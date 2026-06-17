@@ -1,6 +1,6 @@
-# agentic-dbt-pipeline
+# dbt Pipeline
 
-Cursor Agent Skill for **end-to-end agentic dbt automation**: bootstrap, layered models, dbt packages, semantic layer, docs, per-layer git commits, and GitHub push via `gh` CLI.
+Cursor Agent Skill for dbt project automation: bootstrap, layered models, dbt packages, semantic layer, docs, per-layer git commits, and GitHub push via `gh` CLI.
 
 **One install command.** On first use, the agent bootstraps everything else (dbt Agent Skills, dbt packages, codegen, CI workflows).
 
@@ -23,7 +23,7 @@ Default flags (`auto_bootstrap: true`, `auto_install_dbt_skills: true`) handle t
 In Cursor chat:
 
 ```text
-Use the agentic-dbt-pipeline skill.
+Use the dbt Pipeline skill (`agentic-dbt-pipeline`).
 
 auto_bootstrap: true
 auto_install_dbt_skills: true

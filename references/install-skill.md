@@ -1,4 +1,4 @@
-# Install agentic-dbt-pipeline Skill
+# Install dbt Pipeline Skill
 
 ## One command (all you install manually)
 
@@ -19,7 +19,7 @@ The agent runs that command — not you.
 ## Then invoke
 
 ```text
-Use the agentic-dbt-pipeline skill.
+Use the dbt Pipeline skill (`agentic-dbt-pipeline`).
 ```
 
 See [prompt.md](../prompt.md) for the full prompt.

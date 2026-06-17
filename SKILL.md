@@ -7,7 +7,7 @@ description: >-
   Use when setting up or extending a dbt analytics project with agentic automation.
 ---
 
-# Agentic dbt Pipeline
+# dbt Pipeline
 
 Full lifecycle orchestrator for the dbt project.  
 **On every prompt:** agent runs [bootstrap.md](references/bootstrap.md) first (install skills, codegen, automation).  

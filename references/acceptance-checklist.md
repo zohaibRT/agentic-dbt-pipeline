@@ -1,6 +1,6 @@
 # Acceptance Checklist
 
-Verify before marking agentic dbt workflow complete.
+Verify before marking the dbt pipeline workflow complete.
 
 ## Skill structure
 

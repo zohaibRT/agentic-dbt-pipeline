@@ -5,7 +5,7 @@ Copy into Cursor when starting dbt pipeline work. Edit overrides as needed.
 ```text
 You are working in the dbt project.
 
-Use the agentic-dbt-pipeline skill and these dbt-labs skills:
+Use the dbt Pipeline skill (`agentic-dbt-pipeline`) and these dbt-labs skills:
 - using-dbt-for-analytics-engineering
 - running-dbt-commands
 - troubleshooting-dbt-job-errors

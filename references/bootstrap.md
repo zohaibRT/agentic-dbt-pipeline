@@ -1,6 +1,6 @@
 # Bootstrap — Agent Runs This First (Mandatory)
 
-On **every** agentic dbt pipeline skill invocation (full pipeline or single phase), the agent **must** run this bootstrap before layer work. Do not skip unless user sets `auto_bootstrap: false`.
+On **every** dbt Pipeline skill invocation (full pipeline or single phase), the agent **must** run this bootstrap before layer work. Do not skip unless user sets `auto_bootstrap: false`.
 
 ## 1. dbt Agent Skills + dbt packages *(agent installs — user does not)*
 
