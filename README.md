@@ -39,7 +39,7 @@ layer_names:
   layer_3: marts
 ```
 
-Full copy-paste prompt: [ONE_SHOT_PROMPT.md](ONE_SHOT_PROMPT.md)
+Full copy-paste prompt: [prompt.md](prompt.md)
 
 ## Verify (after first agent run)
 

@@ -224,7 +224,7 @@ Read [git-workflow.md](references/git-workflow.md). Ask before every commit/push
 
 ## One-shot prompt
 
-[ONE_SHOT_PROMPT.md](ONE_SHOT_PROMPT.md) · [agent-context-prompt.md](references/agent-context-prompt.md)
+[prompt.md](prompt.md) · [agent-context-prompt.md](references/agent-context-prompt.md)
 
 ## Do not use this skill for
 
@@ -261,4 +261,4 @@ Read [git-workflow.md](references/git-workflow.md). Ask before every commit/push
 | [acceptance-checklist.md](references/acceptance-checklist.md) | Final verification |
 | [dbt-project-layers.md](references/dbt-project-layers.md) | Layer naming |
 | [separate-layer-builds.md](references/separate-layer-builds.md) | Build order |
-| [ONE_SHOT_PROMPT.md](ONE_SHOT_PROMPT.md) | Paste-ready prompt |
+| [prompt.md](prompt.md) | Paste-ready prompt |

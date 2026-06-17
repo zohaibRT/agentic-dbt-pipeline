@@ -22,7 +22,7 @@ Examples the user might choose:
 Use **AskQuestion** or chat. Wait for answers before proceeding.
 
 If the user gives one name only, ask for all three.  
-If the prompt already includes `layer_names:` (see [ONE_SHOT_PROMPT.md](../ONE_SHOT_PROMPT.md)), use those and skip the ask.
+If the prompt already includes `layer_names:` (see [prompt.md](../prompt.md)), use those and skip the ask.
 
 ---
 

@@ -22,7 +22,7 @@ The agent runs that command — not you.
 Use the agentic-dbt-pipeline skill.
 ```
 
-See [ONE_SHOT_PROMPT.md](../ONE_SHOT_PROMPT.md) for the full prompt.
+See [prompt.md](../prompt.md) for the full prompt.
 
 ## What gets installed when
 
