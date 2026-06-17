@@ -26,7 +26,7 @@ All layers `view` — faster iteration:
 
 ```yaml
 models:
-  shopsphere_analytics:
+  <project.name>:
     staging:
       +materialized: view
     intermediate:

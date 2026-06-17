@@ -4,8 +4,8 @@ What the agent needs before dbt pipeline work.
 
 ## Access requirements
 
-- [ ] dbt project folder: `{project.root}` (default `shopsphere_analytics/`)
-- [ ] dbt CLI: `%APPDATA%/Python/Python312/Scripts/dbt.exe` or venv `dbt`
+- [ ] dbt project folder: `{project.root}`
+- [ ] dbt CLI: active environment `dbt`; fallback rules in [validation-commands.md](validation-commands.md)
 - [ ] Python 3.12 venv with `dbt-core` + `dbt-postgres`
 - [ ] Warehouse credentials via `~/.dbt/profiles.yml` — never in repo
 - [ ] `agentic-dbt-pipeline` skill installed — [install-skill.md](install-skill.md)

@@ -60,8 +60,8 @@ Map null `channel_id` → `-1` in facts.
 Run from dbt project root. **Build is mandatory** — a layer is not complete until build passes.
 
 ```powershell
-& "$env:APPDATA\Python\Python312\Scripts\dbt.exe" parse --no-partial-parse
-& "$env:APPDATA\Python\Python312\Scripts\dbt.exe" build --select +path:models/marts/{domain}
+dbt parse --no-partial-parse
+dbt build --select +path:models/marts/{domain}
 ```
 
 `+path` builds marts models, their tests, and required upstream (staging + intermediate) dependencies.

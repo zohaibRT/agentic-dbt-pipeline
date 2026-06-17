@@ -36,7 +36,7 @@ $owner = gh api user --jq ".login"
 ## 3. Check dbt CLI
 
 ```powershell
-& "$env:APPDATA\Python\Python312\Scripts\dbt.exe" --version
+dbt --version
 ```
 
 If missing and `workflow_phase` includes `init` or full pipeline → run [project-initialization.md](project-initialization.md).
@@ -44,7 +44,7 @@ If missing and `workflow_phase` includes `init` or full pipeline → run [projec
 ## 4. Check dbt connection
 
 ```powershell
-& "$env:APPDATA\Python\Python312\Scripts\dbt.exe" debug
+dbt debug
 ```
 
 If profile missing → guide user to `~/.dbt/profiles.yml` (never commit passwords).

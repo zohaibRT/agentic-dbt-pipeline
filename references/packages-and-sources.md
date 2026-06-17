@@ -29,11 +29,11 @@ git add package-lock.yml && git commit -m "Install dbt packages"
 From `{project.root}`:
 
 ```powershell
-$dbt = "$env:APPDATA\Python\Python312\Scripts\dbt.exe"
+$dbt = "dbt"
 & $dbt deps
 & $dbt --quiet run-operation generate_source `
   --args '{"schema_name": "<source.schema>", "generate_columns": true}' `
-  > models\sources\ecommerce_sources_generated.yml
+  > models\sources\<source.name>_sources_generated.yml
 & $dbt parse --no-partial-parse
 ```
 
@@ -45,9 +45,9 @@ Codegen may omit `schema:`. Add explicitly:
 version: 2
 
 sources:
-  - name: ecommerce
-    description: Ecommerce operational source tables in PostgreSQL
-    schema: ecommerce
+  - name: <source.name>
+    description: Source tables for <domain>
+    schema: <source.schema>
     tables:
       - name: customers
         description: One row per customer

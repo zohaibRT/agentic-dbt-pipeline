@@ -66,10 +66,10 @@ dbt deps
 ### codegen — source bootstrap
 
 ```powershell
-$dbt = "$env:APPDATA\Python\Python312\Scripts\dbt.exe"
+$dbt = "dbt"
 & $dbt --quiet run-operation generate_source `
-  --args '{"schema_name": "ecommerce", "generate_columns": true}' `
-  > models\sources\ecommerce_sources_generated.yml
+  --args '{"schema_name": "<source.schema>", "generate_columns": true}' `
+  > models\sources\<source.name>_sources_generated.yml
 ```
 
 See [packages-and-sources.md](packages-and-sources.md) for post-codegen rules.

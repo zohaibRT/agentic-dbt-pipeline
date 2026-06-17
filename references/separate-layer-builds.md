@@ -43,7 +43,7 @@ Ensure `packages.yml` has **codegen only** — see [packages-and-sources.md](pac
 
 ```powershell
 dbt deps
-dbt run-operation generate_source --args '{"schema_name": "ecommerce", "generate_columns": true}'
+dbt run-operation generate_source --args '{"schema_name": "<source.schema>", "generate_columns": true}'
 dbt parse --no-partial-parse
 # No dbt build for sources alone — sources are YAML definitions
 ```
@@ -65,8 +65,8 @@ Creates models like:
 - … (one per source table)
 
 ```powershell
-& "$env:APPDATA\Python\Python312\Scripts\dbt.exe" parse --no-partial-parse
-& "$env:APPDATA\Python\Python312\Scripts\dbt.exe" build --select +path:models/staging/ecommerce
+dbt parse --no-partial-parse
+dbt build --select +path:models/{layer_1_name}/{domain}
 ```
 
 **Builds:** staging models + tests + upstream source dependencies.  
@@ -74,7 +74,7 @@ Creates models like:
 
 Postgres models land in: **`ecommerce_staging`** (default materialization: `view`)
 
-Ask commit → push `models/staging/ecommerce/` only.
+Ask commit → push `models/{layer_1_name}/{domain}/` only.
 
 ---
 
@@ -92,8 +92,8 @@ Creates models like:
 - `int_ecommerce__customer_order_metrics`
 
 ```powershell
-& "$env:APPDATA\Python\Python312\Scripts\dbt.exe" parse --no-partial-parse
-& "$env:APPDATA\Python\Python312\Scripts\dbt.exe" build --select +path:models/intermediate/ecommerce
+dbt parse --no-partial-parse
+dbt build --select +path:models/{layer_2_name}/{domain}
 ```
 
 **Builds:** intermediate + staging (upstream) + tests.  
@@ -101,7 +101,7 @@ Creates models like:
 
 Postgres models land in: **`ecommerce_intermediate`** (default materialization: `view`)
 
-Ask commit → push `models/intermediate/ecommerce/` only.
+Ask commit → push `models/{layer_2_name}/{domain}/` only.
 
 ---
 
@@ -117,8 +117,8 @@ Creates models like:
 - **Reporting:** `mart_channel_performance`, `mart_product_performance`
 
 ```powershell
-& "$env:APPDATA\Python\Python312\Scripts\dbt.exe" parse --no-partial-parse
-& "$env:APPDATA\Python\Python312\Scripts\dbt.exe" build --select +path:models/marts/ecommerce
+dbt parse --no-partial-parse
+dbt build --select +path:models/{layer_3_name}/{domain}
 ```
 
 **Builds:** marts + intermediate + staging (upstream) + tests.  
@@ -126,7 +126,7 @@ Creates models like:
 
 Postgres models land in: **`ecommerce_marts`** (prod defaults: `dim_*`/`mart_*` = `table`, `fct_*` = `incremental`)
 
-Ask commit → push `models/marts/ecommerce/` (+ `dbt_project.yml` if changed).
+Ask commit → push `models/{layer_3_name}/{domain}/` (+ `dbt_project.yml` if changed).
 
 ---
 
@@ -139,9 +139,9 @@ layers: all
 Run in order, **stop and ask commit after each**:
 
 1. Sources (if needed) → ask commit  
-2. Staging → build `+path:models/staging/ecommerce` → ask commit  
-3. Intermediate → build `+path:models/intermediate/ecommerce` → ask commit  
-4. Marts → build `+path:models/marts/ecommerce` → ask commit  
+2. Staging → build `+path:models/{layer_1_name}/{domain}` → ask commit
+3. Intermediate → build `+path:models/{layer_2_name}/{domain}` → ask commit
+4. Marts → build `+path:models/{layer_3_name}/{domain}` → ask commit
 
 Each layer is a separate build and optional separate git push.
 
@@ -152,9 +152,9 @@ Each layer is a separate build and optional separate git push.
 After creating one model in a layer:
 
 ```powershell
-& "$env:APPDATA\Python\Python312\Scripts\dbt.exe" build --select +stg_ecommerce__customers
-& "$env:APPDATA\Python\Python312\Scripts\dbt.exe" build --select +int_ecommerce__customer_order_metrics
-& "$env:APPDATA\Python\Python312\Scripts\dbt.exe" build --select +dim_customers
+dbt build --select +stg_<source>__customers
+dbt build --select +int_<source>__customer_order_metrics
+dbt build --select +dim_customers
 ```
 
 `+model_name` builds that model and required upstream only.  
@@ -166,7 +166,7 @@ Use for incremental work inside a layer; default skill flow still builds the **w
 
 | Selector | Meaning |
 |---|---|
-| `path:models/staging/ecommerce` | Only models in that folder |
-| `+path:models/staging/ecommerce` | That folder **+ all upstream** dependencies |
+| `path:models/{layer_1_name}/{domain}` | Only models in that folder |
+| `+path:models/{layer_1_name}/{domain}` | That folder **+ all upstream** dependencies |
 
 Prefer **`+path`** so upstream layers are built automatically when you build intermediate or marts alone.

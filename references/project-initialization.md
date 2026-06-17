@@ -40,7 +40,7 @@ Profile file: `~/.dbt/profiles.yml` — **do not commit**.
 ## 3. Verify connection
 
 ```powershell
-& "$env:APPDATA\Python\Python312\Scripts\dbt.exe" debug
+dbt debug
 ```
 
 All checks must pass before continuing.

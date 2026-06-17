@@ -86,7 +86,7 @@ Use **actual column names** from `fct_orders` / `fct_order_items` — do not inv
 ## Validate
 
 ```powershell
-& "$env:APPDATA\Python\Python312\Scripts\dbt.exe" parse --no-partial-parse
+dbt parse --no-partial-parse
 ```
 
 ## Do not

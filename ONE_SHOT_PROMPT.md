@@ -102,7 +102,7 @@ materialization_profile: dev
 ## Build commands
 
 ```powershell
-$dbt = "$env:APPDATA\Python\Python312\Scripts\dbt.exe"
+$dbt = "dbt"
 & $dbt debug
 & $dbt deps
 & $dbt parse --no-partial-parse

@@ -48,8 +48,8 @@ Document: purpose, grain, primary key, important columns, tests.
 Run from dbt project root. **Build is mandatory** — a layer is not complete until build passes.
 
 ```powershell
-& "$env:APPDATA\Python\Python312\Scripts\dbt.exe" parse --no-partial-parse
-& "$env:APPDATA\Python\Python312\Scripts\dbt.exe" build --select +path:models/staging/{domain}
+dbt parse --no-partial-parse
+dbt build --select +path:models/staging/{domain}
 ```
 
 `+path` builds staging models, their tests, and required upstream dependencies.

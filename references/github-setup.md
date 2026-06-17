@@ -55,7 +55,8 @@ Do not start package, source, staging, intermediate, mart, docs, CI, or Agents S
 
 ```powershell
 git status
-& "$env:APPDATA\Python\Python312\Scripts\dbt.exe" parse --no-partial-parse
+$dbt = "dbt"
+& $dbt parse --no-partial-parse
 ```
 
 ## Never commit

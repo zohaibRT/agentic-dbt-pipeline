@@ -89,7 +89,7 @@ Write all three layer blocks to `dbt_project.yml` up front (when starting a new 
 ## Build commands (use user names)
 
 ```powershell
-& "$env:APPDATA\Python\Python312\Scripts\dbt.exe" build --select +path:models/{layer_1_name}/{domain}
-& "$env:APPDATA\Python\Python312\Scripts\dbt.exe" build --select +path:models/{layer_2_name}/{domain}
-& "$env:APPDATA\Python\Python312\Scripts\dbt.exe" build --select +path:models/{layer_3_name}/{domain}
+dbt build --select +path:models/{layer_1_name}/{domain}
+dbt build --select +path:models/{layer_2_name}/{domain}
+dbt build --select +path:models/{layer_3_name}/{domain}
 ```

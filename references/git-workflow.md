@@ -51,16 +51,17 @@ Use the **AskQuestion** tool when available. Otherwise ask in chat and wait.
 From `{project.root}`:
 
 ```powershell
-& "$env:APPDATA\Python\Python312\Scripts\dbt.exe" parse --no-partial-parse
-& "$env:APPDATA\Python\Python312\Scripts\dbt.exe" build --select +path:<layer_path>
+$dbt = "dbt"
+& $dbt parse --no-partial-parse
+& $dbt build --select +path:<layer_path>
 ```
 
 Examples:
 
 ```powershell
-& "$env:APPDATA\Python\Python312\Scripts\dbt.exe" build --select +path:models/staging/ecommerce
-& "$env:APPDATA\Python\Python312\Scripts\dbt.exe" build --select +path:models/intermediate/ecommerce
-& "$env:APPDATA\Python\Python312\Scripts\dbt.exe" build --select +path:models/marts/ecommerce
+& $dbt build --select +path:models/{layer_1_name}/{domain}
+& $dbt build --select +path:models/{layer_2_name}/{domain}
+& $dbt build --select +path:models/{layer_3_name}/{domain}
 ```
 
 ## Stage only this layer (use user-defined folder names)
@@ -121,5 +122,5 @@ If `git commit` fails with `unknown option trailer`, use:
 | `commit:` value | Behavior |
 |---|---|
 | `ask` *(default)* | Ask after each layer; push when user says yes and `push_to_github: true` |
-| `auto_yes` | Commit and push each layer to `github_repo` without asking |
+| `auto_yes` | Commit each layer without asking; push only when `push_to_github: true` and the target is not production |
 | `skip_all` | Never commit or push during this run |

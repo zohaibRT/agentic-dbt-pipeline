@@ -18,9 +18,9 @@ After codegen, add if missing:
 
 ```yaml
 sources:
-  - name: ecommerce
-    description: Ecommerce operational source tables
-    schema: ecommerce
+  - name: <source.name>
+    description: Source tables for <domain>
+    schema: <source.schema>
     tables:
       - name: customers
         description: One row per customer
@@ -42,7 +42,8 @@ Only add if `updated_at` (or equivalent) exists in source YAML — **do not assu
 ## Generate docs
 
 ```powershell
-& "$env:APPDATA\Python\Python312\Scripts\dbt.exe" docs generate
+$dbt = "dbt"
+& $dbt docs generate
 ```
 
 Verify `target/manifest.json` and `target/catalog.json`.

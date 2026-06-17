@@ -61,8 +61,8 @@ Create or update **only** the intermediate layer from completed staging models.
 Run from dbt project root. **Build is mandatory** — a layer is not complete until build passes.
 
 ```powershell
-& "$env:APPDATA\Python\Python312\Scripts\dbt.exe" parse --no-partial-parse
-& "$env:APPDATA\Python\Python312\Scripts\dbt.exe" build --select +path:models/intermediate/{domain}
+dbt parse --no-partial-parse
+dbt build --select +path:models/intermediate/{domain}
 ```
 
 `+path` builds intermediate models, their tests, and required upstream (staging) dependencies.
