@@ -1,6 +1,8 @@
 # One-Shot Prompt — Agentic dbt Pipeline
 
-Install once: [references/install-skill.md](references/install-skill.md)  
+**Install once:** `npx skills add zohaibRT/agentic-dbt-pipeline`  
+Bootstrap auto-installs dbt Agent Skills + packages on first run.
+
 Copy into Cursor. See also [references/agent-context-prompt.md](references/agent-context-prompt.md).
 
 ---

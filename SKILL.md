@@ -15,7 +15,8 @@ Full lifecycle orchestrator for the dbt project.
 
 Use `workflow_phase:` to run a single phase. Use `auto_bootstrap: false` only for layer-only edits.
 
-**Install this skill** (once per machine or project): [references/install-skill.md](references/install-skill.md)
+**Install (one command):** `npx skills add zohaibRT/agentic-dbt-pipeline` — see [references/install-skill.md](references/install-skill.md).  
+Bootstrap auto-installs dbt Agent Skills and dbt packages on first run.
 
 ## Bootstrap (mandatory — agent runs automatically)
 
@@ -35,7 +36,7 @@ Read [references/dbt-packages-and-skills.md](references/dbt-packages-and-skills.
 
 | Capability | Install / use |
 |---|---|
-| dbt Agent Skills | `npx skills add dbt-labs/dbt-agent-skills/skills/dbt` |
+| dbt Agent Skills | **Bootstrap auto-installs** if missing (`auto_install_dbt_skills: true`) |
 | codegen | `packages.yml` + `generate_source` |
 | dbt_utils | `packages.yml` — macros in models/tests |
 | dbt_project_evaluator | `packages.yml` + `dispatch` + `dbt build --select package:dbt_project_evaluator` |

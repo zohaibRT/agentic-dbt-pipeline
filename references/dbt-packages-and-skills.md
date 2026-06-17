@@ -13,9 +13,11 @@ The pipeline uses **six dbt capabilities** together. Agent installs and runs the
 
 ---
 
-## 1. dbt Agent Skills (bootstrap)
+## 1. dbt Agent Skills (bootstrap — not manual install)
 
-Install when `auto_install_dbt_skills: true` — see [install-dbt-agent-skills.md](install-dbt-agent-skills.md).
+User installs **only** `agentic-dbt-pipeline`. Bootstrap runs `npx skills add dbt-labs/dbt-agent-skills/skills/dbt` when skills are missing — see [install-dbt-agent-skills.md](install-dbt-agent-skills.md).
+
+Install when `auto_install_dbt_skills: true` (default).
 
 **Always compose:**
 
@@ -30,7 +32,13 @@ Install when `auto_install_dbt_skills: true` — see [install-dbt-agent-skills.m
 | `answering-natural-language-questions-with-dbt` | Ad-hoc metric questions *(optional)* |
 
 ```bash
-npx skills add dbt-labs/dbt-agent-skills/skills/dbt
+npx skills add dbt-labs/dbt-agent-skills/skills/dbt   # agent runs this in bootstrap if missing
+```
+
+User's only manual skill install:
+
+```bash
+npx skills add zohaibRT/agentic-dbt-pipeline
 ```
 
 ---

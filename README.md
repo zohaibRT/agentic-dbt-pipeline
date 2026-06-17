@@ -2,30 +2,21 @@
 
 Cursor Agent Skill for **end-to-end agentic dbt automation**: bootstrap, layered models, dbt packages, semantic layer, docs, per-layer git commits, and GitHub push via `gh` CLI.
 
-Works with [dbt Agent Skills](https://github.com/dbt-labs/dbt-agent-skills) the same way you install `using-dbt-for-analytics-engineering`.
+**One install command.** On first use, the agent bootstraps everything else (dbt Agent Skills, dbt packages, codegen, CI workflows).
 
-## Install
-
-### 1. dbt Agent Skills (required companion)
-
-```bash
-npx skills add dbt-labs/dbt-agent-skills/skills/dbt
-```
-
-### 2. This skill
+## Install (one command)
 
 ```bash
 npx skills add zohaibRT/agentic-dbt-pipeline
 ```
 
-Skills install to `.agents/skills/` in your project (or global agent skills path, depending on your Cursor setup).
+That is the **only** skill you install manually. When you run the pipeline, bootstrap automatically:
 
-### 3. Verify
+1. Installs [dbt Agent Skills](https://github.com/dbt-labs/dbt-agent-skills) (`npx skills add dbt-labs/dbt-agent-skills/skills/dbt`) if missing
+2. Runs `dbt deps` for codegen, dbt_utils, dbt_project_evaluator, audit_helper
+3. Verifies `dbt debug`, codegen sources, and GitHub repo setup
 
-```text
-.agents/skills/agentic-dbt-pipeline/SKILL.md
-.agents/skills/using-dbt-for-analytics-engineering/SKILL.md
-```
+Default flags (`auto_bootstrap: true`, `auto_install_dbt_skills: true`) handle this — you do not run separate install commands.
 
 ## Use
 
@@ -50,21 +41,24 @@ layer_names:
 
 Full copy-paste prompt: [ONE_SHOT_PROMPT.md](ONE_SHOT_PROMPT.md)
 
+## Verify (after first agent run)
+
+```text
+.agents/skills/agentic-dbt-pipeline/SKILL.md          ← you installed this
+.agents/skills/using-dbt-for-analytics-engineering/    ← agent installed this
+```
+
 ## Configure
 
-Edit `project.config.yml` in this skill folder (or after install, under `.agents/skills/agentic-dbt-pipeline/`) for:
+Edit `project.config.yml` (under `.agents/skills/agentic-dbt-pipeline/` after install) for warehouse metadata, project paths, and layer defaults.
 
-- dbt project name and root path
-- Warehouse connection metadata (no passwords)
-- Layer folder names and materialization defaults
-
-**GitHub:** do not hardcode accounts. The agent asks for `github_repo_name` and resolves the owner from `gh api user`.
+**GitHub:** agent asks for `github_repo_name`; owner comes from `gh api user`.
 
 ## What the agent automates
 
 | Phase | Action |
 |---|---|
-| Bootstrap | Install dbt skills, all packages, `dbt debug`, codegen |
+| Bootstrap | **Auto-install** dbt Agent Skills + all dbt packages, `dbt debug`, codegen |
 | Sources | `packages.yml`, `dbt deps`, `generate_source` |
 | Layers | staging → intermediate → marts (build + tests) |
 | Semantic layer | MetricFlow YAML on marts |
@@ -73,7 +67,7 @@ Edit `project.config.yml` in this skill folder (or after install, under `.agents
 | Git | Per-layer commits + push to GitHub on approval |
 | CI | GitHub Actions + Agents Schema workflows |
 
-## dbt packages included
+## dbt packages (installed by agent via `dbt deps`)
 
 - `dbt-labs/codegen`
 - `dbt-labs/dbt_utils`
@@ -82,20 +76,16 @@ Edit `project.config.yml` in this skill folder (or after install, under `.agents
 
 ## Prerequisites
 
-- Python 3.12 + `dbt-core` + `dbt-postgres`
+- Python 3.12 + `dbt-core` + adapter (e.g. `dbt-postgres`)
 - `~/.dbt/profiles.yml` with warehouse credentials
-- [GitHub CLI](https://cli.github.com/) (`gh auth login`)
-- Postgres (or adapt `project.config.yml` for your adapter)
+- [GitHub CLI](https://cli.github.com/) (`gh auth login`) for push
+- Node.js (for `npx skills` on first install)
 
 ## More docs
 
 | File | Purpose |
 |---|---|
 | [SKILL.md](SKILL.md) | Main skill orchestrator |
-| [references/install-skill.md](references/install-skill.md) | Install options |
-| [references/github-repo-resolution.md](references/github-repo-resolution.md) | GitHub owner + repo name |
-| [references/dbt-packages-and-skills.md](references/dbt-packages-and-skills.md) | Full package stack |
-
-## License
-
-Apache-2.0 (same spirit as dbt Labs agent skills — adjust if you add a LICENSE file).
+| [references/install-skill.md](references/install-skill.md) | Install details |
+| [references/bootstrap.md](references/bootstrap.md) | What auto-runs on first use |
+| [references/dbt-packages-and-skills.md](references/dbt-packages-and-skills.md) | Full stack |

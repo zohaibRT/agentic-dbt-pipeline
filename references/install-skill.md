@@ -1,41 +1,47 @@
 # Install agentic-dbt-pipeline Skill
 
-Install once — then invoke with: **"Use the agentic-dbt-pipeline skill"** (same pattern as dbt Agent Skills).
-
-## Recommended — npx skills from GitHub
+## One command (all you install manually)
 
 ```bash
-npx skills add dbt-labs/dbt-agent-skills/skills/dbt
 npx skills add zohaibRT/agentic-dbt-pipeline
 ```
 
 Repository: https://github.com/zohaibRT/agentic-dbt-pipeline
 
-## Manual — copy into project
-
-```text
-.agents/skills/agentic-dbt-pipeline/
-```
-
-Clone this repo and copy the folder contents, or symlink:
+**You do not install dbt Agent Skills separately.** On first pipeline run, bootstrap installs them automatically when `auto_install_dbt_skills: true` (default):
 
 ```bash
-git clone https://github.com/zohaibRT/agentic-dbt-pipeline.git
-cp -r agentic-dbt-pipeline .agents/skills/agentic-dbt-pipeline
+npx skills add dbt-labs/dbt-agent-skills/skills/dbt
 ```
+
+The agent runs that command — not you.
+
+## Then invoke
+
+```text
+Use the agentic-dbt-pipeline skill.
+```
+
+See [ONE_SHOT_PROMPT.md](../ONE_SHOT_PROMPT.md) for the full prompt.
+
+## What gets installed when
+
+| What | Who installs | When |
+|---|---|---|
+| `agentic-dbt-pipeline` | **You** (`npx skills add ...`) | Once, before first use |
+| dbt Agent Skills (9 skills) | **Agent** (bootstrap) | First run if missing |
+| dbt packages (codegen, utils, etc.) | **Agent** (`dbt deps`) | Sources / full pipeline |
+| dbt project + layers | **Agent** | Full pipeline |
 
 ## Verify
 
+After first agent run:
+
 ```text
-.agents/skills/agentic-dbt-pipeline/SKILL.md exists?
-.agents/skills/using-dbt-for-analytics-engineering/SKILL.md exists?
+.agents/skills/agentic-dbt-pipeline/SKILL.md
+.agents/skills/using-dbt-for-analytics-engineering/SKILL.md
 ```
 
-## Configure per project
+## Configure
 
-Edit [project.config.yml](../project.config.yml) for warehouse, project name, and layer paths.  
-Do **not** hardcode GitHub accounts — use `github_repo_name` in the prompt; owner from `gh api user`.
-
-## One-shot prompt
-
-See [ONE_SHOT_PROMPT.md](../ONE_SHOT_PROMPT.md).
+Edit [project.config.yml](../project.config.yml) for warehouse, project name, and layer paths.

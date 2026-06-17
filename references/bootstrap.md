@@ -2,17 +2,21 @@
 
 On **every** agentic dbt pipeline skill invocation (full pipeline or single phase), the agent **must** run this bootstrap before layer work. Do not skip unless user sets `auto_bootstrap: false`.
 
-## 1. dbt Agent Skills + dbt packages
+## 1. dbt Agent Skills + dbt packages *(agent installs — user does not)*
 
-**Agent skills** — see [install-dbt-agent-skills.md](install-dbt-agent-skills.md):
+**User installed only:** `npx skills add zohaibRT/agentic-dbt-pipeline`
+
+**Agent skills (auto)** — see [install-dbt-agent-skills.md](install-dbt-agent-skills.md):
+
+If `.agents/skills/using-dbt-for-analytics-engineering/SKILL.md` is missing, agent **must** run:
 
 ```bash
 npx skills add dbt-labs/dbt-agent-skills/skills/dbt
 ```
 
-Compose with: `using-dbt-for-analytics-engineering`, `running-dbt-commands`, `building-dbt-semantic-layer`, `troubleshooting-dbt-job-errors`.
+Do not ask the user to install dbt skills manually when `auto_install_dbt_skills: true`.
 
-**dbt packages** — see [dbt-packages-and-skills.md](dbt-packages-and-skills.md):
+**dbt packages (auto)** — see [dbt-packages-and-skills.md](dbt-packages-and-skills.md):
 
 1. Write full `packages.yml` (codegen, dbt_utils, dbt_project_evaluator, audit_helper)
 2. Add `dispatch` block to `dbt_project.yml` for evaluator

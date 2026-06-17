@@ -1,44 +1,46 @@
-# Install dbt Agent Skills (Mandatory Bootstrap)
+# Install dbt Agent Skills (Auto — Bootstrap)
 
-The agent **runs this automatically** on every agentic dbt pipeline skill invocation when `auto_install_dbt_skills: true` (default).
+**User does not run this manually.**  
+Bootstrap runs this when `auto_install_dbt_skills: true` (default) and dbt skills are missing.
 
-## Check first
+User only installs:
+
+```bash
+npx skills add zohaibRT/agentic-dbt-pipeline
+```
+
+## Agent check (bootstrap step 1)
 
 ```text
 .agents/skills/using-dbt-for-analytics-engineering/SKILL.md exists?
 ```
 
-If **yes** → skip install, proceed to layer work.
+If **yes** → skip, proceed.
 
-If **no** → install now (do not ask user to do it manually):
+If **no** → agent runs automatically:
 
 ```bash
 npx skills add dbt-labs/dbt-agent-skills/skills/dbt
 ```
 
-Full install (optional):
+Do not ask the user to install dbt skills manually unless `npx` fails.
 
-```bash
-npx skills add dbt-labs/dbt-agent-skills
-```
+## After install — agent composes with
 
-## After install — always compose with
+1. `agentic-dbt-pipeline` (orchestration + GitHub)
+2. `using-dbt-for-analytics-engineering`
+3. `running-dbt-commands`
+4. `building-dbt-semantic-layer`
+5. `troubleshooting-dbt-job-errors` *(on failures)*
 
-1. `agentic-dbt-pipeline` (pipeline orchestration + GitHub)
-2. `using-dbt-for-analytics-engineering` (models, tests, docs)
-3. `running-dbt-commands` (CLI)
-4. `building-dbt-semantic-layer` (MetricFlow / semantic models — after marts)
-5. `troubleshooting-dbt-job-errors` (on failures)
-6. `adding-dbt-unit-test` (when adding unit tests)
-
-See also [dbt-packages-and-skills.md](dbt-packages-and-skills.md) for dbt **packages** (codegen, dbt_utils, dbt_project_evaluator, audit_helper).
+See also [dbt-packages-and-skills.md](dbt-packages-and-skills.md) for dbt **packages** (`dbt deps`).
 
 ## Verify
 
-List `.agents/skills/` and confirm at least:
+Confirm at least:
 
 - `using-dbt-for-analytics-engineering`
 - `running-dbt-commands`
 - `building-dbt-semantic-layer`
 
-Report install result to user before continuing.
+Report install result before continuing layer work.
