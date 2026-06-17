@@ -1,0 +1,72 @@
+# Intermediate Layer Spec
+
+## Goal
+
+Create or update **only** the intermediate layer from completed staging models.
+
+## Folder and naming
+
+- Folder: `models/intermediate/{domain}/`
+- SQL: `int_{source}__<name>.sql`
+- YAML: `_int_{source}.yml`
+
+## Required models (ecommerce reference)
+
+| Model | Grain | Source |
+|---|---|---|
+| `int_{source}__payments_aggregated` | order_id | `stg_*__payments` |
+| `int_{source}__refunds_aggregated` | order_id | `stg_*__refunds` |
+| `int_{source}__orders_enriched` | order_id | orders + customers + channels + payment/refund aggregates |
+| `int_{source}__order_items_enriched` | order_item_id | order_items + products + categories + orders enriched |
+| `int_{source}__customer_order_metrics` | customer_id | all customers + order rollups |
+
+## Business logic (orders enriched)
+
+- `order_subtotal_amount` = `gross_amount - discount_amount`
+- `calculated_order_total_amount` = subtotal + `tax_amount` + `shipping_amount`
+- `net_order_amount` = calculated total − `total_refund_amount`
+- `is_cancelled_order` = status = `cancelled`
+- `is_refunded_order` = status = `refunded`
+- `is_completed_order` = status = `completed`
+- `is_commercial_order` = status in (`completed`, `refunded`)
+
+## Payments aggregated
+
+- `successful_payment_amount` where `payment_status = 'paid'`
+- `refunded_payment_amount` where `payment_status = 'refunded'`
+- Include totals, counts, first/last dates, method summary if safe
+
+## Customer metrics
+
+- Include **all customers** (left join), even with no orders
+- `is_repeat_customer` = `commercial_orders >= 2`
+- Do not allocate refunds to item grain
+
+## Rules
+
+- `ref()` only — **no** `source()` in intermediate
+- `{{ config(materialized='view') }}` on every model
+- Use **actual** staging/intermediate columns — do not assume `currency_code`, `source_system`, `order_total_amount`, `item_total_amount`
+- If a required column is missing, **stop and explain**
+
+## Tests
+
+- `not_null` + `unique` on primary keys
+- `relationships` to staging or sibling intermediate models where safe
+- `accepted_values` on boolean flags (`true`, `false`)
+- Use `arguments:` nesting for generic tests
+
+## Validate (required after every intermediate change)
+
+Run from dbt project root. **Build is mandatory** — a layer is not complete until build passes.
+
+```powershell
+& "$env:APPDATA\Python\Python312\Scripts\dbt.exe" parse --no-partial-parse
+& "$env:APPDATA\Python\Python312\Scripts\dbt.exe" build --select +path:models/intermediate/{domain}
+```
+
+`+path` builds intermediate models, their tests, and required upstream (staging) dependencies.
+
+## Do not create
+
+marts, facts, dimensions, semantic models, metrics, reports

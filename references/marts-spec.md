@@ -1,0 +1,71 @@
+# Marts / Star Schema Layer Spec
+
+## Goal
+
+Create or update **only** the marts star-schema layer from staging + intermediate models.
+
+## Folder and naming
+
+- Folder: `models/marts/{domain}/`
+- YAML: `_ecommerce_marts.yml` (or `_<domain>_marts.yml`)
+
+## Required dimensions
+
+| Model | Grain | Notes |
+|---|---|---|
+| `dim_customers` | customer_id | staging customers + customer order metrics |
+| `dim_products` | product_id | products + categories |
+| `dim_categories` | category_id | categories |
+| `dim_marketing_channels` | channel_id | channels + fallback row `channel_id = -1`, `channel_name = 'Unattributed'` |
+| `dim_dates` | date_day | `generate_series` spine from order/payment/refund/signup dates |
+
+## Required facts
+
+| Model | Grain | Source |
+|---|---|---|
+| `fct_orders` | order_id | `int_*__orders_enriched` |
+| `fct_order_items` | order_item_id | `int_*__order_items_enriched` |
+
+Map null `channel_id` → `-1` in facts.
+
+## Optional reporting marts (create if simple)
+
+| Model | Grain | Metrics |
+|---|---|---|
+| `mart_channel_performance` | channel_id | orders by status, gross/net revenue, refund amount, AOV |
+| `mart_product_performance` | product_id | items sold, quantity, gross/commercial item revenue, order count |
+
+`average_order_value` = `gross_revenue / commercial_orders` (nullif denominator 0).
+
+## Rules
+
+- `ref()` only — **no** `source()` in marts
+- Materialization: follow [materialization-rules.md](materialization-rules.md)
+  - `prod`: marts folder `table`; `fct_*` incremental with `unique_key`
+  - `dev`: all `view`
+- Sync `dbt_project.yml` with `materialization_profile` before build
+- Keep facts/dims clean for BI and future semantic layer
+- Do not assume unavailable columns (`currency_code`, `source_system`, etc.)
+- Do not allocate refunds to order items (refunds are order-grain only)
+
+## Tests
+
+- `not_null` + `unique` on dimension and fact primary keys
+- `relationships`: facts → dimensions (and `fct_order_items` → `fct_orders`)
+- `accepted_values` on boolean flags
+- Use `arguments:` nesting for generic tests
+
+## Validate (required after every marts change)
+
+Run from dbt project root. **Build is mandatory** — a layer is not complete until build passes.
+
+```powershell
+& "$env:APPDATA\Python\Python312\Scripts\dbt.exe" parse --no-partial-parse
+& "$env:APPDATA\Python\Python312\Scripts\dbt.exe" build --select +path:models/marts/{domain}
+```
+
+`+path` builds marts models, their tests, and required upstream (staging + intermediate) dependencies.
+
+## Do not create
+
+semantic models, metrics, reports, dashboards, final documentation

@@ -1,0 +1,159 @@
+# Edit this file when starting a new domain or environment.
+# The agent reads this before building dbt layers.
+
+project:
+  name: shopsphere_analytics
+  root: shopsphere_analytics
+  profile: shopsphere_analytics
+
+database:
+  adapter: postgres
+  host: localhost
+  port: 5432
+  dbname: shopsphere_update
+  target_schema: ecommerce
+  threads: 4
+  # password: NEVER store here — use ~/.dbt/profiles.yml
+
+targets:
+  default: dev
+  available:
+    - dev
+    - ci
+    - prod
+
+source:
+  name: ecommerce
+  schema: ecommerce
+  yaml_path: models/sources/ecommerce_sources_generated.yml
+
+agents:
+  schema: AGENTS
+  github_secret: WAREHOUSE_CREDENTIALS
+  workflow_version: v0.0.9
+
+packages:
+  - package: dbt-labs/codegen
+    version: 0.14.1
+  - package: dbt-labs/dbt_utils
+    version: 1.3.3
+  - package: dbt-labs/dbt_project_evaluator
+    version: 1.3.0
+  - package: dbt-labs/audit_helper
+    version: 0.14.0
+
+dbt_agent_skills:
+  install_command: npx skills add dbt-labs/dbt-agent-skills/skills/dbt
+  required:
+    - using-dbt-for-analytics-engineering
+    - running-dbt-commands
+    - building-dbt-semantic-layer
+    - troubleshooting-dbt-job-errors
+  optional:
+    - adding-dbt-unit-test
+    - answering-natural-language-questions-with-dbt
+
+domain: ecommerce
+
+layer_names:
+  ask_user: true
+  layer_1: staging
+  layer_2: intermediate
+  layer_3: marts
+
+layer_roles:
+  - sources
+  - layer_1
+  - layer_2
+  - layer_3
+
+paths:
+  sources: models/sources
+  layer_1: models/staging/ecommerce
+  layer_2: models/intermediate/ecommerce
+  layer_3: models/marts/ecommerce
+
+naming:
+  layer_1_prefix: stg_{source}__
+  layer_2_prefix: int_{source}__
+  layer_1_yaml: _stg_{source}.yml
+  layer_2_yaml: _int_{source}.yml
+  layer_3_yaml: _ecommerce_marts.yml
+
+examples:
+  source: "source('ecommerce', 'customers')"
+  layer_1: stg_ecommerce__customers
+  layer_2: int_ecommerce__customer_order_metrics
+  layer_3: dim_customers
+
+dbt:
+  executable_windows: '%APPDATA%/Python/Python312/Scripts/dbt.exe'
+  core_version: '1.10.15'
+  adapter_version: '1.10.0'
+  parse_flags: '--no-partial-parse'
+  build_selectors:
+    layer_1: '+path:models/staging/ecommerce'
+    layer_2: '+path:models/intermediate/ecommerce'
+    layer_3: '+path:models/marts/ecommerce'
+
+materialization_profile: prod
+materialization:
+  staging: view
+  intermediate: view
+  marts: table
+  marts_fact_default: incremental
+  marts_dim_default: table
+  marts_reporting_default: table
+  dev_override_all: view
+
+git:
+  ask_after_each_layer: true
+  default_commit_mode: ask
+  push_to_github: true
+  use_gh_cli_account: true       # owner from `gh api user --jq .login`
+  github_repo_name: null         # prompt: github_repo_name — ask user for repo slug only
+  remote: null                   # resolved: https://github.com/{gh_user}/{github_repo_name}.git
+  branch: main
+  exclude:
+    - .venv
+    - target
+    - logs
+    - dbt_packages
+    - .env
+    - profiles.yml
+
+commit_messages:
+  init: 'Initialize dbt project'
+  packages: 'Add dbt packages'
+  package_lock: 'Install dbt packages'
+  config: 'Configure dbt profile and source settings'
+  sources: 'Define dbt sources'
+  layer_1: 'Add dbt staging layer for {source} sources.'
+  layer_2: 'Add dbt intermediate layer for {source} analytics.'
+  layer_3: 'Add dbt marts layer for {source} star schema.'
+  semantic_layer: 'Add semantic layer metrics for {source}'
+  project_evaluator: 'Configure and run dbt project evaluator'
+  docs: 'Add dbt tests and documentation'
+  ci: 'Add dbt automation workflows'
+  agents_schema: 'Add Agents Schema sync workflow'
+
+workflow_phases:
+  - bootstrap
+  - init
+  - sources
+  - staging
+  - intermediate
+  - marts
+  - semantic_layer
+  - project_evaluator
+  - docs
+  - ci
+  - agents_schema
+
+auto_bootstrap:
+  default: true
+  install_dbt_labs_skills: true
+  run_dbt_deps_on_sources: true
+  create_ci_workflow: true
+  create_agents_schema_workflow: true
+  # User must add WAREHOUSE_CREDENTIALS in GitHub UI — agent cannot create secrets

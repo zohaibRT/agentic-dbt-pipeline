@@ -1,0 +1,45 @@
+# Security & Credentials
+
+## Never
+
+- Hardcode passwords, tokens, or private keys in `SKILL.md`, SQL, YAML, or commits.
+- Commit `.env`, `profiles.yml`, or credential files.
+- Print secrets in terminal output or chat summaries.
+- Change production schemas, profiles, or credentials without user approval.
+
+## Always
+
+- Inspect `.gitignore` before the first commit.
+- Use `project.config.yml` for **non-secret** connection metadata only.
+- Reference credentials via:
+  - Local: `~/.dbt/profiles.yml`
+  - CI: GitHub Actions secrets
+  - Agents Schema: `WAREHOUSE_CREDENTIALS` secret (YAML in GitHub)
+
+## `.gitignore` minimum entries
+
+```gitignore
+.venv/
+target/
+logs/
+dbt_packages/
+.env
+profiles.yml
+```
+
+## Production guardrails
+
+Before any change when `target=prod` or production database:
+
+1. **Ask the user** to confirm.
+2. Run `dbt parse` and scoped `dbt build` — not full-project unless approved.
+3. Never `dbt run-operation` against prod without explicit approval.
+
+## GitHub Actions secrets
+
+| Secret | Purpose |
+|---|---|
+| `WAREHOUSE_CREDENTIALS` | Agents Schema sync (warehouse YAML) |
+| dbt profile vars | CI `dbt build` *(project-specific)* |
+
+Store warehouse credentials as YAML in the secret — not in the repository.

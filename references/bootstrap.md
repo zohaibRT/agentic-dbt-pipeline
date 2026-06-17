@@ -1,0 +1,95 @@
+# Bootstrap — Agent Runs This First (Mandatory)
+
+On **every** agentic dbt pipeline skill invocation (full pipeline or single phase), the agent **must** run this bootstrap before layer work. Do not skip unless user sets `auto_bootstrap: false`.
+
+## 1. dbt Agent Skills + dbt packages
+
+**Agent skills** — see [install-dbt-agent-skills.md](install-dbt-agent-skills.md):
+
+```bash
+npx skills add dbt-labs/dbt-agent-skills/skills/dbt
+```
+
+Compose with: `using-dbt-for-analytics-engineering`, `running-dbt-commands`, `building-dbt-semantic-layer`, `troubleshooting-dbt-job-errors`.
+
+**dbt packages** — see [dbt-packages-and-skills.md](dbt-packages-and-skills.md):
+
+1. Write full `packages.yml` (codegen, dbt_utils, dbt_project_evaluator, audit_helper)
+2. Add `dispatch` block to `dbt_project.yml` for evaluator
+3. Run `dbt deps`
+
+## 2. GitHub repo (ask name, use gh account)
+
+See [github-repo-resolution.md](github-repo-resolution.md):
+
+```powershell
+gh auth status
+$owner = gh api user --jq ".login"
+```
+
+**Ask user** for `github_repo_name` (repo slug only). Do not hardcode GitHub accounts in config.
+
+## 3. Check dbt CLI
+
+```powershell
+& "$env:APPDATA\Python\Python312\Scripts\dbt.exe" --version
+```
+
+If missing and `workflow_phase` includes `init` or full pipeline → run [project-initialization.md](project-initialization.md).
+
+## 4. Check dbt connection
+
+```powershell
+& "$env:APPDATA\Python\Python312\Scripts\dbt.exe" debug
+```
+
+If profile missing → guide user to `~/.dbt/profiles.yml` (never commit passwords).
+
+## 5. Sources bootstrap (codegen)
+
+When running **sources** phase or full pipeline:
+
+1. Ensure full `packages.yml` exists
+2. Run `dbt deps`
+3. Run `generate_source` → source YAML
+4. Add `schema:` to source YAML if missing
+5. Run `dbt parse`
+
+See [packages-and-sources.md](packages-and-sources.md).
+
+## 6. Agents Schema (automation bootstrap)
+
+When running **full pipeline** or `auto_agents_schema: true`:
+
+1. Run `dbt docs generate` (requires layers built)
+2. Create `.github/workflows/agents-schema-dbt.yml` if missing
+3. Create `.github/workflows/dbt-ci.yml` if missing
+4. **Ask user once** if `WAREHOUSE_CREDENTIALS` GitHub secret is configured
+
+## 7. Skill self-check
+
+Confirm `.agents/skills/agentic-dbt-pipeline/SKILL.md` and `project.config.yml` are readable.
+
+## Bootstrap complete when
+
+| Check | Status |
+|---|---|
+| dbt Agent Skills installed | ✅ |
+| All 4 dbt packages in `packages.yml` + `dbt deps` | ✅ |
+| `dbt debug` passes | ✅ |
+| `github_repo_name` collected (or in prompt) | ✅ |
+| Workflow files created (if automation requested) | ✅ |
+
+Then proceed to layer phases.
+
+## User prompt flags
+
+```text
+auto_bootstrap: true
+auto_agents_schema: true
+auto_install_dbt_skills: true
+github_repo_name: analytics    # repo slug — owner from gh CLI
+push_to_github: true
+```
+
+Set `auto_bootstrap: false` only for layer-only edits on a fully set up project.
