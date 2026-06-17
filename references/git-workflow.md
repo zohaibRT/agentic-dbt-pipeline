@@ -11,6 +11,20 @@ Resolve GitHub remote **before any git work** — [github-repo-resolution.md](gi
 
 **Never hardcode GitHub accounts** in skill files or `project.config.yml`.
 
+Before any package, source, staging, intermediate, mart, docs, CI, or Agents Schema work, confirm the initial dbt project commit exists:
+
+```powershell
+git log --oneline -1
+git status
+```
+
+If no commit exists, create only the initialized project skeleton plus safe `.gitignore`, then commit:
+
+```powershell
+git add .
+git commit -m "Initialize dbt project"
+```
+
 After **each layer** completes successfully (`dbt parse` + `dbt build` PASS):
 
 1. Summarize the layer results.

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Agentic dbt Pipeline"
+  short_description: "End-to-end agentic dbt project automation"
+  default_prompt: "Use $agentic-dbt-pipeline to initialize or extend this dbt project with staged commits, validation, docs, CI, and Agents Schema setup."
+
+policy:
+  allow_implicit_invocation: true

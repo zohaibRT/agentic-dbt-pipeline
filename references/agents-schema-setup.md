@@ -16,12 +16,12 @@ Store warehouse connection as YAML (not in repo):
 
 ```yaml
 type: postgres
-host: localhost
-port: 5432
-user: postgres
+host: <database.host>
+port: <database.port>
+user: <warehouse_user>
 password: <from-secret>
-dbname: shopsphere_update
-schema: ecommerce
+dbname: <database.dbname>
+schema: <source.schema>
 ```
 
 ## Workflow file
@@ -36,14 +36,14 @@ on:
   push:
     branches: [main]
     paths:
-      - 'shopsphere_analytics/**'
+      - '<project.root>/**'
       - '.github/workflows/agents-schema-dbt.yml'
 
 jobs:
   agents-schema-dbt:
     uses: dbt-labs/agents_schema/.github/workflows/agents-schema-dbt.yml@v0.0.9
     with:
-      dbt-project-dir: shopsphere_analytics
+      dbt-project-dir: <project.root>
     secrets:
       WAREHOUSE_CREDENTIALS: ${{ secrets.WAREHOUSE_CREDENTIALS }}
 ```

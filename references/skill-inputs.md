@@ -6,17 +6,17 @@ Read [project.config.yml](../project.config.yml). If values are missing, **ask t
 
 | Input | Config key | project default |
 |---|---|---|
-| dbt project name | `project.name` | `shopsphere_analytics` |
-| dbt project root | `project.root` | `shopsphere_analytics` |
-| dbt profile name | `project.profile` | `shopsphere_analytics` |
+| dbt project name | `project.name` | `my_dbt_project` |
+| dbt project root | `project.root` | `my_dbt_project` |
+| dbt profile name | `project.profile` | `my_dbt_project` |
 | Adapter | `database.adapter` | `postgres` |
-| Host | `database.host` | `localhost` |
+| Host | `database.host` | `warehouse_host` |
 | Port | `database.port` | `5432` |
-| Database | `database.dbname` | `shopsphere_update` |
-| Profile target schema | `database.target_schema` | `ecommerce` |
-| Source/raw schema | `source.schema` | `ecommerce` |
-| Source name | `source.name` | `ecommerce` |
-| Domain folder | `domain` | `ecommerce` |
+| Database | `database.dbname` | `analytics` |
+| Profile target schema | `database.target_schema` | `raw` |
+| Source/raw schema | `source.schema` | `raw` |
+| Source name | `source.name` | `raw` |
+| Domain folder | `domain` | `analytics` |
 | Layer 1 schema suffix | user name → `+schema` | `staging` |
 | Layer 2 schema suffix | user name → `+schema` | `intermediate` |
 | Layer 3 schema suffix | user name → `+schema` | `marts` |

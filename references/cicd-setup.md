@@ -13,14 +13,14 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - 'shopsphere_analytics/**'
+      - '<project.root>/**'
 
 jobs:
   dbt-validate:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: shopsphere_analytics
+        working-directory: <project.root>
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -30,7 +30,7 @@ jobs:
       - run: dbt deps
       - run: dbt parse --no-partial-parse
       # Uncomment when CI warehouse credentials are configured:
-      # - run: dbt build --select +path:models/staging/ecommerce
+      # - run: dbt build --select +path:models/<layer_1_name>/<domain>
       env:
         DBT_PROFILES_DIR: ${{ github.workspace }}/.dbt-ci
 ```

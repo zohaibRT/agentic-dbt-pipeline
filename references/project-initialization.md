@@ -7,7 +7,7 @@ Read [security-and-credentials.md](security-and-credentials.md) and [skill-input
 ## 1. Workspace setup
 
 ```powershell
-cd C:\codebase\shopsphere
+cd <workspace_parent>
 py -3.12 -m venv .venv
 .\.venv\Scripts\activate
 python --version
@@ -19,21 +19,21 @@ dbt --version
 ## 2. Initialize dbt project
 
 ```powershell
-dbt init shopsphere_analytics
-# Select [1] postgres when prompted
-cd shopsphere_analytics
+dbt init <project.name>
+# Select the adapter from database.adapter when prompted
+cd <project.root>
 ```
 
 Profile values *(user provides password locally)*:
 
 | Setting | Value |
 |---|---|
-| host | `localhost` |
-| port | `5432` |
-| user | `postgres` |
-| dbname | `shopsphere_update` |
-| schema | `ecommerce` |
-| threads | `4` |
+| host | `database.host` |
+| port | `database.port` |
+| user | from user or local profile |
+| dbname | `database.dbname` |
+| schema | `database.target_schema` |
+| threads | `database.threads` |
 
 Profile file: `~/.dbt/profiles.yml` — **do not commit**.
 
@@ -80,16 +80,16 @@ Skip only if skills already exist under `.agents/skills/`.
 Initialize a dbt project using the required warehouse details below.
 Use defaults for anything not listed. Do not hardcode secrets in project files.
 
-Project name: shopsphere_analytics
-Adapter: postgres
-Host: localhost
-Port: 5432
-Database: shopsphere_update
-User: postgres
+Project name: <project.name>
+Adapter: <database.adapter>
+Host: <database.host>
+Port: <database.port>
+Database: <database.dbname>
+User: <warehouse_user>
 Password: use local profiles.yml — do not commit
-Source schema: ecommerce
-Staging schema: staging
-Mart schema: marts
+Source schema: <source.schema>
+Staging schema: <layer_names.layer_1>
+Mart schema: <layer_names.layer_3>
 Target environment: dev
 ```
 

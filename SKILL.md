@@ -116,9 +116,15 @@ Read [validation-commands.md](references/validation-commands.md).
 
 **Never mark a phase complete without successful validation.**
 
+Validate the skill configuration before project work:
+
+```powershell
+python scripts/validate_config.py --root .
+```
+
 ```powershell
 cd {project.root}
-$dbt = "$env:APPDATA\Python\Python312\Scripts\dbt.exe"
+$dbt = "dbt"          # prefer active venv/path; see validation-commands.md for fallbacks
 & $dbt debug          # init / profile changes only
 & $dbt parse --no-partial-parse
 & $dbt build --select +path:<layer_folder>
@@ -146,7 +152,7 @@ Each stage: **parse → build → summarize → ask commit/push** (repo: `https:
 
 Read [packages-and-sources.md](references/packages-and-sources.md) and [dbt-packages-and-skills.md](references/dbt-packages-and-skills.md).
 
-All four packages in `packages.yml`. Codegen for sources. Add `schema: ecommerce` to source YAML after generate.
+All four packages in `packages.yml`. Codegen for sources. Add the configured `source.schema` to source YAML after generate.
 
 ## Step 3 — Layer 1 (staging)
 
@@ -208,7 +214,7 @@ Read [git-workflow.md](references/git-workflow.md). Ask before every commit/push
 - `auto_agents_schema:` true *(default on full pipeline)* | false
 - `auto_install_dbt_skills:` true *(default)* | false
 - `layer_names:` layer_1, layer_2, layer_3
-- `domain:` (default `ecommerce`)
+- `domain:` (default from `project.config.yml`)
 - `github_repo_name:` repo slug *(ask user; owner from `gh api user`)*
 - `github_repo:` full URL or `owner/repo` *(optional override)*
 - `push_to_github:` true *(default on full pipeline)* | false

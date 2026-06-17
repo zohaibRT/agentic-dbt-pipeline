@@ -106,9 +106,9 @@ $dbt = "$env:APPDATA\Python\Python312\Scripts\dbt.exe"
 & $dbt debug
 & $dbt deps
 & $dbt parse --no-partial-parse
-& $dbt build --select +path:models/staging/ecommerce
-& $dbt build --select +path:models/intermediate/ecommerce
-& $dbt build --select +path:models/marts/ecommerce
+& $dbt build --select +path:models/<layer_1_name>/<domain>
+& $dbt build --select +path:models/<layer_2_name>/<domain>
+& $dbt build --select +path:models/<layer_3_name>/<domain>
 & $dbt build --select package:dbt_project_evaluator
 & $dbt docs generate
 ```

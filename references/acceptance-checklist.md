@@ -6,6 +6,8 @@ Verify before marking agentic dbt workflow complete.
 
 - [ ] `SKILL.md` has `name` and `description` only in frontmatter
 - [ ] Workflow instructions in body; details in `references/`
+- [ ] `agents/openai.yaml` exists and matches the skill
+- [ ] `python scripts/validate_config.py --root .` passes
 - [ ] No secrets or hardcoded GitHub accounts in skill files
 - [ ] `project.config.yml` has non-secret defaults
 
@@ -26,7 +28,7 @@ Verify before marking agentic dbt workflow complete.
 ## Warehouse
 
 - [ ] Source schema accessible
-- [ ] Layer schemas build (`ecommerce_staging`, `ecommerce_intermediate`, `ecommerce_marts`)
+- [ ] Layer schemas build using configured layer schema suffixes
 
 ## dbt project
 

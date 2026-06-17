@@ -2,16 +2,16 @@
 # The agent reads this before building dbt layers.
 
 project:
-  name: shopsphere_analytics
-  root: shopsphere_analytics
-  profile: shopsphere_analytics
+  name: my_dbt_project
+  root: my_dbt_project
+  profile: my_dbt_project
 
 database:
   adapter: postgres
-  host: localhost
+  host: warehouse_host
   port: 5432
-  dbname: shopsphere_update
-  target_schema: ecommerce
+  dbname: analytics
+  target_schema: raw
   threads: 4
   # password: NEVER store here — use ~/.dbt/profiles.yml
 
@@ -23,9 +23,9 @@ targets:
     - prod
 
 source:
-  name: ecommerce
-  schema: ecommerce
-  yaml_path: models/sources/ecommerce_sources_generated.yml
+  name: raw
+  schema: raw
+  yaml_path: models/sources/raw_sources_generated.yml
 
 agents:
   schema: AGENTS
@@ -53,7 +53,7 @@ dbt_agent_skills:
     - adding-dbt-unit-test
     - answering-natural-language-questions-with-dbt
 
-domain: ecommerce
+domain: analytics
 
 layer_names:
   ask_user: true
@@ -69,16 +69,16 @@ layer_roles:
 
 paths:
   sources: models/sources
-  layer_1: models/staging/ecommerce
-  layer_2: models/intermediate/ecommerce
-  layer_3: models/marts/ecommerce
+  layer_1: models/staging/analytics
+  layer_2: models/intermediate/analytics
+  layer_3: models/marts/analytics
 
 naming:
   layer_1_prefix: stg_{source}__
   layer_2_prefix: int_{source}__
   layer_1_yaml: _stg_{source}.yml
   layer_2_yaml: _int_{source}.yml
-  layer_3_yaml: _ecommerce_marts.yml
+  layer_3_yaml: _{domain}_marts.yml
 
 examples:
   source: "source('ecommerce', 'customers')"
@@ -87,14 +87,15 @@ examples:
   layer_3: dim_customers
 
 dbt:
-  executable_windows: '%APPDATA%/Python/Python312/Scripts/dbt.exe'
+  executable: dbt
+  executable_windows_fallback: '%APPDATA%/Python/Python312/Scripts/dbt.exe'
   core_version: '1.10.15'
   adapter_version: '1.10.0'
   parse_flags: '--no-partial-parse'
   build_selectors:
-    layer_1: '+path:models/staging/ecommerce'
-    layer_2: '+path:models/intermediate/ecommerce'
-    layer_3: '+path:models/marts/ecommerce'
+    layer_1: '+path:models/staging/analytics'
+    layer_2: '+path:models/intermediate/analytics'
+    layer_3: '+path:models/marts/analytics'
 
 materialization_profile: prod
 materialization:

@@ -15,18 +15,18 @@ Read project.config.yml and references/skill-inputs.md first.
 ## Warehouse (non-secret)
 
 - type: postgres
-- host: localhost
+- host: <database.host>
 - port: 5432
-- database: shopsphere_update
-- source schema: ecommerce
-- staging schema: ecommerce_staging (+schema: staging)
-- intermediate schema: ecommerce_intermediate (+schema: intermediate)
-- marts schema: ecommerce_marts (+schema: marts)
+- database: <database.dbname>
+- source schema: <source.schema>
+- staging schema: <target_schema>_<layer_1_name>
+- intermediate schema: <target_schema>_<layer_2_name>
+- marts schema: <target_schema>_<layer_3_name>
 - agents schema: AGENTS
 
 ## Credentials
 
-- Use existing dbt profile: shopsphere_analytics
+- Use existing dbt profile: <project.profile>
 - Do not hardcode passwords
 - Do not commit profiles.yml or .env
 

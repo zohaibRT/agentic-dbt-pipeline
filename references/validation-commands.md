@@ -1,9 +1,18 @@
 # dbt Validation Commands
 
-Run from `{project.root}`. Use executable from `project.config.yml`:
+Run from `{project.root}`. Prefer the active environment's `dbt` command.
+If `dbt` is not available, try `python -m dbt`.
+On Windows only, fall back to `dbt.executable_windows_fallback` from `project.config.yml`.
 
 ```powershell
-$dbt = "$env:APPDATA\Python\Python312\Scripts\dbt.exe"
+$dbt = "dbt"
+if (-not (Get-Command $dbt -ErrorAction SilentlyContinue)) {
+  $dbt = "python -m dbt"
+}
+if ($IsWindows -and -not (Get-Command "dbt" -ErrorAction SilentlyContinue)) {
+  $fallback = "$env:APPDATA\Python\Python312\Scripts\dbt.exe"
+  if (Test-Path $fallback) { $dbt = $fallback }
+}
 ```
 
 ## Connection check *(init or profile changes)*
@@ -28,9 +37,9 @@ $dbt = "$env:APPDATA\Python\Python312\Scripts\dbt.exe"
 
 ```powershell
 # Full layer (with upstream)
-& $dbt build --select +path:models/staging/ecommerce
-& $dbt build --select +path:models/intermediate/ecommerce
-& $dbt build --select +path:models/marts/ecommerce
+& $dbt build --select +path:models/{layer_1_name}/{domain}
+& $dbt build --select +path:models/{layer_2_name}/{domain}
+& $dbt build --select +path:models/{layer_3_name}/{domain}
 ```
 
 ## Project evaluator *(after marts)*
@@ -50,7 +59,7 @@ See [semantic-layer-spec.md](semantic-layer-spec.md).
 ## Tests only *(when debugging)*
 
 ```powershell
-& $dbt test --select path:models/marts/ecommerce
+& $dbt test --select path:models/{layer_3_name}/{domain}
 ```
 
 ## Documentation

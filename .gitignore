@@ -1,3 +1,9 @@
 .DS_Store
 Thumbs.db
 *.swp
+.venv/
+target/
+logs/
+dbt_packages/
+.env
+profiles.yml
