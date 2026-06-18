@@ -33,9 +33,7 @@ In Cursor chat, use:
 ```text
 Use the dbt Pipeline skill (`agentic-dbt-pipeline`).
 
-Goal: Build a <domain> dbt project using medallion layers from the available source schemas.
-
-Required inputs:
+Build a dbt project for this domain:
 - domain: <hospital | it_company | finance | retail | etc.>
 - dbt_profile_name: <profile key from ~/.dbt/profiles.yml>
 - source_schema: <raw/source schema to inspect>
@@ -43,20 +41,10 @@ Required inputs:
 - layer_schema_prefix: <usually same as source_name>
 - github_repo_name: <repo slug only>
 
-layer_names:
-  layer_1: bronze
-  layer_2: silver
-  layer_3: gold
-
-project_rules:
-  field_mappings:
-    - <source_table.source_column> -> <target_column>: <meaning/rule>
-  joins:
-    - <left_table.column> -> <right_table.column>: <relationship>
-  metrics:
-    - <metric_name>: <definition, grain, filters>
-  privacy:
-    - <PII/PHI handling, masking, or exclusion rules>
+Use these medallion layers:
+- bronze
+- silver
+- gold
 ```
 
 For a full copy-paste prompt, see [prompt.md](prompt.md).
