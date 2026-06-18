@@ -31,7 +31,13 @@ layer_names:
 
 1. Run bootstrap.md (dbt Agent Skills, all packages, dbt debug, codegen/deps).
 2. Run full pipeline: sources → staging → intermediate → marts → semantic layer → project evaluator → docs.
-3. Utilize: codegen, dbt_utils, audit_helper, MetricFlow/semantic layer, dbt_project_evaluator.
+3. Use dbt packages and metadata tools at the correct phase:
+   - codegen: generate source YAML from hospital source schemas; do not invent columns.
+   - dbt_utils: use standard macros/tests while building staging, intermediate, and mart models.
+   - audit_helper: compare old vs new model outputs during refactors or validation.
+   - dbt_project_evaluator: run after marts to check project quality, tests, docs, and DAG structure.
+   - MetricFlow/semantic layer: define metrics on final mart models.
+   - Agents Schema: publish `target/manifest.json` metadata to `AGENTS.*` after docs/manifest generation.
 4. Create the Agents Schema workflow after `target/manifest.json` exists, then create CI workflow files.
 5. Initialize git if needed; commit per layer; push to https://github.com/{gh_user}/{github_repo_name} on approval.
 6. Ask me only for: github_repo_name (if not set), WAREHOUSE_CREDENTIALS (if not set), and commit/push approval.
