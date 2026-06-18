@@ -217,6 +217,9 @@ Use Agents Schema after docs generation or any step that produces `target/manife
 
 - `workflow_phase:` init | sources | staging | intermediate | marts | semantic_layer | project_evaluator | docs | ci | agents_schema
 - `dbt_profile_name:` dbt profile key from `~/.dbt/profiles.yml`; ask if missing or ambiguous
+- `domain:` business/domain folder name; ask if missing
+- `source_schema:` warehouse schema to inspect with codegen; ask if missing
+- `source_name:` dbt source name to write in source YAML; ask if missing
 - `auto_bootstrap:` true *(default)* | false
 - `auto_agents_schema:` true *(default on full pipeline)* | false
 - `auto_install_dbt_skills:` true *(default)* | false

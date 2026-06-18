@@ -14,15 +14,19 @@ Copy the prompt below into Cursor. See also [references/agent-context-prompt.md]
 
 ## Full Pipeline
 
-Use this for a new hospital analytics project.
+Use this for any new analytics project. Fill in the values that are known. Leave unknown values blank and the agent will ask before running dbt commands.
 
 ```text
 Use the dbt Pipeline skill (`agentic-dbt-pipeline`).
 
-Goal: Build a hospital dbt project using medallion layers from the available source schemas.
+Goal: Build a <domain> dbt project using medallion layers from the available source schemas.
 
-dbt_profile_name: hospital_analytics
-github_repo_name: hospital-analytics
+Required inputs:
+- domain: <hospital | it_company | finance | retail | etc.>
+- dbt_profile_name: <profile key from ~/.dbt/profiles.yml>
+- source_schema: <raw/source schema to inspect>
+- source_name: <friendly dbt source name>
+- github_repo_name: <repo slug only>
 
 layer_names:
   layer_1: bronze
@@ -33,7 +37,7 @@ Task:
 1. Set up the dbt project and install any required dbt agent skills or dbt packages.
 2. Run the full pipeline: sources -> bronze -> silver -> gold -> semantic layer -> project evaluator -> docs.
 3. Use dbt packages and metadata tools at the correct phase:
-   - codegen: generate source YAML from hospital source schemas; do not invent columns.
+   - codegen: generate source YAML from the provided source schema; do not invent columns.
    - dbt_utils: use standard macros/tests while building bronze, silver, and gold models.
    - audit_helper: compare old vs new model outputs during refactors or validation.
    - dbt_project_evaluator: run after gold models to check project quality, tests, docs, and DAG structure.
@@ -41,8 +45,9 @@ Task:
    - Agents Schema: publish target/manifest.json metadata to AGENTS.* after docs/manifest generation.
 4. Create the Agents Schema workflow after target/manifest.json exists, then create CI workflow files.
 5. Initialize git if needed; commit initialization, sources, bronze, silver, gold, docs, CI, and Agents Schema separately.
-6. If dbt_profile_name is missing or does not exist in profiles.yml, ask me which dbt profile to use before running dbt commands.
-7. Ask me only for missing repo name, missing credentials/secrets, and commit or push approval.
+6. If dbt_profile_name, source_schema, source_name, or github_repo_name is missing, ask me before running dbt commands.
+7. If multiple dbt profiles exist in profiles.yml, ask which one to use. Do not guess.
+8. Ask me only for missing source/profile details, missing credentials/secrets, and commit or push approval.
 ```
 
 Defaults:
@@ -101,6 +106,40 @@ After sync, verify the agent can query `AGENTS.ROOT` and `AGENTS.DBT_MODEL`.
 
 ---
 
+## Example Inputs
+
+Hospital:
+
+```text
+domain: hospital
+dbt_profile_name: hospital_analytics
+source_schema: hospital_raw
+source_name: hospital
+github_repo_name: hospital-analytics
+```
+
+IT company:
+
+```text
+domain: it_company
+dbt_profile_name: it_analytics
+source_schema: raw
+source_name: it_company
+github_repo_name: it-company-analytics
+```
+
+Retail:
+
+```text
+domain: retail
+dbt_profile_name: retail_analytics
+source_schema: raw_orders
+source_name: retail
+github_repo_name: retail-analytics
+```
+
+---
+
 ## Optional Settings
 
 Use these only when you want to override the defaults.
@@ -144,6 +183,6 @@ $dbt = "dbt"
 |---|---|
 | Full phase order and security rules | dbt profile name |
 | dbt packages and validation steps | Layer names |
-| Model prefixes such as `stg_`, `int_`, `dim_`, `fct_` | Domain folder |
+| Model prefixes such as `stg_`, `int_`, `dim_`, `fct_` | Domain and source schema |
 | GitHub owner from logged-in `gh` account | GitHub repo name |
 | Ask before commit/push | Warehouse credentials and secrets |

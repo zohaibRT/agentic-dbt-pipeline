@@ -33,10 +33,14 @@ In Cursor chat, use:
 ```text
 Use the dbt Pipeline skill (`agentic-dbt-pipeline`).
 
-Goal: Build a hospital dbt project using medallion layers from the available source schemas.
+Goal: Build a <domain> dbt project using medallion layers from the available source schemas.
 
-dbt_profile_name: hospital_analytics
-github_repo_name: hospital-analytics
+Required inputs:
+- domain: <hospital | it_company | finance | retail | etc.>
+- dbt_profile_name: <profile key from ~/.dbt/profiles.yml>
+- source_schema: <raw/source schema to inspect>
+- source_name: <friendly dbt source name>
+- github_repo_name: <repo slug only>
 
 layer_names:
   layer_1: bronze
