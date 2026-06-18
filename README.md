@@ -33,18 +33,14 @@ In Cursor chat, use:
 ```text
 Use the dbt Pipeline skill (`agentic-dbt-pipeline`).
 
-auto_bootstrap: true
-auto_install_dbt_skills: true
-push_to_github: true
-commit: ask
-materialization_profile: prod
+Goal: Build a hospital dbt project using medallion layers from the available source schemas.
 
-github_repo_name: your-repo-name
+github_repo_name: hospital-analytics
 
 layer_names:
-  layer_1: staging
-  layer_2: intermediate
-  layer_3: marts
+  layer_1: bronze
+  layer_2: silver
+  layer_3: gold
 ```
 
 For a full copy-paste prompt, see [prompt.md](prompt.md).

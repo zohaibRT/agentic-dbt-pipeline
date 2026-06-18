@@ -1,114 +1,126 @@
 # dbt Pipeline Prompt
 
-**Install once:** `npx skills add zohaibRT/agentic-dbt-pipeline`  
-Bootstrap auto-installs dbt Agent Skills + packages on first run.
+Install once:
 
-Copy into Cursor. See also [references/agent-context-prompt.md](references/agent-context-prompt.md).
+```bash
+npx skills add zohaibRT/agentic-dbt-pipeline
+```
+
+Bootstrap installs the required dbt Labs agent skills and dbt packages when they are missing.
+
+Copy the prompt below into Cursor. See also [references/agent-context-prompt.md](references/agent-context-prompt.md).
 
 ---
 
 ## Full Pipeline
 
+Use this for a new hospital analytics project.
+
 ```text
 Use the dbt Pipeline skill (`agentic-dbt-pipeline`).
 
-auto_bootstrap: true
-auto_install_dbt_skills: true
-auto_agents_schema: true
-commit: ask
-push_to_github: true
-materialization_profile: prod
+Goal: Build a hospital dbt project using medallion layers from the available source schemas.
 
-# Ask me for repo name only — owner from GitHub CLI logged-in account (gh api user)
-github_repo_name: analytics
+github_repo_name: hospital-analytics
 
 layer_names:
-  layer_1: staging
-  layer_2: intermediate
-  layer_3: marts
+  layer_1: bronze
+  layer_2: silver
+  layer_3: gold
 
-## Task
-
-1. Run bootstrap.md (dbt Agent Skills, all packages, dbt debug, codegen/deps).
-2. Run full pipeline: sources → staging → intermediate → marts → semantic layer → project evaluator → docs.
+Task:
+1. Set up the dbt project and install any required dbt agent skills or dbt packages.
+2. Run the full pipeline: sources -> bronze -> silver -> gold -> semantic layer -> project evaluator -> docs.
 3. Use dbt packages and metadata tools at the correct phase:
    - codegen: generate source YAML from hospital source schemas; do not invent columns.
-   - dbt_utils: use standard macros/tests while building staging, intermediate, and mart models.
+   - dbt_utils: use standard macros/tests while building bronze, silver, and gold models.
    - audit_helper: compare old vs new model outputs during refactors or validation.
-   - dbt_project_evaluator: run after marts to check project quality, tests, docs, and DAG structure.
-   - MetricFlow/semantic layer: define metrics on final mart models.
-   - Agents Schema: publish `target/manifest.json` metadata to `AGENTS.*` after docs/manifest generation.
-4. Create the Agents Schema workflow after `target/manifest.json` exists, then create CI workflow files.
-5. Initialize git if needed; commit per layer; push to https://github.com/{gh_user}/{github_repo_name} on approval.
-6. Ask me only for: github_repo_name (if not set), WAREHOUSE_CREDENTIALS (if not set), and commit/push approval.
+   - dbt_project_evaluator: run after gold models to check project quality, tests, docs, and DAG structure.
+   - MetricFlow/semantic layer: define metrics on final gold models.
+   - Agents Schema: publish target/manifest.json metadata to AGENTS.* after docs/manifest generation.
+4. Create the Agents Schema workflow after target/manifest.json exists, then create CI workflow files.
+5. Initialize git if needed; commit initialization, sources, bronze, silver, gold, docs, CI, and Agents Schema separately.
+6. Ask me only for missing repo name, missing credentials/secrets, and commit or push approval.
 ```
+
+Defaults:
+
+- Bootstrap is enabled.
+- dbt Labs agent skills install automatically when missing.
+- The agent asks before commits and pushes.
+- Production materialization is used unless changed.
+- Agents Schema runs after dbt metadata exists.
 
 ---
 
-## Single phase examples
+## Single Phase Examples
+
+Use these when you want to run only one part of the workflow.
 
 **Initialize project only**
+
 ```text
 workflow_phase: init
-commit: ask
 ```
 
 **Sources only**
+
 ```text
 workflow_phase: sources
-commit: ask
 ```
 
-**Marts only** *(staging + intermediate must exist)*
+**Gold layer only**  
+Bronze and silver must already exist.
+
 ```text
 workflow_phase: marts
-materialization_profile: prod
-commit: ask
 ```
 
-**Semantic layer only** *(marts must exist)*
+**Semantic layer only**  
+Gold models must already exist.
+
 ```text
 workflow_phase: semantic_layer
-commit: ask
 ```
 
 **Project evaluator only**
+
 ```text
 workflow_phase: project_evaluator
-commit: ask
 ```
 
-**Agents Schema**
+**Agents Schema only**
+
 ```text
 workflow_phase: agents_schema
-auto_agents_schema: true
-commit: ask
 ```
 
 After sync, verify the agent can query `AGENTS.ROOT` and `AGENTS.DBT_MODEL`.
 
 ---
 
-## Materialization profiles
+## Optional Settings
 
-**Production (default)**
-```yaml
-# dbt_project.yml
-marts:
-  +schema: marts
-  +materialized: table
-# fct_*.sql: {{ config(materialized='incremental', unique_key='order_id') }}
+Use these only when you want to override the defaults.
+
+```text
+commit: ask
+push_to_github: true
+materialization_profile: prod
+auto_agents_schema: true
 ```
 
-**Development (fast iteration)**
+For faster development:
+
 ```text
 materialization_profile: dev
-# all layers +materialized: view
 ```
 
 ---
 
-## Build commands
+## Build Commands
+
+The agent normally runs these. They are shown here for visibility.
 
 ```powershell
 $dbt = "dbt"
@@ -124,12 +136,12 @@ $dbt = "dbt"
 
 ---
 
-## What stays fixed vs user-defined
+## What Users Usually Change
 
-| Fixed | User-defined |
+| Usually fixed | User-defined |
 |---|---|
-| Full phase order & security rules | Layer folder names in dbt_project.yml |
-| Model prefixes stg_/int_/dim_/fct_/mart_ | +schema suffixes |
-| All standard dbt packages (see dbt-packages-and-skills.md) | `github_repo_name` (repo slug) |
-| GitHub owner from `gh` logged-in account | domain folder |
-| Ask before commit/push (default) | materialization_profile prod/dev |
+| Full phase order and security rules | GitHub repo name |
+| dbt packages and validation steps | Layer names |
+| Model prefixes such as `stg_`, `int_`, `dim_`, `fct_` | Domain folder |
+| GitHub owner from logged-in `gh` account | Development vs production materialization |
+| Ask before commit/push | Warehouse credentials and secrets |
