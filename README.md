@@ -2,7 +2,7 @@
 
 `dbt Pipeline` is a Cursor Agent Skill for setting up and maintaining dbt projects with a structured, agent-assisted workflow.
 
-It helps an agent initialize a dbt project, configure sources, build staging/intermediate/mart layers, add semantic layer assets, run quality checks, generate docs, create CI workflows, sync Agents Schema metadata, and commit each stage separately.
+It helps an agent initialize a dbt project, configure sources, build staging/intermediate/mart layers, add semantic layer assets, run quality checks, generate docs, create CI workflows, publish dbt metadata to Agents Schema, and commit each stage separately.
 
 ## Installation
 
@@ -21,7 +21,8 @@ This is the only skill users need to install manually. During bootstrap, the ski
 - A valid local dbt profile in `~/.dbt/profiles.yml`
 - Node.js for `npx skills`
 - GitHub CLI authenticated with `gh auth login`, if GitHub push is enabled
-- Warehouse access for `dbt debug`, `dbt build`, and Agents Schema sync
+- Warehouse access for `dbt debug` and `dbt build`
+- Snowflake, Databricks, or BigQuery credentials for Agents Schema sync, if enabled
 
 Do not commit real warehouse credentials, `.env`, or `profiles.yml`.
 
@@ -83,6 +84,7 @@ Keep passwords, tokens, and private keys in local profiles or GitHub Secrets.
 | Quality | Runs `dbt_project_evaluator` and uses `audit_helper` where useful |
 | Documentation | Runs `dbt docs generate` and verifies manifest/catalog output |
 | Git | Commits initialization, sources, each model layer, docs, CI, and Agents Schema separately |
+| Agents Schema | Publishes dbt metadata into `AGENTS.*` so agents can query project context from the warehouse |
 | CI | Creates GitHub Actions workflows for dbt validation and Agents Schema sync |
 
 ## Commit Strategy
@@ -118,6 +120,8 @@ The repository also includes a local config validator:
 ```bash
 python scripts/validate_config.py --root .
 ```
+
+When Agents Schema is enabled, verify that the GitHub workflow creates an `AGENTS` schema and queryable metadata tables such as `AGENTS.DBT_MODEL`.
 
 ## Included dbt Packages
 

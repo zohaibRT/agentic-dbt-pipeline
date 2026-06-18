@@ -32,7 +32,7 @@ layer_names:
 1. Run bootstrap.md (dbt Agent Skills, all packages, dbt debug, codegen/deps).
 2. Run full pipeline: sources → staging → intermediate → marts → semantic layer → project evaluator → docs.
 3. Utilize: codegen, dbt_utils, audit_helper, MetricFlow/semantic layer, dbt_project_evaluator.
-4. Create CI + Agents Schema GitHub workflow files.
+4. Create the Agents Schema workflow after `target/manifest.json` exists, then create CI workflow files.
 5. Initialize git if needed; commit per layer; push to https://github.com/{gh_user}/{github_repo_name} on approval.
 6. Ask me only for: github_repo_name (if not set), WAREHOUSE_CREDENTIALS (if not set), and commit/push approval.
 ```
@@ -75,8 +75,11 @@ commit: ask
 **Agents Schema**
 ```text
 workflow_phase: agents_schema
+auto_agents_schema: true
 commit: ask
 ```
+
+After sync, verify the agent can query `AGENTS.ROOT` and `AGENTS.DBT_MODEL`.
 
 ---
 

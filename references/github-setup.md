@@ -62,3 +62,5 @@ $dbt = "dbt"
 ## Never commit
 
 `.venv/`, `target/`, `logs/`, `dbt_packages/`, `.env`, `profiles.yml`
+
+Agents Schema exception: commit only `<project.root>/target/manifest.json` when the Agents Schema workflow needs it.

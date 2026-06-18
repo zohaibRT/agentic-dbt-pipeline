@@ -42,6 +42,7 @@ Read [references/dbt-packages-and-skills.md](references/dbt-packages-and-skills.
 | dbt_project_evaluator | `packages.yml` + `dispatch` + `dbt build --select package:dbt_project_evaluator` |
 | audit_helper | `packages.yml` — compare queries on refactors |
 | MetricFlow / Semantic Layer | [semantic-layer-spec.md](references/semantic-layer-spec.md) + `building-dbt-semantic-layer` |
+| Agents Schema | [agents-schema-setup.md](references/agents-schema-setup.md) - publish dbt metadata to `AGENTS.*` for warehouse-side agent context |
 
 Install agent skills: [references/install-dbt-agent-skills.md](references/install-dbt-agent-skills.md)
 
@@ -62,7 +63,7 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 | **7c Evaluator** | Best-practice audit | [dbt-packages-and-skills.md](references/dbt-packages-and-skills.md) |
 | **8 Docs** | After layers | [documentation.md](references/documentation.md) |
 | **9 Git** | After each stage | [github-repo-resolution.md](references/github-repo-resolution.md), [git-workflow.md](references/git-workflow.md) |
-| **10 CI / Agents** | Automation | [cicd-setup.md](references/cicd-setup.md), [agents-schema-setup.md](references/agents-schema-setup.md) |
+| **10 Agents Schema / CI** | Metadata + automation | [agents-schema-setup.md](references/agents-schema-setup.md), [cicd-setup.md](references/cicd-setup.md) |
 | **Done** | Final check | [acceptance-checklist.md](references/acceptance-checklist.md) |
 
 Context prompt template: [agent-context-prompt.md](references/agent-context-prompt.md)
@@ -143,8 +144,9 @@ Read [separate-layer-builds.md](references/separate-layer-builds.md).
 5. Semantic layer — metrics on marts facts
 6. Project evaluator — `dbt build --select package:dbt_project_evaluator`
 7. Docs — `dbt docs generate`
-8. Automation — CI workflow + Agents Schema workflow
-9. **Acceptance** — [acceptance-checklist.md](references/acceptance-checklist.md)
+8. Agents Schema - publish dbt metadata to `AGENTS.*` after `target/manifest.json` exists
+9. Automation - CI workflow
+10. **Acceptance** - [acceptance-checklist.md](references/acceptance-checklist.md)
 
 Each stage: **parse → build → summarize → ask commit/push** (repo: `https://github.com/{gh_user}/{github_repo_name}`).
 
@@ -186,8 +188,10 @@ Read [git-workflow.md](references/git-workflow.md). Ask before every commit/push
 
 ## Step 8 — CI/CD & Agents Schema *(when requested)*
 
-- [cicd-setup.md](references/cicd-setup.md)
 - [agents-schema-setup.md](references/agents-schema-setup.md)
+- [cicd-setup.md](references/cicd-setup.md)
+
+Use Agents Schema after docs generation or any step that produces `target/manifest.json`. Do not treat it as a replacement for dbt project files while editing; use it as the warehouse-side metadata layer that helps agents answer questions and understand built models.
 
 ## Failure handling
 

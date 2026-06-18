@@ -27,6 +27,15 @@ dbt_packages/
 profiles.yml
 ```
 
+When Agents Schema is enabled, the dbt manifest is the only allowed exception:
+
+```gitignore
+target/*
+!target/manifest.json
+```
+
+Do not commit other files from `target/`.
+
 ## Production guardrails
 
 Before any change when `target=prod` or production database:

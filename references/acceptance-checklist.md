@@ -59,7 +59,11 @@ Verify before marking the dbt pipeline workflow complete.
 ## Automation *(optional)*
 
 - [ ] CI workflow: deps + parse (+ build when creds available)
-- [ ] Agents Schema workflow + `AGENTS` schema verified
+- [ ] Agents Schema workflow present
+- [ ] `target/manifest.json` generated and committed when Agents Schema workflow needs it
+- [ ] `WAREHOUSE_CREDENTIALS` secret configured for Snowflake, Databricks, or BigQuery
+- [ ] `AGENTS` schema verified in warehouse
+- [ ] Agent can query `AGENTS.ROOT` and `AGENTS.DBT_MODEL`
 
 ## Agent readiness
 

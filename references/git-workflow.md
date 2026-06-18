@@ -46,6 +46,8 @@ Use the **AskQuestion** tool when available. Otherwise ask in chat and wait.
 - Stage `.venv`, `target/`, `logs/`, `dbt_packages/`, `.env`, `profiles.yml`
 - Commit unrelated layers in one commit
 
+Exception: when Agents Schema is enabled, commit only `<project.root>/target/manifest.json`; do not stage any other `target/` files.
+
 ## Pre-commit validation (re-run if build was a while ago)
 
 From `{project.root}`:

@@ -31,6 +31,10 @@ agents:
   schema: AGENTS
   github_secret: WAREHOUSE_CREDENTIALS
   workflow_version: v0.0.9
+  supported_destinations:
+    - snowflake
+    - databricks
+    - bigquery
 
 packages:
   - package: dbt-labs/codegen
