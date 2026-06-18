@@ -30,6 +30,8 @@ Read and execute [references/bootstrap.md](references/bootstrap.md) **before** a
 
 User one-time manual steps: **profiles.yml password**, **GitHub secret** `WAREHOUSE_CREDENTIALS`, and **repo name** (`github_repo_name`).
 
+If `dbt_profile_name` is provided in the prompt, use it as `{project.profile}` for dbt commands and generated `dbt_project.yml`. If it is missing and multiple profiles exist in `~/.dbt/profiles.yml`, ask the user which profile to use before running dbt commands. Never guess from the first profile.
+
 ## dbt packages & agent skills (mandatory stack)
 
 Read [references/dbt-packages-and-skills.md](references/dbt-packages-and-skills.md).
@@ -214,6 +216,7 @@ Use Agents Schema after docs generation or any step that produces `target/manife
 ## Ambiguity — prompt overrides
 
 - `workflow_phase:` init | sources | staging | intermediate | marts | semantic_layer | project_evaluator | docs | ci | agents_schema
+- `dbt_profile_name:` dbt profile key from `~/.dbt/profiles.yml`; ask if missing or ambiguous
 - `auto_bootstrap:` true *(default)* | false
 - `auto_agents_schema:` true *(default on full pipeline)* | false
 - `auto_install_dbt_skills:` true *(default)* | false

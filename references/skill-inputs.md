@@ -8,7 +8,7 @@ Read [project.config.yml](../project.config.yml). If values are missing, **ask t
 |---|---|---|
 | dbt project name | `project.name` | `my_dbt_project` |
 | dbt project root | `project.root` | `my_dbt_project` |
-| dbt profile name | `project.profile` | `my_dbt_project` |
+| dbt profile name | `dbt_profile_name` prompt or `project.profile` | ask if missing or ambiguous |
 | Adapter | `database.adapter` | `postgres` |
 | Host | `database.host` | `warehouse_host` |
 | Port | `database.port` | `5432` |
@@ -47,11 +47,13 @@ Read [project.config.yml](../project.config.yml). If values are missing, **ask t
 - **Never** hardcode passwords in skills, prompts, or project files.
 - Use `~/.dbt/profiles.yml` locally.
 - Use GitHub Secrets in CI (`WAREHOUSE_CREDENTIALS` for Agents Schema).
+- If multiple dbt profiles exist, ask for `dbt_profile_name` before running `dbt debug`, `dbt deps`, `dbt parse`, or `dbt build`.
 
 ## Optional overrides (user prompt wins)
 
 ```text
 github_repo_name: analytics              # repo slug — ask if missing
+dbt_profile_name: hospital_analytics     # profile key from ~/.dbt/profiles.yml
 github_repo: other-owner/analytics       # optional full override only
 push_to_github: true | false
 layer_names: staging, intermediate, marts

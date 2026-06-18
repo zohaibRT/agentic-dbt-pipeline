@@ -35,6 +35,7 @@ Use the dbt Pipeline skill (`agentic-dbt-pipeline`).
 
 Goal: Build a hospital dbt project using medallion layers from the available source schemas.
 
+dbt_profile_name: hospital_analytics
 github_repo_name: hospital-analytics
 
 layer_names:

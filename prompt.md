@@ -21,6 +21,7 @@ Use the dbt Pipeline skill (`agentic-dbt-pipeline`).
 
 Goal: Build a hospital dbt project using medallion layers from the available source schemas.
 
+dbt_profile_name: hospital_analytics
 github_repo_name: hospital-analytics
 
 layer_names:
@@ -40,7 +41,8 @@ Task:
    - Agents Schema: publish target/manifest.json metadata to AGENTS.* after docs/manifest generation.
 4. Create the Agents Schema workflow after target/manifest.json exists, then create CI workflow files.
 5. Initialize git if needed; commit initialization, sources, bronze, silver, gold, docs, CI, and Agents Schema separately.
-6. Ask me only for missing repo name, missing credentials/secrets, and commit or push approval.
+6. If dbt_profile_name is missing or does not exist in profiles.yml, ask me which dbt profile to use before running dbt commands.
+7. Ask me only for missing repo name, missing credentials/secrets, and commit or push approval.
 ```
 
 Defaults:
@@ -140,8 +142,8 @@ $dbt = "dbt"
 
 | Usually fixed | User-defined |
 |---|---|
-| Full phase order and security rules | GitHub repo name |
+| Full phase order and security rules | dbt profile name |
 | dbt packages and validation steps | Layer names |
 | Model prefixes such as `stg_`, `int_`, `dim_`, `fct_` | Domain folder |
-| GitHub owner from logged-in `gh` account | Development vs production materialization |
+| GitHub owner from logged-in `gh` account | GitHub repo name |
 | Ask before commit/push | Warehouse credentials and secrets |

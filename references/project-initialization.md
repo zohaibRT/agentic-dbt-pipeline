@@ -37,6 +37,8 @@ Profile values *(user provides password locally)*:
 
 Profile file: `~/.dbt/profiles.yml` — **do not commit**.
 
+If more than one dbt profile exists, ask for `dbt_profile_name` and use that exact key as the dbt profile. Do not guess from the first profile in the file.
+
 ## 3. Verify connection
 
 ```powershell
@@ -81,6 +83,7 @@ Initialize a dbt project using the required warehouse details below.
 Use defaults for anything not listed. Do not hardcode secrets in project files.
 
 Project name: <project.name>
+dbt profile name: <dbt_profile_name>
 Adapter: <database.adapter>
 Host: <database.host>
 Port: <database.port>

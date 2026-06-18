@@ -3,6 +3,7 @@
 ## Never
 
 - Hardcode passwords, tokens, or private keys in `SKILL.md`, SQL, YAML, or commits.
+- Paste full `profiles.yml` contents with passwords into prompts or issue comments.
 - Commit `.env`, `profiles.yml`, or credential files.
 - Print secrets in terminal output or chat summaries.
 - Change production schemas, profiles, or credentials without user approval.
@@ -15,6 +16,7 @@
   - Local: `~/.dbt/profiles.yml`
   - CI: GitHub Actions secrets
   - Agents Schema: `WAREHOUSE_CREDENTIALS` secret (YAML in GitHub)
+- Ask for the dbt profile key, such as `dbt_profile_name: hospital_analytics`, instead of asking for passwords.
 
 ## `.gitignore` minimum entries
 
