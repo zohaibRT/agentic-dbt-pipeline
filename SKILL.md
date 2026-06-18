@@ -197,10 +197,13 @@ Use Agents Schema after docs generation or any step that produces `target/manife
 
 ## Failure handling
 
+Read [stuck-recovery.md](references/stuck-recovery.md) whenever a command hangs, validation fails repeatedly, required input is missing, or the agent cannot decide safely.
+
 1. Identify failing model/test from build output.
 2. Fix **only the current layer** unless upstream is broken.
 3. Re-run `dbt build --select +path:<layer_path>`.
 4. Use `troubleshooting-dbt-job-errors` for unclear errors.
+5. If still blocked, stop and ask with the current phase, last command, error, changed files, `git status`, and concrete options.
 
 ## Summary template (end of each phase)
 
@@ -263,6 +266,7 @@ Use Agents Schema after docs generation or any step that produces `target/manife
 | [marts-spec.md](references/marts-spec.md) | Star schema |
 | [documentation.md](references/documentation.md) | Docs generate |
 | [validation-commands.md](references/validation-commands.md) | debug, parse, build, docs |
+| [stuck-recovery.md](references/stuck-recovery.md) | Stuck command and blocker recovery |
 | [github-setup.md](references/github-setup.md) | Initial git + commit order |
 | [git-workflow.md](references/git-workflow.md) | Per-layer commits |
 | [code-agent-setup.md](references/code-agent-setup.md) | Agent access & behavior |

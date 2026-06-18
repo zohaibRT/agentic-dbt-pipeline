@@ -81,3 +81,9 @@ Before every layer commit:
 2. `dbt build --select +path:<layer_folder>`
 
 If validation fails, fix before commit unless user explicitly documents a failing checkpoint.
+
+## If Validation Gets Stuck
+
+Read [stuck-recovery.md](stuck-recovery.md).
+
+Do not keep retrying the same command. Summarize the current phase, last successful command, stuck/failed command, error output, changed files, and `git status`, then try one safe recovery or ask the user for a decision.

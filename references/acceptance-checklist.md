@@ -69,3 +69,4 @@ Verify before marking the dbt pipeline workflow complete.
 
 - [ ] Full stack documented in [dbt-packages-and-skills.md](dbt-packages-and-skills.md)
 - [ ] [agent-context-prompt.md](agent-context-prompt.md) available for sessions
+- [ ] Stuck or blocked runs followed [stuck-recovery.md](stuck-recovery.md)

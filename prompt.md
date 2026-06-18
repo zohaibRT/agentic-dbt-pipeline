@@ -35,7 +35,8 @@ Please:
 2. Build sources, bronze, silver, gold, semantic layer, docs, and quality checks.
 3. Create source-prefixed layer schemas such as <source_name>_bronze, <source_name>_silver, and <source_name>_gold.
 4. Commit each stage separately.
-5. Ask before using another dbt profile, changing schema naming, adding secrets, or pushing to GitHub.
+5. If stuck, stop retrying, summarize the blocker, show the last command/result, and ask me for the next decision.
+6. Ask before using another dbt profile, changing schema naming, adding secrets, or pushing to GitHub.
 ```
 
 What the skill handles automatically:
