@@ -18,6 +18,7 @@ Read [project.config.yml](../project.config.yml). If values are missing, **ask t
 | Source name | `source_name` prompt or `source.name` | ask if missing |
 | Layer schema prefix | `layer_schema_prefix` prompt | usually same as `source_name`; ask if missing |
 | Domain folder | `domain` prompt or `domain` config | ask if missing |
+| Project rules | `project_rules` prompt | optional; ask if unclear |
 | Layer 1 schema suffix | user name → `+schema` | `staging` |
 | Layer 2 schema suffix | user name → `+schema` | `intermediate` |
 | Layer 3 schema suffix | user name → `+schema` | `marts` |
@@ -50,6 +51,7 @@ Read [project.config.yml](../project.config.yml). If values are missing, **ask t
 - Use GitHub Secrets in CI (`WAREHOUSE_CREDENTIALS` for Agents Schema).
 - If multiple dbt profiles exist, ask for `dbt_profile_name` before running `dbt debug`, `dbt deps`, `dbt parse`, or `dbt build`.
 - Ask for `source_schema`, `source_name`, and `layer_schema_prefix` before running codegen or writing layer config. Do not guess the source schema from the dbt profile target schema.
+- If `project_rules` include mappings, joins, metrics, exclusions, privacy rules, naming rules, or special instructions, apply them exactly and ask before interpreting ambiguous rules.
 
 ## Optional overrides (user prompt wins)
 
@@ -60,6 +62,14 @@ domain: hospital                         # domain folder and naming context
 source_schema: hospital_raw              # warehouse schema to inspect with codegen
 source_name: hospital                    # dbt source name to write in YAML
 layer_schema_prefix: hospital            # physical schema prefix for bronze/silver/gold
+project_rules:                           # optional business/modeling rules
+  field_mappings: []
+  joins: []
+  metrics: []
+  exclusions: []
+  privacy: []
+  naming: []
+  special_instructions: []
 github_repo: other-owner/analytics       # optional full override only
 push_to_github: true | false
 layer_names: staging, intermediate, marts

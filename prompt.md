@@ -34,6 +34,22 @@ layer_names:
   layer_2: silver
   layer_3: gold
 
+project_rules:
+  field_mappings:
+    - <source_table.source_column> -> <target_column>: <meaning/rule>
+  joins:
+    - <left_table.column> -> <right_table.column>: <relationship>
+  metrics:
+    - <metric_name>: <definition, grain, filters>
+  exclusions:
+    - <tables/columns/records to ignore>
+  privacy:
+    - <PII/PHI handling, masking, or exclusion rules>
+  naming:
+    - <custom naming conventions>
+  special_instructions:
+    - <anything else the agent must follow>
+
 Task:
 1. Set up the dbt project and install any required dbt agent skills or dbt packages.
 2. Run the full pipeline: sources -> bronze -> silver -> gold -> semantic layer -> project evaluator -> docs.
@@ -47,10 +63,11 @@ Task:
 4. Create the Agents Schema workflow after target/manifest.json exists, then create CI workflow files.
 5. Create layer schemas prefixed by layer_schema_prefix. Example: doctor_hospital_src_bronze, doctor_hospital_src_silver, doctor_hospital_src_gold.
 6. If dbt's default schema behavior would create analytics_bronze instead, add a safe generate_schema_name macro or ask before changing schema generation.
-7. Initialize git if needed; commit initialization, sources, bronze, silver, gold, docs, CI, and Agents Schema separately.
-8. If dbt_profile_name, source_schema, source_name, layer_schema_prefix, or github_repo_name is missing, ask me before running dbt commands.
-9. If multiple dbt profiles exist in profiles.yml, ask which one to use. Do not guess.
-10. Ask me only for missing source/profile details, missing credentials/secrets, and commit or push approval.
+7. Apply project_rules exactly. If any mapping, join, metric, or privacy rule is unclear, ask before modeling it.
+8. Initialize git if needed; commit initialization, sources, bronze, silver, gold, docs, CI, and Agents Schema separately.
+9. If dbt_profile_name, source_schema, source_name, layer_schema_prefix, or github_repo_name is missing, ask me before running dbt commands.
+10. If multiple dbt profiles exist in profiles.yml, ask which one to use. Do not guess.
+11. Ask me only for missing source/profile details, unclear project_rules, missing credentials/secrets, and commit or push approval.
 ```
 
 Defaults:
@@ -120,6 +137,17 @@ source_schema: hospital_raw
 source_name: hospital
 layer_schema_prefix: hospital
 github_repo_name: hospital-analytics
+
+project_rules:
+  field_mappings:
+    - patients.patient_id -> patient_id: primary patient identifier
+    - encounters.visit_date -> encounter_date: date of patient visit
+  joins:
+    - encounters.patient_id -> patients.patient_id: many encounters per patient
+  metrics:
+    - total_encounters: count of encounters at daily grain
+  privacy:
+    - exclude direct patient identifiers from gold models unless explicitly needed
 ```
 
 IT company:
@@ -131,6 +159,15 @@ source_schema: raw
 source_name: it_company
 layer_schema_prefix: it_company
 github_repo_name: it-company-analytics
+
+project_rules:
+  field_mappings:
+    - tickets.created_at -> ticket_created_at: ticket creation timestamp
+    - employees.employee_id -> employee_id: internal employee key
+  joins:
+    - tickets.assignee_id -> employees.employee_id: ticket owner
+  metrics:
+    - open_tickets: count of tickets where status is not closed
 ```
 
 Retail:
@@ -142,6 +179,15 @@ source_schema: raw_orders
 source_name: retail
 layer_schema_prefix: retail
 github_repo_name: retail-analytics
+
+project_rules:
+  field_mappings:
+    - orders.order_id -> order_id: primary order identifier
+    - order_items.quantity -> item_quantity: units sold
+  joins:
+    - order_items.order_id -> orders.order_id: one order has many items
+  metrics:
+    - gross_revenue: sum of item_quantity * unit_price
 ```
 
 ---

@@ -47,6 +47,16 @@ layer_names:
   layer_1: bronze
   layer_2: silver
   layer_3: gold
+
+project_rules:
+  field_mappings:
+    - <source_table.source_column> -> <target_column>: <meaning/rule>
+  joins:
+    - <left_table.column> -> <right_table.column>: <relationship>
+  metrics:
+    - <metric_name>: <definition, grain, filters>
+  privacy:
+    - <PII/PHI handling, masking, or exclusion rules>
 ```
 
 For a full copy-paste prompt, see [prompt.md](prompt.md).

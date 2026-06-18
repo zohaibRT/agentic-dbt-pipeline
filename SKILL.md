@@ -221,6 +221,7 @@ Use Agents Schema after docs generation or any step that produces `target/manife
 - `source_schema:` warehouse schema to inspect with codegen; ask if missing
 - `source_name:` dbt source name to write in source YAML; ask if missing
 - `layer_schema_prefix:` prefix for physical layer schemas, usually same as `source_name`; ask if missing
+- `project_rules:` optional field mappings, joins, metrics, exclusions, privacy rules, naming rules, and special instructions. Apply exactly; ask if unclear.
 - `auto_bootstrap:` true *(default)* | false
 - `auto_agents_schema:` true *(default on full pipeline)* | false
 - `auto_install_dbt_skills:` true *(default)* | false
