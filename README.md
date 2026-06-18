@@ -40,6 +40,7 @@ Required inputs:
 - dbt_profile_name: <profile key from ~/.dbt/profiles.yml>
 - source_schema: <raw/source schema to inspect>
 - source_name: <friendly dbt source name>
+- layer_schema_prefix: <usually same as source_name>
 - github_repo_name: <repo slug only>
 
 layer_names:

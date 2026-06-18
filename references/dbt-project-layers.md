@@ -28,13 +28,27 @@ If the prompt already includes `layer_names:` (see [prompt.md](../prompt.md)), u
 
 ## How user names map to the project
 
-Each name becomes **both** the `dbt_project.yml` key **and** the `+schema` suffix **and** the folder under `models/`:
+Each name becomes the `dbt_project.yml` key and folder under `models/`.
+
+For physical warehouse schemas, prefer source-prefixed names when `layer_schema_prefix` is provided:
+
+```text
+{layer_schema_prefix}_{layer_name}
+```
+
+Example:
+
+```text
+doctor_hospital_src_bronze
+doctor_hospital_src_silver
+doctor_hospital_src_gold
+```
 
 | Role | User name (example) | `dbt_project.yml` | Folder | Postgres schema |
 |---|---|---|---|---|
-| Layer 1 | `staging` | `staging:` | `models/staging/{domain}/` | `ecommerce_staging` |
-| Layer 2 | `intermediate` | `intermediate:` | `models/intermediate/{domain}/` | `ecommerce_intermediate` |
-| Layer 3 | `marts` | `marts:` | `models/marts/{domain}/` | `ecommerce_marts` |
+| Layer 1 | `bronze` | `bronze:` | `models/bronze/{domain}/` | `{layer_schema_prefix}_bronze` |
+| Layer 2 | `silver` | `silver:` | `models/silver/{domain}/` | `{layer_schema_prefix}_silver` |
+| Layer 3 | `gold` | `gold:` | `models/gold/{domain}/` | `{layer_schema_prefix}_gold` |
 
 If user chooses `bronze`, `silver`, `gold` (production defaults):
 
@@ -42,18 +56,34 @@ If user chooses `bronze`, `silver`, `gold` (production defaults):
 models:
   {project.name}:
     bronze:
-      +schema: bronze
+      +schema: {layer_schema_prefix}_bronze
       +materialized: view
     silver:
-      +schema: silver
+      +schema: {layer_schema_prefix}_silver
       +materialized: view
     gold:
-      +schema: gold
+      +schema: {layer_schema_prefix}_gold
       +materialized: table
 ```
 
 Folders: `models/bronze/{domain}/`, `models/silver/{domain}/`, `models/gold/{domain}/`  
-Schemas: `ecommerce_bronze`, `ecommerce_silver`, `ecommerce_gold`
+Schemas: `{layer_schema_prefix}_bronze`, `{layer_schema_prefix}_silver`, `{layer_schema_prefix}_gold`
+
+Important: dbt's default `generate_schema_name` macro prefixes custom schemas with the profile target schema. With profile schema `analytics` and `+schema: doctor_hospital_src_bronze`, dbt may create `analytics_doctor_hospital_src_bronze`.
+
+If the user wants the exact physical schema `doctor_hospital_src_bronze`, add or confirm a project-level `macros/generate_schema_name.sql` override:
+
+```sql
+{% macro generate_schema_name(custom_schema_name, node) -%}
+  {%- if custom_schema_name is none -%}
+    {{ target.schema }}
+  {%- else -%}
+    {{ custom_schema_name | trim }}
+  {%- endif -%}
+{%- endmacro %}
+```
+
+Ask before adding this macro in an existing project because it changes schema naming globally.
 
 For layer 3 (marts), set model-level configs in SQL:
 - `dim_*` / `mart_*`: `materialized='table'`

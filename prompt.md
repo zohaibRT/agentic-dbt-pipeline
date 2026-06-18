@@ -26,6 +26,7 @@ Required inputs:
 - dbt_profile_name: <profile key from ~/.dbt/profiles.yml>
 - source_schema: <raw/source schema to inspect>
 - source_name: <friendly dbt source name>
+- layer_schema_prefix: <usually same as source_name>
 - github_repo_name: <repo slug only>
 
 layer_names:
@@ -44,10 +45,12 @@ Task:
    - MetricFlow/semantic layer: define metrics on final gold models.
    - Agents Schema: publish target/manifest.json metadata to AGENTS.* after docs/manifest generation.
 4. Create the Agents Schema workflow after target/manifest.json exists, then create CI workflow files.
-5. Initialize git if needed; commit initialization, sources, bronze, silver, gold, docs, CI, and Agents Schema separately.
-6. If dbt_profile_name, source_schema, source_name, or github_repo_name is missing, ask me before running dbt commands.
-7. If multiple dbt profiles exist in profiles.yml, ask which one to use. Do not guess.
-8. Ask me only for missing source/profile details, missing credentials/secrets, and commit or push approval.
+5. Create layer schemas prefixed by layer_schema_prefix. Example: doctor_hospital_src_bronze, doctor_hospital_src_silver, doctor_hospital_src_gold.
+6. If dbt's default schema behavior would create analytics_bronze instead, add a safe generate_schema_name macro or ask before changing schema generation.
+7. Initialize git if needed; commit initialization, sources, bronze, silver, gold, docs, CI, and Agents Schema separately.
+8. If dbt_profile_name, source_schema, source_name, layer_schema_prefix, or github_repo_name is missing, ask me before running dbt commands.
+9. If multiple dbt profiles exist in profiles.yml, ask which one to use. Do not guess.
+10. Ask me only for missing source/profile details, missing credentials/secrets, and commit or push approval.
 ```
 
 Defaults:
@@ -115,6 +118,7 @@ domain: hospital
 dbt_profile_name: hospital_analytics
 source_schema: hospital_raw
 source_name: hospital
+layer_schema_prefix: hospital
 github_repo_name: hospital-analytics
 ```
 
@@ -125,6 +129,7 @@ domain: it_company
 dbt_profile_name: it_analytics
 source_schema: raw
 source_name: it_company
+layer_schema_prefix: it_company
 github_repo_name: it-company-analytics
 ```
 
@@ -135,6 +140,7 @@ domain: retail
 dbt_profile_name: retail_analytics
 source_schema: raw_orders
 source_name: retail
+layer_schema_prefix: retail
 github_repo_name: retail-analytics
 ```
 
