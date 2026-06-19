@@ -6,92 +6,22 @@ Install once:
 npx skills add zohaibRT/agentic-dbt-pipeline
 ```
 
-Copy one of the prompts below into Cursor.
+Create `.env` from `.env.example` and fill the project settings there. Then use this prompt.
 
----
-
-## Starter Prompt
-
-Use this for a new dbt project. Fill in the values you know, or put them in `.env`. Leave anything unknown blank; the agent will ask before running dbt.
-
-```text
-Use the dbt Pipeline skill (`agentic-dbt-pipeline`).
-
-Build a dbt project for this domain:
-- domain: <hospital | it_company | finance | retail | etc.>
-- dbt_profile_name: <profile key from ~/.dbt/profiles.yml>
-- source_schema: <raw/source schema to inspect>
-- source_name: <friendly dbt source name>
-- layer_schema_prefix: <usually same as source_name>
-- github_repo_name: <repo name or local-only>
-
-Use these medallion layers:
-- bronze
-- silver
-- gold
-
-Please:
-1. Discover source tables with codegen.
-2. Profile source tables before modeling: row counts, keys, relationships, dates, measures, and status/code fields.
-3. Build sources, bronze, silver, gold, semantic layer, docs, and quality checks.
-4. Create source-prefixed layer schemas such as <source_name>_bronze, <source_name>_silver, and <source_name>_gold.
-5. Use mapping seeds or reference tables when I provide manual mappings or code translations.
-6. Commit each stage separately.
-7. Summarize assumptions, data quality notes, and open review decisions before final delivery.
-8. If stuck, stop retrying, summarize the blocker, show the last command/result, and ask me for the next decision.
-9. Ask before using another dbt profile, changing schema naming, adding secrets, or pushing to GitHub.
-```
-
-What the skill handles automatically:
-
-- installs dbt Labs agent skills when missing
-- reads non-secret project settings from `.env` when present
-- uses subagents for safe parallel analysis when enabled
-- installs dbt packages with `dbt deps`
-- uses `dbt_utils`, `audit_helper`, and `dbt_project_evaluator` at the right stages
-- profiles source data before modeling
-- applies data-engineering guardrails for grain, tests, incremental models, snapshots, exposures, and privacy
-- applies mapping seeds and coverage checks when mappings are provided
-- generates dbt docs
-- prepares human review and final handoff notes
-- prepares Agents Schema after `target/manifest.json` exists when enabled and supported
-- asks before unclear or risky actions
-
----
-
-## Optional `.env`
-
-For repeated runs, create a local `.env` from `.env.example`:
-
-```text
-DBT_DOMAIN=<domain_name>
-DBT_PROFILE_NAME=<dbt_profile_name>
-DBT_SOURCE_SCHEMA=<raw_source_schema>
-DBT_SOURCE_NAME=<dbt_source_name>
-DBT_LAYER_SCHEMA_PREFIX=<layer_schema_prefix>
-DBT_GITHUB_REPO_NAME=<repo_name_or_local_only>
-DBT_LAYER_1=bronze
-DBT_LAYER_2=silver
-DBT_LAYER_3=gold
-DBT_USE_SUBAGENTS=true
-```
-
-Do not put passwords or tokens in `.env`. Prompt values override `.env`.
-
-When `.env` already has the required values, the prompt can be as simple as:
+## Recommended Prompt
 
 ```text
 Use the dbt Pipeline skill (`agentic-dbt-pipeline`).
 
 Build the dbt project using the settings from `.env`.
-Run the full pipeline and ask before committing, pushing, changing schemas, or adding secrets.
-```
+Run the full pipeline from source discovery through final delivery.
 
----
+Ask me only when required `.env` values are missing, credentials or secrets are needed, a business rule is unclear, or before committing, pushing, or changing schema behavior.
+```
 
 ## Optional Project Rules
 
-Add this only when you have business rules, field mappings, joins, or privacy requirements.
+Add this only when the project has business-specific rules, mappings, joins, or privacy requirements.
 
 ```text
 Project rules:
@@ -113,86 +43,13 @@ Project rules:
 
 If a rule is unclear, the agent should ask before modeling it.
 
----
+## Single Phase
 
-## Example: Hospital
+Use this only when you want one part of the workflow:
 
 ```text
 Use the dbt Pipeline skill (`agentic-dbt-pipeline`).
 
-Build a dbt project for this domain:
-- domain: hospital
-- dbt_profile_name: hospital_analytics
-- source_schema: hospital_raw
-- source_name: hospital_src
-- layer_schema_prefix: hospital_src
-- github_repo_name: local-only
-
-Use these medallion layers:
-- bronze
-- silver
-- gold
-
-Project rules:
-- Field mappings:
-  - patients.patient_id -> patient_id: primary patient identifier
-  - encounters.visit_date -> encounter_date: date of patient visit
-- Joins:
-  - encounters.patient_id -> patients.patient_id: many encounters per patient
-- Privacy:
-  - exclude direct patient identifiers from gold models unless explicitly approved
-
-Please commit locally only. Do not push to GitHub.
-```
-
----
-
-## Single Phase Examples
-
-Use these when you want to run only one part of the workflow.
-
-```text
-workflow_phase: init
-```
-
-```text
-workflow_phase: sources
-```
-
-```text
-workflow_phase: marts
-```
-
-```text
-workflow_phase: semantic_layer
-```
-
-```text
-workflow_phase: project_evaluator
-```
-
-```text
-workflow_phase: agents_schema
-```
-
----
-
-## Optional Settings
-
-Most users do not need these.
-
-```text
-commit: ask
-push_to_github: true
-materialization_profile: prod
-auto_agents_schema: false
-use_subagents: true
-```
-
-Set `auto_agents_schema: true` only for Snowflake, Databricks, or BigQuery targets.
-
-For faster development:
-
-```text
-materialization_profile: dev
+Use settings from `.env`.
+workflow_phase: <init | sources | staging | intermediate | marts | semantic_layer | project_evaluator | docs | ci | agents_schema>
 ```

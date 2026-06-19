@@ -33,35 +33,13 @@ In Cursor chat, use:
 ```text
 Use the dbt Pipeline skill (`agentic-dbt-pipeline`).
 
-Build a dbt project for this domain:
-- domain: <hospital | it_company | finance | retail | etc.>
-- dbt_profile_name: <profile key from ~/.dbt/profiles.yml>
-- source_schema: <raw/source schema to inspect>
-- source_name: <friendly dbt source name>
-- layer_schema_prefix: <usually same as source_name>
-- github_repo_name: <repo slug only>
-
-Use these medallion layers:
-- bronze
-- silver
-- gold
+Build the dbt project using the settings from `.env`.
+Run the full pipeline from source discovery through final delivery.
 ```
 
 For a full copy-paste prompt, see [prompt.md](prompt.md).
 
-You can also keep repeatable non-secret settings in `.env`:
-
-```text
-DBT_DOMAIN=<domain_name>
-DBT_PROFILE_NAME=<dbt_profile_name>
-DBT_SOURCE_SCHEMA=<raw_source_schema>
-DBT_SOURCE_NAME=<dbt_source_name>
-DBT_LAYER_SCHEMA_PREFIX=<layer_schema_prefix>
-DBT_GITHUB_REPO_NAME=<repo_name_or_local_only>
-DBT_USE_SUBAGENTS=true
-```
-
-Prompt values override `.env`; credentials stay in `~/.dbt/profiles.yml` or GitHub Secrets.
+Keep repeatable non-secret settings in `.env` by copying `.env.example`. Prompt values override `.env`; credentials stay in `~/.dbt/profiles.yml` or GitHub Secrets.
 
 ## Configuration
 
