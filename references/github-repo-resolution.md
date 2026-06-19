@@ -20,6 +20,14 @@ Which GitHub repository name should I use? (e.g. analytics, hospital-analytics, 
 Owner will be: {owner from gh}
 ```
 
+Treat these values as local-only, not repository names:
+
+```text
+local-only, local, none, no, false, na, n/a, NA
+```
+
+When repo intent is local-only, skip `gh` remote setup and do not push.
+
 3. **Build remote URL**:
 
 ```text

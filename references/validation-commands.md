@@ -79,6 +79,16 @@ Confirm after generate:
 - `target/manifest.json` exists
 - `target/catalog.json` exists
 
+## View docs locally *(optional)*
+
+After docs generate succeeds:
+
+```powershell
+& $dbt docs serve --host 127.0.0.1 --port 8080
+```
+
+Use a non-blocking/background process when the agent starts the server. Report the final URL.
+
 ## Pre-commit minimum
 
 Before every layer commit:

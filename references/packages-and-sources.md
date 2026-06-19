@@ -39,6 +39,24 @@ $dbt = "dbt"
 
 This step reads `<source.schema>` only. It must not create models, package tables, or evaluator artifacts in the source schema.
 
+## Resolve dbt source name
+
+The user does not need to provide a source name. Derive `source.name` before writing source YAML:
+
+1. Use explicit `source_name` / `DBT_SOURCE_NAME` only when provided.
+2. Otherwise normalize `source_schema`.
+3. Remove generic suffixes such as `_src`, `_source`, `_raw`, `_schema`.
+4. If the result is generic (`raw`, `source`, `src`) or unclear, use `domain`.
+5. Ask only if both `source_schema` and `domain` are unclear.
+
+Examples:
+
+| Source schema | Domain | Derived source name |
+|---|---|---|
+| `doctors_hospital_src` | `hospital` | `doctors_hospital` |
+| `hospital_raw` | `hospital` | `hospital` |
+| `raw` | `finance` | `finance` |
+
 ## Source profiling
 
 After codegen and before staging, read [source-profiling.md](source-profiling.md).

@@ -20,7 +20,7 @@ Examples of valid custom names:
 
 Each name becomes the `dbt_project.yml` key and folder under `models/`.
 
-For physical warehouse schemas, default `layer_schema_prefix` to `source_name`:
+For physical warehouse schemas, resolve `layer_schema_prefix` with [schema-isolation.md](schema-isolation.md). Do not default to a short source name such as `dh` unless explicitly requested:
 
 ```text
 {layer_schema_prefix}_{layer_name}

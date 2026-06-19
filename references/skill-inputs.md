@@ -15,8 +15,8 @@ Read [project.config.yml](../project.config.yml), [project-naming.md](project-na
 | Database | `database.dbname` | `analytics` |
 | Profile target schema | `database.target_schema` | `dbt_work`; must not equal `source_schema` |
 | Source/raw schema | `source_schema` prompt, `DBT_SOURCE_SCHEMA`, or `source.schema` | ask if missing |
-| Source name | `source_name` prompt, `DBT_SOURCE_NAME`, or `source.name` | ask if missing |
-| Layer schema prefix | `layer_schema_prefix` prompt, `DBT_LAYER_SCHEMA_PREFIX`, or `source_name` | default to `source_name` |
+| Source name | `source_name`, `DBT_SOURCE_NAME`, or derived from `source_schema` / `domain` | derive; ask only if unclear |
+| Layer schema prefix | `layer_schema_prefix`, `DBT_LAYER_SCHEMA_PREFIX`, or derived by [schema-isolation.md](schema-isolation.md) | derive; ask if unclear |
 | Domain folder | `domain` prompt, `DBT_DOMAIN`, or `domain` config | ask if missing |
 | Project rules | `project_rules` prompt | optional; ask if unclear |
 | Layer 1 schema suffix | prompt, advanced `.env`, or config -> `+schema` | `bronze` |
@@ -54,7 +54,7 @@ Read [project.config.yml](../project.config.yml), [project-naming.md](project-na
 - If multiple dbt profiles exist, ask for `dbt_profile_name` before running `dbt debug`, `dbt deps`, `dbt parse`, or `dbt build`.
 - Do not use `dbt_profile_name` as the project folder. The profile is only the connection key. Derive project name/root from [project-naming.md](project-naming.md).
 - Keep `source_schema` read-only. If the dbt profile target schema equals `source_schema`, stop and follow [schema-isolation.md](schema-isolation.md) before any build.
-- Ask for `source_schema` and `source_name` before running codegen or writing layer config. Default `layer_schema_prefix` to `source_name` unless the user overrides it. Do not guess the source schema from the dbt profile target schema.
+- Ask for `source_schema` before running codegen or writing layer config. Derive `source_name` from `source_schema` or `domain` unless the user explicitly overrides it. Derive `layer_schema_prefix` with [schema-isolation.md](schema-isolation.md); do not default physical schemas to short source names such as `dh`. Do not guess the source schema from the dbt profile target schema.
 - If `project_rules` include mappings, joins, metrics, exclusions, privacy rules, naming rules, or special instructions, apply them exactly and ask before interpreting ambiguous rules.
 
 ## Optional overrides (user prompt wins)
@@ -66,8 +66,8 @@ dbt_project_root: hospital_analytics     # optional; defaults to dbt_project_nam
 dbt_profile_name: hospital_analytics     # profile key from ~/.dbt/profiles.yml
 domain: hospital                         # domain folder and naming context
 source_schema: hospital_raw              # warehouse schema to inspect with codegen
-source_name: hospital                    # dbt source name to write in YAML
-layer_schema_prefix: hospital            # optional; defaults to source_name
+source_name: hospital                    # optional; otherwise derived from source_schema/domain
+layer_schema_prefix: hospital            # optional; otherwise derived from existing schemas/domain/source schema/descriptive source name
 project_rules:                           # optional business/modeling rules
   field_mappings: []
   joins: []
@@ -92,7 +92,6 @@ For repeat projects, allow the user to keep required fields in `.env`:
 DBT_DOMAIN=<domain_name>
 DBT_PROFILE_NAME=<dbt_profile_name>
 DBT_SOURCE_SCHEMA=<raw_source_schema>
-DBT_SOURCE_NAME=<dbt_source_name>
 DBT_GITHUB_REPO_NAME=<repo_name_or_local_only>
 ```
 
@@ -101,6 +100,7 @@ Advanced `.env` overrides:
 ```text
 DBT_PROJECT_NAME=<dbt_project_name>
 DBT_PROJECT_ROOT=<dbt_project_root>
+DBT_SOURCE_NAME=<dbt_source_name>
 ```
 
 Prompt values override `.env`. Do not commit `.env`; commit only `.env.example`.

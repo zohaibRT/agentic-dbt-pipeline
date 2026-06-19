@@ -41,12 +41,31 @@ Only add if `updated_at` (or equivalent) exists in source YAML - **do not assume
 
 ## Generate docs
 
+Run after `dbt build` succeeds, or during `workflow_phase: docs`.
+
 ```powershell
 $dbt = "dbt"
 & $dbt docs generate
 ```
 
 Verify `target/manifest.json` and `target/catalog.json`.
+
+## Serve docs locally
+
+Use this when the user wants to view docs locally or the run is an interactive local session.
+
+```powershell
+$dbt = "dbt"
+& $dbt docs serve --host 127.0.0.1 --port 8080
+```
+
+`dbt docs serve` is a long-running local web server. If the agent starts it, run it as a non-blocking/background process, use the configured host/port from `project.config.yml`, and provide the URL:
+
+```text
+http://127.0.0.1:8080
+```
+
+If port `8080` is busy, try the next available port and report the final URL. Do not treat `docs serve` as required validation; `docs generate` is the required validation step.
 
 ## Commit
 

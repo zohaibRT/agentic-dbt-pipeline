@@ -6,6 +6,12 @@ Use this before writing `dbt_project.yml`, running `dbt build`, seeds, snapshots
 
 The source schema is read-only input. Do not materialize dbt models, seeds, snapshots, package models, evaluator tables, docs artifacts, audit outputs, or temporary project tables into `source_schema`.
 
+One-line rule:
+
+```text
+Source schema = read-only. Profile schema = neutral dbt work/default. Medallion layers = explicit +schema with generate_schema_name override. Packages = own schemas, never source.
+```
+
 The warehouse should stay separated like this:
 
 | Purpose | Schema |
@@ -19,6 +25,36 @@ The warehouse should stay separated like this:
 | dbt project evaluator package | `<layer_schema_prefix>_evaluator` |
 | Optional audit outputs | `<layer_schema_prefix>_audit` |
 | Agents Schema metadata | `AGENTS` or configured agents schema |
+
+## Resolve `layer_schema_prefix`
+
+`layer_schema_prefix` controls the physical warehouse schemas, not the dbt source name used in `source()`.
+
+Resolve it in this order:
+
+1. Explicit prompt value: `layer_schema_prefix`
+2. Advanced `.env`: `DBT_LAYER_SCHEMA_PREFIX`
+3. Existing complete medallion schema set, when detected and approved for reuse
+4. `domain`, when descriptive and not generic
+5. Normalized `source_schema`, when descriptive
+6. Normalized `source_name`, only when descriptive
+7. Ask the user
+
+Do not use short or abbreviated source names such as `dh`, `src`, `raw`, or names ending in punctuation as the physical schema prefix unless the user explicitly sets `layer_schema_prefix`.
+
+Example:
+
+| Input | Good physical prefix |
+|---|---|
+| `domain: hospital`, `source_name: dh` | `hospital` |
+| `source_schema: doctors_hospital_src`, no useful domain | `doctors_hospital` |
+| `source_name: doctors_hospital_src`, no useful domain/schema | `doctors_hospital` |
+
+The dbt source name may still be short, such as `dh`, for model names like `stg_dh__appointments`. That does not require physical schemas like `dh_bronze`.
+
+If old schemas already exist from a previous prefix, do not create another medallion set silently. Reuse the intended prefix or ask before changing it.
+
+When multiple medallion prefix sets exist, such as `dh_bronze/dh_silver/dh_gold` and `hospital_bronze/hospital_silver/hospital_gold`, stop and ask which prefix is canonical before the next build. Do not drop the older schemas without explicit approval.
 
 ## Profile target schema
 

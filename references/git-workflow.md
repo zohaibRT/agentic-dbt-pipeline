@@ -6,7 +6,7 @@ Resolve GitHub remote **before any git work** - [github-repo-resolution.md](gith
 
 1. `gh auth status` and `gh api user --jq ".login"` -> `{owner}`
 2. Read `github_repo_name` from prompt or `.env`; **if missing, ask user** for repo slug only
-3. If `github_repo_name` is `local-only`, do not add a remote or push
+3. If `github_repo_name` is `local-only`, `local`, `none`, `no`, `false`, `na`, or `n/a`, do not add a remote or push
 4. Otherwise remote = `https://github.com/{owner}/{github_repo_name}.git`
 5. Optional `github_repo:` override for a different owner/repo
 

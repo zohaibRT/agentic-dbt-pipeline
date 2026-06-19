@@ -4,7 +4,7 @@ Read [schema-isolation.md](schema-isolation.md) first. The source schema is read
 
 By default, dbt resolves custom schemas as `{profile_target_schema}_{+schema}` when using `+schema` in `dbt_project.yml`.
 
-If the user requests source-prefixed schemas, prefer:
+Resolve `layer_schema_prefix` with [schema-isolation.md](schema-isolation.md). If the user requests source-prefixed schemas, prefer a descriptive source/schema/domain prefix:
 
 ```text
 {layer_schema_prefix}_{layer_name}

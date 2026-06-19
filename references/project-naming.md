@@ -14,7 +14,7 @@ Resolve `dbt_project_name` and `dbt_project_root` in this order:
 
 1. Prompt: `dbt_project_name` and `dbt_project_root`
 2. Advanced `.env`: `DBT_PROJECT_NAME` and `DBT_PROJECT_ROOT`
-3. `github_repo_name` when it is not `local-only`
+3. `github_repo_name` when it is not local-only (`local-only`, `local`, `none`, `no`, `false`, `na`, or `n/a`)
 4. `source_schema` when descriptive
 5. `source_name` when descriptive
 6. `domain`

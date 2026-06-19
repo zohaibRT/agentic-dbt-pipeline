@@ -83,6 +83,7 @@ Verify before marking the dbt pipeline workflow complete.
 
 - [ ] Model/column descriptions in YAML
 - [ ] `dbt docs generate` -> manifest + catalog exist
+- [ ] Docs serve command or local docs URL provided when user wants to view docs
 
 ## Human review
 

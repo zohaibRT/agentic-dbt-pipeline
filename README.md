@@ -39,7 +39,7 @@ Run the full pipeline from source discovery through final delivery.
 
 For a full copy-paste prompt, see [prompt.md](prompt.md).
 
-Keep repeatable non-secret settings in `.env` by copying `.env.example`. Most projects only need domain, dbt profile, source schema/name, and repo intent there. The skill infers project name/root, layer names, schema prefix, commit mode, push behavior, materialization, and Agents Schema handling unless you override them.
+Keep repeatable non-secret settings in `.env` by copying `.env.example`. Most projects only need domain, dbt profile, source schema, and repo intent there. The skill infers project name/root, dbt source name, layer names, schema prefix, commit mode, push behavior, materialization, and Agents Schema handling unless you override them.
 
 ## Configuration
 
@@ -79,7 +79,7 @@ Keep passwords, tokens, and private keys in local profiles or GitHub Secrets.
 | Marts | Builds final dimension, fact, and reporting models with business-friendly fields |
 | Semantic layer | Adds MetricFlow / dbt semantic layer YAML for mart metrics |
 | Quality | Runs `dbt_project_evaluator` and uses `audit_helper` where useful |
-| Documentation | Runs `dbt docs generate` and verifies manifest/catalog output |
+| Documentation | Runs `dbt docs generate`, verifies manifest/catalog output, and can serve docs locally for viewing |
 | Human review | Summarizes assumptions, data quality notes, mappings, metrics, and open decisions |
 | Git | Commits initialization, sources, each model layer, docs, CI, and Agents Schema separately |
 | Agents Schema | Publishes dbt metadata into `AGENTS.*` so agents can query project context from the warehouse |

@@ -85,7 +85,7 @@ Resolve paths relative to workspace root. dbt project root = `{project.root}`.
 
 Resolve `project.name` and `project.root` before `dbt init`. Never use `dbt_profile_name` as the folder/project name unless the user explicitly provides it as `dbt_project_name`. Prefer a clean name derived from `github_repo_name`, `source_schema`, `source_name`, or `domain`.
 
-Keep the source schema read-only. Never build dbt models, package models, evaluator tables, seeds, snapshots, or audit outputs into `source_schema`. Route evaluator outputs to `<layer_schema_prefix>_evaluator` and layer outputs to separate medallion schemas.
+Keep the source schema read-only. Never build dbt models, package models, evaluator tables, seeds, snapshots, or audit outputs into `source_schema`. Route evaluator outputs to `<layer_schema_prefix>_evaluator` and layer outputs to separate medallion schemas. Resolve `layer_schema_prefix` with [schema-isolation.md](references/schema-isolation.md); do not use short source names like `dh` as physical schema prefixes unless the user explicitly sets them.
 
 ## Step 0b - Optional subagents
 
@@ -113,7 +113,7 @@ Use `layer_names` from the prompt, `.env`, or `project.config.yml` when provided
 - Layer 2 (`int_*`): `silver`
 - Layer 3 (`dim_*`/`fct_*`/`mart_*`): `gold`
 
-Do not ask for layer names unless the user requests a non-default naming convention or an existing project already uses different folders. Default `layer_schema_prefix` to `source_name`; ask only when the user wants a different physical schema prefix.
+Do not ask for layer names unless the user requests a non-default naming convention or an existing project already uses different folders. Resolve `layer_schema_prefix` from explicit config, existing medallion schemas, domain, source schema, or descriptive source name. Ask only when the intended physical schema prefix is unclear.
 
 Write `dbt_project.yml` per [materialization-rules.md](references/materialization-rules.md):
 
@@ -174,7 +174,7 @@ Read [separate-layer-builds.md](references/separate-layer-builds.md).
 4. Staging -> Intermediate -> Marts
 5. Semantic layer - metrics on marts facts
 6. Project evaluator - `dbt build --select package:dbt_project_evaluator` after confirming it is routed to `<layer_schema_prefix>_evaluator`
-7. Docs - `dbt docs generate`
+7. Docs - `dbt docs generate`; use `dbt docs serve` for local viewing when requested or appropriate for an interactive local run
 8. Agents Schema - publish dbt metadata to `AGENTS.*` after `target/manifest.json` exists when enabled and supported
 9. Automation - CI workflow
 10. **Acceptance + final summary** - [acceptance-checklist.md](references/acceptance-checklist.md), [final-delivery.md](references/final-delivery.md)
@@ -185,7 +185,7 @@ Each stage: **parse -> build -> summarize -> ask commit/push** (repo: `https://g
 
 Read [packages-and-sources.md](references/packages-and-sources.md), [source-profiling.md](references/source-profiling.md), [schema-isolation.md](references/schema-isolation.md), and [dbt-packages-and-skills.md](references/dbt-packages-and-skills.md).
 
-All four packages in `packages.yml`. Codegen for sources. Add the configured `source.schema` to source YAML after generate. Profile row counts, candidate keys, relationships, important dates, measures, and status/code fields before staging.
+All four packages in `packages.yml`. Codegen for sources. Derive `source.name` from `source.schema` / `domain` unless explicitly provided. Add the configured `source.schema` to source YAML after generate. Profile row counts, candidate keys, relationships, important dates, measures, and status/code fields before staging.
 
 ## Step 3 - Layer 1 (staging)
 
@@ -213,7 +213,7 @@ Before running evaluator, confirm `dbt_project.yml` routes `models: dbt_project_
 
 ## Step 6 - Documentation
 
-Read [documentation.md](references/documentation.md). Run `dbt docs generate`.
+Read [documentation.md](references/documentation.md). Run `dbt docs generate`. Use `dbt docs serve` only as a non-blocking local viewing step and report the URL when started.
 
 ## Step 6b - Human review
 
@@ -277,8 +277,8 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 - `dbt_project_root:` optional explicit folder name; otherwise use `dbt_project_name`
 - `domain:` business/domain folder name; ask if missing
 - `source_schema:` warehouse schema to inspect with codegen; ask if missing
-- `source_name:` dbt source name to write in source YAML; ask if missing
-- `layer_schema_prefix:` prefix for physical layer schemas; default to `source_name`
+- `source_name:` optional dbt source name override; derive from `source_schema` / `domain` when missing
+- `layer_schema_prefix:` prefix for physical output schemas; derive by [schema-isolation.md](references/schema-isolation.md) unless explicitly provided
 - `project_rules:` optional field mappings, joins, metrics, exclusions, privacy rules, naming rules, and special instructions. Apply exactly; ask if unclear.
 - `auto_bootstrap:` true *(default)* | false
 - `auto_agents_schema:` true | false *(default false for local/unsupported adapters; enable for Snowflake, Databricks, or BigQuery)*

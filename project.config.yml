@@ -23,7 +23,7 @@ targets:
     - prod
 
 source:
-  name: raw
+  name: auto
   schema: raw
   yaml_path: models/sources/raw_sources_generated.yml
 
@@ -119,6 +119,12 @@ materialization:
   marts_dim_default: table
   marts_reporting_default: table
   dev_override_all: view
+
+docs:
+  generate_after_build: true
+  serve_on_request: true
+  host: 127.0.0.1
+  port: 8080
 
 git:
   ask_after_each_layer: true

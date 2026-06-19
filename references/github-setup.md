@@ -6,7 +6,7 @@ Repo resolution: [github-repo-resolution.md](github-repo-resolution.md).
 ## Prompt requirement
 
 ```text
-github_repo_name: analytics    # repo slug only - owner from gh CLI
+github_repo_name: analytics    # repo slug only; use local-only/NA for no remote push
 ```
 
 Agent resolves owner via `gh api user --jq ".login"` - **never hardcode accounts**.

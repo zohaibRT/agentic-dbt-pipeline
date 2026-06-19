@@ -26,7 +26,7 @@ Update or create project handoff notes with:
 - Final facts, dimensions, marts, and metrics
 - Known empty tables or data quality limitations
 - Incremental, snapshot, exposure, and privacy decisions
-- How to run `dbt build` and `dbt docs generate`
+- How to run `dbt build`, `dbt docs generate`, and `dbt docs serve`
 - What still needs business review
 
 ## Final validation
@@ -40,6 +40,14 @@ dbt docs generate
 ```
 
 If a full `dbt build` is too expensive, explain why and run the most complete safe build.
+
+For local docs viewing after `dbt docs generate`:
+
+```powershell
+dbt docs serve --host 127.0.0.1 --port 8080
+```
+
+If the agent starts docs serving, do it as a non-blocking/background process and report the URL.
 
 ## Final response
 
@@ -78,6 +86,7 @@ Use a compact table when helpful:
 - Important models created by layer
 - Semantic models and metrics added
 - CI or Agents Schema workflow changes
+- Docs generated and docs serve URL when started
 
 ### Validation results
 
