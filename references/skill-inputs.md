@@ -77,6 +77,7 @@ layer_names: staging, intermediate, marts
 commit: ask | auto_yes | skip_all
 materialization_profile: prod | dev
 workflow_phase: init | sources | staging | intermediate | marts | semantic_layer | project_evaluator | docs | ci | agents_schema
+use_subagents: true | false
 ```
 
 ## Optional `.env`
@@ -93,6 +94,7 @@ DBT_GITHUB_REPO_NAME=local-only
 DBT_LAYER_1=bronze
 DBT_LAYER_2=silver
 DBT_LAYER_3=gold
+DBT_USE_SUBAGENTS=true
 ```
 
 Prompt values override `.env`. Do not commit `.env`; commit only `.env.example`.

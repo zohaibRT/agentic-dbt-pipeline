@@ -11,6 +11,7 @@ Use the dbt Pipeline skill (`agentic-dbt-pipeline`) and these dbt-labs skills:
 - troubleshooting-dbt-job-errors
 
 Read project.config.yml, references/skill-inputs.md, and references/env-configuration.md first. If `.env` exists, load non-secret settings from it before asking for missing inputs.
+If `use_subagents` or `DBT_USE_SUBAGENTS` is true, read references/subagent-workflow.md and use subagents only for safe read-only analysis or draft review.
 
 ## Warehouse (non-secret)
 
@@ -57,6 +58,7 @@ See [dbt-packages-and-skills.md](dbt-packages-and-skills.md): codegen, dbt_utils
 - ref() only in intermediate/marts; source() only in staging
 - Run dbt debug (init), dbt parse, dbt build after changes
 - Commit each layer separately; ask before commit/push
+- Keep dbt commands, file edits, commits, pushes, and final decisions with the main agent
 - Push to `github_repo` after commits when `push_to_github: true`
 - Never stage: .venv, target, logs, dbt_packages, .env, profiles.yml
 

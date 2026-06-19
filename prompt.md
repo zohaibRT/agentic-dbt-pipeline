@@ -46,6 +46,7 @@ What the skill handles automatically:
 
 - installs dbt Labs agent skills when missing
 - reads non-secret project settings from `.env` when present
+- uses subagents for safe parallel analysis when enabled
 - installs dbt packages with `dbt deps`
 - uses `dbt_utils`, `audit_helper`, and `dbt_project_evaluator` at the right stages
 - profiles source data before modeling
@@ -71,6 +72,7 @@ DBT_GITHUB_REPO_NAME=local-only
 DBT_LAYER_1=bronze
 DBT_LAYER_2=silver
 DBT_LAYER_3=gold
+DBT_USE_SUBAGENTS=true
 ```
 
 Do not put passwords or tokens in `.env`. Prompt values override `.env`.
@@ -183,6 +185,7 @@ commit: ask
 push_to_github: true
 materialization_profile: prod
 auto_agents_schema: true
+use_subagents: true
 ```
 
 For faster development:

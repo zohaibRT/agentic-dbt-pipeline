@@ -58,6 +58,7 @@ DBT_SOURCE_SCHEMA=doctors_hospital_src
 DBT_SOURCE_NAME=doctors_hospital_src
 DBT_LAYER_SCHEMA_PREFIX=doctors_hospital_src
 DBT_GITHUB_REPO_NAME=local-only
+DBT_USE_SUBAGENTS=true
 ```
 
 Prompt values override `.env`; credentials stay in `~/.dbt/profiles.yml` or GitHub Secrets.
@@ -90,6 +91,7 @@ Keep passwords, tokens, and private keys in local profiles or GitHub Secrets.
 | Bootstrap | Installs dbt Labs agent skills and dbt packages when needed |
 | Validation | Runs `dbt debug`, `dbt deps`, `dbt parse`, and scoped `dbt build` commands |
 | Environment config | Loads non-secret `.env` values before asking for missing inputs |
+| Subagents | Optionally parallelizes read-only profiling, planning, docs, and review work |
 | Sources | Generates source YAML and adds source descriptions |
 | Source profiling | Reviews row counts, keys, relationships, dates, measures, and status/code fields before modeling |
 | Staging | Builds source-cleaning models with `source()` references |

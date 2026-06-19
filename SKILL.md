@@ -54,6 +54,7 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 |---|---|---|
 | **Bootstrap** | **Every run** (unless `auto_bootstrap: false`) | [bootstrap.md](references/bootstrap.md) |
 | **0 Inputs** | Always first | [skill-inputs.md](references/skill-inputs.md), [env-configuration.md](references/env-configuration.md), [security-and-credentials.md](references/security-and-credentials.md), [code-agent-setup.md](references/code-agent-setup.md) |
+| **0b Subagents** | Optional speed-up | [subagent-workflow.md](references/subagent-workflow.md) |
 | **1 Init** | New project | [project-initialization.md](references/project-initialization.md) |
 | **2 Schemas** | After init | [warehouse-schema-setup.md](references/warehouse-schema-setup.md) |
 | **3 Sources** | Packages + source YAML | [packages-and-sources.md](references/packages-and-sources.md) |
@@ -79,6 +80,10 @@ Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skil
 Resolve paths relative to workspace root. dbt project root = `{project.root}`.
 
 **User prompt overrides `.env` and config** for schema, domain, layers, materialization, commit mode. Use `.env` for non-secret reusable inputs before asking the user.
+
+## Step 0b - Optional subagents
+
+Read [subagent-workflow.md](references/subagent-workflow.md) when `use_subagents: true` or when source profiling, mapping review, model planning, docs, or evaluator review can safely run in parallel. Keep dbt commands, shared file edits, commits, pushes, and final decisions with the main agent.
 
 ## Step 0.1 — Security
 
@@ -234,6 +239,7 @@ Read [stuck-recovery.md](references/stuck-recovery.md) whenever a command hangs,
 - `auto_bootstrap:` true *(default)* | false
 - `auto_agents_schema:` true *(default on full pipeline)* | false
 - `auto_install_dbt_skills:` true *(default)* | false
+- `use_subagents:` true | false *(default: true for large projects, false for small/simple projects)*
 - `layer_names:` layer_1, layer_2, layer_3
 - `domain:` (default from `project.config.yml`)
 - `github_repo_name:` repo slug *(ask user; owner from `gh api user`)*
@@ -261,6 +267,7 @@ Read [stuck-recovery.md](references/stuck-recovery.md) whenever a command hangs,
 | [project.config.yml](project.config.yml) | Defaults, paths, git, materialization |
 | [skill-inputs.md](references/skill-inputs.md) | Required inputs |
 | [env-configuration.md](references/env-configuration.md) | Optional `.env` settings and precedence |
+| [subagent-workflow.md](references/subagent-workflow.md) | Optional parallel analysis and review |
 | [security-and-credentials.md](references/security-and-credentials.md) | Secrets & gitignore |
 | [project-initialization.md](references/project-initialization.md) | venv, dbt init, debug |
 | [warehouse-schema-setup.md](references/warehouse-schema-setup.md) | Postgres schemas |
