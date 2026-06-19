@@ -54,10 +54,20 @@ models:
     gold:
       +schema: {layer_schema_prefix}_gold
       +materialized: table
+  dbt_project_evaluator:
+    +schema: {layer_schema_prefix}_evaluator
+    +materialized: table
+seeds:
+  {project.name}:
+    +schema: {layer_schema_prefix}_seeds
+snapshots:
+  {project.name}:
+    +schema: {layer_schema_prefix}_snapshots
 ```
 
 Folders: `models/bronze/{domain}/`, `models/silver/{domain}/`, `models/gold/{domain}/`
 Schemas: `{layer_schema_prefix}_bronze`, `{layer_schema_prefix}_silver`, `{layer_schema_prefix}_gold`
+Package/evaluator schema: `{layer_schema_prefix}_evaluator`
 
 Important: dbt's default `generate_schema_name` macro prefixes custom schemas with the profile target schema. With profile schema `analytics` and `+schema: <layer_schema_prefix>_bronze`, dbt may create `analytics_<layer_schema_prefix>_bronze`.
 
@@ -73,7 +83,7 @@ If the user wants the exact physical schema `<layer_schema_prefix>_bronze`, add 
 {%- endmacro %}
 ```
 
-Ask before adding this macro in an existing project because it changes schema naming globally.
+For new projects, add this macro automatically so medallion, evaluator, seed, and snapshot schemas are exact and separate. Ask before adding this macro in an existing project because it changes schema naming globally.
 
 For layer 3 (marts), set model-level configs in SQL:
 - `dim_*` / `mart_*`: `materialized='table'`

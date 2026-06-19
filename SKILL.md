@@ -54,11 +54,11 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 | Phase | When | Reference |
 |---|---|---|
 | **Bootstrap** | **Every run** (unless `auto_bootstrap: false`) | [bootstrap.md](references/bootstrap.md) |
-| **0 Inputs** | Always first | [skill-inputs.md](references/skill-inputs.md), [project-naming.md](references/project-naming.md), [env-configuration.md](references/env-configuration.md), [security-and-credentials.md](references/security-and-credentials.md), [code-agent-setup.md](references/code-agent-setup.md) |
+| **0 Inputs** | Always first | [skill-inputs.md](references/skill-inputs.md), [project-naming.md](references/project-naming.md), [env-configuration.md](references/env-configuration.md), [security-and-credentials.md](references/security-and-credentials.md), [schema-isolation.md](references/schema-isolation.md), [code-agent-setup.md](references/code-agent-setup.md) |
 | **0b Subagents** | Optional speed-up | [subagent-workflow.md](references/subagent-workflow.md) |
 | **0c Best practices** | Design guardrails | [data-engineering-best-practices.md](references/data-engineering-best-practices.md) |
 | **1 Init** | New project | [project-initialization.md](references/project-initialization.md) |
-| **2 Schemas** | After init | [warehouse-schema-setup.md](references/warehouse-schema-setup.md) |
+| **2 Schemas** | After init | [warehouse-schema-setup.md](references/warehouse-schema-setup.md), [schema-isolation.md](references/schema-isolation.md) |
 | **3 Sources** | Packages + source YAML | [packages-and-sources.md](references/packages-and-sources.md) |
 | **3b Source profiling** | Before staging | [source-profiling.md](references/source-profiling.md) |
 | **4 Layer names** | Before models | [dbt-project-layers.md](references/dbt-project-layers.md) |
@@ -77,13 +77,15 @@ Context prompt template: [agent-context-prompt.md](references/agent-context-prom
 
 ## Step 0 - Load config
 
-Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), [project-naming.md](references/project-naming.md), and [env-configuration.md](references/env-configuration.md).
+Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), [project-naming.md](references/project-naming.md), [schema-isolation.md](references/schema-isolation.md), and [env-configuration.md](references/env-configuration.md).
 
 Resolve paths relative to workspace root. dbt project root = `{project.root}`.
 
 **User prompt overrides `.env` and config** for schema, domain, layers, materialization, commit mode. Use `.env` for non-secret reusable inputs before asking the user.
 
 Resolve `project.name` and `project.root` before `dbt init`. Never use `dbt_profile_name` as the folder/project name unless the user explicitly provides it as `dbt_project_name`. Prefer a clean name derived from `github_repo_name`, `source_schema`, `source_name`, or `domain`.
+
+Keep the source schema read-only. Never build dbt models, package models, evaluator tables, seeds, snapshots, or audit outputs into `source_schema`. Route evaluator outputs to `<layer_schema_prefix>_evaluator` and layer outputs to separate medallion schemas.
 
 ## Step 0b - Optional subagents
 
@@ -127,6 +129,15 @@ models:
     {layer_3_name}:
       +schema: {layer_schema_prefix}_{layer_3_name}
       +materialized: table   # prod; use view for dev profile
+  dbt_project_evaluator:
+    +schema: {layer_schema_prefix}_evaluator
+    +materialized: table
+seeds:
+  {project.name}:
+    +schema: {layer_schema_prefix}_seeds
+snapshots:
+  {project.name}:
+    +schema: {layer_schema_prefix}_snapshots
 ```
 
 `fct_*` models: `incremental` with `unique_key` in SQL when `materialization_profile: prod`.
@@ -162,7 +173,7 @@ Read [separate-layer-builds.md](references/separate-layer-builds.md).
 3. Sources - full `packages.yml`, `dbt deps`, codegen, source YAML
 4. Staging -> Intermediate -> Marts
 5. Semantic layer - metrics on marts facts
-6. Project evaluator - `dbt build --select package:dbt_project_evaluator`
+6. Project evaluator - `dbt build --select package:dbt_project_evaluator` after confirming it is routed to `<layer_schema_prefix>_evaluator`
 7. Docs - `dbt docs generate`
 8. Agents Schema - publish dbt metadata to `AGENTS.*` after `target/manifest.json` exists when enabled and supported
 9. Automation - CI workflow
@@ -172,7 +183,7 @@ Each stage: **parse -> build -> summarize -> ask commit/push** (repo: `https://g
 
 ## Step 2 - Sources
 
-Read [packages-and-sources.md](references/packages-and-sources.md), [source-profiling.md](references/source-profiling.md), and [dbt-packages-and-skills.md](references/dbt-packages-and-skills.md).
+Read [packages-and-sources.md](references/packages-and-sources.md), [source-profiling.md](references/source-profiling.md), [schema-isolation.md](references/schema-isolation.md), and [dbt-packages-and-skills.md](references/dbt-packages-and-skills.md).
 
 All four packages in `packages.yml`. Codegen for sources. Add the configured `source.schema` to source YAML after generate. Profile row counts, candidate keys, relationships, important dates, measures, and status/code fields before staging.
 
@@ -193,6 +204,8 @@ Read [marts-spec.md](references/marts-spec.md). `ref()` only. Build domain-appro
 Read [semantic-layer-spec.md](references/semantic-layer-spec.md). Compose with `building-dbt-semantic-layer`. Legacy spec on dbt 1.10.x.
 
 ## Step 5c - Project evaluator
+
+Before running evaluator, confirm `dbt_project.yml` routes `models: dbt_project_evaluator: +schema` to `<layer_schema_prefix>_evaluator`. Do not let evaluator package tables build in `source_schema`.
 
 ```powershell
 & $dbt build --select package:dbt_project_evaluator
@@ -298,6 +311,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 | [skill-inputs.md](references/skill-inputs.md) | Required inputs |
 | [project-naming.md](references/project-naming.md) | Derive project and folder names without using dbt profile |
 | [env-configuration.md](references/env-configuration.md) | Optional `.env` settings and precedence |
+| [schema-isolation.md](references/schema-isolation.md) | Keep source, medallion, evaluator, seeds, snapshots, and agent metadata schemas separate |
 | [subagent-workflow.md](references/subagent-workflow.md) | Optional parallel analysis and review |
 | [data-engineering-best-practices.md](references/data-engineering-best-practices.md) | Grain, tests, history, contracts, privacy, operations |
 | [security-and-credentials.md](references/security-and-credentials.md) | Secrets & gitignore |

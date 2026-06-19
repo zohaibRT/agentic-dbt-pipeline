@@ -9,6 +9,7 @@ Controlled by `materialization_profile` in `project.config.yml` (default: `prod`
 | Layer 1 / staging role | `+materialized: view` | - |
 | Layer 2 / intermediate role | `+materialized: view` | - |
 | Layer 3 / marts role | `+materialized: table` | - |
+| dbt project evaluator package | `+schema: <layer_schema_prefix>_evaluator`, `+materialized: table` | - |
 | `dim_*` | inherits table | `{{ config(materialized='table') }}` optional |
 | `fct_*` | inherits table | `{{ config(materialized='incremental', unique_key='<pk>') }}` |
 | `mart_*` reporting | inherits table | `{{ config(materialized='table') }}` |
@@ -33,6 +34,9 @@ models:
       +materialized: view
     <layer_3_name>:
       +materialized: view
+  dbt_project_evaluator:
+    +schema: <layer_schema_prefix>_evaluator
+    +materialized: table
 ```
 
 ## Sync rule

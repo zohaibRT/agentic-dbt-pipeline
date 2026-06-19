@@ -2,6 +2,8 @@
 
 Use this when `project_rules` include manual mappings, code translations, department/group mappings, category mappings, or user-provided business labels.
 
+Read [schema-isolation.md](schema-isolation.md). Seeds must not build into the source schema.
+
 ## When to create seeds
 
 Create dbt seeds when mappings are stable business reference data, for example:
@@ -39,6 +41,8 @@ seeds:
 ```
 
 Ask before changing physical schema naming.
+
+Default seed schema: `{layer_schema_prefix}_seeds`.
 
 ## Usage by layer
 

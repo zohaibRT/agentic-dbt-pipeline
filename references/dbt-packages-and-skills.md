@@ -4,7 +4,7 @@ The pipeline uses **six dbt capabilities** together. Agent installs and runs the
 
 | # | Capability | Type | Purpose in pipeline |
 |---|---|---|---|
-| 1 | **dbt Agent Skills** | Cursor/agent skills | Orchestration, CLI, troubleshooting, semantic layer authoring |
+| 1 | **dbt Agent Skills** | Agent skills | Orchestration, CLI, troubleshooting, semantic layer authoring |
 | 2 | **dbt-codegen** | dbt package | `generate_source` for source YAML bootstrap |
 | 3 | **dbt-utils** | dbt package | `star()`, `surrogate_key`, generic tests, cross-db macros |
 | 4 | **dbt-project-evaluator** | dbt package | Best-practice checks on DAG, tests, docs, structure |
@@ -90,7 +90,14 @@ Add to `dbt_project.yml`:
 dispatch:
   - macro_namespace: dbt
     search_order: ['dbt_project_evaluator', 'dbt']
+
+models:
+  dbt_project_evaluator:
+    +schema: <layer_schema_prefix>_evaluator
+    +materialized: table
 ```
+
+The evaluator package must not build into `source_schema`. If `base_*`, `stg_*`, or `fct_*` evaluator tables appear beside raw source tables, fix schema routing before accepting the run. See [schema-isolation.md](schema-isolation.md).
 
 Run after marts build passes:
 

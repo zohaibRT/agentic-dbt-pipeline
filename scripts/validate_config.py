@@ -21,6 +21,8 @@ REQUIRED_KEYS = [
     ("database", "target_schema"),
     ("source", "name"),
     ("source", "schema"),
+    ("schema_isolation", "source_read_only"),
+    ("schema_isolation", "allow_dbt_outputs_in_source_schema"),
     ("agents", "schema"),
     ("agents", "github_secret"),
     ("git", "branch"),
@@ -126,6 +128,29 @@ def main() -> int:
                 errors.append(
                     "Config contains secret-like keys that should not be stored: "
                     + ", ".join(forbidden)
+                )
+
+            source_schema = str(get_nested(config, ("source", "schema")) or "").lower()
+            target_schema = str(
+                get_nested(config, ("database", "target_schema")) or ""
+            ).lower()
+            if source_schema and target_schema and source_schema == target_schema:
+                errors.append(
+                    "database.target_schema must not equal source.schema; "
+                    "source schemas are read-only inputs"
+                )
+
+            if get_nested(config, ("schema_isolation", "source_read_only")) is not True:
+                errors.append("schema_isolation.source_read_only must be true")
+
+            if (
+                get_nested(
+                    config, ("schema_isolation", "allow_dbt_outputs_in_source_schema")
+                )
+                is not False
+            ):
+                errors.append(
+                    "schema_isolation.allow_dbt_outputs_in_source_schema must be false"
                 )
         elif config is not None:
             errors.append("project.config.yml must contain a YAML mapping at top level")

@@ -30,7 +30,9 @@ Verify before marking the dbt pipeline workflow complete.
 ## Warehouse
 
 - [ ] Source schema accessible
+- [ ] Source schema remains read-only input; no dbt-created models, evaluator tables, seeds, snapshots, or audit outputs were materialized there
 - [ ] Layer schemas build using configured layer schema suffixes
+- [ ] dbt_project_evaluator outputs build in `<layer_schema_prefix>_evaluator`, not `source_schema`
 
 ## Source profiling
 

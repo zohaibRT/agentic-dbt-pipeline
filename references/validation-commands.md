@@ -44,9 +44,15 @@ if ($IsWindows -and -not (Get-Command "dbt" -ErrorAction SilentlyContinue)) {
 
 ## Project evaluator *(after marts)*
 
+Before running, confirm `dbt_project.yml` routes `dbt_project_evaluator` to `<layer_schema_prefix>_evaluator`.
+
 ```powershell
 & $dbt build --select package:dbt_project_evaluator
 ```
+
+## Schema isolation *(after builds)*
+
+Confirm no dbt-created artifacts landed in `<source_schema>`. See [schema-isolation.md](schema-isolation.md).
 
 ## Semantic layer *(after marts)*
 

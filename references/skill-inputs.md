@@ -1,6 +1,6 @@
 # Skill Inputs - Collect Before Any Work
 
-Read [project.config.yml](../project.config.yml), [project-naming.md](project-naming.md), and [env-configuration.md](env-configuration.md). If values are missing after prompt, `.env`, config, and project-name derivation, **ask the user** before proceeding.
+Read [project.config.yml](../project.config.yml), [project-naming.md](project-naming.md), [schema-isolation.md](schema-isolation.md), and [env-configuration.md](env-configuration.md). If values are missing after prompt, `.env`, config, and project-name derivation, **ask the user** before proceeding.
 
 ## Required inputs
 
@@ -13,7 +13,7 @@ Read [project.config.yml](../project.config.yml), [project-naming.md](project-na
 | Host | `database.host` | `warehouse_host` |
 | Port | `database.port` | `5432` |
 | Database | `database.dbname` | `analytics` |
-| Profile target schema | `database.target_schema` | `raw` |
+| Profile target schema | `database.target_schema` | `dbt_work`; must not equal `source_schema` |
 | Source/raw schema | `source_schema` prompt, `DBT_SOURCE_SCHEMA`, or `source.schema` | ask if missing |
 | Source name | `source_name` prompt, `DBT_SOURCE_NAME`, or `source.name` | ask if missing |
 | Layer schema prefix | `layer_schema_prefix` prompt, `DBT_LAYER_SCHEMA_PREFIX`, or `source_name` | default to `source_name` |
@@ -53,6 +53,7 @@ Read [project.config.yml](../project.config.yml), [project-naming.md](project-na
 - Treat config values like `auto`, `my_dbt_project`, `default`, `example`, or `<...>` as placeholders, not real project/profile inputs.
 - If multiple dbt profiles exist, ask for `dbt_profile_name` before running `dbt debug`, `dbt deps`, `dbt parse`, or `dbt build`.
 - Do not use `dbt_profile_name` as the project folder. The profile is only the connection key. Derive project name/root from [project-naming.md](project-naming.md).
+- Keep `source_schema` read-only. If the dbt profile target schema equals `source_schema`, stop and follow [schema-isolation.md](schema-isolation.md) before any build.
 - Ask for `source_schema` and `source_name` before running codegen or writing layer config. Default `layer_schema_prefix` to `source_name` unless the user overrides it. Do not guess the source schema from the dbt profile target schema.
 - If `project_rules` include mappings, joins, metrics, exclusions, privacy rules, naming rules, or special instructions, apply them exactly and ask before interpreting ambiguous rules.
 

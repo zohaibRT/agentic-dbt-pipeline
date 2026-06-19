@@ -19,7 +19,7 @@ Do not ask the user to install dbt skills manually when `auto_install_dbt_skills
 **dbt packages (auto)** - see [dbt-packages-and-skills.md](dbt-packages-and-skills.md):
 
 1. Write full `packages.yml` (codegen, dbt_utils, dbt_project_evaluator, audit_helper)
-2. Add `dispatch` block to `dbt_project.yml` for evaluator
+2. Add `dispatch` block and `<layer_schema_prefix>_evaluator` schema routing to `dbt_project.yml` for evaluator
 3. Run `dbt deps`
 
 ## 2. GitHub repo (ask name, use gh account)

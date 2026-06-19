@@ -21,6 +21,7 @@ Update or create project handoff notes with:
 - Domain and source schema used
 - dbt profile name used, without secrets
 - Layer names and physical schema naming
+- Schema isolation status, including evaluator/seeds/snapshots schemas and whether source schema stayed clean
 - Important source tables
 - Final facts, dimensions, marts, and metrics
 - Known empty tables or data quality limitations
@@ -68,6 +69,7 @@ Use a compact table when helpful:
 | Source | `<source_schema>` / `<source_name>` |
 | Layers | `<layer_1>` -> `<layer_2>` -> `<layer_3>` |
 | Schemas | `<schema_1>`, `<schema_2>`, `<schema_3>` |
+| Evaluator schema | `<layer_schema_prefix>_evaluator` |
 | Git | `<commit/push status>` |
 
 ### What changed
@@ -81,6 +83,7 @@ Use a compact table when helpful:
 
 - Build and docs results
 - Project evaluator result
+- Schema isolation check result
 - Key pass/warn/fail counts when available
 
 ### Data notes

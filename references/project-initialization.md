@@ -41,12 +41,14 @@ Profile values *(user provides password locally)*:
 | port | `database.port` |
 | user | from user or local profile |
 | dbname | `database.dbname` |
-| schema | `database.target_schema` |
+| schema | `database.target_schema` *(must not equal source_schema; default `dbt_work`)* |
 | threads | `database.threads` |
 
 Profile file: `~/.dbt/profiles.yml` - **do not commit**.
 
 If more than one dbt profile exists, ask for `dbt_profile_name` and use that exact key as the dbt profile. Do not guess from the first profile in the file.
+
+If the selected profile target schema is the same as `source_schema`, stop before building and follow [schema-isolation.md](schema-isolation.md).
 
 ## 3. Verify connection
 

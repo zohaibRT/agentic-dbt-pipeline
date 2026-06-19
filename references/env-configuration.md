@@ -32,6 +32,7 @@ Do not require these in the prompt or `.env`:
 | Decision | Default behavior |
 |---|---|
 | Project name/root | Derive from repo, source schema, source name, or domain; never from dbt profile |
+| Schema isolation | Keep source schema read-only; route evaluator/seeds/snapshots to separate schemas |
 | Layer schema prefix | Use `source_name` |
 | Layer names | Use `bronze`, `silver`, `gold` |
 | Commit behavior | Ask before each phase commit |

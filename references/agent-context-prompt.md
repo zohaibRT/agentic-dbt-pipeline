@@ -1,6 +1,6 @@
 # Agent Context Prompt
 
-Copy into Cursor when starting dbt pipeline work. Edit overrides as needed.
+Copy into an agent session when starting dbt pipeline work. Edit overrides as needed.
 
 ```text
 You are working in the dbt project.
@@ -10,7 +10,7 @@ Use the dbt Pipeline skill (`agentic-dbt-pipeline`) and these dbt-labs skills:
 - running-dbt-commands
 - troubleshooting-dbt-job-errors
 
-Read project.config.yml, references/skill-inputs.md, references/project-naming.md, references/env-configuration.md, and references/data-engineering-best-practices.md first. If `.env` exists, load non-secret settings from it before asking for missing inputs.
+Read project.config.yml, references/skill-inputs.md, references/project-naming.md, references/schema-isolation.md, references/env-configuration.md, and references/data-engineering-best-practices.md first. If `.env` exists, load non-secret settings from it before asking for missing inputs.
 When work can be safely delegated, read references/subagent-workflow.md and use subagents only for read-only analysis or draft review.
 
 ## Warehouse (non-secret)
@@ -19,10 +19,13 @@ When work can be safely delegated, read references/subagent-workflow.md and use 
 - host: <database.host>
 - port: 5432
 - database: <database.dbname>
-- source schema: <source.schema>
-- staging schema: <target_schema>_<layer_1_name>
-- intermediate schema: <target_schema>_<layer_2_name>
-- marts schema: <target_schema>_<layer_3_name>
+- source schema: <source.schema> (read-only)
+- work/target schema: <database.target_schema> (must not equal source schema)
+- layer 1 schema: <layer_schema_prefix>_<layer_1_name>
+- layer 2 schema: <layer_schema_prefix>_<layer_2_name>
+- layer 3 schema: <layer_schema_prefix>_<layer_3_name>
+- evaluator schema: <layer_schema_prefix>_evaluator
+- seeds schema: <layer_schema_prefix>_seeds
 - agents schema: AGENTS
 
 ## Credentials
@@ -55,6 +58,7 @@ See [dbt-packages-and-skills.md](dbt-packages-and-skills.md): codegen, dbt_utils
 - layer 3: models/{layer_3_name}/{domain}/ - dim_*, fct_*, mart_* (default layer name: gold)
 - materialization_profile: prod (layer 1/2=view; layer 3=table; fct_*=incremental)
 - ref() only in intermediate/marts; source() only in staging
+- Never materialize dbt models, package models, evaluator tables, seeds, snapshots, or audit outputs in source schema
 - Run dbt debug (init), dbt parse, dbt build after changes
 - Commit each layer separately; ask before commit/push
 - Keep dbt commands, file edits, commits, pushes, and final decisions with the main agent

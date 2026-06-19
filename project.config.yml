@@ -11,7 +11,7 @@ database:
   host: warehouse_host
   port: 5432
   dbname: analytics
-  target_schema: raw
+  target_schema: dbt_work
   threads: 4
   # password: NEVER store here - use ~/.dbt/profiles.yml
 
@@ -26,6 +26,15 @@ source:
   name: raw
   schema: raw
   yaml_path: models/sources/raw_sources_generated.yml
+
+schema_isolation:
+  source_read_only: true
+  work_schema_suffix: work
+  seeds_schema_suffix: seeds
+  snapshots_schema_suffix: snapshots
+  evaluator_schema_suffix: evaluator
+  audit_schema_suffix: audit
+  allow_dbt_outputs_in_source_schema: false
 
 agents:
   schema: AGENTS

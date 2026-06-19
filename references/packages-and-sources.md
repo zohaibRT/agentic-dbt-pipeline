@@ -1,6 +1,6 @@
 # Packages & Source YAML (Phase 3)
 
-See full stack: [dbt-packages-and-skills.md](dbt-packages-and-skills.md).
+See full stack: [dbt-packages-and-skills.md](dbt-packages-and-skills.md) and schema routing rules in [schema-isolation.md](schema-isolation.md).
 
 ## `packages.yml` - standard packages
 
@@ -22,7 +22,7 @@ dbt deps
 git add package-lock.yml && git commit -m "Install dbt packages"
 ```
 
-`dbt_utils`, `dbt_project_evaluator`, and `audit_helper` install via `dbt deps`. Add `dispatch` for evaluator - see [dbt-packages-and-skills.md](dbt-packages-and-skills.md).
+`dbt_utils`, `dbt_project_evaluator`, and `audit_helper` install via `dbt deps`. Add `dispatch` and route evaluator outputs to `<layer_schema_prefix>_evaluator` - see [dbt-packages-and-skills.md](dbt-packages-and-skills.md).
 
 ## Generate source YAML
 
@@ -36,6 +36,8 @@ $dbt = "dbt"
   > models\sources\<source.name>_sources_generated.yml
 & $dbt parse --no-partial-parse
 ```
+
+This step reads `<source.schema>` only. It must not create models, package tables, or evaluator artifacts in the source schema.
 
 ## Source profiling
 

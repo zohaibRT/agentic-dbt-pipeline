@@ -1,6 +1,6 @@
 # dbt Pipeline
 
-`dbt Pipeline` is a Cursor Agent Skill for setting up and maintaining dbt projects with a structured, agent-assisted workflow.
+`dbt Pipeline` is an agent skill for setting up and maintaining dbt projects with a structured, agent-assisted workflow.
 
 It helps an agent initialize a dbt project, configure sources, build bronze/silver/gold medallion layers, add semantic layer assets, run quality checks, generate docs, create CI workflows, publish dbt metadata to Agents Schema, commit each stage separately, and finish with a clear user-facing run summary.
 
@@ -28,7 +28,7 @@ Do not commit real warehouse credentials, `.env`, or `profiles.yml`. Use `.env.e
 
 ## Usage
 
-In Cursor chat, use:
+In your agent chat, use:
 
 ```text
 Use the dbt Pipeline skill (`agentic-dbt-pipeline`).
@@ -71,6 +71,7 @@ Keep passwords, tokens, and private keys in local profiles or GitHub Secrets.
 | Environment config | Loads non-secret `.env` values before asking for missing inputs |
 | Subagents | Optionally parallelizes read-only profiling, planning, docs, and review work |
 | Sources | Generates source YAML and adds source descriptions |
+| Schema isolation | Keeps source, medallion, evaluator, seeds, snapshots, and agent metadata in separate schemas |
 | Source profiling | Reviews row counts, keys, relationships, dates, measures, and status/code fields before modeling |
 | Data engineering guardrails | Checks grain, tests, incremental strategy, snapshots, exposures, privacy, and performance |
 | Staging | Builds source-cleaning models with `source()` references |
@@ -135,10 +136,11 @@ The skill can add and install these dbt packages:
 | File | Purpose |
 |---|---|
 | [SKILL.md](SKILL.md) | Main skill orchestration instructions |
-| [prompt.md](prompt.md) | Copy-paste prompt for Cursor |
+| [prompt.md](prompt.md) | Copy-paste prompt for an agent session |
 | [project.config.yml](project.config.yml) | Default non-secret configuration |
 | [references/bootstrap.md](references/bootstrap.md) | Bootstrap workflow |
 | [references/git-workflow.md](references/git-workflow.md) | Commit and push workflow |
+| [references/schema-isolation.md](references/schema-isolation.md) | Source, layer, evaluator, seeds, snapshots, and metadata schema separation |
 | [references/agents-schema-setup.md](references/agents-schema-setup.md) | Agents Schema workflow setup |
 | [references/dbt-packages-and-skills.md](references/dbt-packages-and-skills.md) | dbt packages and companion skills |
 | [references/data-engineering-best-practices.md](references/data-engineering-best-practices.md) | Data-engineering guardrails |
