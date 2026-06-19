@@ -1,10 +1,22 @@
-# GitHub Repo Resolution (via GitHub CLI)
+# GitHub Repo Resolution (Optional, via GitHub CLI)
 
 **Never hardcode a GitHub account** in prompts, `project.config.yml`, or skill examples.
 
+Default to local-only git work. Do not run `gh` or ask for a repo name unless the user requests a push, provides `github_repo_name` / `DBT_GITHUB_REPO_NAME`, sets `push_to_github: true`, or an existing remote must be verified.
+
 ## Agent workflow
 
-1. **Detect logged-in account** (required before git init/push):
+1. **Decide whether GitHub is needed**
+
+Treat missing repo settings as local-only. Treat these values as local-only, not repository names:
+
+```text
+local-only, local, none, no, false, na, n/a, NA
+```
+
+When the resolved mode is local-only, skip `gh` remote setup and do not push.
+
+2. **Detect logged-in account** (only when push/new remote is needed):
 
 ```powershell
 gh auth status
@@ -13,28 +25,20 @@ $owner = gh api user --jq ".login"
 
 If `gh` is not authenticated -> ask user to run `gh auth login`, then retry.
 
-2. **Ask user only for the repository name** (slug), not the full URL:
+3. **Ask user only for the repository name** (slug), not the full URL, when no repo was provided:
 
 ```text
 Which GitHub repository name should I use? (e.g. analytics, hospital-analytics, finance-dbt)
 Owner will be: {owner from gh}
 ```
 
-Treat these values as local-only, not repository names:
-
-```text
-local-only, local, none, no, false, na, n/a, NA
-```
-
-When repo intent is local-only, skip `gh` remote setup and do not push.
-
-3. **Build remote URL**:
+4. **Build remote URL**:
 
 ```text
 https://github.com/{owner}/{github_repo_name}.git
 ```
 
-4. **Configure git after approval**:
+5. **Configure git after approval**:
 
 ```powershell
 git remote add origin "https://github.com/$owner/$repo.git"   # if origin missing
@@ -46,7 +50,7 @@ git branch -M main
 ## Prompt field
 
 ```text
-github_repo_name: analytics    # user provides repo slug only
+github_repo_name: analytics    # optional; use only when pushing
 ```
 
 Optional override (full URL or `other-owner/repo`) - only when user explicitly wants a different account:

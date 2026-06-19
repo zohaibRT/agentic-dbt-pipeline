@@ -43,7 +43,7 @@ Verify before marking the dbt pipeline workflow complete.
 
 ## dbt project
 
-- [ ] Project name/root were derived from repo/source/domain or explicitly provided; not accidentally copied from `dbt_profile_name`
+- [ ] Project name/root were derived from source/domain or explicitly provided; not accidentally copied from `dbt_profile_name`
 - [ ] Source YAML UTF-8 with `schema:` set
 - [ ] `dbt_project.yml` layer blocks match user layer names
 - [ ] Materialization matches `materialization_profile`
@@ -74,7 +74,7 @@ Verify before marking the dbt pipeline workflow complete.
 
 ## Git
 
-- [ ] `github_repo_name` collected; owner from `gh api user`
+- [ ] Git mode is local-only by default; GitHub repo/owner resolved only when push was requested
 - [ ] Staged commits per layer ([github-setup.md](github-setup.md))
 - [ ] Pushed only when repo is not `local-only` and user approved
 - [ ] No secrets in commits

@@ -1,12 +1,24 @@
-# Skill Inputs - Collect Before Any Work
+# Skill Inputs - Resolve Before Any Work
 
-Read [project.config.yml](../project.config.yml), [project-naming.md](project-naming.md), [schema-isolation.md](schema-isolation.md), and [env-configuration.md](env-configuration.md). If values are missing after prompt, `.env`, config, and project-name derivation, **ask the user** before proceeding.
+Read [project.config.yml](../project.config.yml), [project-naming.md](project-naming.md), [schema-isolation.md](schema-isolation.md), and [env-configuration.md](env-configuration.md). Ask the user only for values the agent cannot infer safely.
 
-## Required inputs
+## Normal user inputs
+
+Most runs need only these non-secret values:
+
+| Input | Config key | When to ask |
+|---|---|---|
+| Domain | `domain` prompt or `DBT_DOMAIN` | Ask if missing; used for modeling context and folders |
+| dbt profile name | `dbt_profile_name` prompt or `DBT_PROFILE_NAME` | Ask if missing or multiple profiles exist |
+| Source/raw schema | `source_schema` prompt or `DBT_SOURCE_SCHEMA` | Ask if missing; codegen must inspect a real warehouse schema |
+
+Do not ask a new user for project name, dbt source name, layer schema prefix, layer names, materialization, commit mode, or GitHub repo unless they explicitly want to override the defaults.
+
+## Agent-resolved settings
 
 | Input | Config key | project default |
 |---|---|---|
-| dbt project name | `dbt_project_name`, `DBT_PROJECT_NAME`, or derived by [project-naming.md](project-naming.md) | derive from repo/source/domain |
+| dbt project name | `dbt_project_name`, `DBT_PROJECT_NAME`, or derived by [project-naming.md](project-naming.md) | derive from source/domain |
 | dbt project root | `dbt_project_root`, `DBT_PROJECT_ROOT`, or derived project name | same as project name |
 | dbt profile name | `dbt_profile_name` prompt, `DBT_PROFILE_NAME`, or `project.profile` | ask if missing or ambiguous |
 | Adapter | `database.adapter` | `postgres` |
@@ -14,26 +26,30 @@ Read [project.config.yml](../project.config.yml), [project-naming.md](project-na
 | Port | `database.port` | `5432` |
 | Database | `database.dbname` | `analytics` |
 | Profile target schema | `database.target_schema` | `dbt_work`; must not equal `source_schema` |
-| Source/raw schema | `source_schema` prompt, `DBT_SOURCE_SCHEMA`, or `source.schema` | ask if missing |
-| Source name | `source_name`, `DBT_SOURCE_NAME`, or derived from `source_schema` / `domain` | derive; ask only if unclear |
-| Layer schema prefix | `layer_schema_prefix`, `DBT_LAYER_SCHEMA_PREFIX`, or derived by [schema-isolation.md](schema-isolation.md) | derive; ask if unclear |
-| Domain folder | `domain` prompt, `DBT_DOMAIN`, or `domain` config | ask if missing |
+| Source/raw schema | `source_schema` prompt, `DBT_SOURCE_SCHEMA`, or `source.schema` | required human input when missing |
+| Source name | `source_name`, `DBT_SOURCE_NAME`, or derived from `source_schema` / `domain` | derive; ask only for existing-project collisions |
+| Layer schema prefix | `layer_schema_prefix`, `DBT_LAYER_SCHEMA_PREFIX`, or derived by [schema-isolation.md](schema-isolation.md) | derive; ask only when existing schemas conflict |
+| Domain folder | `domain` prompt, `DBT_DOMAIN`, or `domain` config | required human input when missing |
 | Project rules | `project_rules` prompt | optional; ask if unclear |
 | Layer 1 schema suffix | prompt, advanced `.env`, or config -> `+schema` | `bronze` |
 | Layer 2 schema suffix | prompt, advanced `.env`, or config -> `+schema` | `silver` |
 | Layer 3 schema suffix | prompt, advanced `.env`, or config -> `+schema` | `gold` |
 | Agents schema | `agents.schema` | `AGENTS` |
-| **GitHub repo name** *(ask user)* | `github_repo_name` | - |
-| GitHub owner *(from CLI)* | `gh api user` | logged-in `gh` account |
+| GitHub repo name | `github_repo_name`, `DBT_GITHUB_REPO_NAME`, or existing remote | local-only unless push is requested |
+| GitHub owner *(from CLI)* | `gh api user` | only needed when pushing |
 | Default branch | `git.branch` | `main` |
-| Push to GitHub after commit | `push_to_github` | `false` for `local-only`; otherwise ask |
+| Push to GitHub after commit | `push_to_github` | `false` unless explicitly requested or approved |
 
 ## GitHub repo resolution
 
 **Do not hardcode GitHub accounts.** See [github-repo-resolution.md](github-repo-resolution.md).
 
-1. Run `gh api user --jq ".login"` -> `{owner}`
-2. Ask user: `github_repo_name` (e.g. `analytics`)
+Default to local commits only. Do not ask for a GitHub repo during ordinary local builds.
+
+Only resolve GitHub when the user asks to push, provides `github_repo_name` / `DBT_GITHUB_REPO_NAME`, or the project already has a non-local `origin` remote.
+
+1. Run `gh api user --jq ".login"` -> `{owner}` only when a push or new remote is needed
+2. Ask user for `github_repo_name` only when push is requested and no repo can be inferred
 3. Remote = `https://github.com/{owner}/{github_repo_name}.git`
 
 ## Target environments
@@ -60,8 +76,7 @@ Read [project.config.yml](../project.config.yml), [project-naming.md](project-na
 ## Optional overrides (user prompt wins)
 
 ```text
-github_repo_name: analytics              # repo slug - ask if missing
-dbt_project_name: hospital_analytics     # optional; otherwise derived from repo/source/domain
+dbt_project_name: hospital_analytics     # optional; otherwise derived from source/domain
 dbt_project_root: hospital_analytics     # optional; defaults to dbt_project_name
 dbt_profile_name: hospital_analytics     # profile key from ~/.dbt/profiles.yml
 domain: hospital                         # domain folder and naming context
@@ -77,6 +92,7 @@ project_rules:                           # optional business/modeling rules
   naming: []
   special_instructions: []
 github_repo: other-owner/analytics       # optional full override only
+github_repo_name: analytics              # optional repo slug; use only when pushing
 push_to_github: <true|false>             # optional; omit for approval-based default
 layer_names: bronze, silver, gold        # optional; defaults shown
 commit: ask | auto_yes | skip_all
@@ -92,7 +108,6 @@ For repeat projects, allow the user to keep required fields in `.env`:
 DBT_DOMAIN=<domain_name>
 DBT_PROFILE_NAME=<dbt_profile_name>
 DBT_SOURCE_SCHEMA=<raw_source_schema>
-DBT_GITHUB_REPO_NAME=<repo_name_or_local_only>
 ```
 
 Advanced `.env` overrides:
@@ -101,6 +116,7 @@ Advanced `.env` overrides:
 DBT_PROJECT_NAME=<dbt_project_name>
 DBT_PROJECT_ROOT=<dbt_project_root>
 DBT_SOURCE_NAME=<dbt_source_name>
+DBT_GITHUB_REPO_NAME=<repo_name_if_push_is_required>
 ```
 
 Prompt values override `.env`. Do not commit `.env`; commit only `.env.example`.

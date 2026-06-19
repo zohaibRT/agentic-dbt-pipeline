@@ -22,9 +22,6 @@ Keep the normal `.env` small. These are the only fields most users should fill:
 | `DBT_DOMAIN` | `domain` |
 | `DBT_PROFILE_NAME` | `dbt_profile_name` / `project.profile` |
 | `DBT_SOURCE_SCHEMA` | `source_schema` / `source.schema` |
-| `DBT_GITHUB_REPO_NAME` | `github_repo_name` |
-
-For local-only runs, accepted values include `local-only`, `local`, `none`, `no`, `false`, `na`, and `n/a`.
 
 ## Skill-managed defaults
 
@@ -32,13 +29,13 @@ Do not require these in the prompt or `.env`:
 
 | Decision | Default behavior |
 |---|---|
-| Project name/root | Derive from repo, source schema, source name, or domain; never from dbt profile |
+| Project name/root | Derive from source schema or domain; never from dbt profile |
 | dbt source name | Derive from source schema or domain |
 | Schema isolation | Keep source schema read-only; route evaluator/seeds/snapshots to separate schemas |
 | Layer schema prefix | Derive from explicit override, existing medallion schemas, domain, source schema, or descriptive source name |
 | Layer names | Use `bronze`, `silver`, `gold` |
 | Commit behavior | Ask before each phase commit |
-| Push behavior | Do not push for `local-only`; otherwise ask before pushing |
+| GitHub behavior | Commit locally by default; ask for repo details only when the user requests a push |
 | Materialization | Use production-friendly defaults from `project.config.yml` |
 | Agents Schema | Prepare only when requested and supported by the warehouse adapter |
 
@@ -52,6 +49,7 @@ These keys are supported for teams that need a non-default workflow, but keep th
 | `DBT_PROJECT_ROOT` | `dbt_project_root` |
 | `DBT_SOURCE_NAME` | `source_name` |
 | `DBT_LAYER_SCHEMA_PREFIX` | `layer_schema_prefix` |
+| `DBT_GITHUB_REPO_NAME` | `github_repo_name` |
 | `DBT_LAYER_1` | first medallion layer |
 | `DBT_LAYER_2` | second medallion layer |
 | `DBT_LAYER_3` | third medallion layer |
@@ -67,9 +65,9 @@ Good:
 - Domain name
 - dbt profile key
 - Source schema
-- Local-only or GitHub repo name
 
 Use advanced override keys only when the project should intentionally differ from the skill defaults.
+Add a GitHub repo name only when the user wants the agent to push to a remote. For local-only work, omit it.
 
 In `.env.example`, keep the core project fields as placeholders, not real profile or schema values.
 

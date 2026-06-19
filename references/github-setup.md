@@ -3,26 +3,29 @@
 Initial repository setup. Layer-by-layer commits: [git-workflow.md](git-workflow.md).
 Repo resolution: [github-repo-resolution.md](github-repo-resolution.md).
 
-## Prompt requirement
+## Repository mode
 
-```text
-github_repo_name: analytics    # repo slug only; use local-only/NA for no remote push
-```
+Default to local commits only. A GitHub repo name is needed only when the user asks the agent to push.
 
-Agent resolves owner via `gh api user --jq ".login"` - **never hardcode accounts**.
+When pushing is requested, agent resolves owner via `gh api user --jq ".login"` and asks for only the repo slug if it is missing. **Never hardcode accounts**.
 
 ## First-time setup
 
 Create `.gitignore` before the first commit and confirm it excludes secrets and generated dbt artifacts.
 
 ```powershell
-$owner = gh api user --jq ".login"
-$repo = "<github_repo_name from user>"
 git init
 git status
 git add .
 git commit -m "Initialize dbt project"
 git branch -M main
+```
+
+Only when pushing is requested:
+
+```powershell
+$owner = gh api user --jq ".login"
+$repo = "<github_repo_name from user>"
 git remote add origin "https://github.com/$owner/$repo.git"
 # Push only after approval.
 # git push -u origin main

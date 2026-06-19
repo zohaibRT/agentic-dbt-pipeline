@@ -31,19 +31,17 @@ When work can be safely delegated, read references/subagent-workflow.md and use 
 ## Credentials
 
 - Use existing dbt profile: <project.profile>
-- Derive dbt project name/root from repo, source schema, source name, or domain. Do not use the profile name as the folder unless explicitly requested.
+- Derive dbt project name/root from source schema or domain. Use repo name only when the user provided one for push. Do not use the profile name as the folder unless explicitly requested.
 - Do not hardcode passwords
 - Do not commit profiles.yml or .env
 - Commit `.env.example` only when it contains no secrets
 
-## GitHub *(ask repo name; owner from gh CLI)*
+## Git
 
-```text
-github_repo_name: analytics
-```
-
-- Agent runs `gh api user` for owner - do not hardcode accounts
-- Ask user for repo slug if not in prompt
+- Commit locally by default
+- Use GitHub only when the user requests push or provides a repo
+- When pushing, run `gh api user` for owner - do not hardcode accounts
+- Ask user for repo slug only when push is requested and no repo is configured
 - Commit per layer; push on approval
 
 ## dbt packages & skills *(full pipeline)*
@@ -62,7 +60,7 @@ See [dbt-packages-and-skills.md](dbt-packages-and-skills.md): codegen, dbt_utils
 - Run dbt debug (init), dbt parse, dbt build after changes
 - Commit each layer separately; ask before commit/push
 - Keep dbt commands, file edits, commits, pushes, and final decisions with the main agent
-- Push to `github_repo` only after approval; do not push when repo intent is `local-only`
+- Push to `github_repo` only after approval; do not push in local-only mode
 - Never stage: .venv, target, logs, dbt_packages, .env, profiles.yml
 
 ## Task

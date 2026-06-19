@@ -39,7 +39,7 @@ Run the full pipeline from source discovery through final delivery.
 
 For a full copy-paste prompt, see [prompt.md](prompt.md).
 
-Keep repeatable non-secret settings in `.env` by copying `.env.example`. Most projects only need domain, dbt profile, source schema, and repo intent there. The skill infers project name/root, dbt source name, layer names, schema prefix, commit mode, push behavior, materialization, and Agents Schema handling unless you override them.
+Keep repeatable non-secret settings in `.env` by copying `.env.example`. Most projects only need domain, dbt profile, and source schema there. The skill infers project name/root, dbt source name, layer names, schema prefix, commit mode, push behavior, materialization, and Agents Schema handling unless you override them. Add GitHub repo details only when you want the agent to push.
 
 ## Configuration
 
@@ -51,13 +51,13 @@ After installation, edit:
 
 Use this file for non-secret defaults and advanced overrides:
 
-- dbt project name and root path, when you do not want the skill to derive them from repo/source/domain
+- dbt project name and root path, when you do not want the skill to derive them from source/domain
 - dbt profile name
 - adapter, host, port, database, and default schema
 - source schema and source YAML path
 - layer names and model paths, when your team does not use the default bronze/silver/gold flow
 - materialization profile
-- GitHub repo behavior
+- GitHub repo behavior, only when pushing to a remote
 - Agents Schema settings
 
 Keep passwords, tokens, and private keys in local profiles or GitHub Secrets.
@@ -102,7 +102,7 @@ The skill is designed to keep project history readable. It commits each stage se
 10. Add CI workflows
 11. Add Agents Schema workflow
 
-By default, the agent asks before each commit and push.
+By default, the agent asks before each commit. It asks about push only when a GitHub remote is configured or requested.
 
 ## Verification
 

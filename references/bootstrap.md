@@ -22,16 +22,13 @@ Do not ask the user to install dbt skills manually when `auto_install_dbt_skills
 2. Add `dispatch` block and `<layer_schema_prefix>_evaluator` schema routing to `dbt_project.yml` for evaluator
 3. Run `dbt deps`
 
-## 2. GitHub repo (ask name, use gh account)
+## 2. Git mode (local by default; GitHub only when pushing)
 
 See [github-repo-resolution.md](github-repo-resolution.md):
 
-```powershell
-gh auth status
-$owner = gh api user --jq ".login"
-```
+Default to local commits only. Do not ask for `github_repo_name` and do not run `gh` unless the user requests a push, provides a repo override, or an existing remote must be verified.
 
-**Ask user** for `github_repo_name` (repo slug only). Do not hardcode GitHub accounts in config.
+When GitHub is needed, use `gh api user --jq ".login"` for owner and ask only for the repo slug if missing. Do not hardcode GitHub accounts in config.
 
 ## 3. Check dbt CLI
 
@@ -83,7 +80,7 @@ Confirm `.agents/skills/agentic-dbt-pipeline/SKILL.md` and `project.config.yml` 
 | dbt Agent Skills installed | PASS |
 | All 4 dbt packages in `packages.yml` + `dbt deps` | PASS |
 | `dbt debug` passes | PASS |
-| `github_repo_name` collected (or in prompt) | PASS |
+| Git mode resolved: local-only or GitHub remote prepared when requested | PASS |
 | Workflow files created (if automation requested) | PASS |
 
 Then proceed to layer phases.
@@ -94,7 +91,7 @@ Then proceed to layer phases.
 auto_bootstrap: true
 auto_agents_schema: false
 auto_install_dbt_skills: true
-github_repo_name: analytics    # repo slug - owner from gh CLI
+github_repo_name: analytics    # optional; only when pushing to GitHub
 ```
 
 Set `auto_bootstrap: false` only for layer-only edits on a fully set up project.

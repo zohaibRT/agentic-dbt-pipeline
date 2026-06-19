@@ -3,7 +3,7 @@ name: agentic-dbt-pipeline
 description: >-
   Automate end-to-end dbt with an AI agent: bootstrap, medallion layers
   (bronze/silver/gold by default), packages (codegen, utils, evaluator, audit_helper),
-  semantic layer, docs, per-layer git commits, GitHub push via gh CLI, and
+  semantic layer, docs, per-layer git commits, optional GitHub push via gh CLI, and
   user-facing final run summaries.
   Use when setting up or extending a dbt analytics project with agentic automation.
 ---
@@ -26,10 +26,10 @@ Read and execute [references/bootstrap.md](references/bootstrap.md) **before** a
 1. **Install dbt Agent Skills** + all dbt packages - see [dbt-packages-and-skills.md](references/dbt-packages-and-skills.md)
 2. **`dbt debug`** - verify connection
 3. **`dbt deps` + codegen** - when sources/full pipeline
-4. **Resolve GitHub repo** - owner from `gh api user`; ask user for `github_repo_name` - [github-repo-resolution.md](references/github-repo-resolution.md)
+4. **Resolve git mode** - local commits by default; GitHub only when push is requested - [github-repo-resolution.md](references/github-repo-resolution.md)
 5. **Create CI + Agents Schema workflows** - when requested, or when `auto_agents_schema: true` and the destination is supported
 
-User one-time manual steps: **profiles.yml password**, **GitHub secret** `WAREHOUSE_CREDENTIALS`, and **repo name** (`github_repo_name`).
+User one-time manual steps: **profiles.yml password**, plus **GitHub repo/secret** only when remote push, CI, or Agents Schema sync is requested.
 
 If `dbt_profile_name` is provided in the prompt, use it as `{project.profile}` for dbt commands and generated `dbt_project.yml`. If it is missing and multiple profiles exist in `~/.dbt/profiles.yml`, ask the user which profile to use before running dbt commands. Never guess from the first profile.
 
@@ -83,7 +83,9 @@ Resolve paths relative to workspace root. dbt project root = `{project.root}`.
 
 **User prompt overrides `.env` and config** for schema, domain, layers, materialization, commit mode. Use `.env` for non-secret reusable inputs before asking the user.
 
-Resolve `project.name` and `project.root` before `dbt init`. Never use `dbt_profile_name` as the folder/project name unless the user explicitly provides it as `dbt_project_name`. Prefer a clean name derived from `github_repo_name`, `source_schema`, `source_name`, or `domain`.
+For normal runs, collect only the values the agent cannot infer safely: `domain`, `dbt_profile_name`, and `source_schema`. Derive project name/root, dbt source name, schema prefix, layer names, commit behavior, and GitHub mode unless the user explicitly overrides them.
+
+Resolve `project.name` and `project.root` before `dbt init`. Never use `dbt_profile_name` as the folder/project name unless the user explicitly provides it as `dbt_project_name`. Prefer a clean name derived from `source_schema` or `domain`; use `github_repo_name` only when the user provided it for push.
 
 Keep the source schema read-only. Never build dbt models, package models, evaluator tables, seeds, snapshots, or audit outputs into `source_schema`. Route evaluator outputs to `<layer_schema_prefix>_evaluator` and layer outputs to separate medallion schemas. Resolve `layer_schema_prefix` with [schema-isolation.md](references/schema-isolation.md); do not use short source names like `dh` as physical schema prefixes unless the user explicitly sets them.
 
@@ -113,7 +115,7 @@ Use `layer_names` from the prompt, `.env`, or `project.config.yml` when provided
 - Layer 2 (`int_*`): `silver`
 - Layer 3 (`dim_*`/`fct_*`/`mart_*`): `gold`
 
-Do not ask for layer names unless the user requests a non-default naming convention or an existing project already uses different folders. Resolve `layer_schema_prefix` from explicit config, existing medallion schemas, domain, source schema, or descriptive source name. Ask only when the intended physical schema prefix is unclear.
+Do not ask for layer names unless the user requests a non-default naming convention or an existing project already uses different folders. Resolve `layer_schema_prefix` from explicit config, existing medallion schemas, domain, source schema, or descriptive source name. Ask only when existing schemas create a real conflict that the agent cannot resolve safely.
 
 Write `dbt_project.yml` per [materialization-rules.md](references/materialization-rules.md):
 
@@ -179,7 +181,7 @@ Read [separate-layer-builds.md](references/separate-layer-builds.md).
 9. Automation - CI workflow
 10. **Acceptance + final summary** - [acceptance-checklist.md](references/acceptance-checklist.md), [final-delivery.md](references/final-delivery.md)
 
-Each stage: **parse -> build -> summarize -> ask commit/push** (repo: `https://github.com/{gh_user}/{github_repo_name}`).
+Each stage: **parse -> build -> summarize -> ask commit**. Ask for push only when a non-local GitHub repo is configured or the user requested push.
 
 ## Step 2 - Sources
 
@@ -273,7 +275,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 
 - `workflow_phase:` init | sources | staging | intermediate | marts | semantic_layer | project_evaluator | docs | ci | agents_schema
 - `dbt_profile_name:` dbt profile key from `~/.dbt/profiles.yml`; ask if missing or ambiguous
-- `dbt_project_name:` optional explicit dbt project name; otherwise derive from repo/source/domain
+- `dbt_project_name:` optional explicit dbt project name; otherwise derive from source/domain
 - `dbt_project_root:` optional explicit folder name; otherwise use `dbt_project_name`
 - `domain:` business/domain folder name; ask if missing
 - `source_schema:` warehouse schema to inspect with codegen; ask if missing
@@ -285,7 +287,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 - `auto_install_dbt_skills:` true *(default)* | false
 - `layer_names:` layer_1, layer_2, layer_3 *(default: bronze, silver, gold)*
 - `domain:` (default from `project.config.yml`)
-- `github_repo_name:` repo slug *(ask user; owner from `gh api user`)*
+- `github_repo_name:` optional repo slug; ask only when push is requested and no repo can be inferred
 - `github_repo:` full URL or `owner/repo` *(optional override)*
 - `push_to_github:` true | false *(default: false for `local-only`, otherwise ask before pushing)*
 - `commit:` ask | auto_yes | skip_all

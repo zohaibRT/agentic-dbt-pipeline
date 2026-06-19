@@ -2,13 +2,13 @@
 
 ## Default behavior
 
-Resolve GitHub remote **before any git work** - [github-repo-resolution.md](github-repo-resolution.md):
+Use local commits by default. Resolve GitHub remote only when the user requests push, provides a repo setting, or an existing remote must be verified - [github-repo-resolution.md](github-repo-resolution.md):
 
-1. `gh auth status` and `gh api user --jq ".login"` -> `{owner}`
-2. Read `github_repo_name` from prompt or `.env`; **if missing, ask user** for repo slug only
-3. If `github_repo_name` is `local-only`, `local`, `none`, `no`, `false`, `na`, or `n/a`, do not add a remote or push
-4. Otherwise remote = `https://github.com/{owner}/{github_repo_name}.git`
-5. Optional `github_repo:` override for a different owner/repo
+1. If no repo is configured and no push is requested, keep the run local-only
+2. If `github_repo_name` is `local-only`, `local`, `none`, `no`, `false`, `na`, or `n/a`, do not add a remote or push
+3. If push is requested, run `gh auth status` and `gh api user --jq ".login"` -> `{owner}`
+4. If push is requested and repo is missing, ask user for repo slug only
+5. Remote = `https://github.com/{owner}/{github_repo_name}.git`, unless `github_repo:` provides a full override
 
 **Never hardcode GitHub accounts** in skill files or `project.config.yml`.
 
@@ -30,13 +30,15 @@ After **each layer** completes successfully (`dbt parse` + `dbt build` PASS):
 
 1. Summarize the layer results.
 2. **Ask the user:**
-   `"{Layer name} is complete. Commit and push to https://github.com/{owner}/{github_repo_name}?"`
+   `"{Layer name} is complete. Commit this stage locally?"`
 3. Wait for the answer before any git command.
 
 | User answer | Action |
 |---|---|
 | **Yes** / **y** / **commit** | Stage layer files -> commit; push only if the user also approves push and repo is not `local-only` |
 | **No** / **n** / **skip** | Do not commit; proceed to next layer or finish |
+
+After a commit, ask for push only when a non-local GitHub repo is configured or the user requested push for this run.
 
 Use the **AskQuestion** tool when available. Otherwise ask in chat and wait.
 
