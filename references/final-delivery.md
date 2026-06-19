@@ -24,6 +24,7 @@ Update or create project handoff notes with:
 - Important source tables
 - Final facts, dimensions, marts, and metrics
 - Known empty tables or data quality limitations
+- Incremental, snapshot, exposure, and privacy decisions
 - How to run `dbt build` and `dbt docs generate`
 - What still needs business review
 

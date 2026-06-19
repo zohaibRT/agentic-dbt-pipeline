@@ -12,7 +12,21 @@ If `project_rules` include manual mappings or code translations, read [mapping-s
 - SQL: `int_{source}__<name>.sql`
 - YAML: `_int_{source}.yml`
 
-## Required models (ecommerce reference)
+## Model design pattern
+
+Create intermediate models that match the source domain and business process. Do not force ecommerce-shaped models unless the source data is ecommerce.
+
+Use these patterns:
+
+- Aggregate child/event tables to a stable parent grain before joining
+- Enrich core business entities with clean attributes and reusable flags
+- Join mapping seeds or reference tables after staging
+- Keep one clear grain per intermediate model
+- Create reusable metrics at the lowest safe grain, but do not create final BI marts here
+
+## Example pattern only
+
+Use this as an example of shape and grain, not as a required model list:
 
 | Model | Grain | Source |
 |---|---|---|
@@ -22,23 +36,25 @@ If `project_rules` include manual mappings or code translations, read [mapping-s
 | `int_{source}__order_items_enriched` | order_item_id | order_items + products + categories + orders enriched |
 | `int_{source}__customer_order_metrics` | customer_id | all customers + order rollups |
 
-## Business logic (orders enriched)
+## Business logic (orders enriched example)
+
+Only apply this ecommerce example when the source data actually contains these concepts.
 
 - `order_subtotal_amount` = `gross_amount - discount_amount`
 - `calculated_order_total_amount` = subtotal + `tax_amount` + `shipping_amount`
-- `net_order_amount` = calculated total − `total_refund_amount`
+- `net_order_amount` = calculated total - `total_refund_amount`
 - `is_cancelled_order` = status = `cancelled`
 - `is_refunded_order` = status = `refunded`
 - `is_completed_order` = status = `completed`
 - `is_commercial_order` = status in (`completed`, `refunded`)
 
-## Payments aggregated
+## Payments aggregated example
 
 - `successful_payment_amount` where `payment_status = 'paid'`
 - `refunded_payment_amount` where `payment_status = 'refunded'`
 - Include totals, counts, first/last dates, method summary if safe
 
-## Customer metrics
+## Customer metrics example
 
 - Include **all customers** (left join), even with no orders
 - `is_repeat_customer` = `commercial_orders >= 2`
@@ -46,22 +62,24 @@ If `project_rules` include manual mappings or code translations, read [mapping-s
 
 ## Rules
 
-- `ref()` only — **no** `source()` in intermediate
+- `ref()` only - **no** `source()` in intermediate
 - `{{ config(materialized='view') }}` on every model
-- Use **actual** staging/intermediate columns — do not assume `currency_code`, `source_system`, `order_total_amount`, `item_total_amount`
+- Use **actual** staging/intermediate columns - do not assume `currency_code`, `source_system`, `order_total_amount`, `item_total_amount`
 - If a required column is missing, **stop and explain**
+- Do not join tables with different grains until duplicates and cardinality are understood
+- If a join can multiply rows, aggregate first or ask the user for the correct grain
 
 ## Tests
 
 - `not_null` + `unique` on primary keys
 - `relationships` to staging or sibling intermediate models where safe
 - `accepted_values` on boolean flags (`true`, `false`)
-- Use `arguments:` nesting for generic tests
+- Use modern generic test `arguments:` nesting when supported by the installed dbt version
 - Add mapping coverage tests when mapping seeds or code translations are used
 
 ## Validate (required after every intermediate change)
 
-Run from dbt project root. **Build is mandatory** — a layer is not complete until build passes.
+Run from dbt project root. **Build is mandatory** - a layer is not complete until build passes.
 
 ```powershell
 dbt parse --no-partial-parse

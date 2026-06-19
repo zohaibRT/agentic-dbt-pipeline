@@ -11,12 +11,12 @@ gh auth status
 $owner = gh api user --jq ".login"
 ```
 
-If `gh` is not authenticated → ask user to run `gh auth login`, then retry.
+If `gh` is not authenticated -> ask user to run `gh auth login`, then retry.
 
 2. **Ask user only for the repository name** (slug), not the full URL:
 
 ```text
-Which GitHub repository name should I use? (e.g. analytics, shopsphere-analytics)
+Which GitHub repository name should I use? (e.g. analytics, hospital-analytics, finance-dbt)
 Owner will be: {owner from gh}
 ```
 
@@ -42,7 +42,7 @@ push_to_github: true
 commit: ask
 ```
 
-Optional override (full URL or `other-owner/repo`) — only when user explicitly wants a different account:
+Optional override (full URL or `other-owner/repo`) - only when user explicitly wants a different account:
 
 ```text
 github_repo: other-owner/analytics

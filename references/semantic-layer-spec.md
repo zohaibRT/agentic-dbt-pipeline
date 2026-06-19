@@ -1,22 +1,34 @@
 # Semantic Layer Spec
 
-**When:** after marts layer builds successfully.  
-**Skill:** compose with `building-dbt-semantic-layer`.  
+**When:** after marts layer builds successfully.
+**Skill:** compose with `building-dbt-semantic-layer`.
 **dbt Core 1.10.x:** use **legacy spec** (top-level `semantic_models:` and `metrics:`).
 
 ## Folder
 
-- `models/semantic/ecommerce/` or co-locate YAML next to mart models
-- File: `_ecommerce_semantic.yml`
+- `models/semantic/{domain}/` or co-locate YAML next to mart models
+- File: `_{domain}_semantic.yml`
 
-## Required semantic models (ecommerce reference)
+## Semantic model design
+
+Create semantic models only from final marts/facts that already build successfully. Use actual final model names, measures, dimensions, and time fields.
+
+Minimum expectations:
+
+- Primary entity matches the fact grain
+- Time dimension is explicit when metrics need time analysis
+- Measures have clear aggregation and business meaning
+- Ratio metrics use safe denominators
+- Metric names are business-friendly and documented
+
+## Example semantic models only
 
 | Semantic model | dbt model | Grain entity |
 |---|---|---|
 | `orders` | `fct_orders` | `order_id` |
 | `order_items` | `fct_order_items` | `order_item_id` |
 
-## Required metrics (minimum)
+## Example metrics only
 
 | Metric | Type | Definition |
 |---|---|---|
@@ -81,7 +93,7 @@ metrics:
       denominator: order_count
 ```
 
-Use **actual column names** from `fct_orders` / `fct_order_items` — do not invent fields.
+Use **actual column names** from final fact models. Do not invent fields.
 
 ## Validate
 
@@ -92,4 +104,4 @@ dbt parse --no-partial-parse
 ## Do not
 
 - Build semantic models before marts exist
-- Use `source()` in semantic YAML — only `ref()` to marts facts/dims
+- Use `source()` in semantic YAML - only `ref()` to marts facts/dims

@@ -1,4 +1,4 @@
-# Skill Inputs — Collect Before Any Work
+# Skill Inputs - Collect Before Any Work
 
 Read [project.config.yml](../project.config.yml) and [env-configuration.md](env-configuration.md). If values are missing after prompt, `.env`, and config resolution, **ask the user** before proceeding.
 
@@ -19,11 +19,11 @@ Read [project.config.yml](../project.config.yml) and [env-configuration.md](env-
 | Layer schema prefix | `layer_schema_prefix` prompt or `DBT_LAYER_SCHEMA_PREFIX` | usually same as `source_name`; ask if missing |
 | Domain folder | `domain` prompt, `DBT_DOMAIN`, or `domain` config | ask if missing |
 | Project rules | `project_rules` prompt | optional; ask if unclear |
-| Layer 1 schema suffix | user name → `+schema` | `staging` |
-| Layer 2 schema suffix | user name → `+schema` | `intermediate` |
-| Layer 3 schema suffix | user name → `+schema` | `marts` |
+| Layer 1 schema suffix | user name -> `+schema` | `staging` |
+| Layer 2 schema suffix | user name -> `+schema` | `intermediate` |
+| Layer 3 schema suffix | user name -> `+schema` | `marts` |
 | Agents schema | `agents.schema` | `AGENTS` |
-| **GitHub repo name** *(ask user)* | `github_repo_name` | — |
+| **GitHub repo name** *(ask user)* | `github_repo_name` | - |
 | GitHub owner *(from CLI)* | `gh api user` | logged-in `gh` account |
 | Default branch | `git.branch` | `main` |
 | Push to GitHub after commit | `push_to_github` | `true` on full pipeline |
@@ -32,7 +32,7 @@ Read [project.config.yml](../project.config.yml) and [env-configuration.md](env-
 
 **Do not hardcode GitHub accounts.** See [github-repo-resolution.md](github-repo-resolution.md).
 
-1. Run `gh api user --jq ".login"` → `{owner}`
+1. Run `gh api user --jq ".login"` -> `{owner}`
 2. Ask user: `github_repo_name` (e.g. `analytics`)
 3. Remote = `https://github.com/{owner}/{github_repo_name}.git`
 
@@ -42,7 +42,7 @@ Read [project.config.yml](../project.config.yml) and [env-configuration.md](env-
 |---|---|
 | `dev` | Local development *(default)* |
 | `ci` | GitHub Actions validation |
-| `prod` | Production warehouse — **ask before changes** |
+| `prod` | Production warehouse - **ask before changes** |
 
 ## Credentials
 
@@ -57,7 +57,7 @@ Read [project.config.yml](../project.config.yml) and [env-configuration.md](env-
 ## Optional overrides (user prompt wins)
 
 ```text
-github_repo_name: analytics              # repo slug — ask if missing
+github_repo_name: analytics              # repo slug - ask if missing
 dbt_profile_name: hospital_analytics     # profile key from ~/.dbt/profiles.yml
 domain: hospital                         # domain folder and naming context
 source_schema: hospital_raw              # warehouse schema to inspect with codegen
@@ -85,12 +85,12 @@ use_subagents: true | false
 For repeat projects, allow the user to keep required fields in `.env`:
 
 ```text
-DBT_DOMAIN=hospital
-DBT_PROFILE_NAME=shopsphere_analytics_dbt
-DBT_SOURCE_SCHEMA=doctors_hospital_src
-DBT_SOURCE_NAME=doctors_hospital_src
-DBT_LAYER_SCHEMA_PREFIX=doctors_hospital_src
-DBT_GITHUB_REPO_NAME=local-only
+DBT_DOMAIN=<domain_name>
+DBT_PROFILE_NAME=<dbt_profile_name>
+DBT_SOURCE_SCHEMA=<raw_source_schema>
+DBT_SOURCE_NAME=<dbt_source_name>
+DBT_LAYER_SCHEMA_PREFIX=<layer_schema_prefix>
+DBT_GITHUB_REPO_NAME=<repo_name_or_local_only>
 DBT_LAYER_1=bronze
 DBT_LAYER_2=silver
 DBT_LAYER_3=gold
@@ -101,4 +101,4 @@ Prompt values override `.env`. Do not commit `.env`; commit only `.env.example`.
 
 ## dbt packages & skills stack
 
-See [dbt-packages-and-skills.md](dbt-packages-and-skills.md) — agent installs and uses all six capabilities on full pipeline.
+See [dbt-packages-and-skills.md](dbt-packages-and-skills.md) - agent installs and uses all six capabilities on full pipeline.

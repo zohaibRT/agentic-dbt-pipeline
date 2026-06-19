@@ -1,4 +1,4 @@
-# CI/CD — GitHub Actions
+# CI/CD - GitHub Actions
 
 Basic dbt validation on pull requests; Agents Schema sync on `main`.
 
@@ -35,12 +35,12 @@ jobs:
         DBT_PROFILES_DIR: ${{ github.workspace }}/.dbt-ci
 ```
 
-Use GitHub Secrets for CI warehouse credentials — never commit profiles.
+Use GitHub Secrets for CI warehouse credentials - never commit profiles.
 
 ## Production deployment
 
 - Keep **PR validation** separate from **production deploy**
-- Agents Schema sync on push to `main` — see [agents-schema-setup.md](agents-schema-setup.md)
+- Agents Schema sync on push to `main` - see [agents-schema-setup.md](agents-schema-setup.md)
 
 ## Commit
 
@@ -55,4 +55,4 @@ Ask user before commit.
 
 1. `dbt deps`
 2. `dbt parse`
-3. `dbt build` *(scoped selector — not full project unless approved)*
+3. `dbt build` *(scoped selector - not full project unless approved)*

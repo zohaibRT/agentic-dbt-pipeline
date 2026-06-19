@@ -9,24 +9,24 @@ description: >-
 
 # dbt Pipeline
 
-Full lifecycle orchestrator for the dbt project.  
-**On every prompt:** agent runs [bootstrap.md](references/bootstrap.md) first (install skills, codegen, automation).  
-**Default full pipeline:** bootstrap → sources → staging → intermediate → marts → semantic layer → project evaluator → docs → CI/Agents Schema.
+Full lifecycle orchestrator for the dbt project.
+**On every prompt:** agent runs [bootstrap.md](references/bootstrap.md) first (install skills, codegen, automation).
+**Default full pipeline:** bootstrap -> sources -> staging -> intermediate -> marts -> semantic layer -> project evaluator -> docs -> CI, plus Agents Schema when enabled and supported.
 
 Use `workflow_phase:` to run a single phase. Use `auto_bootstrap: false` only for layer-only edits.
 
-**Install (one command):** `npx skills add zohaibRT/agentic-dbt-pipeline` — see [references/install-skill.md](references/install-skill.md).  
+**Install (one command):** `npx skills add zohaibRT/agentic-dbt-pipeline` - see [references/install-skill.md](references/install-skill.md).
 Bootstrap auto-installs dbt Agent Skills and dbt packages on first run.
 
-## Bootstrap (mandatory — agent runs automatically)
+## Bootstrap (mandatory - agent runs automatically)
 
 Read and execute [references/bootstrap.md](references/bootstrap.md) **before** any layer work:
 
-1. **Install dbt Agent Skills** + all dbt packages — see [dbt-packages-and-skills.md](references/dbt-packages-and-skills.md)
-2. **`dbt debug`** — verify connection
-3. **`dbt deps` + codegen** — when sources/full pipeline
-4. **Resolve GitHub repo** — owner from `gh api user`; ask user for `github_repo_name` — [github-repo-resolution.md](references/github-repo-resolution.md)
-5. **Create CI + Agents Schema workflows** — when full pipeline or `auto_agents_schema: true`
+1. **Install dbt Agent Skills** + all dbt packages - see [dbt-packages-and-skills.md](references/dbt-packages-and-skills.md)
+2. **`dbt debug`** - verify connection
+3. **`dbt deps` + codegen** - when sources/full pipeline
+4. **Resolve GitHub repo** - owner from `gh api user`; ask user for `github_repo_name` - [github-repo-resolution.md](references/github-repo-resolution.md)
+5. **Create CI + Agents Schema workflows** - when requested, or when `auto_agents_schema: true` and the destination is supported
 
 User one-time manual steps: **profiles.yml password**, **GitHub secret** `WAREHOUSE_CREDENTIALS`, and **repo name** (`github_repo_name`).
 
@@ -40,11 +40,11 @@ Read [references/dbt-packages-and-skills.md](references/dbt-packages-and-skills.
 |---|---|
 | dbt Agent Skills | **Bootstrap auto-installs** if missing (`auto_install_dbt_skills: true`) |
 | codegen | `packages.yml` + `generate_source` |
-| dbt_utils | `packages.yml` — macros in models/tests |
+| dbt_utils | `packages.yml` - macros in models/tests |
 | dbt_project_evaluator | `packages.yml` + `dispatch` + `dbt build --select package:dbt_project_evaluator` |
-| audit_helper | `packages.yml` — compare queries on refactors |
+| audit_helper | `packages.yml` - compare queries on refactors |
 | MetricFlow / Semantic Layer | [semantic-layer-spec.md](references/semantic-layer-spec.md) + `building-dbt-semantic-layer` |
-| Agents Schema | [agents-schema-setup.md](references/agents-schema-setup.md) - publish dbt metadata to `AGENTS.*` for warehouse-side agent context |
+| Agents Schema | [agents-schema-setup.md](references/agents-schema-setup.md) - publish dbt metadata to `AGENTS.*` for warehouse-side agent context when the destination is supported |
 
 Install agent skills: [references/install-dbt-agent-skills.md](references/install-dbt-agent-skills.md)
 
@@ -55,6 +55,7 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 | **Bootstrap** | **Every run** (unless `auto_bootstrap: false`) | [bootstrap.md](references/bootstrap.md) |
 | **0 Inputs** | Always first | [skill-inputs.md](references/skill-inputs.md), [env-configuration.md](references/env-configuration.md), [security-and-credentials.md](references/security-and-credentials.md), [code-agent-setup.md](references/code-agent-setup.md) |
 | **0b Subagents** | Optional speed-up | [subagent-workflow.md](references/subagent-workflow.md) |
+| **0c Best practices** | Design guardrails | [data-engineering-best-practices.md](references/data-engineering-best-practices.md) |
 | **1 Init** | New project | [project-initialization.md](references/project-initialization.md) |
 | **2 Schemas** | After init | [warehouse-schema-setup.md](references/warehouse-schema-setup.md) |
 | **3 Sources** | Packages + source YAML | [packages-and-sources.md](references/packages-and-sources.md) |
@@ -73,7 +74,7 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 
 Context prompt template: [agent-context-prompt.md](references/agent-context-prompt.md)
 
-## Step 0 — Load config
+## Step 0 - Load config
 
 Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), and [env-configuration.md](references/env-configuration.md).
 
@@ -85,22 +86,26 @@ Resolve paths relative to workspace root. dbt project root = `{project.root}`.
 
 Read [subagent-workflow.md](references/subagent-workflow.md) when `use_subagents: true` or when source profiling, mapping review, model planning, docs, or evaluator review can safely run in parallel. Keep dbt commands, shared file edits, commits, pushes, and final decisions with the main agent.
 
-## Step 0.1 — Security
+## Step 0.1 - Security
 
 Read [security-and-credentials.md](references/security-and-credentials.md).
 
 Never hardcode secrets. Ask before production changes.
 
-## Step 0.5 — Ask user for layer names (required for model phases)
+## Step 0.2 - Data engineering guardrails
+
+Read [data-engineering-best-practices.md](references/data-engineering-best-practices.md) before model design and again before final delivery. Apply grain, test, incremental, snapshot, documentation, privacy, and performance guardrails.
+
+## Step 0.5 - Ask user for layer names (required for model phases)
 
 Read [references/dbt-project-layers.md](references/dbt-project-layers.md).
 
 **Always build all model layers** unless `workflow_phase` limits scope.
 
 > What names should I use in `dbt_project.yml`?
-> - Layer 1 (`stg_*`) — default: `staging`
-> - Layer 2 (`int_*`) — default: `intermediate`
-> - Layer 3 (`dim_*`/`fct_*`/`mart_*`) — default: `marts`
+> - Layer 1 (`stg_*`) - default: `staging`
+> - Layer 2 (`int_*`) - default: `intermediate`
+> - Layer 3 (`dim_*`/`fct_*`/`mart_*`) - default: `marts`
 
 Write `dbt_project.yml` per [materialization-rules.md](references/materialization-rules.md):
 
@@ -140,54 +145,54 @@ $dbt = "dbt"          # prefer active venv/path; see validation-commands.md for 
 & $dbt build --select +path:<layer_folder>
 ```
 
-## Step 1 — Full pipeline order
+## Step 1 - Full pipeline order
 
 Read [separate-layer-builds.md](references/separate-layer-builds.md).
 
 **Full pipeline (default):**
 
-1. **Bootstrap** — [bootstrap.md](references/bootstrap.md)
+1. **Bootstrap** - [bootstrap.md](references/bootstrap.md)
 2. Init *(if project missing)*
-3. Sources — full `packages.yml`, `dbt deps`, codegen, source YAML
-4. Staging → Intermediate → Marts
-5. Semantic layer — metrics on marts facts
-6. Project evaluator — `dbt build --select package:dbt_project_evaluator`
-7. Docs — `dbt docs generate`
-8. Agents Schema - publish dbt metadata to `AGENTS.*` after `target/manifest.json` exists
+3. Sources - full `packages.yml`, `dbt deps`, codegen, source YAML
+4. Staging -> Intermediate -> Marts
+5. Semantic layer - metrics on marts facts
+6. Project evaluator - `dbt build --select package:dbt_project_evaluator`
+7. Docs - `dbt docs generate`
+8. Agents Schema - publish dbt metadata to `AGENTS.*` after `target/manifest.json` exists when enabled and supported
 9. Automation - CI workflow
 10. **Acceptance** - [acceptance-checklist.md](references/acceptance-checklist.md)
 
-Each stage: **parse → build → summarize → ask commit/push** (repo: `https://github.com/{gh_user}/{github_repo_name}`).
+Each stage: **parse -> build -> summarize -> ask commit/push** (repo: `https://github.com/{gh_user}/{github_repo_name}`).
 
-## Step 2 — Sources
+## Step 2 - Sources
 
 Read [packages-and-sources.md](references/packages-and-sources.md), [source-profiling.md](references/source-profiling.md), and [dbt-packages-and-skills.md](references/dbt-packages-and-skills.md).
 
 All four packages in `packages.yml`. Codegen for sources. Add the configured `source.schema` to source YAML after generate. Profile row counts, candidate keys, relationships, important dates, measures, and status/code fields before staging.
 
-## Step 3 — Layer 1 (staging)
+## Step 3 - Layer 1 (staging)
 
 Read [staging-spec.md](references/staging-spec.md). `source()` only. No business KPIs.
 
-## Step 4 — Layer 2 (intermediate)
+## Step 4 - Layer 2 (intermediate)
 
 Read [intermediate-spec.md](references/intermediate-spec.md) and [mapping-seeds.md](references/mapping-seeds.md). `ref()` only. Use mapping seeds or reference tables when `project_rules` include manual mappings or code translations.
 
-## Step 5 — Layer 3 (marts / star schema)
+## Step 5 - Layer 3 (marts / star schema)
 
-Read [marts-spec.md](references/marts-spec.md). `ref()` only. 5 dims + 2 facts + 2 reporting marts.
+Read [marts-spec.md](references/marts-spec.md). `ref()` only. Build domain-appropriate facts, dimensions, and reporting marts based on profiled source grain and user requirements.
 
-## Step 5b — Semantic layer
+## Step 5b - Semantic layer
 
 Read [semantic-layer-spec.md](references/semantic-layer-spec.md). Compose with `building-dbt-semantic-layer`. Legacy spec on dbt 1.10.x.
 
-## Step 5c — Project evaluator
+## Step 5c - Project evaluator
 
 ```powershell
 & $dbt build --select package:dbt_project_evaluator
 ```
 
-## Step 6 — Documentation
+## Step 6 - Documentation
 
 Read [documentation.md](references/documentation.md). Run `dbt docs generate`.
 
@@ -195,11 +200,11 @@ Read [documentation.md](references/documentation.md). Run `dbt docs generate`.
 
 Read [human-review.md](references/human-review.md). Summarize business assumptions, data quality notes, and open decisions after each layer. Ask for approval when business meaning, grain, mappings, metrics, or sensitive fields are unclear.
 
-## Step 7 — Git
+## Step 7 - Git
 
 Read [git-workflow.md](references/git-workflow.md). Ask before every commit/push.
 
-## Step 8 — CI/CD & Agents Schema *(when requested)*
+## Step 8 - CI/CD & Agents Schema *(when requested)*
 
 - [agents-schema-setup.md](references/agents-schema-setup.md)
 - [cicd-setup.md](references/cicd-setup.md)
@@ -227,7 +232,7 @@ Read [stuck-recovery.md](references/stuck-recovery.md) whenever a command hangs,
 6. Commit status (asked / skipped / done / pushed to github)
 ```
 
-## Ambiguity — prompt overrides
+## Ambiguity - prompt overrides
 
 - `workflow_phase:` init | sources | staging | intermediate | marts | semantic_layer | project_evaluator | docs | ci | agents_schema
 - `dbt_profile_name:` dbt profile key from `~/.dbt/profiles.yml`; ask if missing or ambiguous
@@ -237,7 +242,7 @@ Read [stuck-recovery.md](references/stuck-recovery.md) whenever a command hangs,
 - `layer_schema_prefix:` prefix for physical layer schemas, usually same as `source_name`; ask if missing
 - `project_rules:` optional field mappings, joins, metrics, exclusions, privacy rules, naming rules, and special instructions. Apply exactly; ask if unclear.
 - `auto_bootstrap:` true *(default)* | false
-- `auto_agents_schema:` true *(default on full pipeline)* | false
+- `auto_agents_schema:` true | false *(default false for local/unsupported adapters; enable for Snowflake, Databricks, or BigQuery)*
 - `auto_install_dbt_skills:` true *(default)* | false
 - `use_subagents:` true | false *(default: true for large projects, false for small/simple projects)*
 - `layer_names:` layer_1, layer_2, layer_3
@@ -251,12 +256,12 @@ Read [stuck-recovery.md](references/stuck-recovery.md) whenever a command hangs,
 
 ## One-shot prompt
 
-[prompt.md](prompt.md) · [agent-context-prompt.md](references/agent-context-prompt.md)
+[prompt.md](prompt.md) - [agent-context-prompt.md](references/agent-context-prompt.md)
 
 ## Do not use this skill for
 
 - Power BI / dashboard build
-- Ad-hoc business questions → `answering-natural-language-questions-with-dbt` *(use that skill directly)*
+- Ad-hoc business questions -> `answering-natural-language-questions-with-dbt` *(use that skill directly)*
 
 ## Reference files
 
@@ -268,6 +273,7 @@ Read [stuck-recovery.md](references/stuck-recovery.md) whenever a command hangs,
 | [skill-inputs.md](references/skill-inputs.md) | Required inputs |
 | [env-configuration.md](references/env-configuration.md) | Optional `.env` settings and precedence |
 | [subagent-workflow.md](references/subagent-workflow.md) | Optional parallel analysis and review |
+| [data-engineering-best-practices.md](references/data-engineering-best-practices.md) | Grain, tests, history, contracts, privacy, operations |
 | [security-and-credentials.md](references/security-and-credentials.md) | Secrets & gitignore |
 | [project-initialization.md](references/project-initialization.md) | venv, dbt init, debug |
 | [warehouse-schema-setup.md](references/warehouse-schema-setup.md) | Postgres schemas |

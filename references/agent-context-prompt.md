@@ -10,7 +10,7 @@ Use the dbt Pipeline skill (`agentic-dbt-pipeline`) and these dbt-labs skills:
 - running-dbt-commands
 - troubleshooting-dbt-job-errors
 
-Read project.config.yml, references/skill-inputs.md, and references/env-configuration.md first. If `.env` exists, load non-secret settings from it before asking for missing inputs.
+Read project.config.yml, references/skill-inputs.md, references/env-configuration.md, and references/data-engineering-best-practices.md first. If `.env` exists, load non-secret settings from it before asking for missing inputs.
 If `use_subagents` or `DBT_USE_SUBAGENTS` is true, read references/subagent-workflow.md and use subagents only for safe read-only analysis or draft review.
 
 ## Warehouse (non-secret)
@@ -40,7 +40,7 @@ push_to_github: true
 commit: ask
 ```
 
-- Agent runs `gh api user` for owner — do not hardcode accounts
+- Agent runs `gh api user` for owner - do not hardcode accounts
 - Ask user for repo slug if not in prompt
 - Commit per layer; push on approval
 
@@ -51,9 +51,9 @@ See [dbt-packages-and-skills.md](dbt-packages-and-skills.md): codegen, dbt_utils
 ## dbt rules
 
 - sources: models/sources/
-- staging: models/staging/{domain}/ — stg_{source}__*
-- intermediate: models/intermediate/{domain}/ — int_{source}__*
-- marts: models/marts/{domain}/ — dim_*, fct_*, mart_*
+- staging: models/staging/{domain}/ - stg_{source}__*
+- intermediate: models/intermediate/{domain}/ - int_{source}__*
+- marts: models/marts/{domain}/ - dim_*, fct_*, mart_*
 - materialization_profile: prod (staging/intermediate=view; marts=table; fct_*=incremental)
 - ref() only in intermediate/marts; source() only in staging
 - Run dbt debug (init), dbt parse, dbt build after changes

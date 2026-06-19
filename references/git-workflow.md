@@ -1,10 +1,10 @@
-# Git Workflow — Ask After Each Layer
+# Git Workflow - Ask After Each Layer
 
 ## Default behavior
 
-Resolve GitHub remote **before any git work** — [github-repo-resolution.md](github-repo-resolution.md):
+Resolve GitHub remote **before any git work** - [github-repo-resolution.md](github-repo-resolution.md):
 
-1. `gh auth status` and `gh api user --jq ".login"` → `{owner}`
+1. `gh auth status` and `gh api user --jq ".login"` -> `{owner}`
 2. Read `github_repo_name` from prompt; **if missing, ask user** for repo slug only
 3. Remote = `https://github.com/{owner}/{github_repo_name}.git`
 4. Optional `github_repo:` override for a different owner/repo
@@ -28,13 +28,13 @@ git commit -m "Initialize dbt project"
 After **each layer** completes successfully (`dbt parse` + `dbt build` PASS):
 
 1. Summarize the layer results.
-2. **Ask the user:**  
+2. **Ask the user:**
    `"{Layer name} is complete. Commit and push to https://github.com/{owner}/{github_repo_name}?"`
 3. Wait for the answer before any git command.
 
 | User answer | Action |
 |---|---|
-| **Yes** / **y** / **commit** | Stage layer files → commit → push to `github_repo` if `push_to_github: true` |
+| **Yes** / **y** / **commit** | Stage layer files -> commit -> push to `github_repo` if `push_to_github: true` |
 | **No** / **n** / **skip** | Do not commit; proceed to next layer or finish |
 
 Use the **AskQuestion** tool when available. Otherwise ask in chat and wait.
@@ -79,7 +79,7 @@ Run from `{project.root}` (where `.git` lives).
 
 ## Full staged commit sequence
 
-See [github-setup.md](github-setup.md) for init → packages → sources → layers → docs → CI.
+See [github-setup.md](github-setup.md) for init -> packages -> sources -> layers -> docs -> CI.
 
 ## Commit messages (use layer role, not user name)
 

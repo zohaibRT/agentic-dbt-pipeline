@@ -35,7 +35,7 @@ Profile values *(user provides password locally)*:
 | schema | `database.target_schema` |
 | threads | `database.threads` |
 
-Profile file: `~/.dbt/profiles.yml` — **do not commit**.
+Profile file: `~/.dbt/profiles.yml` - **do not commit**.
 
 If more than one dbt profile exists, ask for `dbt_profile_name` and use that exact key as the dbt profile. Do not guess from the first profile in the file.
 
@@ -58,7 +58,7 @@ git init
 git add .
 git commit -m "Initialize dbt project"
 git branch -M main
-# Resolve owner + repo — see github-repo-resolution.md
+# Resolve owner + repo - see github-repo-resolution.md
 $owner = gh api user --jq ".login"
 git remote add origin "https://github.com/$owner/<github_repo_name>.git"
 git push -u origin main
@@ -89,11 +89,11 @@ Host: <database.host>
 Port: <database.port>
 Database: <database.dbname>
 User: <warehouse_user>
-Password: use local profiles.yml — do not commit
+Password: use local profiles.yml - do not commit
 Source schema: <source.schema>
 Staging schema: <layer_names.layer_1>
 Mart schema: <layer_names.layer_3>
 Target environment: dev
 ```
 
-After init → proceed to [warehouse-schema-setup.md](warehouse-schema-setup.md) and [packages-and-sources.md](packages-and-sources.md).
+After init -> proceed to [warehouse-schema-setup.md](warehouse-schema-setup.md) and [packages-and-sources.md](packages-and-sources.md).

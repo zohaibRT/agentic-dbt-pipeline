@@ -48,8 +48,8 @@ Verify before marking the dbt pipeline workflow complete.
 ## Layers
 
 - [ ] Staging: all source tables, tests pass
-- [ ] Intermediate: 5 models, tests pass
-- [ ] Marts: 5 dims + 2 facts + 2 reporting marts, tests pass
+- [ ] Intermediate: domain-appropriate reusable business logic models build successfully
+- [ ] Marts: domain-appropriate facts, dimensions, and reporting marts build successfully
 - [ ] Semantic layer: metrics on marts ([semantic-layer-spec.md](semantic-layer-spec.md))
 - [ ] Each layer: `dbt parse` + `dbt build --select +path:...` PASS
 
@@ -59,6 +59,15 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Manual mappings implemented as seeds or reference-table joins where appropriate
 - [ ] Mapping coverage checked; unmapped values summarized or approved
 - [ ] Business grain and key assumptions documented in model YAML or handoff notes
+
+## Data engineering guardrails
+
+- [ ] Each model has one documented grain
+- [ ] Incremental models have a unique key and clear update/filter rule
+- [ ] Snapshots considered for slowly changing dimensions or historical attributes
+- [ ] Source freshness added only when a reliable loaded-at timestamp exists
+- [ ] Exposures added or recommended for known dashboards and downstream consumers
+- [ ] Sensitive fields reviewed before reaching marts
 
 ## Git
 
@@ -70,7 +79,7 @@ Verify before marking the dbt pipeline workflow complete.
 ## Documentation
 
 - [ ] Model/column descriptions in YAML
-- [ ] `dbt docs generate` → manifest + catalog exist
+- [ ] `dbt docs generate` -> manifest + catalog exist
 
 ## Human review
 

@@ -2,13 +2,13 @@
 
 Apply when completing a model layer or `workflow_phase: docs`.
 
-Also use dbt-labs skill: `using-dbt-for-analytics-engineering` → `references/writing-documentation.md`.
+Also use dbt-labs skill: `using-dbt-for-analytics-engineering` -> `references/writing-documentation.md`.
 
 ## Per-model YAML
 
 For each model in staging, intermediate, and marts:
 
-- `description` — purpose and grain (not just restating the model name)
+- `description` - purpose and grain (not just restating the model name)
 - Column `description` for primary keys, foreign keys, and business fields
 - Document non-obvious logic (e.g. `channel_id = -1` for unattributed)
 
@@ -37,7 +37,7 @@ Add when the source has a reliable loaded-at column:
     loaded_at_field: updated_at
 ```
 
-Only add if `updated_at` (or equivalent) exists in source YAML — **do not assume**.
+Only add if `updated_at` (or equivalent) exists in source YAML - **do not assume**.
 
 ## Generate docs
 

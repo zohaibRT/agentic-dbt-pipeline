@@ -8,19 +8,19 @@ What the agent needs before dbt pipeline work.
 - [ ] dbt profile name: prompt `dbt_profile_name` or configured `project.profile`
 - [ ] dbt CLI: active environment `dbt`; fallback rules in [validation-commands.md](validation-commands.md)
 - [ ] Python 3.12 venv with `dbt-core` + `dbt-postgres`
-- [ ] Warehouse credentials via `~/.dbt/profiles.yml` — never in repo
-- [ ] `agentic-dbt-pipeline` skill installed — [install-skill.md](install-skill.md)
-- [ ] dbt-labs skills installed — [install-dbt-agent-skills.md](install-dbt-agent-skills.md)
+- [ ] Warehouse credentials via `~/.dbt/profiles.yml` - never in repo
+- [ ] `agentic-dbt-pipeline` skill installed - [install-skill.md](install-skill.md)
+- [ ] dbt-labs skills installed - [install-dbt-agent-skills.md](install-dbt-agent-skills.md)
 
 ## Agent behavior rules
 
 1. Run [bootstrap.md](bootstrap.md) **first** on every invocation (`auto_bootstrap: true` default).
-2. Install dbt-labs skills automatically if missing — do not tell user to install manually.
-3. Run `dbt deps` + codegen during sources phase — do not tell user to run manually.
+2. Install dbt-labs skills automatically if missing - do not tell user to install manually.
+3. Run `dbt deps` + codegen during sources phase - do not tell user to run manually.
 4. Create CI + Agents Schema workflow files during full pipeline.
 5. Read `project.config.yml` and [skill-inputs.md](skill-inputs.md).
 6. Run [validation-commands.md](validation-commands.md) after edits.
-7. Commit each layer separately — [git-workflow.md](git-workflow.md).
+7. Commit each layer separately - [git-workflow.md](git-workflow.md).
 8. Ask before production changes and before git push.
 
 ## Session start checklist

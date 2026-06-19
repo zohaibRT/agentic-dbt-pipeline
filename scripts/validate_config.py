@@ -50,6 +50,32 @@ FORBIDDEN_ENV_KEY_PARTS = (
     "API_KEY",
 )
 
+REQUIRED_ENV_EXAMPLE_KEYS = {
+    "DBT_DOMAIN",
+    "DBT_PROFILE_NAME",
+    "DBT_SOURCE_SCHEMA",
+    "DBT_SOURCE_NAME",
+    "DBT_LAYER_SCHEMA_PREFIX",
+    "DBT_GITHUB_REPO_NAME",
+    "DBT_LAYER_1",
+    "DBT_LAYER_2",
+    "DBT_LAYER_3",
+    "DBT_COMMIT",
+    "DBT_PUSH_TO_GITHUB",
+    "DBT_MATERIALIZATION_PROFILE",
+    "DBT_AUTO_AGENTS_SCHEMA",
+    "DBT_USE_SUBAGENTS",
+}
+
+PLACEHOLDER_ENV_EXAMPLE_KEYS = {
+    "DBT_DOMAIN",
+    "DBT_PROFILE_NAME",
+    "DBT_SOURCE_SCHEMA",
+    "DBT_SOURCE_NAME",
+    "DBT_LAYER_SCHEMA_PREFIX",
+    "DBT_GITHUB_REPO_NAME",
+}
+
 
 def get_nested(data: dict, path: tuple[str, ...]):
     cur = data
@@ -127,17 +153,33 @@ def main() -> int:
             errors.append("Missing .gitignore entries: " + ", ".join(missing_entries))
 
     if env_example_path.exists():
+        env_keys = set()
         for line_number, line in enumerate(
             env_example_path.read_text(encoding="utf-8").splitlines(), start=1
         ):
             stripped = line.strip()
             if not stripped or stripped.startswith("#") or "=" not in stripped:
                 continue
-            key = stripped.split("=", 1)[0].strip().upper()
+            key, value = stripped.split("=", 1)
+            key = key.strip().upper()
+            value = value.strip()
+            env_keys.add(key)
             if any(part in key for part in FORBIDDEN_ENV_KEY_PARTS):
                 errors.append(
                     f".env.example contains secret-like key on line {line_number}: {key}"
                 )
+            if key in PLACEHOLDER_ENV_EXAMPLE_KEYS and not (
+                value.startswith("<") and value.endswith(">")
+            ):
+                errors.append(
+                    f".env.example key {key} should use a placeholder value like <...>"
+                )
+
+        missing_env_keys = sorted(REQUIRED_ENV_EXAMPLE_KEYS - env_keys)
+        if missing_env_keys:
+            errors.append(
+                ".env.example is missing required keys: " + ", ".join(missing_env_keys)
+            )
 
     if errors:
         for error in errors:

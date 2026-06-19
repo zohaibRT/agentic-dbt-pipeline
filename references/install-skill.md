@@ -14,7 +14,7 @@ Repository: https://github.com/zohaibRT/agentic-dbt-pipeline
 npx skills add dbt-labs/dbt-agent-skills/skills/dbt
 ```
 
-The agent runs that command — not you.
+The agent runs that command - not you.
 
 ## Then invoke
 

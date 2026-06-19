@@ -43,7 +43,7 @@ Do not commit other files from `target/`.
 Before any change when `target=prod` or production database:
 
 1. **Ask the user** to confirm.
-2. Run `dbt parse` and scoped `dbt build` — not full-project unless approved.
+2. Run `dbt parse` and scoped `dbt build` - not full-project unless approved.
 3. Never `dbt run-operation` against prod without explicit approval.
 
 ## GitHub Actions secrets
@@ -53,4 +53,4 @@ Before any change when `target=prod` or production database:
 | `WAREHOUSE_CREDENTIALS` | Agents Schema sync (warehouse YAML) |
 | dbt profile vars | CI `dbt build` *(project-specific)* |
 
-Store warehouse credentials as YAML in the secret — not in the repository.
+Store warehouse credentials as YAML in the secret - not in the repository.

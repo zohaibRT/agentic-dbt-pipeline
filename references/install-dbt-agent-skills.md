@@ -1,6 +1,6 @@
-# Install dbt Agent Skills (Auto — Bootstrap)
+# Install dbt Agent Skills (Auto - Bootstrap)
 
-**User does not run this manually.**  
+**User does not run this manually.**
 Bootstrap runs this when `auto_install_dbt_skills: true` (default) and dbt skills are missing.
 
 User only installs:
@@ -15,9 +15,9 @@ npx skills add zohaibRT/agentic-dbt-pipeline
 .agents/skills/using-dbt-for-analytics-engineering/SKILL.md exists?
 ```
 
-If **yes** → skip, proceed.
+If **yes** -> skip, proceed.
 
-If **no** → agent runs automatically:
+If **no** -> agent runs automatically:
 
 ```bash
 npx skills add dbt-labs/dbt-agent-skills/skills/dbt
@@ -25,7 +25,7 @@ npx skills add dbt-labs/dbt-agent-skills/skills/dbt
 
 Do not ask the user to install dbt skills manually unless `npx` fails.
 
-## After install — agent composes with
+## After install - agent composes with
 
 1. `agentic-dbt-pipeline` (orchestration + GitHub)
 2. `using-dbt-for-analytics-engineering`

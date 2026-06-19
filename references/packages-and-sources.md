@@ -2,7 +2,7 @@
 
 See full stack: [dbt-packages-and-skills.md](dbt-packages-and-skills.md).
 
-## `packages.yml` — standard packages
+## `packages.yml` - standard packages
 
 ```yaml
 packages:
@@ -22,7 +22,7 @@ dbt deps
 git add package-lock.yml && git commit -m "Install dbt packages"
 ```
 
-`dbt_utils`, `dbt_project_evaluator`, and `audit_helper` install via `dbt deps`. Add `dispatch` for evaluator — see [dbt-packages-and-skills.md](dbt-packages-and-skills.md).
+`dbt_utils`, `dbt_project_evaluator`, and `audit_helper` install via `dbt deps`. Add `dispatch` for evaluator - see [dbt-packages-and-skills.md](dbt-packages-and-skills.md).
 
 ## Generate source YAML
 
@@ -66,7 +66,7 @@ sources:
 
 Rules:
 
-- Use **only** columns from codegen output — do not invent columns
+- Use **only** columns from codegen output - do not invent columns
 - Add table/column descriptions where purpose is clear
 - Add `freshness` only if a loaded-at column exists in source YAML
 

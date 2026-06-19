@@ -13,7 +13,7 @@ database:
   dbname: analytics
   target_schema: raw
   threads: 4
-  # password: NEVER store here — use ~/.dbt/profiles.yml
+  # password: NEVER store here - use ~/.dbt/profiles.yml
 
 targets:
   default: dev
@@ -116,7 +116,7 @@ git:
   default_commit_mode: ask
   push_to_github: true
   use_gh_cli_account: true       # owner from `gh api user --jq .login`
-  github_repo_name: null         # prompt: github_repo_name — ask user for repo slug only
+  github_repo_name: null         # prompt: github_repo_name - ask user for repo slug only
   remote: null                   # resolved: https://github.com/{gh_user}/{github_repo_name}.git
   branch: main
   exclude:
@@ -160,5 +160,5 @@ auto_bootstrap:
   install_dbt_labs_skills: true
   run_dbt_deps_on_sources: true
   create_ci_workflow: true
-  create_agents_schema_workflow: true
-  # User must add WAREHOUSE_CREDENTIALS in GitHub UI — agent cannot create secrets
+  create_agents_schema_workflow: false
+  # User must add WAREHOUSE_CREDENTIALS in GitHub UI - agent cannot create secrets

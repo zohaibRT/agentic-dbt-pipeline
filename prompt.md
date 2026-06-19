@@ -50,10 +50,11 @@ What the skill handles automatically:
 - installs dbt packages with `dbt deps`
 - uses `dbt_utils`, `audit_helper`, and `dbt_project_evaluator` at the right stages
 - profiles source data before modeling
+- applies data-engineering guardrails for grain, tests, incremental models, snapshots, exposures, and privacy
 - applies mapping seeds and coverage checks when mappings are provided
 - generates dbt docs
 - prepares human review and final handoff notes
-- prepares Agents Schema after `target/manifest.json` exists
+- prepares Agents Schema after `target/manifest.json` exists when enabled and supported
 - asks before unclear or risky actions
 
 ---
@@ -63,12 +64,12 @@ What the skill handles automatically:
 For repeated runs, create a local `.env` from `.env.example`:
 
 ```text
-DBT_DOMAIN=hospital
-DBT_PROFILE_NAME=shopsphere_analytics_dbt
-DBT_SOURCE_SCHEMA=doctors_hospital_src
-DBT_SOURCE_NAME=doctors_hospital_src
-DBT_LAYER_SCHEMA_PREFIX=doctors_hospital_src
-DBT_GITHUB_REPO_NAME=local-only
+DBT_DOMAIN=<domain_name>
+DBT_PROFILE_NAME=<dbt_profile_name>
+DBT_SOURCE_SCHEMA=<raw_source_schema>
+DBT_SOURCE_NAME=<dbt_source_name>
+DBT_LAYER_SCHEMA_PREFIX=<layer_schema_prefix>
+DBT_GITHUB_REPO_NAME=<repo_name_or_local_only>
 DBT_LAYER_1=bronze
 DBT_LAYER_2=silver
 DBT_LAYER_3=gold
@@ -121,10 +122,10 @@ Use the dbt Pipeline skill (`agentic-dbt-pipeline`).
 
 Build a dbt project for this domain:
 - domain: hospital
-- dbt_profile_name: shopsphere_analytics_dbt
-- source_schema: Source
-- source_name: doctor_hospital_src
-- layer_schema_prefix: doctor_hospital_src
+- dbt_profile_name: hospital_analytics
+- source_schema: hospital_raw
+- source_name: hospital_src
+- layer_schema_prefix: hospital_src
 - github_repo_name: local-only
 
 Use these medallion layers:
@@ -184,9 +185,11 @@ Most users do not need these.
 commit: ask
 push_to_github: true
 materialization_profile: prod
-auto_agents_schema: true
+auto_agents_schema: false
 use_subagents: true
 ```
+
+Set `auto_agents_schema: true` only for Snowflake, Databricks, or BigQuery targets.
 
 For faster development:
 

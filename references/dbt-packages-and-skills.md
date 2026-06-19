@@ -13,9 +13,9 @@ The pipeline uses **six dbt capabilities** together. Agent installs and runs the
 
 ---
 
-## 1. dbt Agent Skills (bootstrap — not manual install)
+## 1. dbt Agent Skills (bootstrap - not manual install)
 
-User installs **only** `agentic-dbt-pipeline`. Bootstrap runs `npx skills add dbt-labs/dbt-agent-skills/skills/dbt` when skills are missing — see [install-dbt-agent-skills.md](install-dbt-agent-skills.md).
+User installs **only** `agentic-dbt-pipeline`. Bootstrap runs `npx skills add dbt-labs/dbt-agent-skills/skills/dbt` when skills are missing - see [install-dbt-agent-skills.md](install-dbt-agent-skills.md).
 
 Install when `auto_install_dbt_skills: true` (default).
 
@@ -26,7 +26,7 @@ Install when `auto_install_dbt_skills: true` (default).
 | `agentic-dbt-pipeline` | Full pipeline orchestration, git, GitHub push |
 | `using-dbt-for-analytics-engineering` | Models, tests, docs |
 | `running-dbt-commands` | CLI formatting |
-| `building-dbt-semantic-layer` | After marts — semantic models & metrics |
+| `building-dbt-semantic-layer` | After marts - semantic models & metrics |
 | `troubleshooting-dbt-job-errors` | On job/CI failures |
 | `adding-dbt-unit-test` | When adding unit tests |
 | `answering-natural-language-questions-with-dbt` | Ad-hoc metric questions *(optional)* |
@@ -43,7 +43,7 @@ npx skills add zohaibRT/agentic-dbt-pipeline
 
 ---
 
-## 2–5. `packages.yml` (all dbt packages)
+## 2-5. `packages.yml` (all dbt packages)
 
 Declare **all** standard packages in `{project.root}/packages.yml`:
 
@@ -63,7 +63,7 @@ packages:
 dbt deps
 ```
 
-### codegen — source bootstrap
+### codegen - source bootstrap
 
 ```powershell
 $dbt = "dbt"
@@ -74,7 +74,7 @@ $dbt = "dbt"
 
 See [packages-and-sources.md](packages-and-sources.md) for post-codegen rules.
 
-### dbt_utils — in models and tests
+### dbt_utils - in models and tests
 
 Use where helpful (not required on every model):
 
@@ -82,7 +82,7 @@ Use where helpful (not required on every model):
 - `dbt_utils.expression_is_true`, `dbt_utils.unique_combination_of_columns`
 - `dbt_utils.generate_surrogate_key` in dims when needed
 
-### dbt_project_evaluator — after layers built
+### dbt_project_evaluator - after layers built
 
 Add to `dbt_project.yml`:
 
@@ -100,7 +100,7 @@ Run after marts build passes:
 
 Review `dbt_project_evaluator` results; fix critical issues or document accepted exceptions.
 
-### audit_helper — validation & refactors
+### audit_helper - validation & refactors
 
 Use macros (in analyses or one-off ops) when comparing model versions:
 
@@ -114,7 +114,7 @@ Use macros (in analyses or one-off ops) when comparing model versions:
 ) }}
 ```
 
-Run during acceptance or after large refactors — not on every layer commit.
+Run during acceptance or after large refactors - not on every layer commit.
 
 ---
 
@@ -124,7 +124,7 @@ Run during acceptance or after large refactors — not on every layer commit.
 
 Read [semantic-layer-spec.md](semantic-layer-spec.md) and compose with `building-dbt-semantic-layer`.
 
-On dbt Core **1.10.x** → use **legacy spec** (`semantic_models:` top-level YAML).
+On dbt Core **1.10.x** -> use **legacy spec** (`semantic_models:` top-level YAML).
 
 Validate:
 
@@ -158,4 +158,4 @@ Validate:
 | Evaluator config | `dbt_project.yml` dispatch | `Configure dbt project evaluator` |
 | Semantic layer | `models/semantic/` or `*_semantic.yml` | `Add semantic layer metrics` |
 
-Ask before each commit — see [git-workflow.md](git-workflow.md).
+Ask before each commit - see [git-workflow.md](git-workflow.md).

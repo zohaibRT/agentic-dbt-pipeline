@@ -8,25 +8,25 @@ If the user requests source-prefixed schemas, prefer:
 {layer_schema_prefix}_{layer_name}
 ```
 
-Example for source `doctor_hospital_src`:
+Example for layer schema prefix `<layer_schema_prefix>`:
 
 ```text
-doctor_hospital_src_bronze
-doctor_hospital_src_silver
-doctor_hospital_src_gold
+<layer_schema_prefix>_bronze
+<layer_schema_prefix>_silver
+<layer_schema_prefix>_gold
 ```
 
-To get those exact names instead of `analytics_doctor_hospital_src_bronze`, the project needs a `generate_schema_name` macro override. See [dbt-project-layers.md](dbt-project-layers.md).
+To get those exact names instead of `analytics_<layer_schema_prefix>_bronze`, the project needs a `generate_schema_name` macro override. See [dbt-project-layers.md](dbt-project-layers.md).
 
-With source prefix `doctor_hospital_src` and layer config:
+With `layer_schema_prefix` and layer config:
 
 | Layer | `+schema` | Postgres schema created |
 |---|---|---|
 | Raw source | *(source tables)* | `<source_schema>` |
-| Bronze | `doctor_hospital_src_bronze` | `doctor_hospital_src_bronze` |
-| Silver | `doctor_hospital_src_silver` | `doctor_hospital_src_silver` |
-| Gold | `doctor_hospital_src_gold` | `doctor_hospital_src_gold` |
-| Agents Schema | `AGENTS` | `AGENTS` *(separate — Agents Schema workflow)* |
+| Bronze | `<layer_schema_prefix>_bronze` | `<layer_schema_prefix>_bronze` |
+| Silver | `<layer_schema_prefix>_silver` | `<layer_schema_prefix>_silver` |
+| Gold | `<layer_schema_prefix>_gold` | `<layer_schema_prefix>_gold` |
+| Agents Schema | `AGENTS` | `AGENTS` *(separate - Agents Schema workflow)* |
 
 ## Verify source schema exists
 

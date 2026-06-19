@@ -49,7 +49,7 @@ Examples:
 
 ```text
 I cannot find source_schema: Source.
-I found these schemas: analytics, doctors_hospital_src, public.
+I found these schemas: analytics, raw_source, public.
 Which schema should I use?
 ```
 

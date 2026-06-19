@@ -9,9 +9,22 @@ Read [human-review.md](human-review.md) before marking marts complete if metrics
 ## Folder and naming
 
 - Folder: `models/marts/{domain}/`
-- YAML: `_ecommerce_marts.yml` (or `_<domain>_marts.yml`)
+- YAML: `_<domain>_marts.yml`
 
-## Required dimensions
+## Domain-driven design
+
+Build marts from the actual source profile and business requirements. Do not force ecommerce-shaped dimensions or facts unless the source data is ecommerce.
+
+Choose:
+
+- Facts for measurable business events or transactions
+- Dimensions for descriptive business entities
+- Date dimensions or time spines when date analysis is required
+- Reporting marts only when they directly support a known dashboard, KPI, or stakeholder question
+
+Each final model must have a documented grain.
+
+## Example dimensions only
 
 | Model | Grain | Notes |
 |---|---|---|
@@ -21,16 +34,18 @@ Read [human-review.md](human-review.md) before marking marts complete if metrics
 | `dim_marketing_channels` | channel_id | channels + fallback row `channel_id = -1`, `channel_name = 'Unattributed'` |
 | `dim_dates` | date_day | `generate_series` spine from order/payment/refund/signup dates |
 
-## Required facts
+## Example facts only
 
 | Model | Grain | Source |
 |---|---|---|
 | `fct_orders` | order_id | `int_*__orders_enriched` |
 | `fct_order_items` | order_item_id | `int_*__order_items_enriched` |
 
-Map null `channel_id` → `-1` in facts.
+Map null `channel_id` -> `-1` in facts.
 
 ## Optional reporting marts (create if simple)
+
+Create reporting marts only when the required metrics and grain are clear. Do not invent dashboard outputs.
 
 | Model | Grain | Metrics |
 |---|---|---|
@@ -41,7 +56,7 @@ Map null `channel_id` → `-1` in facts.
 
 ## Rules
 
-- `ref()` only — **no** `source()` in marts
+- `ref()` only - **no** `source()` in marts
 - Materialization: follow [materialization-rules.md](materialization-rules.md)
   - `prod`: marts folder `table`; `fct_*` incremental with `unique_key`
   - `dev`: all `view`
@@ -51,18 +66,20 @@ Map null `channel_id` → `-1` in facts.
 - Do not allocate refunds to order items (refunds are order-grain only)
 - Expose business-friendly mapped fields from intermediate models; keep raw codes only when useful for audit
 - Do not expose private, sensitive, PII, or PHI fields in marts unless the user explicitly approves
+- Keep one clear grain per fact or dimension; do not mix event, entity, and summary grains in the same model
+- Add surrogate keys only when natural keys are missing, composite, unstable, or too wide for downstream use
 
 ## Tests
 
 - `not_null` + `unique` on dimension and fact primary keys
-- `relationships`: facts → dimensions (and `fct_order_items` → `fct_orders`)
+- `relationships`: facts -> dimensions (and `fct_order_items` -> `fct_orders`)
 - `accepted_values` on boolean flags
-- Use `arguments:` nesting for generic tests
+- Use modern generic test `arguments:` nesting when supported by the installed dbt version
 - Add tests for mapping coverage and metric denominators where applicable
 
 ## Validate (required after every marts change)
 
-Run from dbt project root. **Build is mandatory** — a layer is not complete until build passes.
+Run from dbt project root. **Build is mandatory** - a layer is not complete until build passes.
 
 ```powershell
 dbt parse --no-partial-parse

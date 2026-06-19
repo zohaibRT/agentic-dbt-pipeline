@@ -52,12 +52,12 @@ For a full copy-paste prompt, see [prompt.md](prompt.md).
 You can also keep repeatable non-secret settings in `.env`:
 
 ```text
-DBT_DOMAIN=hospital
-DBT_PROFILE_NAME=shopsphere_analytics_dbt
-DBT_SOURCE_SCHEMA=doctors_hospital_src
-DBT_SOURCE_NAME=doctors_hospital_src
-DBT_LAYER_SCHEMA_PREFIX=doctors_hospital_src
-DBT_GITHUB_REPO_NAME=local-only
+DBT_DOMAIN=<domain_name>
+DBT_PROFILE_NAME=<dbt_profile_name>
+DBT_SOURCE_SCHEMA=<raw_source_schema>
+DBT_SOURCE_NAME=<dbt_source_name>
+DBT_LAYER_SCHEMA_PREFIX=<layer_schema_prefix>
+DBT_GITHUB_REPO_NAME=<repo_name_or_local_only>
 DBT_USE_SUBAGENTS=true
 ```
 
@@ -94,6 +94,7 @@ Keep passwords, tokens, and private keys in local profiles or GitHub Secrets.
 | Subagents | Optionally parallelizes read-only profiling, planning, docs, and review work |
 | Sources | Generates source YAML and adds source descriptions |
 | Source profiling | Reviews row counts, keys, relationships, dates, measures, and status/code fields before modeling |
+| Data engineering guardrails | Checks grain, tests, incremental strategy, snapshots, exposures, privacy, and performance |
 | Staging | Builds source-cleaning models with `source()` references |
 | Intermediate | Builds reusable business logic models with `ref()` references and mapping seeds when needed |
 | Marts | Builds final dimension, fact, and reporting models with business-friendly fields |
@@ -162,3 +163,4 @@ The skill can add and install these dbt packages:
 | [references/git-workflow.md](references/git-workflow.md) | Commit and push workflow |
 | [references/agents-schema-setup.md](references/agents-schema-setup.md) | Agents Schema workflow setup |
 | [references/dbt-packages-and-skills.md](references/dbt-packages-and-skills.md) | dbt packages and companion skills |
+| [references/data-engineering-best-practices.md](references/data-engineering-best-practices.md) | Data-engineering guardrails |

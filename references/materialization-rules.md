@@ -6,23 +6,23 @@ Controlled by `materialization_profile` in `project.config.yml` (default: `prod`
 
 | Layer | `dbt_project.yml` | Model-level override |
 |---|---|---|
-| Staging | `+materialized: view` | — |
-| Intermediate | `+materialized: view` | — |
-| Marts folder default | `+materialized: table` | — |
+| Staging | `+materialized: view` | - |
+| Intermediate | `+materialized: view` | - |
+| Marts folder default | `+materialized: table` | - |
 | `dim_*` | inherits table | `{{ config(materialized='table') }}` optional |
 | `fct_*` | inherits table | `{{ config(materialized='incremental', unique_key='<pk>') }}` |
 | `mart_*` reporting | inherits table | `{{ config(materialized='table') }}` |
 
 ### Incremental facts
 
-`fct_orders` → `unique_key='order_id'`  
-`fct_order_items` → `unique_key='order_item_id'`
+`fct_orders` -> `unique_key='order_id'`
+`fct_order_items` -> `unique_key='order_item_id'`
 
 Use `is_incremental()` filter on date or id when adding incremental logic.
 
 ## Development (`materialization_profile: dev`)
 
-All layers `view` — faster iteration:
+All layers `view` - faster iteration:
 
 ```yaml
 models:
@@ -37,7 +37,7 @@ models:
 
 ## Sync rule
 
-When writing or updating `dbt_project.yml`, **match** `materialization_profile` from user prompt or config.  
+When writing or updating `dbt_project.yml`, **match** `materialization_profile` from user prompt or config.
 If project file disagrees with profile, **update `dbt_project.yml`** and rebuild affected layers.
 
 ## Why prod uses tables for marts
