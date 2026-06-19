@@ -3,7 +3,8 @@ name: agentic-dbt-pipeline
 description: >-
   Automate end-to-end dbt with an AI agent: bootstrap, medallion layers
   (bronze/silver/gold by default), packages (codegen, utils, evaluator, audit_helper),
-  semantic layer, docs, per-layer git commits, and GitHub push via gh CLI.
+  semantic layer, docs, per-layer git commits, GitHub push via gh CLI, and
+  user-facing final run summaries.
   Use when setting up or extending a dbt analytics project with agentic automation.
 ---
 
@@ -70,7 +71,7 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 | **9 Git** | After each stage | [github-repo-resolution.md](references/github-repo-resolution.md), [git-workflow.md](references/git-workflow.md) |
 | **10 Agents Schema / CI** | Metadata + automation | [agents-schema-setup.md](references/agents-schema-setup.md), [cicd-setup.md](references/cicd-setup.md) |
 | **Review** | Human approval points | [human-review.md](references/human-review.md) |
-| **Done** | Final check | [acceptance-checklist.md](references/acceptance-checklist.md), [final-delivery.md](references/final-delivery.md) |
+| **Done** | Final check + user summary | [acceptance-checklist.md](references/acceptance-checklist.md), [final-delivery.md](references/final-delivery.md) |
 
 Context prompt template: [agent-context-prompt.md](references/agent-context-prompt.md)
 
@@ -163,7 +164,7 @@ Read [separate-layer-builds.md](references/separate-layer-builds.md).
 7. Docs - `dbt docs generate`
 8. Agents Schema - publish dbt metadata to `AGENTS.*` after `target/manifest.json` exists when enabled and supported
 9. Automation - CI workflow
-10. **Acceptance** - [acceptance-checklist.md](references/acceptance-checklist.md)
+10. **Acceptance + final summary** - [acceptance-checklist.md](references/acceptance-checklist.md), [final-delivery.md](references/final-delivery.md)
 
 Each stage: **parse -> build -> summarize -> ask commit/push** (repo: `https://github.com/{gh_user}/{github_repo_name}`).
 
@@ -214,6 +215,22 @@ Read [git-workflow.md](references/git-workflow.md). Ask before every commit/push
 
 Use Agents Schema after docs generation or any step that produces `target/manifest.json`. Do not treat it as a replacement for dbt project files while editing; use it as the warehouse-side metadata layer that helps agents answer questions and understand built models.
 
+## Step 9 - Final delivery summary
+
+Read [final-delivery.md](references/final-delivery.md) before marking any full pipeline or requested phase complete.
+
+Always finish with a user-facing summary that starts short, then gives the useful details:
+
+1. Short summary: what was built and whether it passed.
+2. Results: profile, domain, source, schemas, layers, row counts when known.
+3. Models created or changed by layer.
+4. Validation: dbt debug/parse/build/docs/evaluator results.
+5. Data quality notes and assumptions.
+6. Git, CI, and Agents Schema status.
+7. Open decisions and recommended next actions.
+
+Keep the first section concise enough for a new user to understand in under one minute.
+
 ## Failure handling
 
 Read [stuck-recovery.md](references/stuck-recovery.md) whenever a command hangs, validation fails repeatedly, required input is missing, or the agent cannot decide safely.
@@ -234,6 +251,8 @@ Read [stuck-recovery.md](references/stuck-recovery.md) whenever a command hangs,
 5. dbt debug / parse / build results
 6. Commit status (asked / skipped / done / pushed to github)
 ```
+
+For the final response, use [final-delivery.md](references/final-delivery.md) instead of only the phase template.
 
 ## Ambiguity - prompt overrides
 

@@ -106,5 +106,6 @@ Verify before marking the dbt pipeline workflow complete.
 ## Final delivery
 
 - [ ] Final handoff notes or README include domain, profile name, schemas, final models, metrics, run commands, and known limitations
+- [ ] Final response starts with a short summary, then includes results, validation, data notes, git/automation status, and open decisions
 - [ ] Phase commits created or intentionally skipped
 - [ ] Final response summarizes build status, docs status, evaluator status, Agents Schema status, git status, limitations, and open decisions

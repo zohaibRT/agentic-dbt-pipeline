@@ -2,7 +2,7 @@
 
 `dbt Pipeline` is a Cursor Agent Skill for setting up and maintaining dbt projects with a structured, agent-assisted workflow.
 
-It helps an agent initialize a dbt project, configure sources, build bronze/silver/gold medallion layers, add semantic layer assets, run quality checks, generate docs, create CI workflows, publish dbt metadata to Agents Schema, and commit each stage separately.
+It helps an agent initialize a dbt project, configure sources, build bronze/silver/gold medallion layers, add semantic layer assets, run quality checks, generate docs, create CI workflows, publish dbt metadata to Agents Schema, commit each stage separately, and finish with a clear user-facing run summary.
 
 ## Installation
 
@@ -83,7 +83,7 @@ Keep passwords, tokens, and private keys in local profiles or GitHub Secrets.
 | Git | Commits initialization, sources, each model layer, docs, CI, and Agents Schema separately |
 | Agents Schema | Publishes dbt metadata into `AGENTS.*` so agents can query project context from the warehouse |
 | CI | Creates GitHub Actions workflows for dbt validation and Agents Schema sync |
-| Final delivery | Produces handoff notes with run commands, build status, known limitations, and next decisions |
+| Final delivery | Produces a short summary plus handoff notes with run commands, build status, known limitations, and next decisions |
 
 ## Commit Strategy
 

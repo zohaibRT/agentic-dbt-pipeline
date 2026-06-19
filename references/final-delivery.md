@@ -42,12 +42,62 @@ If a full `dbt build` is too expensive, explain why and run the most complete sa
 
 ## Final response
 
-Summarize:
+Always start with a concise user-facing summary before detailed handoff notes.
+
+Use this order:
+
+### Short summary
+
+In 3-6 lines, say:
+
+- Whether the pipeline or requested phase completed successfully
+- What domain/source was used
+- Which layers/models were created or changed
+- Whether validation passed
+- Whether anything important still needs user review
+
+### Results
+
+Use a compact table when helpful:
+
+| Area | Result |
+|---|---|
+| Profile | `<dbt_profile_name>` |
+| Domain | `<domain>` |
+| Source | `<source_schema>` / `<source_name>` |
+| Layers | `<layer_1>` -> `<layer_2>` -> `<layer_3>` |
+| Schemas | `<schema_1>`, `<schema_2>`, `<schema_3>` |
+| Git | `<commit/push status>` |
+
+### What changed
 
 - Files/layers created
+- Important models created by layer
+- Semantic models and metrics added
+- CI or Agents Schema workflow changes
+
+### Validation results
+
 - Build and docs results
 - Project evaluator result
+- Key pass/warn/fail counts when available
+
+### Data notes
+
+- Source row counts and empty tables
+- Known data quality limitations
+- Important assumptions used
+- PII/PHI or sensitive-field decisions
+
+### Git and automation
+
 - Git commit status
 - Agents Schema status
-- Known data limitations
+- CI status
+
+### Open decisions
+
 - Open user decisions
+- Recommended next actions
+
+Keep the final response readable for a new dbt user. Do not bury blockers, failed validation, unsupported Agents Schema destinations, or sensitive-data risks inside long prose.
