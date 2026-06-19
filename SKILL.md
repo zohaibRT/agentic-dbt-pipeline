@@ -66,7 +66,7 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 | **6 Intermediate** | Layer 2 | [intermediate-spec.md](references/intermediate-spec.md), [mapping-seeds.md](references/mapping-seeds.md) |
 | **7 Marts** | Layer 3 star schema | [marts-spec.md](references/marts-spec.md), [materialization-rules.md](references/materialization-rules.md) |
 | **7b Semantic** | Metrics on marts | [semantic-layer-spec.md](references/semantic-layer-spec.md) |
-| **7c Evaluator** | Best-practice audit | [dbt-packages-and-skills.md](references/dbt-packages-and-skills.md) |
+| **7c Evaluator** | Best-practice audit | [project-evaluator.md](references/project-evaluator.md), [dbt-packages-and-skills.md](references/dbt-packages-and-skills.md) |
 | **8 Docs** | After layers | [documentation.md](references/documentation.md) |
 | **9 Git** | After each stage | [github-repo-resolution.md](references/github-repo-resolution.md), [git-workflow.md](references/git-workflow.md) |
 | **10 Agents Schema / CI** | Metadata + automation | [agents-schema-setup.md](references/agents-schema-setup.md), [cicd-setup.md](references/cicd-setup.md) |
@@ -140,6 +140,13 @@ seeds:
 snapshots:
   {project.name}:
     +schema: {layer_schema_prefix}_snapshots
+vars:
+  dbt_project_evaluator:
+    staging_folder_name: {layer_1_name}
+    intermediate_folder_name: {layer_2_name}
+    marts_folder_name: {layer_3_name}
+    marts_prefixes: ['fct_', 'dim_', 'mart_']
+    other_prefixes: ['rpt_']
 ```
 
 `fct_*` models: `incremental` with `unique_key` in SQL when `materialization_profile: prod`.
@@ -207,7 +214,7 @@ Read [semantic-layer-spec.md](references/semantic-layer-spec.md). Compose with `
 
 ## Step 5c - Project evaluator
 
-Before running evaluator, confirm `dbt_project.yml` routes `models: dbt_project_evaluator: +schema` to `<layer_schema_prefix>_evaluator`. Do not let evaluator package tables build in `source_schema`.
+Read [project-evaluator.md](references/project-evaluator.md). Before running evaluator, confirm `dbt_project.yml` routes `models: dbt_project_evaluator: +schema` to `<layer_schema_prefix>_evaluator` and sets evaluator vars for the active medallion folder names. Do not let evaluator package tables build in `source_schema`.
 
 ```powershell
 & $dbt build --select package:dbt_project_evaluator
@@ -320,6 +327,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 | [project-initialization.md](references/project-initialization.md) | venv, dbt init, debug |
 | [warehouse-schema-setup.md](references/warehouse-schema-setup.md) | Postgres schemas |
 | [dbt-packages-and-skills.md](references/dbt-packages-and-skills.md) | codegen, utils, evaluator, audit_helper, agent skills |
+| [project-evaluator.md](references/project-evaluator.md) | Align dbt_project_evaluator with bronze/silver/gold and accepted warnings |
 | [semantic-layer-spec.md](references/semantic-layer-spec.md) | MetricFlow / semantic metrics |
 | [github-repo-resolution.md](references/github-repo-resolution.md) | `gh` CLI owner + repo name |
 | [packages-and-sources.md](references/packages-and-sources.md) | Codegen, source YAML |

@@ -95,6 +95,14 @@ seeds:
 snapshots:
   <project.name>:
     +schema: <layer_schema_prefix>_snapshots
+
+vars:
+  dbt_project_evaluator:
+    staging_folder_name: <layer_1_name>
+    intermediate_folder_name: <layer_2_name>
+    marts_folder_name: <layer_3_name>
+    marts_prefixes: ['fct_', 'dim_', 'mart_']
+    other_prefixes: ['rpt_']
 ```
 
 When `audit_helper` writes persistent outputs, route them to `<layer_schema_prefix>_audit`.

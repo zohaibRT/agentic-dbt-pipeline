@@ -44,10 +44,20 @@ if ($IsWindows -and -not (Get-Command "dbt" -ErrorAction SilentlyContinue)) {
 
 ## Project evaluator *(after marts)*
 
-Before running, confirm `dbt_project.yml` routes `dbt_project_evaluator` to `<layer_schema_prefix>_evaluator`.
+Before running, confirm `dbt_project.yml`:
+
+- Routes `dbt_project_evaluator` to `<layer_schema_prefix>_evaluator`
+- Sets `vars: dbt_project_evaluator:` for the active medallion folders
+- Includes `mart_` in `marts_prefixes` when the gold layer contains `mart_*` reporting models
 
 ```powershell
 & $dbt build --select package:dbt_project_evaluator
+```
+
+If using an exceptions seed:
+
+```powershell
+& $dbt build --select package:dbt_project_evaluator dbt_project_evaluator_exceptions
 ```
 
 ## Schema isolation *(after builds)*

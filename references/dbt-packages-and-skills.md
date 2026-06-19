@@ -84,7 +84,7 @@ Use where helpful (not required on every model):
 
 ### dbt_project_evaluator - after layers built
 
-Add to `dbt_project.yml`:
+Read [project-evaluator.md](project-evaluator.md). Add to `dbt_project.yml`:
 
 ```yaml
 dispatch:
@@ -95,9 +95,19 @@ models:
   dbt_project_evaluator:
     +schema: <layer_schema_prefix>_evaluator
     +materialized: table
+
+vars:
+  dbt_project_evaluator:
+    staging_folder_name: <layer_1_name>
+    intermediate_folder_name: <layer_2_name>
+    marts_folder_name: <layer_3_name>
+    marts_prefixes: ['fct_', 'dim_', 'mart_']
+    other_prefixes: ['rpt_']
 ```
 
 The evaluator package must not build into `source_schema`. If `base_*`, `stg_*`, or `fct_*` evaluator tables appear beside raw source tables, fix schema routing before accepting the run. See [schema-isolation.md](schema-isolation.md).
+
+Use the evaluator vars to keep the skill's bronze/silver/gold layers. Do not restructure to `staging/intermediate/marts` only to satisfy package defaults.
 
 Run after marts build passes:
 
@@ -105,7 +115,7 @@ Run after marts build passes:
 & $dbt build --select package:dbt_project_evaluator
 ```
 
-Review `dbt_project_evaluator` results; fix critical issues or document accepted exceptions.
+Review `dbt_project_evaluator` results; fix critical issues or document accepted exceptions. Use an exceptions seed only for intentional patterns, such as reviewed rejoining warnings.
 
 ### audit_helper - validation & refactors
 

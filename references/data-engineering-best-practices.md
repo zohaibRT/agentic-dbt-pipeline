@@ -51,5 +51,5 @@ Use this as the final design guardrail for every dbt project.
 - Avoid unnecessary `select *` in marts when tables are wide or sensitive.
 - Materialize high-use marts as tables or incremental models in production.
 - Keep development builds light with views where possible.
-- Run project evaluator after marts and document accepted warnings.
+- Run project evaluator after marts with vars aligned to the active layer names; fix warnings or document accepted exceptions.
 - Keep CI focused on parse, deps, targeted builds, docs, and package checks.

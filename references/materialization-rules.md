@@ -37,6 +37,13 @@ models:
   dbt_project_evaluator:
     +schema: <layer_schema_prefix>_evaluator
     +materialized: table
+vars:
+  dbt_project_evaluator:
+    staging_folder_name: <layer_1_name>
+    intermediate_folder_name: <layer_2_name>
+    marts_folder_name: <layer_3_name>
+    marts_prefixes: ['fct_', 'dim_', 'mart_']
+    other_prefixes: ['rpt_']
 ```
 
 ## Sync rule

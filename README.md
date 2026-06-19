@@ -143,4 +143,5 @@ The skill can add and install these dbt packages:
 | [references/schema-isolation.md](references/schema-isolation.md) | Source, layer, evaluator, seeds, snapshots, and metadata schema separation |
 | [references/agents-schema-setup.md](references/agents-schema-setup.md) | Agents Schema workflow setup |
 | [references/dbt-packages-and-skills.md](references/dbt-packages-and-skills.md) | dbt packages and companion skills |
+| [references/project-evaluator.md](references/project-evaluator.md) | Project evaluator setup for bronze/silver/gold |
 | [references/data-engineering-best-practices.md](references/data-engineering-best-practices.md) | Data-engineering guardrails |
