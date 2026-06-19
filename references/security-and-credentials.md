@@ -4,14 +4,14 @@
 
 - Hardcode passwords, tokens, or private keys in `SKILL.md`, SQL, YAML, or commits.
 - Paste full `profiles.yml` contents with passwords into prompts or issue comments.
-- Commit `.env`, `profiles.yml`, or credential files.
+- Commit `.env`, `profiles.yml`, or credential files. Commit `.env.example` only when it contains no secrets.
 - Print secrets in terminal output or chat summaries.
 - Change production schemas, profiles, or credentials without user approval.
 
 ## Always
 
 - Inspect `.gitignore` before the first commit.
-- Use `project.config.yml` for **non-secret** connection metadata only.
+- Use `.env` or `project.config.yml` for **non-secret** connection metadata only.
 - Reference credentials via:
   - Local: `~/.dbt/profiles.yml`
   - CI: GitHub Actions secrets

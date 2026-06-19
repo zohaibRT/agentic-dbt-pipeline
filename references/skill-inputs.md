@@ -1,6 +1,6 @@
 # Skill Inputs — Collect Before Any Work
 
-Read [project.config.yml](../project.config.yml). If values are missing, **ask the user** before proceeding.
+Read [project.config.yml](../project.config.yml) and [env-configuration.md](env-configuration.md). If values are missing after prompt, `.env`, and config resolution, **ask the user** before proceeding.
 
 ## Required inputs
 
@@ -8,16 +8,16 @@ Read [project.config.yml](../project.config.yml). If values are missing, **ask t
 |---|---|---|
 | dbt project name | `project.name` | `my_dbt_project` |
 | dbt project root | `project.root` | `my_dbt_project` |
-| dbt profile name | `dbt_profile_name` prompt or `project.profile` | ask if missing or ambiguous |
+| dbt profile name | `dbt_profile_name` prompt, `DBT_PROFILE_NAME`, or `project.profile` | ask if missing or ambiguous |
 | Adapter | `database.adapter` | `postgres` |
 | Host | `database.host` | `warehouse_host` |
 | Port | `database.port` | `5432` |
 | Database | `database.dbname` | `analytics` |
 | Profile target schema | `database.target_schema` | `raw` |
-| Source/raw schema | `source_schema` prompt or `source.schema` | ask if missing |
-| Source name | `source_name` prompt or `source.name` | ask if missing |
-| Layer schema prefix | `layer_schema_prefix` prompt | usually same as `source_name`; ask if missing |
-| Domain folder | `domain` prompt or `domain` config | ask if missing |
+| Source/raw schema | `source_schema` prompt, `DBT_SOURCE_SCHEMA`, or `source.schema` | ask if missing |
+| Source name | `source_name` prompt, `DBT_SOURCE_NAME`, or `source.name` | ask if missing |
+| Layer schema prefix | `layer_schema_prefix` prompt or `DBT_LAYER_SCHEMA_PREFIX` | usually same as `source_name`; ask if missing |
+| Domain folder | `domain` prompt, `DBT_DOMAIN`, or `domain` config | ask if missing |
 | Project rules | `project_rules` prompt | optional; ask if unclear |
 | Layer 1 schema suffix | user name → `+schema` | `staging` |
 | Layer 2 schema suffix | user name → `+schema` | `intermediate` |
@@ -47,6 +47,7 @@ Read [project.config.yml](../project.config.yml). If values are missing, **ask t
 ## Credentials
 
 - **Never** hardcode passwords in skills, prompts, or project files.
+- Use `.env` only for non-secret reusable project settings.
 - Use `~/.dbt/profiles.yml` locally.
 - Use GitHub Secrets in CI (`WAREHOUSE_CREDENTIALS` for Agents Schema).
 - If multiple dbt profiles exist, ask for `dbt_profile_name` before running `dbt debug`, `dbt deps`, `dbt parse`, or `dbt build`.
@@ -77,6 +78,24 @@ commit: ask | auto_yes | skip_all
 materialization_profile: prod | dev
 workflow_phase: init | sources | staging | intermediate | marts | semantic_layer | project_evaluator | docs | ci | agents_schema
 ```
+
+## Optional `.env`
+
+For repeat projects, allow the user to keep required fields in `.env`:
+
+```text
+DBT_DOMAIN=hospital
+DBT_PROFILE_NAME=shopsphere_analytics_dbt
+DBT_SOURCE_SCHEMA=doctors_hospital_src
+DBT_SOURCE_NAME=doctors_hospital_src
+DBT_LAYER_SCHEMA_PREFIX=doctors_hospital_src
+DBT_GITHUB_REPO_NAME=local-only
+DBT_LAYER_1=bronze
+DBT_LAYER_2=silver
+DBT_LAYER_3=gold
+```
+
+Prompt values override `.env`. Do not commit `.env`; commit only `.env.example`.
 
 ## dbt packages & skills stack
 

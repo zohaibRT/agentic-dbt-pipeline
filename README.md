@@ -24,7 +24,7 @@ This is the only skill users need to install manually. During bootstrap, the ski
 - Warehouse access for `dbt debug` and `dbt build`
 - Snowflake, Databricks, or BigQuery credentials for Agents Schema sync, if enabled
 
-Do not commit real warehouse credentials, `.env`, or `profiles.yml`.
+Do not commit real warehouse credentials, `.env`, or `profiles.yml`. Use `.env.example` as a safe template for non-secret project settings.
 
 ## Usage
 
@@ -48,6 +48,19 @@ Use these medallion layers:
 ```
 
 For a full copy-paste prompt, see [prompt.md](prompt.md).
+
+You can also keep repeatable non-secret settings in `.env`:
+
+```text
+DBT_DOMAIN=hospital
+DBT_PROFILE_NAME=shopsphere_analytics_dbt
+DBT_SOURCE_SCHEMA=doctors_hospital_src
+DBT_SOURCE_NAME=doctors_hospital_src
+DBT_LAYER_SCHEMA_PREFIX=doctors_hospital_src
+DBT_GITHUB_REPO_NAME=local-only
+```
+
+Prompt values override `.env`; credentials stay in `~/.dbt/profiles.yml` or GitHub Secrets.
 
 ## Configuration
 
@@ -76,6 +89,7 @@ Keep passwords, tokens, and private keys in local profiles or GitHub Secrets.
 |---|---|
 | Bootstrap | Installs dbt Labs agent skills and dbt packages when needed |
 | Validation | Runs `dbt debug`, `dbt deps`, `dbt parse`, and scoped `dbt build` commands |
+| Environment config | Loads non-secret `.env` values before asking for missing inputs |
 | Sources | Generates source YAML and adds source descriptions |
 | Source profiling | Reviews row counts, keys, relationships, dates, measures, and status/code fields before modeling |
 | Staging | Builds source-cleaning models with `source()` references |

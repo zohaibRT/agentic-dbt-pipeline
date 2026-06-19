@@ -16,6 +16,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Python venv and dbt adapter installed
 - [ ] `dbt debug` passes
 - [ ] `.gitignore` excludes credentials and generated files
+- [ ] `.env` loaded for non-secret inputs when present; `.env.example` contains no secrets when committed
 
 ## dbt Agent Skills & packages
 

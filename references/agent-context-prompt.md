@@ -10,7 +10,7 @@ Use the dbt Pipeline skill (`agentic-dbt-pipeline`) and these dbt-labs skills:
 - running-dbt-commands
 - troubleshooting-dbt-job-errors
 
-Read project.config.yml and references/skill-inputs.md first.
+Read project.config.yml, references/skill-inputs.md, and references/env-configuration.md first. If `.env` exists, load non-secret settings from it before asking for missing inputs.
 
 ## Warehouse (non-secret)
 
@@ -29,6 +29,7 @@ Read project.config.yml and references/skill-inputs.md first.
 - Use existing dbt profile: <project.profile>
 - Do not hardcode passwords
 - Do not commit profiles.yml or .env
+- Commit `.env.example` only when it contains no secrets
 
 ## GitHub *(ask repo name; owner from gh CLI)*
 

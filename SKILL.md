@@ -53,7 +53,7 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 | Phase | When | Reference |
 |---|---|---|
 | **Bootstrap** | **Every run** (unless `auto_bootstrap: false`) | [bootstrap.md](references/bootstrap.md) |
-| **0 Inputs** | Always first | [skill-inputs.md](references/skill-inputs.md), [security-and-credentials.md](references/security-and-credentials.md), [code-agent-setup.md](references/code-agent-setup.md) |
+| **0 Inputs** | Always first | [skill-inputs.md](references/skill-inputs.md), [env-configuration.md](references/env-configuration.md), [security-and-credentials.md](references/security-and-credentials.md), [code-agent-setup.md](references/code-agent-setup.md) |
 | **1 Init** | New project | [project-initialization.md](references/project-initialization.md) |
 | **2 Schemas** | After init | [warehouse-schema-setup.md](references/warehouse-schema-setup.md) |
 | **3 Sources** | Packages + source YAML | [packages-and-sources.md](references/packages-and-sources.md) |
@@ -74,11 +74,11 @@ Context prompt template: [agent-context-prompt.md](references/agent-context-prom
 
 ## Step 0 — Load config
 
-Read [project.config.yml](project.config.yml) and [skill-inputs.md](references/skill-inputs.md).
+Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), and [env-configuration.md](references/env-configuration.md).
 
 Resolve paths relative to workspace root. dbt project root = `{project.root}`.
 
-**User prompt overrides config** for schema, domain, layers, materialization, commit mode.
+**User prompt overrides `.env` and config** for schema, domain, layers, materialization, commit mode. Use `.env` for non-secret reusable inputs before asking the user.
 
 ## Step 0.1 — Security
 
@@ -260,6 +260,7 @@ Read [stuck-recovery.md](references/stuck-recovery.md) whenever a command hangs,
 | [bootstrap.md](references/bootstrap.md) | **Auto-run:** skills install, codegen, CI/Agents workflows |
 | [project.config.yml](project.config.yml) | Defaults, paths, git, materialization |
 | [skill-inputs.md](references/skill-inputs.md) | Required inputs |
+| [env-configuration.md](references/env-configuration.md) | Optional `.env` settings and precedence |
 | [security-and-credentials.md](references/security-and-credentials.md) | Secrets & gitignore |
 | [project-initialization.md](references/project-initialization.md) | venv, dbt init, debug |
 | [warehouse-schema-setup.md](references/warehouse-schema-setup.md) | Postgres schemas |

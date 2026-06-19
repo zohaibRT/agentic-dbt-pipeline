@@ -12,7 +12,7 @@ Copy one of the prompts below into Cursor.
 
 ## Starter Prompt
 
-Use this for a new dbt project. Fill in the values you know. Leave anything unknown blank; the agent will ask before running dbt.
+Use this for a new dbt project. Fill in the values you know, or put them in `.env`. Leave anything unknown blank; the agent will ask before running dbt.
 
 ```text
 Use the dbt Pipeline skill (`agentic-dbt-pipeline`).
@@ -23,7 +23,7 @@ Build a dbt project for this domain:
 - source_schema: <raw/source schema to inspect>
 - source_name: <friendly dbt source name>
 - layer_schema_prefix: <usually same as source_name>
-- github_repo_name: <repo slug only>
+- github_repo_name: <repo name or local-only>
 
 Use these medallion layers:
 - bronze
@@ -45,6 +45,7 @@ Please:
 What the skill handles automatically:
 
 - installs dbt Labs agent skills when missing
+- reads non-secret project settings from `.env` when present
 - installs dbt packages with `dbt deps`
 - uses `dbt_utils`, `audit_helper`, and `dbt_project_evaluator` at the right stages
 - profiles source data before modeling
@@ -53,6 +54,35 @@ What the skill handles automatically:
 - prepares human review and final handoff notes
 - prepares Agents Schema after `target/manifest.json` exists
 - asks before unclear or risky actions
+
+---
+
+## Optional `.env`
+
+For repeated runs, create a local `.env` from `.env.example`:
+
+```text
+DBT_DOMAIN=hospital
+DBT_PROFILE_NAME=shopsphere_analytics_dbt
+DBT_SOURCE_SCHEMA=doctors_hospital_src
+DBT_SOURCE_NAME=doctors_hospital_src
+DBT_LAYER_SCHEMA_PREFIX=doctors_hospital_src
+DBT_GITHUB_REPO_NAME=local-only
+DBT_LAYER_1=bronze
+DBT_LAYER_2=silver
+DBT_LAYER_3=gold
+```
+
+Do not put passwords or tokens in `.env`. Prompt values override `.env`.
+
+When `.env` already has the required values, the prompt can be as simple as:
+
+```text
+Use the dbt Pipeline skill (`agentic-dbt-pipeline`).
+
+Build the dbt project using the settings from `.env`.
+Run the full pipeline and ask before committing, pushing, changing schemas, or adding secrets.
+```
 
 ---
 

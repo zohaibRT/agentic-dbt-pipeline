@@ -42,6 +42,14 @@ REQUIRED_GITIGNORE = {
     "profiles.yml",
 }
 
+FORBIDDEN_ENV_KEY_PARTS = (
+    "PASSWORD",
+    "TOKEN",
+    "PRIVATE_KEY",
+    "SECRET",
+    "API_KEY",
+)
+
 
 def get_nested(data: dict, path: tuple[str, ...]):
     cur = data
@@ -79,6 +87,7 @@ def main() -> int:
     root = Path(args.root).resolve()
     config_path = root / "project.config.yml"
     gitignore_path = root / ".gitignore"
+    env_example_path = root / ".env.example"
 
     errors = []
 
@@ -116,6 +125,19 @@ def main() -> int:
         missing_entries = sorted(REQUIRED_GITIGNORE - gitignore_entries)
         if missing_entries:
             errors.append("Missing .gitignore entries: " + ", ".join(missing_entries))
+
+    if env_example_path.exists():
+        for line_number, line in enumerate(
+            env_example_path.read_text(encoding="utf-8").splitlines(), start=1
+        ):
+            stripped = line.strip()
+            if not stripped or stripped.startswith("#") or "=" not in stripped:
+                continue
+            key = stripped.split("=", 1)[0].strip().upper()
+            if any(part in key for part in FORBIDDEN_ENV_KEY_PARTS):
+                errors.append(
+                    f".env.example contains secret-like key on line {line_number}: {key}"
+                )
 
     if errors:
         for error in errors:
