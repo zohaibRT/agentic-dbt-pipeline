@@ -17,7 +17,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] `dbt debug` passes
 - [ ] `.gitignore` excludes credentials and generated files
 - [ ] `.env` loaded for non-secret inputs when present; `.env.example` contains no secrets when committed
-- [ ] Subagents used only for read-only/draft work when enabled; main agent kept dbt commands, edits, commits, and final decisions
+- [ ] Any subagent delegation was read-only/draft work; main agent kept dbt commands, edits, commits, and final decisions
 
 ## dbt Agent Skills & packages
 

@@ -11,7 +11,7 @@ Use the dbt Pipeline skill (`agentic-dbt-pipeline`) and these dbt-labs skills:
 - troubleshooting-dbt-job-errors
 
 Read project.config.yml, references/skill-inputs.md, references/env-configuration.md, and references/data-engineering-best-practices.md first. If `.env` exists, load non-secret settings from it before asking for missing inputs.
-If `use_subagents` or `DBT_USE_SUBAGENTS` is true, read references/subagent-workflow.md and use subagents only for safe read-only analysis or draft review.
+When work can be safely delegated, read references/subagent-workflow.md and use subagents only for read-only analysis or draft review.
 
 ## Warehouse (non-secret)
 

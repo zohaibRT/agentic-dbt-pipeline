@@ -84,7 +84,7 @@ Resolve paths relative to workspace root. dbt project root = `{project.root}`.
 
 ## Step 0b - Optional subagents
 
-Read [subagent-workflow.md](references/subagent-workflow.md) when `use_subagents: true` or when source profiling, mapping review, model planning, docs, or evaluator review can safely run in parallel. Keep dbt commands, shared file edits, commits, pushes, and final decisions with the main agent.
+Read [subagent-workflow.md](references/subagent-workflow.md) when source profiling, mapping review, model planning, docs, or evaluator review can safely run in parallel. The main agent decides when to delegate and keeps dbt commands, shared file edits, commits, pushes, and final decisions.
 
 ## Step 0.1 - Security
 
@@ -244,7 +244,6 @@ Read [stuck-recovery.md](references/stuck-recovery.md) whenever a command hangs,
 - `auto_bootstrap:` true *(default)* | false
 - `auto_agents_schema:` true | false *(default false for local/unsupported adapters; enable for Snowflake, Databricks, or BigQuery)*
 - `auto_install_dbt_skills:` true *(default)* | false
-- `use_subagents:` true | false *(default: true for large projects, false for small/simple projects)*
 - `layer_names:` layer_1, layer_2, layer_3
 - `domain:` (default from `project.config.yml`)
 - `github_repo_name:` repo slug *(ask user; owner from `gh api user`)*

@@ -30,7 +30,6 @@ Do not let `.env` silently override a value the user provided in the prompt.
 | `DBT_PUSH_TO_GITHUB` | `push_to_github` |
 | `DBT_MATERIALIZATION_PROFILE` | `materialization_profile` |
 | `DBT_AUTO_AGENTS_SCHEMA` | `auto_agents_schema` |
-| `DBT_USE_SUBAGENTS` | `use_subagents` |
 
 ## What belongs in `.env`
 
@@ -45,7 +44,6 @@ Good:
 - Local-only or GitHub repo name
 - Commit/push preferences
 - Materialization profile
-- Subagent preference for faster read-only analysis
 - Agents Schema preference for supported destinations
 
 In `.env.example`, keep the core project fields as placeholders, not real profile or schema values.
