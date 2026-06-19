@@ -41,6 +41,7 @@ Verify before marking the dbt pipeline workflow complete.
 
 ## dbt project
 
+- [ ] Project name/root were derived from repo/source/domain or explicitly provided; not accidentally copied from `dbt_profile_name`
 - [ ] Source YAML UTF-8 with `schema:` set
 - [ ] `dbt_project.yml` layer blocks match user layer names
 - [ ] Materialization matches `materialization_profile`

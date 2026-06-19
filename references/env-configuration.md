@@ -31,6 +31,7 @@ Do not require these in the prompt or `.env`:
 
 | Decision | Default behavior |
 |---|---|
+| Project name/root | Derive from repo, source schema, source name, or domain; never from dbt profile |
 | Layer schema prefix | Use `source_name` |
 | Layer names | Use `bronze`, `silver`, `gold` |
 | Commit behavior | Ask before each phase commit |
@@ -44,6 +45,8 @@ These keys are supported for teams that need a non-default workflow, but keep th
 
 | `.env` key | Prompt/config meaning |
 |---|---|
+| `DBT_PROJECT_NAME` | `dbt_project_name` |
+| `DBT_PROJECT_ROOT` | `dbt_project_root` |
 | `DBT_LAYER_SCHEMA_PREFIX` | `layer_schema_prefix` |
 | `DBT_LAYER_1` | first medallion layer |
 | `DBT_LAYER_2` | second medallion layer |

@@ -10,7 +10,7 @@ Use the dbt Pipeline skill (`agentic-dbt-pipeline`) and these dbt-labs skills:
 - running-dbt-commands
 - troubleshooting-dbt-job-errors
 
-Read project.config.yml, references/skill-inputs.md, references/env-configuration.md, and references/data-engineering-best-practices.md first. If `.env` exists, load non-secret settings from it before asking for missing inputs.
+Read project.config.yml, references/skill-inputs.md, references/project-naming.md, references/env-configuration.md, and references/data-engineering-best-practices.md first. If `.env` exists, load non-secret settings from it before asking for missing inputs.
 When work can be safely delegated, read references/subagent-workflow.md and use subagents only for read-only analysis or draft review.
 
 ## Warehouse (non-secret)
@@ -28,6 +28,7 @@ When work can be safely delegated, read references/subagent-workflow.md and use 
 ## Credentials
 
 - Use existing dbt profile: <project.profile>
+- Derive dbt project name/root from repo, source schema, source name, or domain. Do not use the profile name as the folder unless explicitly requested.
 - Do not hardcode passwords
 - Do not commit profiles.yml or .env
 - Commit `.env.example` only when it contains no secrets

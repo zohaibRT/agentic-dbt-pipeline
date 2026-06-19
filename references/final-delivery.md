@@ -62,6 +62,7 @@ Use a compact table when helpful:
 
 | Area | Result |
 |---|---|
+| Project | `<dbt_project_name>` in `<dbt_project_root>` |
 | Profile | `<dbt_profile_name>` |
 | Domain | `<domain>` |
 | Source | `<source_schema>` / `<source_name>` |

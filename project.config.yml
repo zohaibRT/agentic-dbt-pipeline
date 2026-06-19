@@ -2,9 +2,9 @@
 # The agent reads this before building dbt layers.
 
 project:
-  name: my_dbt_project
-  root: my_dbt_project
-  profile: my_dbt_project
+  name: auto                 # derive from repo/source/domain; see references/project-naming.md
+  root: auto                 # default to project.name unless explicitly overridden
+  profile: auto              # use DBT_PROFILE_NAME or ask; never infer from project name
 
 database:
   adapter: postgres

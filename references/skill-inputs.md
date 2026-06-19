@@ -1,13 +1,13 @@
 # Skill Inputs - Collect Before Any Work
 
-Read [project.config.yml](../project.config.yml) and [env-configuration.md](env-configuration.md). If values are missing after prompt, `.env`, and config resolution, **ask the user** before proceeding.
+Read [project.config.yml](../project.config.yml), [project-naming.md](project-naming.md), and [env-configuration.md](env-configuration.md). If values are missing after prompt, `.env`, config, and project-name derivation, **ask the user** before proceeding.
 
 ## Required inputs
 
 | Input | Config key | project default |
 |---|---|---|
-| dbt project name | `project.name` | `my_dbt_project` |
-| dbt project root | `project.root` | `my_dbt_project` |
+| dbt project name | `dbt_project_name`, `DBT_PROJECT_NAME`, or derived by [project-naming.md](project-naming.md) | derive from repo/source/domain |
+| dbt project root | `dbt_project_root`, `DBT_PROJECT_ROOT`, or derived project name | same as project name |
 | dbt profile name | `dbt_profile_name` prompt, `DBT_PROFILE_NAME`, or `project.profile` | ask if missing or ambiguous |
 | Adapter | `database.adapter` | `postgres` |
 | Host | `database.host` | `warehouse_host` |
@@ -50,7 +50,9 @@ Read [project.config.yml](../project.config.yml) and [env-configuration.md](env-
 - Use `.env` only for non-secret reusable project settings.
 - Use `~/.dbt/profiles.yml` locally.
 - Use GitHub Secrets in CI (`WAREHOUSE_CREDENTIALS` for Agents Schema).
+- Treat config values like `auto`, `my_dbt_project`, `default`, `example`, or `<...>` as placeholders, not real project/profile inputs.
 - If multiple dbt profiles exist, ask for `dbt_profile_name` before running `dbt debug`, `dbt deps`, `dbt parse`, or `dbt build`.
+- Do not use `dbt_profile_name` as the project folder. The profile is only the connection key. Derive project name/root from [project-naming.md](project-naming.md).
 - Ask for `source_schema` and `source_name` before running codegen or writing layer config. Default `layer_schema_prefix` to `source_name` unless the user overrides it. Do not guess the source schema from the dbt profile target schema.
 - If `project_rules` include mappings, joins, metrics, exclusions, privacy rules, naming rules, or special instructions, apply them exactly and ask before interpreting ambiguous rules.
 
@@ -58,6 +60,8 @@ Read [project.config.yml](../project.config.yml) and [env-configuration.md](env-
 
 ```text
 github_repo_name: analytics              # repo slug - ask if missing
+dbt_project_name: hospital_analytics     # optional; otherwise derived from repo/source/domain
+dbt_project_root: hospital_analytics     # optional; defaults to dbt_project_name
 dbt_profile_name: hospital_analytics     # profile key from ~/.dbt/profiles.yml
 domain: hospital                         # domain folder and naming context
 source_schema: hospital_raw              # warehouse schema to inspect with codegen
@@ -89,6 +93,13 @@ DBT_PROFILE_NAME=<dbt_profile_name>
 DBT_SOURCE_SCHEMA=<raw_source_schema>
 DBT_SOURCE_NAME=<dbt_source_name>
 DBT_GITHUB_REPO_NAME=<repo_name_or_local_only>
+```
+
+Advanced `.env` overrides:
+
+```text
+DBT_PROJECT_NAME=<dbt_project_name>
+DBT_PROJECT_ROOT=<dbt_project_root>
 ```
 
 Prompt values override `.env`. Do not commit `.env`; commit only `.env.example`.

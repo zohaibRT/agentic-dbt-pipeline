@@ -54,7 +54,7 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 | Phase | When | Reference |
 |---|---|---|
 | **Bootstrap** | **Every run** (unless `auto_bootstrap: false`) | [bootstrap.md](references/bootstrap.md) |
-| **0 Inputs** | Always first | [skill-inputs.md](references/skill-inputs.md), [env-configuration.md](references/env-configuration.md), [security-and-credentials.md](references/security-and-credentials.md), [code-agent-setup.md](references/code-agent-setup.md) |
+| **0 Inputs** | Always first | [skill-inputs.md](references/skill-inputs.md), [project-naming.md](references/project-naming.md), [env-configuration.md](references/env-configuration.md), [security-and-credentials.md](references/security-and-credentials.md), [code-agent-setup.md](references/code-agent-setup.md) |
 | **0b Subagents** | Optional speed-up | [subagent-workflow.md](references/subagent-workflow.md) |
 | **0c Best practices** | Design guardrails | [data-engineering-best-practices.md](references/data-engineering-best-practices.md) |
 | **1 Init** | New project | [project-initialization.md](references/project-initialization.md) |
@@ -77,11 +77,13 @@ Context prompt template: [agent-context-prompt.md](references/agent-context-prom
 
 ## Step 0 - Load config
 
-Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), and [env-configuration.md](references/env-configuration.md).
+Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), [project-naming.md](references/project-naming.md), and [env-configuration.md](references/env-configuration.md).
 
 Resolve paths relative to workspace root. dbt project root = `{project.root}`.
 
 **User prompt overrides `.env` and config** for schema, domain, layers, materialization, commit mode. Use `.env` for non-secret reusable inputs before asking the user.
+
+Resolve `project.name` and `project.root` before `dbt init`. Never use `dbt_profile_name` as the folder/project name unless the user explicitly provides it as `dbt_project_name`. Prefer a clean name derived from `github_repo_name`, `source_schema`, `source_name`, or `domain`.
 
 ## Step 0b - Optional subagents
 
@@ -258,6 +260,8 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 
 - `workflow_phase:` init | sources | staging | intermediate | marts | semantic_layer | project_evaluator | docs | ci | agents_schema
 - `dbt_profile_name:` dbt profile key from `~/.dbt/profiles.yml`; ask if missing or ambiguous
+- `dbt_project_name:` optional explicit dbt project name; otherwise derive from repo/source/domain
+- `dbt_project_root:` optional explicit folder name; otherwise use `dbt_project_name`
 - `domain:` business/domain folder name; ask if missing
 - `source_schema:` warehouse schema to inspect with codegen; ask if missing
 - `source_name:` dbt source name to write in source YAML; ask if missing
@@ -292,6 +296,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 | [bootstrap.md](references/bootstrap.md) | **Auto-run:** skills install, codegen, CI/Agents workflows |
 | [project.config.yml](project.config.yml) | Defaults, paths, git, materialization |
 | [skill-inputs.md](references/skill-inputs.md) | Required inputs |
+| [project-naming.md](references/project-naming.md) | Derive project and folder names without using dbt profile |
 | [env-configuration.md](references/env-configuration.md) | Optional `.env` settings and precedence |
 | [subagent-workflow.md](references/subagent-workflow.md) | Optional parallel analysis and review |
 | [data-engineering-best-practices.md](references/data-engineering-best-practices.md) | Grain, tests, history, contracts, privacy, operations |

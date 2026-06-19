@@ -39,7 +39,7 @@ Run the full pipeline from source discovery through final delivery.
 
 For a full copy-paste prompt, see [prompt.md](prompt.md).
 
-Keep repeatable non-secret settings in `.env` by copying `.env.example`. Most projects only need domain, dbt profile, source schema/name, and repo intent there. The skill infers layer names, schema prefix, commit mode, push behavior, materialization, and Agents Schema handling unless you override them.
+Keep repeatable non-secret settings in `.env` by copying `.env.example`. Most projects only need domain, dbt profile, source schema/name, and repo intent there. The skill infers project name/root, layer names, schema prefix, commit mode, push behavior, materialization, and Agents Schema handling unless you override them.
 
 ## Configuration
 
@@ -51,7 +51,7 @@ After installation, edit:
 
 Use this file for non-secret defaults and advanced overrides:
 
-- dbt project name and root path
+- dbt project name and root path, when you do not want the skill to derive them from repo/source/domain
 - dbt profile name
 - adapter, host, port, database, and default schema
 - source schema and source YAML path

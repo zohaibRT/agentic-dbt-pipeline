@@ -2,7 +2,9 @@
 
 Run when `{project.root}` does not exist or user requests `workflow_phase: init`.
 
-Read [security-and-credentials.md](security-and-credentials.md) and [skill-inputs.md](skill-inputs.md) first.
+Read [security-and-credentials.md](security-and-credentials.md), [skill-inputs.md](skill-inputs.md), and [project-naming.md](project-naming.md) first.
+
+Before running `dbt init`, resolve `dbt_project_name` and `dbt_project_root` from [project-naming.md](project-naming.md). Do not use `dbt_profile_name` as the project folder unless the user explicitly provided it as `dbt_project_name`.
 
 ## 1. Workspace setup
 
@@ -19,9 +21,16 @@ dbt --version
 ## 2. Initialize dbt project
 
 ```powershell
-dbt init <project.name>
+dbt init <dbt_project_name>
 # Select the adapter from database.adapter when prompted
-cd <project.root>
+cd <dbt_project_root>
+```
+
+After init, ensure `dbt_project.yml` has:
+
+```yaml
+name: <dbt_project_name>
+profile: <dbt_profile_name>
 ```
 
 Profile values *(user provides password locally)*:
@@ -83,7 +92,8 @@ Skip only if skills already exist under `.agents/skills/`.
 Initialize a dbt project using the required warehouse details below.
 Use defaults for anything not listed. Do not hardcode secrets in project files.
 
-Project name: <project.name>
+Project name: <dbt_project_name>
+Project folder: <dbt_project_root>
 dbt profile name: <dbt_profile_name>
 Adapter: <database.adapter>
 Host: <database.host>
