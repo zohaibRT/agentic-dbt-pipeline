@@ -4,11 +4,11 @@ Controlled by `materialization_profile` in `project.config.yml` (default: `prod`
 
 ## Production (`materialization_profile: prod`)
 
-| Layer | `dbt_project.yml` | Model-level override |
+| Role | `dbt_project.yml` | Model-level override |
 |---|---|---|
-| Staging | `+materialized: view` | - |
-| Intermediate | `+materialized: view` | - |
-| Marts folder default | `+materialized: table` | - |
+| Layer 1 / staging role | `+materialized: view` | - |
+| Layer 2 / intermediate role | `+materialized: view` | - |
+| Layer 3 / marts role | `+materialized: table` | - |
 | `dim_*` | inherits table | `{{ config(materialized='table') }}` optional |
 | `fct_*` | inherits table | `{{ config(materialized='incremental', unique_key='<pk>') }}` |
 | `mart_*` reporting | inherits table | `{{ config(materialized='table') }}` |
@@ -27,11 +27,11 @@ All layers `view` - faster iteration:
 ```yaml
 models:
   <project.name>:
-    staging:
+    <layer_1_name>:
       +materialized: view
-    intermediate:
+    <layer_2_name>:
       +materialized: view
-    marts:
+    <layer_3_name>:
       +materialized: view
 ```
 

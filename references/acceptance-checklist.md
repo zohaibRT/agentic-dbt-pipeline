@@ -73,7 +73,7 @@ Verify before marking the dbt pipeline workflow complete.
 
 - [ ] `github_repo_name` collected; owner from `gh api user`
 - [ ] Staged commits per layer ([github-setup.md](github-setup.md))
-- [ ] Pushed when `push_to_github: true` and user approved
+- [ ] Pushed only when repo is not `local-only` and user approved
 - [ ] No secrets in commits
 
 ## Documentation

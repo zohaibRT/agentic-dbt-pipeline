@@ -36,8 +36,6 @@ When work can be safely delegated, read references/subagent-workflow.md and use 
 
 ```text
 github_repo_name: analytics
-push_to_github: true
-commit: ask
 ```
 
 - Agent runs `gh api user` for owner - do not hardcode accounts
@@ -51,15 +49,15 @@ See [dbt-packages-and-skills.md](dbt-packages-and-skills.md): codegen, dbt_utils
 ## dbt rules
 
 - sources: models/sources/
-- staging: models/staging/{domain}/ - stg_{source}__*
-- intermediate: models/intermediate/{domain}/ - int_{source}__*
-- marts: models/marts/{domain}/ - dim_*, fct_*, mart_*
-- materialization_profile: prod (staging/intermediate=view; marts=table; fct_*=incremental)
+- layer 1: models/{layer_1_name}/{domain}/ - stg_{source}__* (default layer name: bronze)
+- layer 2: models/{layer_2_name}/{domain}/ - int_{source}__* (default layer name: silver)
+- layer 3: models/{layer_3_name}/{domain}/ - dim_*, fct_*, mart_* (default layer name: gold)
+- materialization_profile: prod (layer 1/2=view; layer 3=table; fct_*=incremental)
 - ref() only in intermediate/marts; source() only in staging
 - Run dbt debug (init), dbt parse, dbt build after changes
 - Commit each layer separately; ask before commit/push
 - Keep dbt commands, file edits, commits, pushes, and final decisions with the main agent
-- Push to `github_repo` after commits when `push_to_github: true`
+- Push to `github_repo` only after approval; do not push when repo intent is `local-only`
 - Never stage: .venv, target, logs, dbt_packages, .env, profiles.yml
 
 ## Task

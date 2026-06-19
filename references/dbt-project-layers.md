@@ -1,28 +1,18 @@
-# dbt_project.yml - User-Defined Layer Names
+# dbt_project.yml - Layer Names
 
 **Always create all three model layers** (plus sources).
-**Ask the user for the layer names** before writing `dbt_project.yml` or any models.
+Default to `bronze`, `silver`, and `gold` unless the prompt, advanced `.env` keys, or an existing project clearly uses different names.
 
-## What to ask (required unless names are in the prompt)
+Ask the user only when:
 
-Before any file creation, ask the user for **three layer names** used in `dbt_project.yml`:
+- They explicitly request custom layer names.
+- Existing folders or `dbt_project.yml` conflict with the defaults.
+- They provide only one or two custom layer names.
 
-> I will create **all layers** (sources -> layer 1 -> layer 2 -> layer 3).
-> What names should I use in `dbt_project.yml`?
->
-> 1. **Layer 1** (closest to source, `stg_*` models) - default: `staging`
-> 2. **Layer 2** (business logic, `int_*` models) - default: `intermediate`
-> 3. **Layer 3** (star schema, `dim_*` / `fct_*` / `mart_*`) - default: `marts`
+Examples of valid custom names:
 
-Examples the user might choose:
-- `staging`, `intermediate`, `marts` (project default)
-- `bronze`, `silver`, `gold`
+- `staging`, `intermediate`, `marts`
 - `raw_clean`, `enriched`, `analytics`
-
-Use **AskQuestion** or chat. Wait for answers before proceeding.
-
-If the user gives one name only, ask for all three.
-If the prompt already includes `layer_names:` (see [prompt.md](../prompt.md)), use those and skip the ask.
 
 ---
 
@@ -30,7 +20,7 @@ If the prompt already includes `layer_names:` (see [prompt.md](../prompt.md)), u
 
 Each name becomes the `dbt_project.yml` key and folder under `models/`.
 
-For physical warehouse schemas, prefer source-prefixed names when `layer_schema_prefix` is provided:
+For physical warehouse schemas, default `layer_schema_prefix` to `source_name`:
 
 ```text
 {layer_schema_prefix}_{layer_name}

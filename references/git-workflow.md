@@ -5,9 +5,10 @@
 Resolve GitHub remote **before any git work** - [github-repo-resolution.md](github-repo-resolution.md):
 
 1. `gh auth status` and `gh api user --jq ".login"` -> `{owner}`
-2. Read `github_repo_name` from prompt; **if missing, ask user** for repo slug only
-3. Remote = `https://github.com/{owner}/{github_repo_name}.git`
-4. Optional `github_repo:` override for a different owner/repo
+2. Read `github_repo_name` from prompt or `.env`; **if missing, ask user** for repo slug only
+3. If `github_repo_name` is `local-only`, do not add a remote or push
+4. Otherwise remote = `https://github.com/{owner}/{github_repo_name}.git`
+5. Optional `github_repo:` override for a different owner/repo
 
 **Never hardcode GitHub accounts** in skill files or `project.config.yml`.
 
@@ -34,7 +35,7 @@ After **each layer** completes successfully (`dbt parse` + `dbt build` PASS):
 
 | User answer | Action |
 |---|---|
-| **Yes** / **y** / **commit** | Stage layer files -> commit -> push to `github_repo` if `push_to_github: true` |
+| **Yes** / **y** / **commit** | Stage layer files -> commit; push only if the user also approves push and repo is not `local-only` |
 | **No** / **n** / **skip** | Do not commit; proceed to next layer or finish |
 
 Use the **AskQuestion** tool when available. Otherwise ask in chat and wait.
@@ -99,7 +100,7 @@ See [github-setup.md](github-setup.md) for init -> packages -> sources -> layers
 
 ## Push
 
-After commit, push to `github_repo` when user approved and `push_to_github` is not `false`:
+After commit, push to `github_repo` only when the repo is not `local-only` and the user approved the push:
 
 ```powershell
 git remote add origin <github_repo>   # if origin missing
@@ -123,6 +124,6 @@ If `git commit` fails with `unknown option trailer`, use:
 
 | `commit:` value | Behavior |
 |---|---|
-| `ask` *(default)* | Ask after each layer; push when user says yes and `push_to_github: true` |
-| `auto_yes` | Commit each layer without asking; push only when `push_to_github: true` and the target is not production |
+| `ask` *(default)* | Ask after each layer; push only after explicit approval |
+| `auto_yes` | Commit each layer without asking; push only after explicit approval and when the target is not production |
 | `skip_all` | Never commit or push during this run |

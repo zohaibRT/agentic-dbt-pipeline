@@ -1,8 +1,8 @@
 ---
 name: agentic-dbt-pipeline
 description: >-
-  Automate end-to-end dbt with an AI agent: bootstrap, layered models (staging,
-  intermediate, marts), packages (codegen, utils, evaluator, audit_helper),
+  Automate end-to-end dbt with an AI agent: bootstrap, medallion layers
+  (bronze/silver/gold by default), packages (codegen, utils, evaluator, audit_helper),
   semantic layer, docs, per-layer git commits, and GitHub push via gh CLI.
   Use when setting up or extending a dbt analytics project with agentic automation.
 ---
@@ -11,7 +11,7 @@ description: >-
 
 Full lifecycle orchestrator for the dbt project.
 **On every prompt:** agent runs [bootstrap.md](references/bootstrap.md) first (install skills, codegen, automation).
-**Default full pipeline:** bootstrap -> sources -> staging -> intermediate -> marts -> semantic layer -> project evaluator -> docs -> CI, plus Agents Schema when enabled and supported.
+**Default full pipeline:** bootstrap -> sources -> bronze -> silver -> gold -> semantic layer -> project evaluator -> docs -> CI, plus Agents Schema when enabled and supported.
 
 Use `workflow_phase:` to run a single phase. Use `auto_bootstrap: false` only for layer-only edits.
 
@@ -96,16 +96,19 @@ Never hardcode secrets. Ask before production changes.
 
 Read [data-engineering-best-practices.md](references/data-engineering-best-practices.md) before model design and again before final delivery. Apply grain, test, incremental, snapshot, documentation, privacy, and performance guardrails.
 
-## Step 0.5 - Ask user for layer names (required for model phases)
+## Step 0.5 - Resolve layer names
 
 Read [references/dbt-project-layers.md](references/dbt-project-layers.md).
 
 **Always build all model layers** unless `workflow_phase` limits scope.
 
-> What names should I use in `dbt_project.yml`?
-> - Layer 1 (`stg_*`) - default: `staging`
-> - Layer 2 (`int_*`) - default: `intermediate`
-> - Layer 3 (`dim_*`/`fct_*`/`mart_*`) - default: `marts`
+Use `layer_names` from the prompt, `.env`, or `project.config.yml` when provided. Otherwise use:
+
+- Layer 1 (`stg_*`): `bronze`
+- Layer 2 (`int_*`): `silver`
+- Layer 3 (`dim_*`/`fct_*`/`mart_*`): `gold`
+
+Do not ask for layer names unless the user requests a non-default naming convention or an existing project already uses different folders. Default `layer_schema_prefix` to `source_name`; ask only when the user wants a different physical schema prefix.
 
 Write `dbt_project.yml` per [materialization-rules.md](references/materialization-rules.md):
 
@@ -239,16 +242,16 @@ Read [stuck-recovery.md](references/stuck-recovery.md) whenever a command hangs,
 - `domain:` business/domain folder name; ask if missing
 - `source_schema:` warehouse schema to inspect with codegen; ask if missing
 - `source_name:` dbt source name to write in source YAML; ask if missing
-- `layer_schema_prefix:` prefix for physical layer schemas, usually same as `source_name`; ask if missing
+- `layer_schema_prefix:` prefix for physical layer schemas; default to `source_name`
 - `project_rules:` optional field mappings, joins, metrics, exclusions, privacy rules, naming rules, and special instructions. Apply exactly; ask if unclear.
 - `auto_bootstrap:` true *(default)* | false
 - `auto_agents_schema:` true | false *(default false for local/unsupported adapters; enable for Snowflake, Databricks, or BigQuery)*
 - `auto_install_dbt_skills:` true *(default)* | false
-- `layer_names:` layer_1, layer_2, layer_3
+- `layer_names:` layer_1, layer_2, layer_3 *(default: bronze, silver, gold)*
 - `domain:` (default from `project.config.yml`)
 - `github_repo_name:` repo slug *(ask user; owner from `gh api user`)*
 - `github_repo:` full URL or `owner/repo` *(optional override)*
-- `push_to_github:` true *(default on full pipeline)* | false
+- `push_to_github:` true | false *(default: false for `local-only`, otherwise ask before pushing)*
 - `commit:` ask | auto_yes | skip_all
 - `materialization_profile:` prod | dev
 - `regenerate_sources:` true | false

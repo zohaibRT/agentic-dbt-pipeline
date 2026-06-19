@@ -58,10 +58,11 @@ git init
 git add .
 git commit -m "Initialize dbt project"
 git branch -M main
-# Resolve owner + repo - see github-repo-resolution.md
+# If github_repo_name is not local-only, resolve owner + repo after approval.
 $owner = gh api user --jq ".login"
 git remote add origin "https://github.com/$owner/<github_repo_name>.git"
-git push -u origin main
+# Push only after user approval.
+# git push -u origin main
 ```
 
 See [github-setup.md](github-setup.md) and [github-repo-resolution.md](github-repo-resolution.md).
@@ -91,8 +92,8 @@ Database: <database.dbname>
 User: <warehouse_user>
 Password: use local profiles.yml - do not commit
 Source schema: <source.schema>
-Staging schema: <layer_names.layer_1>
-Mart schema: <layer_names.layer_3>
+Layer 1 schema suffix: <layer_names.layer_1>
+Layer 3 schema suffix: <layer_names.layer_3>
 Target environment: dev
 ```
 

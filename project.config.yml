@@ -60,10 +60,10 @@ dbt_agent_skills:
 domain: analytics
 
 layer_names:
-  ask_user: true
-  layer_1: staging
-  layer_2: intermediate
-  layer_3: marts
+  ask_user: false
+  layer_1: bronze
+  layer_2: silver
+  layer_3: gold
 
 layer_roles:
   - sources
@@ -73,9 +73,9 @@ layer_roles:
 
 paths:
   sources: models/sources
-  layer_1: models/staging/analytics
-  layer_2: models/intermediate/analytics
-  layer_3: models/marts/analytics
+  layer_1: models/bronze/analytics
+  layer_2: models/silver/analytics
+  layer_3: models/gold/analytics
 
 naming:
   layer_1_prefix: stg_{source}__
@@ -97,9 +97,9 @@ dbt:
   adapter_version: '1.10.0'
   parse_flags: '--no-partial-parse'
   build_selectors:
-    layer_1: '+path:models/staging/analytics'
-    layer_2: '+path:models/intermediate/analytics'
-    layer_3: '+path:models/marts/analytics'
+    layer_1: '+path:models/bronze/analytics'
+    layer_2: '+path:models/silver/analytics'
+    layer_3: '+path:models/gold/analytics'
 
 materialization_profile: prod
 materialization:
@@ -114,7 +114,7 @@ materialization:
 git:
   ask_after_each_layer: true
   default_commit_mode: ask
-  push_to_github: true
+  push_to_github: ask            # local-only disables push; otherwise ask before pushing
   use_gh_cli_account: true       # owner from `gh api user --jq .login`
   github_repo_name: null         # prompt: github_repo_name - ask user for repo slug only
   remote: null                   # resolved: https://github.com/{gh_user}/{github_repo_name}.git

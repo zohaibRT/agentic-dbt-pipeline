@@ -1,6 +1,6 @@
 # Separate Layer Builds - Order, Schemas, and Examples
 
-> **Skill default:** always create **all** layers. **Ask user for three layer names** (e.g. `staging`/`intermediate`/`marts` or `bronze`/`silver`/`gold`). Names become `dbt_project.yml` keys, folders, and `+schema` values. See [dbt-project-layers.md](dbt-project-layers.md).
+> **Skill default:** always create **all** layers. Use `bronze`/`silver`/`gold` unless the user or existing project provides different layer names. Names become `dbt_project.yml` keys, folders, and `+schema` values. See [dbt-project-layers.md](dbt-project-layers.md).
 
 ## Correct layer order (always - all layers)
 
@@ -11,7 +11,7 @@
 4. Layer 3     ->  models/{layer_3_name}/{domain}/  ->  Postgres: {target}_{layer_3_name}
 ```
 
-Default names: `staging`, `intermediate`, `marts`.
+Default names: `bronze`, `silver`, `gold`.
 
 **Do not** build intermediate before staging exists.
 **Do not** build marts before intermediate exists.
@@ -31,12 +31,12 @@ Staging comes **before** intermediate. Marts (star schema) come **last**.
 
 ## Build one layer at a time
 
-Set `layers:` in the prompt to run **only** that layer. After each layer: **parse -> build -> summarize -> ask commit**.
+Set `workflow_phase:` in the prompt to run **only** that phase. After each layer: **parse -> build -> summarize -> ask commit**.
 
-### Layer 1 - Sources only
+### Sources only
 
 ```text
-layers: sources
+workflow_phase: sources
 ```
 
 Ensure `packages.yml` has **codegen only** - see [packages-and-sources.md](packages-and-sources.md).
@@ -52,10 +52,10 @@ Ask commit for `models/sources/` only.
 
 ---
 
-### Layer 2 - Staging only
+### Layer 1 - Bronze / staging only
 
 ```text
-layers: staging
+workflow_phase: staging
 ```
 
 Creates models like:
@@ -78,10 +78,10 @@ Ask commit -> push `models/{layer_1_name}/{domain}/` only.
 
 ---
 
-### Layer 3 - Intermediate only
+### Layer 2 - Silver / intermediate only
 
 ```text
-layers: intermediate
+workflow_phase: intermediate
 ```
 
 Creates models like:
@@ -103,10 +103,10 @@ Ask commit -> push `models/{layer_2_name}/{domain}/` only.
 
 ---
 
-### Layer 4 - Marts / star schema only
+### Layer 3 - Gold / marts only
 
 ```text
-layers: marts
+workflow_phase: marts
 ```
 
 Creates models like:
@@ -131,7 +131,7 @@ Ask commit -> push `models/{layer_3_name}/{domain}/` (+ `dbt_project.yml` if cha
 ## Full pipeline (all layers, still separate commits)
 
 ```text
-layers: all
+Run the default prompt without `workflow_phase`.
 ```
 
 Run in order, **stop and ask commit after each**:

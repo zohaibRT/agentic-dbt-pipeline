@@ -88,14 +88,13 @@ Confirm `.agents/skills/agentic-dbt-pipeline/SKILL.md` and `project.config.yml` 
 
 Then proceed to layer phases.
 
-## User prompt flags
+## Advanced prompt flags
 
 ```text
 auto_bootstrap: true
 auto_agents_schema: false
 auto_install_dbt_skills: true
 github_repo_name: analytics    # repo slug - owner from gh CLI
-push_to_github: true
 ```
 
 Set `auto_bootstrap: false` only for layer-only edits on a fully set up project.

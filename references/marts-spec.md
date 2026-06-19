@@ -8,7 +8,7 @@ Read [human-review.md](human-review.md) before marking marts complete if metrics
 
 ## Folder and naming
 
-- Folder: `models/marts/{domain}/`
+- Folder: `models/{layer_3_name}/{domain}/` (default: `models/gold/{domain}/`)
 - YAML: `_<domain>_marts.yml`
 
 ## Domain-driven design
@@ -83,7 +83,7 @@ Run from dbt project root. **Build is mandatory** - a layer is not complete unti
 
 ```powershell
 dbt parse --no-partial-parse
-dbt build --select +path:models/marts/{domain}
+dbt build --select +path:models/{layer_3_name}/{domain}
 ```
 
 `+path` builds marts models, their tests, and required upstream (staging + intermediate) dependencies.

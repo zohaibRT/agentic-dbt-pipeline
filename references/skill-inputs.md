@@ -16,17 +16,17 @@ Read [project.config.yml](../project.config.yml) and [env-configuration.md](env-
 | Profile target schema | `database.target_schema` | `raw` |
 | Source/raw schema | `source_schema` prompt, `DBT_SOURCE_SCHEMA`, or `source.schema` | ask if missing |
 | Source name | `source_name` prompt, `DBT_SOURCE_NAME`, or `source.name` | ask if missing |
-| Layer schema prefix | `layer_schema_prefix` prompt or `DBT_LAYER_SCHEMA_PREFIX` | usually same as `source_name`; ask if missing |
+| Layer schema prefix | `layer_schema_prefix` prompt, `DBT_LAYER_SCHEMA_PREFIX`, or `source_name` | default to `source_name` |
 | Domain folder | `domain` prompt, `DBT_DOMAIN`, or `domain` config | ask if missing |
 | Project rules | `project_rules` prompt | optional; ask if unclear |
-| Layer 1 schema suffix | user name -> `+schema` | `staging` |
-| Layer 2 schema suffix | user name -> `+schema` | `intermediate` |
-| Layer 3 schema suffix | user name -> `+schema` | `marts` |
+| Layer 1 schema suffix | prompt, advanced `.env`, or config -> `+schema` | `bronze` |
+| Layer 2 schema suffix | prompt, advanced `.env`, or config -> `+schema` | `silver` |
+| Layer 3 schema suffix | prompt, advanced `.env`, or config -> `+schema` | `gold` |
 | Agents schema | `agents.schema` | `AGENTS` |
 | **GitHub repo name** *(ask user)* | `github_repo_name` | - |
 | GitHub owner *(from CLI)* | `gh api user` | logged-in `gh` account |
 | Default branch | `git.branch` | `main` |
-| Push to GitHub after commit | `push_to_github` | `true` on full pipeline |
+| Push to GitHub after commit | `push_to_github` | `false` for `local-only`; otherwise ask |
 
 ## GitHub repo resolution
 
@@ -51,7 +51,7 @@ Read [project.config.yml](../project.config.yml) and [env-configuration.md](env-
 - Use `~/.dbt/profiles.yml` locally.
 - Use GitHub Secrets in CI (`WAREHOUSE_CREDENTIALS` for Agents Schema).
 - If multiple dbt profiles exist, ask for `dbt_profile_name` before running `dbt debug`, `dbt deps`, `dbt parse`, or `dbt build`.
-- Ask for `source_schema`, `source_name`, and `layer_schema_prefix` before running codegen or writing layer config. Do not guess the source schema from the dbt profile target schema.
+- Ask for `source_schema` and `source_name` before running codegen or writing layer config. Default `layer_schema_prefix` to `source_name` unless the user overrides it. Do not guess the source schema from the dbt profile target schema.
 - If `project_rules` include mappings, joins, metrics, exclusions, privacy rules, naming rules, or special instructions, apply them exactly and ask before interpreting ambiguous rules.
 
 ## Optional overrides (user prompt wins)
@@ -62,7 +62,7 @@ dbt_profile_name: hospital_analytics     # profile key from ~/.dbt/profiles.yml
 domain: hospital                         # domain folder and naming context
 source_schema: hospital_raw              # warehouse schema to inspect with codegen
 source_name: hospital                    # dbt source name to write in YAML
-layer_schema_prefix: hospital            # physical schema prefix for bronze/silver/gold
+layer_schema_prefix: hospital            # optional; defaults to source_name
 project_rules:                           # optional business/modeling rules
   field_mappings: []
   joins: []
@@ -72,8 +72,8 @@ project_rules:                           # optional business/modeling rules
   naming: []
   special_instructions: []
 github_repo: other-owner/analytics       # optional full override only
-push_to_github: true | false
-layer_names: staging, intermediate, marts
+push_to_github: <true|false>             # optional; omit for approval-based default
+layer_names: bronze, silver, gold        # optional; defaults shown
 commit: ask | auto_yes | skip_all
 materialization_profile: prod | dev
 workflow_phase: init | sources | staging | intermediate | marts | semantic_layer | project_evaluator | docs | ci | agents_schema
@@ -88,11 +88,7 @@ DBT_DOMAIN=<domain_name>
 DBT_PROFILE_NAME=<dbt_profile_name>
 DBT_SOURCE_SCHEMA=<raw_source_schema>
 DBT_SOURCE_NAME=<dbt_source_name>
-DBT_LAYER_SCHEMA_PREFIX=<layer_schema_prefix>
 DBT_GITHUB_REPO_NAME=<repo_name_or_local_only>
-DBT_LAYER_1=bronze
-DBT_LAYER_2=silver
-DBT_LAYER_3=gold
 ```
 
 Prompt values override `.env`. Do not commit `.env`; commit only `.env.example`.

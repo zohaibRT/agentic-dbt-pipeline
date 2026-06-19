@@ -7,8 +7,6 @@ Repo resolution: [github-repo-resolution.md](github-repo-resolution.md).
 
 ```text
 github_repo_name: analytics    # repo slug only - owner from gh CLI
-push_to_github: true
-commit: ask
 ```
 
 Agent resolves owner via `gh api user --jq ".login"` - **never hardcode accounts**.
@@ -26,7 +24,8 @@ git add .
 git commit -m "Initialize dbt project"
 git branch -M main
 git remote add origin "https://github.com/$owner/$repo.git"
-git push -u origin main
+# Push only after approval.
+# git push -u origin main
 ```
 
 If repo does not exist: `gh repo create $repo --private --source=. --remote=origin --push` *(ask user first)*.
@@ -41,9 +40,9 @@ If repo does not exist: `gh repo create $repo --private --source=. --remote=orig
 | 4. Safe config/profile examples | `dbt_project.yml`, `.env.example`, `profiles.example.yml` | `Configure dbt profile and source settings` |
 | 5. Evaluator config | `dbt_project.yml` dispatch | `Configure dbt project evaluator` |
 | 6. Sources | `models/sources/` | `Define dbt sources` |
-| 7. Staging | `models/staging/{domain}/` | `Add dbt staging layer for {source} sources.` |
-| 8. Intermediate | `models/intermediate/{domain}/` | `Add dbt intermediate layer for {source} analytics.` |
-| 9. Marts | `models/marts/{domain}/` | `Add dbt marts layer for {source} star schema.` |
+| 7. Layer 1 | `models/{layer_1_name}/{domain}/` | `Add dbt staging layer for {source} sources.` |
+| 8. Layer 2 | `models/{layer_2_name}/{domain}/` | `Add dbt intermediate layer for {source} analytics.` |
+| 9. Layer 3 | `models/{layer_3_name}/{domain}/` | `Add dbt marts layer for {source} star schema.` |
 | 10. Semantic layer | `models/semantic/` or `*_semantic.yml` | `Add semantic layer metrics` |
 | 11. Docs/tests | model YAML updates | `Add dbt tests and documentation` |
 | 12. CI | `.github/workflows/` | `Add dbt automation workflows` |

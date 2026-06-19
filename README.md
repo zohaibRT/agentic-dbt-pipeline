@@ -2,7 +2,7 @@
 
 `dbt Pipeline` is a Cursor Agent Skill for setting up and maintaining dbt projects with a structured, agent-assisted workflow.
 
-It helps an agent initialize a dbt project, configure sources, build staging/intermediate/mart layers, add semantic layer assets, run quality checks, generate docs, create CI workflows, publish dbt metadata to Agents Schema, and commit each stage separately.
+It helps an agent initialize a dbt project, configure sources, build bronze/silver/gold medallion layers, add semantic layer assets, run quality checks, generate docs, create CI workflows, publish dbt metadata to Agents Schema, and commit each stage separately.
 
 ## Installation
 
@@ -39,7 +39,7 @@ Run the full pipeline from source discovery through final delivery.
 
 For a full copy-paste prompt, see [prompt.md](prompt.md).
 
-Keep repeatable non-secret settings in `.env` by copying `.env.example`. Prompt values override `.env`; credentials stay in `~/.dbt/profiles.yml` or GitHub Secrets.
+Keep repeatable non-secret settings in `.env` by copying `.env.example`. Most projects only need domain, dbt profile, source schema/name, and repo intent there. The skill infers layer names, schema prefix, commit mode, push behavior, materialization, and Agents Schema handling unless you override them.
 
 ## Configuration
 
@@ -49,13 +49,13 @@ After installation, edit:
 .agents/skills/agentic-dbt-pipeline/project.config.yml
 ```
 
-Use this file for non-secret project settings:
+Use this file for non-secret defaults and advanced overrides:
 
 - dbt project name and root path
 - dbt profile name
 - adapter, host, port, database, and default schema
 - source schema and source YAML path
-- layer names and model paths
+- layer names and model paths, when your team does not use the default bronze/silver/gold flow
 - materialization profile
 - GitHub repo behavior
 - Agents Schema settings

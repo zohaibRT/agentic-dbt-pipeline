@@ -8,7 +8,7 @@ If `project_rules` include manual mappings or code translations, read [mapping-s
 
 ## Folder and naming
 
-- Folder: `models/intermediate/{domain}/`
+- Folder: `models/{layer_2_name}/{domain}/` (default: `models/silver/{domain}/`)
 - SQL: `int_{source}__<name>.sql`
 - YAML: `_int_{source}.yml`
 
@@ -83,7 +83,7 @@ Run from dbt project root. **Build is mandatory** - a layer is not complete unti
 
 ```powershell
 dbt parse --no-partial-parse
-dbt build --select +path:models/intermediate/{domain}
+dbt build --select +path:models/{layer_2_name}/{domain}
 ```
 
 `+path` builds intermediate models, their tests, and required upstream (staging) dependencies.

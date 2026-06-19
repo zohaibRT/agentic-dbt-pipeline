@@ -8,7 +8,7 @@ Read [source-profiling.md](source-profiling.md) before creating or changing stag
 
 ## Folder and naming
 
-- Folder: `models/staging/{domain}/`
+- Folder: `models/{layer_1_name}/{domain}/` (default: `models/bronze/{domain}/`)
 - SQL: `stg_{source}__<table_name>.sql`
 - YAML: `_stg_{source}.yml`
 
@@ -53,7 +53,7 @@ Run from dbt project root. **Build is mandatory** - a layer is not complete unti
 
 ```powershell
 dbt parse --no-partial-parse
-dbt build --select +path:models/staging/{domain}
+dbt build --select +path:models/{layer_1_name}/{domain}
 ```
 
 `+path` builds staging models, their tests, and required upstream dependencies.

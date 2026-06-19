@@ -13,16 +13,38 @@ Resolve inputs in this order:
 
 Do not let `.env` silently override a value the user provided in the prompt.
 
-## Supported keys
+## Minimal `.env` keys
 
-| `.env` key | Prompt/config meaning |
+Keep the normal `.env` small. These are the only fields most users should fill:
+
+| `.env` key | Meaning |
 |---|---|
 | `DBT_DOMAIN` | `domain` |
 | `DBT_PROFILE_NAME` | `dbt_profile_name` / `project.profile` |
 | `DBT_SOURCE_SCHEMA` | `source_schema` / `source.schema` |
 | `DBT_SOURCE_NAME` | `source_name` / `source.name` |
-| `DBT_LAYER_SCHEMA_PREFIX` | `layer_schema_prefix` |
 | `DBT_GITHUB_REPO_NAME` | `github_repo_name` |
+
+## Skill-managed defaults
+
+Do not require these in the prompt or `.env`:
+
+| Decision | Default behavior |
+|---|---|
+| Layer schema prefix | Use `source_name` |
+| Layer names | Use `bronze`, `silver`, `gold` |
+| Commit behavior | Ask before each phase commit |
+| Push behavior | Do not push for `local-only`; otherwise ask before pushing |
+| Materialization | Use production-friendly defaults from `project.config.yml` |
+| Agents Schema | Prepare only when requested and supported by the warehouse adapter |
+
+## Advanced override keys
+
+These keys are supported for teams that need a non-default workflow, but keep them out of `.env.example`:
+
+| `.env` key | Prompt/config meaning |
+|---|---|
+| `DBT_LAYER_SCHEMA_PREFIX` | `layer_schema_prefix` |
 | `DBT_LAYER_1` | first medallion layer |
 | `DBT_LAYER_2` | second medallion layer |
 | `DBT_LAYER_3` | third medallion layer |
@@ -39,12 +61,9 @@ Good:
 - dbt profile key
 - Source schema
 - dbt source name
-- Layer schema prefix
-- Layer names
 - Local-only or GitHub repo name
-- Commit/push preferences
-- Materialization profile
-- Agents Schema preference for supported destinations
+
+Use advanced override keys only when the project should intentionally differ from the skill defaults.
 
 In `.env.example`, keep the core project fields as placeholders, not real profile or schema values.
 

@@ -26,20 +26,19 @@ Owner will be: {owner from gh}
 https://github.com/{owner}/{github_repo_name}.git
 ```
 
-4. **Configure git**:
+4. **Configure git after approval**:
 
 ```powershell
 git remote add origin "https://github.com/$owner/$repo.git"   # if origin missing
 git branch -M main
-git push -u origin main
+# Push only after the user approves the push.
+# git push -u origin main
 ```
 
 ## Prompt field
 
 ```text
 github_repo_name: analytics    # user provides repo slug only
-push_to_github: true
-commit: ask
 ```
 
 Optional override (full URL or `other-owner/repo`) - only when user explicitly wants a different account:
