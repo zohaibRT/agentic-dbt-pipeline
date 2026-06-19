@@ -4,6 +4,8 @@
 
 Create or update **only** the marts star-schema layer from staging + intermediate models.
 
+Read [human-review.md](human-review.md) before marking marts complete if metrics, grain, mappings, or sensitive fields require business approval.
+
 ## Folder and naming
 
 - Folder: `models/marts/{domain}/`
@@ -47,6 +49,8 @@ Map null `channel_id` → `-1` in facts.
 - Keep facts/dims clean for BI and future semantic layer
 - Do not assume unavailable columns (`currency_code`, `source_system`, etc.)
 - Do not allocate refunds to order items (refunds are order-grain only)
+- Expose business-friendly mapped fields from intermediate models; keep raw codes only when useful for audit
+- Do not expose private, sensitive, PII, or PHI fields in marts unless the user explicitly approves
 
 ## Tests
 
@@ -54,6 +58,7 @@ Map null `channel_id` → `-1` in facts.
 - `relationships`: facts → dimensions (and `fct_order_items` → `fct_orders`)
 - `accepted_values` on boolean flags
 - Use `arguments:` nesting for generic tests
+- Add tests for mapping coverage and metric denominators where applicable
 
 ## Validate (required after every marts change)
 

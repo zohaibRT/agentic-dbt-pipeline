@@ -4,6 +4,8 @@
 
 Create or update **only** the intermediate layer from completed staging models.
 
+If `project_rules` include manual mappings or code translations, read [mapping-seeds.md](mapping-seeds.md) before modeling.
+
 ## Folder and naming
 
 - Folder: `models/intermediate/{domain}/`
@@ -55,6 +57,7 @@ Create or update **only** the intermediate layer from completed staging models.
 - `relationships` to staging or sibling intermediate models where safe
 - `accepted_values` on boolean flags (`true`, `false`)
 - Use `arguments:` nesting for generic tests
+- Add mapping coverage tests when mapping seeds or code translations are used
 
 ## Validate (required after every intermediate change)
 

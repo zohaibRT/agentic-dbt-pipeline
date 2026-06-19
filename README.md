@@ -77,15 +77,18 @@ Keep passwords, tokens, and private keys in local profiles or GitHub Secrets.
 | Bootstrap | Installs dbt Labs agent skills and dbt packages when needed |
 | Validation | Runs `dbt debug`, `dbt deps`, `dbt parse`, and scoped `dbt build` commands |
 | Sources | Generates source YAML and adds source descriptions |
+| Source profiling | Reviews row counts, keys, relationships, dates, measures, and status/code fields before modeling |
 | Staging | Builds source-cleaning models with `source()` references |
-| Intermediate | Builds reusable business logic models with `ref()` references |
-| Marts | Builds final dimension, fact, and reporting models |
+| Intermediate | Builds reusable business logic models with `ref()` references and mapping seeds when needed |
+| Marts | Builds final dimension, fact, and reporting models with business-friendly fields |
 | Semantic layer | Adds MetricFlow / dbt semantic layer YAML for mart metrics |
 | Quality | Runs `dbt_project_evaluator` and uses `audit_helper` where useful |
 | Documentation | Runs `dbt docs generate` and verifies manifest/catalog output |
+| Human review | Summarizes assumptions, data quality notes, mappings, metrics, and open decisions |
 | Git | Commits initialization, sources, each model layer, docs, CI, and Agents Schema separately |
 | Agents Schema | Publishes dbt metadata into `AGENTS.*` so agents can query project context from the warehouse |
 | CI | Creates GitHub Actions workflows for dbt validation and Agents Schema sync |
+| Final delivery | Produces handoff notes with run commands, build status, known limitations, and next decisions |
 
 ## Commit Strategy
 

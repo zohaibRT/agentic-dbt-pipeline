@@ -37,6 +37,14 @@ $dbt = "dbt"
 & $dbt parse --no-partial-parse
 ```
 
+## Source profiling
+
+After codegen and before staging, read [source-profiling.md](source-profiling.md).
+
+Inspect each source table for row counts, candidate keys, relationships, important date columns, numeric measure columns, status/code values, duplicate keys, null keys, and empty tables.
+
+Use the findings to choose staging tests and to decide whether the agent needs clarification before building intermediate joins or marts.
+
 ## Post-codegen: add `schema` and descriptions
 
 Codegen may omit `schema:`. Add explicitly:

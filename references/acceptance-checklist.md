@@ -30,6 +30,13 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Source schema accessible
 - [ ] Layer schemas build using configured layer schema suffixes
 
+## Source profiling
+
+- [ ] Row counts reviewed for each source table
+- [ ] Candidate primary keys and important relationships reviewed
+- [ ] Important date, amount/measure, status, type, and code columns identified
+- [ ] Empty tables, duplicate keys, null keys, and major data quality concerns summarized
+
 ## dbt project
 
 - [ ] Source YAML UTF-8 with `schema:` set
@@ -44,6 +51,13 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Semantic layer: metrics on marts ([semantic-layer-spec.md](semantic-layer-spec.md))
 - [ ] Each layer: `dbt parse` + `dbt build --select +path:...` PASS
 
+## Mappings and business rules
+
+- [ ] `project_rules` applied or explicitly marked not provided
+- [ ] Manual mappings implemented as seeds or reference-table joins where appropriate
+- [ ] Mapping coverage checked; unmapped values summarized or approved
+- [ ] Business grain and key assumptions documented in model YAML or handoff notes
+
 ## Git
 
 - [ ] `github_repo_name` collected; owner from `gh api user`
@@ -55,6 +69,13 @@ Verify before marking the dbt pipeline workflow complete.
 
 - [ ] Model/column descriptions in YAML
 - [ ] `dbt docs generate` → manifest + catalog exist
+
+## Human review
+
+- [ ] Staging review summary produced
+- [ ] Intermediate review summary produced
+- [ ] Marts and metric review summary produced
+- [ ] Open business decisions, assumptions, privacy concerns, and data limitations listed
 
 ## Automation *(optional)*
 
@@ -70,3 +91,9 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Full stack documented in [dbt-packages-and-skills.md](dbt-packages-and-skills.md)
 - [ ] [agent-context-prompt.md](agent-context-prompt.md) available for sessions
 - [ ] Stuck or blocked runs followed [stuck-recovery.md](stuck-recovery.md)
+
+## Final delivery
+
+- [ ] Final handoff notes or README include domain, profile name, schemas, final models, metrics, run commands, and known limitations
+- [ ] Phase commits created or intentionally skipped
+- [ ] Final response summarizes build status, docs status, evaluator status, Agents Schema status, git status, limitations, and open decisions

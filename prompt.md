@@ -32,11 +32,14 @@ Use these medallion layers:
 
 Please:
 1. Discover source tables with codegen.
-2. Build sources, bronze, silver, gold, semantic layer, docs, and quality checks.
-3. Create source-prefixed layer schemas such as <source_name>_bronze, <source_name>_silver, and <source_name>_gold.
-4. Commit each stage separately.
-5. If stuck, stop retrying, summarize the blocker, show the last command/result, and ask me for the next decision.
-6. Ask before using another dbt profile, changing schema naming, adding secrets, or pushing to GitHub.
+2. Profile source tables before modeling: row counts, keys, relationships, dates, measures, and status/code fields.
+3. Build sources, bronze, silver, gold, semantic layer, docs, and quality checks.
+4. Create source-prefixed layer schemas such as <source_name>_bronze, <source_name>_silver, and <source_name>_gold.
+5. Use mapping seeds or reference tables when I provide manual mappings or code translations.
+6. Commit each stage separately.
+7. Summarize assumptions, data quality notes, and open review decisions before final delivery.
+8. If stuck, stop retrying, summarize the blocker, show the last command/result, and ask me for the next decision.
+9. Ask before using another dbt profile, changing schema naming, adding secrets, or pushing to GitHub.
 ```
 
 What the skill handles automatically:
@@ -44,7 +47,10 @@ What the skill handles automatically:
 - installs dbt Labs agent skills when missing
 - installs dbt packages with `dbt deps`
 - uses `dbt_utils`, `audit_helper`, and `dbt_project_evaluator` at the right stages
+- profiles source data before modeling
+- applies mapping seeds and coverage checks when mappings are provided
 - generates dbt docs
+- prepares human review and final handoff notes
 - prepares Agents Schema after `target/manifest.json` exists
 - asks before unclear or risky actions
 

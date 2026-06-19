@@ -1,0 +1,58 @@
+# Source Profiling Checklist
+
+Run this after source YAML is generated and before staging models are designed.
+
+## Goal
+
+Understand the real source data before modeling. Do not infer business meaning from table names alone.
+
+## Inspect
+
+For each source table, capture:
+
+- Row count
+- Candidate primary key columns
+- Candidate foreign key columns
+- Date and timestamp columns
+- Amount, quantity, score, duration, or other numeric measure columns
+- Status, type, category, flag, and code columns
+- Nullable columns that look important
+- Duplicate keys
+- Empty tables
+
+Use warehouse SQL, dbt source metadata, or codegen output. Keep queries lightweight and avoid full table scans when tables are large.
+
+## Record findings
+
+Add short notes to source YAML descriptions or a project note when helpful:
+
+- Table grain
+- Primary key assumption
+- Known relationships
+- Important date column
+- Important status/code values
+- Data quality concerns
+- Empty or low-row-count tables
+
+## Stop and ask
+
+Ask the user before modeling if:
+
+- No stable primary key can be found for an important table
+- A required table is empty
+- A relationship is unclear
+- Multiple date columns could drive the same fact
+- Important columns have ambiguous names
+- The prompt includes business rules that conflict with the data
+
+## Validate
+
+At minimum, run source-level checks or SQL inspections for:
+
+- Row counts
+- Duplicate primary keys
+- Null primary keys
+- Distinct values for important status/code columns
+- Min/max dates for important date columns
+
+Use these findings to choose staging tests and intermediate joins.

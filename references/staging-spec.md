@@ -4,6 +4,8 @@
 
 Create or update **only** the staging layer from the current source YAML.
 
+Read [source-profiling.md](source-profiling.md) before creating or changing staging models.
+
 ## Folder and naming
 
 - Folder: `models/staging/{domain}/`
@@ -21,6 +23,8 @@ Create or update **only** the staging layer from the current source YAML.
 - If a staging column no longer exists in source, **do not delete silently** — summarize and ask
 
 ## Safe standardization
+
+Preserve raw mapping/code columns so later layers can apply business mappings safely.
 
 - Lowercase: `email`, status fields, `customer_segment`
 - Uppercase: `currency_code` (only if column exists in source)

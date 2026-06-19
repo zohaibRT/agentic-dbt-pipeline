@@ -57,16 +57,18 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 | **1 Init** | New project | [project-initialization.md](references/project-initialization.md) |
 | **2 Schemas** | After init | [warehouse-schema-setup.md](references/warehouse-schema-setup.md) |
 | **3 Sources** | Packages + source YAML | [packages-and-sources.md](references/packages-and-sources.md) |
+| **3b Source profiling** | Before staging | [source-profiling.md](references/source-profiling.md) |
 | **4 Layer names** | Before models | [dbt-project-layers.md](references/dbt-project-layers.md) |
 | **5 Staging** | Layer 1 | [staging-spec.md](references/staging-spec.md) |
-| **6 Intermediate** | Layer 2 | [intermediate-spec.md](references/intermediate-spec.md) |
+| **6 Intermediate** | Layer 2 | [intermediate-spec.md](references/intermediate-spec.md), [mapping-seeds.md](references/mapping-seeds.md) |
 | **7 Marts** | Layer 3 star schema | [marts-spec.md](references/marts-spec.md), [materialization-rules.md](references/materialization-rules.md) |
 | **7b Semantic** | Metrics on marts | [semantic-layer-spec.md](references/semantic-layer-spec.md) |
 | **7c Evaluator** | Best-practice audit | [dbt-packages-and-skills.md](references/dbt-packages-and-skills.md) |
 | **8 Docs** | After layers | [documentation.md](references/documentation.md) |
 | **9 Git** | After each stage | [github-repo-resolution.md](references/github-repo-resolution.md), [git-workflow.md](references/git-workflow.md) |
 | **10 Agents Schema / CI** | Metadata + automation | [agents-schema-setup.md](references/agents-schema-setup.md), [cicd-setup.md](references/cicd-setup.md) |
-| **Done** | Final check | [acceptance-checklist.md](references/acceptance-checklist.md) |
+| **Review** | Human approval points | [human-review.md](references/human-review.md) |
+| **Done** | Final check | [acceptance-checklist.md](references/acceptance-checklist.md), [final-delivery.md](references/final-delivery.md) |
 
 Context prompt template: [agent-context-prompt.md](references/agent-context-prompt.md)
 
@@ -154,9 +156,9 @@ Each stage: **parse → build → summarize → ask commit/push** (repo: `https:
 
 ## Step 2 — Sources
 
-Read [packages-and-sources.md](references/packages-and-sources.md) and [dbt-packages-and-skills.md](references/dbt-packages-and-skills.md).
+Read [packages-and-sources.md](references/packages-and-sources.md), [source-profiling.md](references/source-profiling.md), and [dbt-packages-and-skills.md](references/dbt-packages-and-skills.md).
 
-All four packages in `packages.yml`. Codegen for sources. Add the configured `source.schema` to source YAML after generate.
+All four packages in `packages.yml`. Codegen for sources. Add the configured `source.schema` to source YAML after generate. Profile row counts, candidate keys, relationships, important dates, measures, and status/code fields before staging.
 
 ## Step 3 — Layer 1 (staging)
 
@@ -164,7 +166,7 @@ Read [staging-spec.md](references/staging-spec.md). `source()` only. No business
 
 ## Step 4 — Layer 2 (intermediate)
 
-Read [intermediate-spec.md](references/intermediate-spec.md). `ref()` only.
+Read [intermediate-spec.md](references/intermediate-spec.md) and [mapping-seeds.md](references/mapping-seeds.md). `ref()` only. Use mapping seeds or reference tables when `project_rules` include manual mappings or code translations.
 
 ## Step 5 — Layer 3 (marts / star schema)
 
@@ -183,6 +185,10 @@ Read [semantic-layer-spec.md](references/semantic-layer-spec.md). Compose with `
 ## Step 6 — Documentation
 
 Read [documentation.md](references/documentation.md). Run `dbt docs generate`.
+
+## Step 6b - Human review
+
+Read [human-review.md](references/human-review.md). Summarize business assumptions, data quality notes, and open decisions after each layer. Ask for approval when business meaning, grain, mappings, metrics, or sensitive fields are unclear.
 
 ## Step 7 — Git
 
@@ -261,10 +267,14 @@ Read [stuck-recovery.md](references/stuck-recovery.md) whenever a command hangs,
 | [semantic-layer-spec.md](references/semantic-layer-spec.md) | MetricFlow / semantic metrics |
 | [github-repo-resolution.md](references/github-repo-resolution.md) | `gh` CLI owner + repo name |
 | [packages-and-sources.md](references/packages-and-sources.md) | Codegen, source YAML |
+| [source-profiling.md](references/source-profiling.md) | Row counts, keys, dates, status/code values |
 | [staging-spec.md](references/staging-spec.md) | Layer 1 |
 | [intermediate-spec.md](references/intermediate-spec.md) | Layer 2 |
+| [mapping-seeds.md](references/mapping-seeds.md) | Manual mapping seeds and coverage tests |
 | [marts-spec.md](references/marts-spec.md) | Star schema |
 | [documentation.md](references/documentation.md) | Docs generate |
+| [human-review.md](references/human-review.md) | Engineer/domain review checkpoints |
+| [final-delivery.md](references/final-delivery.md) | Final handoff checklist |
 | [validation-commands.md](references/validation-commands.md) | debug, parse, build, docs |
 | [stuck-recovery.md](references/stuck-recovery.md) | Stuck command and blocker recovery |
 | [github-setup.md](references/github-setup.md) | Initial git + commit order |
