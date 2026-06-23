@@ -40,6 +40,7 @@ Capture:
 - User-provided inputs
 - User-approved requirements and rules
 - Discovery conclusions
+- Agent recommendations and whether they were approved, changed, or deferred
 - Important data-engineering decisions
 - Assumptions and their approval status
 - Open decisions
@@ -87,6 +88,11 @@ Use this structure:
 | Decision | Choice | Evidence | Status |
 |---|---|---|---|
 | Grain | <choice> | <evidence> | approved/open |
+
+## Recommendations
+| Phase | Recommendation | Evidence | Outcome |
+|---|---|---|---|
+| <phase> | <recommended path> | <evidence> | approved/changed/deferred/open |
 
 ## Phase Tree
 - Discovery

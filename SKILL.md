@@ -68,6 +68,7 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 | **0c Best practices** | Design guardrails | [data-engineering-best-practices.md](references/data-engineering-best-practices.md) |
 | **0d Engineer gate** | Explicit modeling decisions | [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md) |
 | **0e Phased discovery** | Discover just enough per phase | [phased-discovery.md](references/phased-discovery.md) |
+| **0f Recommendations** | Agent recommends; data engineer approves | [recommendation-and-review.md](references/recommendation-and-review.md) |
 | **1 Init** | New project | [project-initialization.md](references/project-initialization.md) |
 | **2 Schemas** | After init | [warehouse-schema-setup.md](references/warehouse-schema-setup.md), [schema-isolation.md](references/schema-isolation.md) |
 | **3 Sources** | Packages + source YAML | [packages-and-sources.md](references/packages-and-sources.md) |
@@ -91,7 +92,7 @@ Context prompt template: [agent-context-prompt.md](references/agent-context-prom
 
 ## Step 0 - Load config
 
-Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), [project-naming.md](references/project-naming.md), [schema-isolation.md](references/schema-isolation.md), [env-configuration.md](references/env-configuration.md), [discovery-requirements.md](references/discovery-requirements.md), [phased-discovery.md](references/phased-discovery.md), [phase-plan-approval.md](references/phase-plan-approval.md), [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md), [phase-completion-report.md](references/phase-completion-report.md), and [context-tree.md](references/context-tree.md).
+Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), [project-naming.md](references/project-naming.md), [schema-isolation.md](references/schema-isolation.md), [env-configuration.md](references/env-configuration.md), [discovery-requirements.md](references/discovery-requirements.md), [phased-discovery.md](references/phased-discovery.md), [recommendation-and-review.md](references/recommendation-and-review.md), [phase-plan-approval.md](references/phase-plan-approval.md), [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md), [phase-completion-report.md](references/phase-completion-report.md), and [context-tree.md](references/context-tree.md).
 
 Resolve paths relative to workspace root. dbt project root = `{project.root}`.
 
@@ -122,6 +123,8 @@ Read [data-engineering-best-practices.md](references/data-engineering-best-pract
 Read [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md) before writing each phase plan. The phase plan must show the agent's data-engineering decisions, evidence, and approval needs; do not hide grain, key, join, mapping, privacy, metric, materialization, or validation choices inside code.
 
 Read [phased-discovery.md](references/phased-discovery.md) before each phase. Discover only what is needed for the next layer or workflow step; do not fully design silver/gold/semantic outputs during initial discovery or bronze work.
+
+Read [recommendation-and-review.md](references/recommendation-and-review.md) before writing discovery summaries, phase plans, phase reports, and final handoffs. The agent must recommend the best path with evidence, show what looks right and what is not ready, and ask the data engineer only for business-impacting approvals. Do not make the user design everything from scratch.
 
 ## Step 0.5 - Resolve layer names
 
@@ -209,7 +212,7 @@ Read [separate-layer-builds.md](references/separate-layer-builds.md).
 10. Automation - CI workflow
 11. **Acceptance + final summary** - [acceptance-checklist.md](references/acceptance-checklist.md), [final-delivery.md](references/final-delivery.md)
 
-Each stage: **phase-specific discovery -> data engineer decision check -> write Markdown plan -> ask approval -> implement -> parse/build -> write phase report -> update context tree -> summarize -> ask commit**. Ask for push only when a non-local GitHub repo is configured or the user requested push.
+Each stage: **phase-specific discovery -> agent recommendation -> data engineer decision check -> write Markdown plan -> ask approval -> implement -> parse/build -> write phase report -> update context tree -> summarize -> ask commit**. Ask for push only when a non-local GitHub repo is configured or the user requested push.
 
 ## Step 2 - Sources
 
@@ -295,12 +298,13 @@ Read [stuck-recovery.md](references/stuck-recovery.md) whenever a command hangs,
 2. Files created / updated
 3. Grain / business logic
 4. Data-engineering decisions and evidence
-5. Tests / docs added
-6. Assumptions used
-7. dbt debug / parse / build results
-8. Phase report path and status
-9. Context tree update status
-10. Commit status (asked / skipped / done / pushed to github)
+5. Agent recommendation, what looks right, and what is not ready
+6. Tests / docs added
+7. Assumptions used
+8. dbt debug / parse / build results
+9. Phase report path and status
+10. Context tree update status
+11. Commit status (asked / skipped / done / pushed to github)
 ```
 
 For the final response, use [final-delivery.md](references/final-delivery.md) instead of only the phase template.
@@ -351,6 +355,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 | [context-tree.md](references/context-tree.md) | Curated project memory: inputs, outputs, decisions, reports, and open items |
 | [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md) | Senior data-engineering decisions that must be explicit before build |
 | [phased-discovery.md](references/phased-discovery.md) | Layer-by-layer discovery that keeps the data engineer in control |
+| [recommendation-and-review.md](references/recommendation-and-review.md) | Agent recommendations, risks, and approval boundaries |
 | [project-naming.md](references/project-naming.md) | Derive project and folder names without using dbt profile |
 | [env-configuration.md](references/env-configuration.md) | Optional `.env` settings and precedence |
 | [schema-isolation.md](references/schema-isolation.md) | Keep source, medallion, evaluator, seeds, snapshots, and agent metadata schemas separate |

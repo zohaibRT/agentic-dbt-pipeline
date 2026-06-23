@@ -36,6 +36,9 @@ After discovery, explain in Markdown:
 - Privacy/sensitive-field observations
 - High-level medallion direction, without finalizing every layer design
 - Suggested business questions or analytics use cases the source appears able to support
+- Agent recommendation with evidence
+- What looks right for the next phase
+- What is not ready yet
 - What the agent is confident about
 - What the agent is not confident about
 - Required user decisions before modeling
@@ -78,10 +81,22 @@ Discovery is complete. I have not built or changed anything yet.
 Here is what I concluded from the source data:
 <short Markdown summary>
 
+My recommendation:
+<recommended next step and why>
+
+What looks right:
+<safe or well-supported choices>
+
+What is not ready yet:
+<risks, missing data, ambiguous fields, or weak assumptions>
+
+Needs your approval:
+<business-impacting choices before the next build phase>
+
 Before I plan the dbt build, do you want to add any requirements?
 Examples: field mappings, columns to exclude, metric definitions, privacy rules, naming rules, facts/dimensions to prioritize, or tables to ignore.
 
-Reply with your requirements, or reply "continue" and I will prepare the Bootstrap & Init plan for approval.
+Reply with your changes/requirements, or reply "continue" if you approve the recommendation and want me to prepare the Bootstrap & Init plan for approval.
 ```
 
 If the user replies `continue`, `no changes`, `go ahead`, or similar, proceed to [phase-plan-approval.md](phase-plan-approval.md) for Bootstrap & Init.

@@ -22,6 +22,8 @@ First, perform lightweight read-only project discovery only: inspect source sche
 
 After I answer, before each build phase, write/update `AGENT_PLAN.md`, explain in Markdown what you will build, and wait for my approval before implementing that phase.
 
+In each discovery summary and phase plan, recommend the best next path with evidence, show what looks right, what is not ready yet, and what needs my approval. Do not ask me to design everything from scratch.
+
 In each phase plan, include a Data Engineer Decision Check covering grain, keys, joins, mappings, metrics, privacy, materialization, tests, and validation evidence. Ask me before guessing any decision that affects business meaning, privacy, correctness, cost, or downstream usability.
 
 After each completed phase, write/update `reports/agent/<phase>_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` with what was done, what passed, warnings/failures/skips, assumptions, user decisions, phase outputs, report links, and open decisions.
@@ -63,5 +65,5 @@ Use the dbt Pipeline skill (`agentic-dbt-pipeline`).
 Use settings from `.env`.
 workflow_phase: <init | sources | staging | intermediate | marts | semantic_layer | project_evaluator | docs | ci | agents_schema>
 
-Before building this phase, explain the plan in Markdown and wait for my approval. After it completes, write/update the phase report, pipeline status, and context tree files.
+Before building this phase, explain the plan in Markdown with your recommendation, evidence, risks, and approval needs, then wait for my approval. After it completes, write/update the phase report, pipeline status, and context tree files.
 ```

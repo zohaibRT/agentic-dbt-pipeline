@@ -36,9 +36,9 @@ Use the dbt Pipeline skill (`agentic-dbt-pipeline`).
 Build the dbt project using the settings from `.env`.
 Run the full pipeline from source discovery through final delivery.
 
-First, perform read-only discovery only: inspect source schemas/tables, summarize what you conclude from the data, and ask whether I want to add requirements.
+First, perform read-only discovery only: inspect source schemas/tables, summarize what you conclude from the data, recommend the best next path with evidence, and ask whether I want to add or change requirements.
 
-After I answer, before each build phase, write/update `AGENT_PLAN.md`, explain what will be built, and wait for my approval. After each completed phase, write/update `reports/agent/<phase>_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md`.
+After I answer, before each build phase, write/update `AGENT_PLAN.md`, explain what will be built, what looks right, what is not ready yet, and what needs my approval, then wait for approval. After each completed phase, write/update `reports/agent/<phase>_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md`.
 ```
 
 For a full copy-paste prompt, see [prompt.md](prompt.md).
@@ -76,6 +76,7 @@ Keep passwords, tokens, and private keys in local profiles or GitHub Secrets.
 | Environment config | Loads non-secret `.env` values before asking for missing inputs |
 | Subagents | Optionally parallelizes read-only profiling, planning, docs, and review work |
 | Phase planning | Writes a Markdown plan before each phase and waits for approval before building |
+| Agent recommendations | Recommends the best path with evidence, then asks the data engineer to approve or change business-impacting choices |
 | Data engineer decision gate | Documents grain, keys, joins, mappings, metrics, privacy, tests, materialization, and validation evidence before build |
 | Phase reports | Writes `reports/agent/<phase>_report.md`, `PIPELINE_STATUS.md`, and `CONTEXT_TREE.md` after each phase |
 | Sources | Generates source YAML and adds source descriptions |
@@ -151,6 +152,7 @@ The skill can add and install these dbt packages:
 | [references/bootstrap.md](references/bootstrap.md) | Bootstrap workflow |
 | [references/discovery-requirements.md](references/discovery-requirements.md) | Read-only discovery and requirements checkpoint before build planning |
 | [references/phase-plan-approval.md](references/phase-plan-approval.md) | Markdown plan and approval gate before every phase |
+| [references/recommendation-and-review.md](references/recommendation-and-review.md) | Agent recommendations, what looks right, risks, and approval boundaries |
 | [references/phase-completion-report.md](references/phase-completion-report.md) | Per-phase reports and pipeline status file |
 | [references/context-tree.md](references/context-tree.md) | Curated project memory for inputs, decisions, outputs, and report links |
 | [references/data-engineer-decision-gate.md](references/data-engineer-decision-gate.md) | Required senior data-engineering decision checks before build |

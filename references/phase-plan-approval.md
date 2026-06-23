@@ -4,7 +4,7 @@ Use this before every phase that creates files, changes dbt behavior, or builds 
 
 ## Core rule
 
-Before implementation, run phase-specific discovery from [phased-discovery.md](phased-discovery.md), explain the phase plan in Markdown, and wait for user approval. Include the data-engineering decision check from [data-engineer-decision-gate.md](data-engineer-decision-gate.md) so the design is reviewed before build.
+Before implementation, run phase-specific discovery from [phased-discovery.md](phased-discovery.md), add the agent recommendation from [recommendation-and-review.md](recommendation-and-review.md), explain the phase plan in Markdown, and wait for user approval. Include the data-engineering decision check from [data-engineer-decision-gate.md](data-engineer-decision-gate.md) so the design is reviewed before build.
 
 Default plan file:
 
@@ -43,6 +43,7 @@ For each phase, include:
 - Target folders, files, and warehouse schemas
 - Planned models, grains, materializations, and naming
 - Planned joins, mappings, metrics, and privacy handling when relevant
+- Agent recommendation: recommended path, evidence, what looks right, what is not ready yet, and what requires data engineer approval
 - Data-engineering decisions, evidence, and which choices need user approval
 - Tests and documentation to add
 - dbt packages/macros involved
@@ -100,6 +101,22 @@ If the user approves with plain language such as "yes", "go ahead", or "looks go
 - <schema isolation rule>
 - <privacy or mapping rule>
 - <materialization rule>
+
+### Agent Recommendation
+- Recommended path: <what I recommend for this phase>
+- Why: <evidence from discovery, source profiling, dbt files, or validation>
+
+### What Looks Right
+- <safe or well-supported choice>
+
+### What Is Not Ready Yet
+- <risk, missing data, ambiguous field, or weak assumption>
+
+### Needs Data Engineer Approval
+- <business-impacting choice that must be approved before build>
+
+### Not Deciding Alone
+- <privacy, metric, mapping, grain, schema, cost, or production behavior I will not choose silently>
 
 ### Data Engineer Decision Check
 | Decision | Choice | Evidence | Needs User Approval? |

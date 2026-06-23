@@ -58,6 +58,10 @@ reports/agent/agents_schema_report.md
 - Data quality and completeness notes
 - Privacy/sensitive-field observations
 - Recommended medallion direction
+- Agent recommendation
+- What looks right
+- What is not ready yet
+- Items needing data engineer approval
 - Open modeling decisions for the data engineer
 - Inputs used: domain, dbt profile name without credentials, source schema, source tables inspected
 
@@ -76,6 +80,7 @@ Every phase report must include:
 - Models, seeds, semantic files, workflows, or docs created
 - Commands run
 - Validation results: pass, warn, fail, skipped
+- Agent recommendation followed, changed, or deferred
 - What looks correct
 - What looks wrong or risky
 - Data-engineering decisions implemented, inferred, or still open
@@ -124,11 +129,19 @@ Overall: <PASS | WARN | FAIL | SKIPPED | BLOCKED>
 |---|---|---|
 | <command/check> | <PASS/WARN/FAIL/SKIPPED> | <important output> |
 
+## Agent Recommendation Outcome
+| Recommendation | Outcome | Evidence / Reason |
+|---|---|---|
+| <recommended action> | <followed/changed/deferred> | <why> |
+
 ## What Looks Correct
 - <confirmed-good point>
 
-## What Looks Wrong Or Needs Review
+## What Is Not Ready Yet
 - <warning/risk/question>
+
+## Needs Data Engineer Approval
+- <open approval item, or "None">
 
 ## Data Engineer Decisions
 | Decision | Implemented Choice | Evidence / Validation | Still Open? |
