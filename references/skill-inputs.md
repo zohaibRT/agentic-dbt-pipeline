@@ -121,9 +121,9 @@ DBT_GITHUB_REPO_NAME=<repo_name_if_push_is_required>
 
 Prompt values override `.env`. Do not commit `.env`; commit only `.env.example`.
 
-On a fresh clone, if `.env` is missing, follow [env-configuration.md](env-configuration.md): create a safe local `.env` from `.env.example`, stop, and ask the user to fill `DBT_DOMAIN`, `DBT_PROFILE_NAME`, and `DBT_SOURCE_SCHEMA` before running dbt commands.
+On a fresh clone, if `.env` is missing, follow [env-configuration.md](env-configuration.md): create a safe local `.env` from `.env.example`, stop, and ask the user to provide `DBT_DOMAIN`, `DBT_PROFILE_NAME`, and `DBT_SOURCE_SCHEMA` before running discovery or dbt commands.
 
-Do not satisfy missing required inputs from other workspaces, previous runs, existing schemas, or guessed warehouse patterns. Do not suggest values from other workspaces. Ask the user directly for `DBT_DOMAIN`, `DBT_PROFILE_NAME`, and `DBT_SOURCE_SCHEMA`, then update `.env` from the user's answer.
+Do not satisfy missing required inputs from repo search, terminal output, other workspaces, previous runs, existing schemas, or guessed warehouse patterns. Do not suggest values. Ask the user directly for `DBT_DOMAIN`, `DBT_PROFILE_NAME`, and `DBT_SOURCE_SCHEMA`, then update `.env` from the user's answer.
 
 ## dbt packages & skills stack
 

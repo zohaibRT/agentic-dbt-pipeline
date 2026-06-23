@@ -102,7 +102,9 @@ When the user runs the default prompt in a freshly cloned skill or dbt project a
 5. Stop before dbt discovery, `dbt debug`, `dbt deps`, codegen, or build commands.
 6. Tell the user exactly which required values are missing and ask them to update `.env` or provide the values in chat.
 
-Do not infer required first-run values from other workspaces, old dbt projects, old `.env` files, existing medallion schemas, warehouse object names, or previous runs. Do not scan or summarize other workspaces to suggest values. Ask the user directly.
+When `.env` is missing, do not search the repo for alternate config files, inspect terminal history/output, inspect other workspaces, inspect old dbt projects, query warehouse schemas, or look at previous runs to decide what to do. The data engineer controls the active project inputs.
+
+Do not infer required first-run values from other workspaces, old dbt projects, old `.env` files, existing medallion schemas, warehouse object names, terminal output, or previous runs. Do not scan or summarize other workspaces to suggest values. Ask the user directly.
 
 Never combine missing-`.env` setup with discovery in the same response. Missing `.env` is a hard stop until the user confirms the required values.
 
@@ -142,5 +144,7 @@ After I update `.env`, I will summarize the values and wait for your approval be
 
 Optional: add project rules in chat if you have mappings, metrics, privacy rules, exclusions, or special instructions.
 ```
+
+If the user provides the three values in chat, update the local `.env`, summarize only those user-provided values, and ask for approval before discovery. Do not add extra inferred values.
 
 Never commit `.env`. Commit `.env.example` only if it contains placeholders and comments, not real project credentials or private connection details.
