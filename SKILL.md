@@ -83,13 +83,14 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 | **Plan approval** | Before each build phase | [phase-plan-approval.md](references/phase-plan-approval.md) |
 | **Review** | Human approval points | [human-review.md](references/human-review.md) |
 | **Phase report** | After each completed phase | [phase-completion-report.md](references/phase-completion-report.md) |
+| **Context tree** | Ongoing project memory | [context-tree.md](references/context-tree.md) |
 | **Done** | Final check + user summary | [acceptance-checklist.md](references/acceptance-checklist.md), [final-delivery.md](references/final-delivery.md) |
 
 Context prompt template: [agent-context-prompt.md](references/agent-context-prompt.md)
 
 ## Step 0 - Load config
 
-Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), [project-naming.md](references/project-naming.md), [schema-isolation.md](references/schema-isolation.md), [env-configuration.md](references/env-configuration.md), [discovery-requirements.md](references/discovery-requirements.md), [phase-plan-approval.md](references/phase-plan-approval.md), [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md), and [phase-completion-report.md](references/phase-completion-report.md).
+Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), [project-naming.md](references/project-naming.md), [schema-isolation.md](references/schema-isolation.md), [env-configuration.md](references/env-configuration.md), [discovery-requirements.md](references/discovery-requirements.md), [phase-plan-approval.md](references/phase-plan-approval.md), [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md), [phase-completion-report.md](references/phase-completion-report.md), and [context-tree.md](references/context-tree.md).
 
 Resolve paths relative to workspace root. dbt project root = `{project.root}`.
 
@@ -205,7 +206,7 @@ Read [separate-layer-builds.md](references/separate-layer-builds.md).
 10. Automation - CI workflow
 11. **Acceptance + final summary** - [acceptance-checklist.md](references/acceptance-checklist.md), [final-delivery.md](references/final-delivery.md)
 
-Each stage: **discover -> data engineer decision check -> write Markdown plan -> ask approval -> implement -> parse/build -> write phase report -> summarize -> ask commit**. Ask for push only when a non-local GitHub repo is configured or the user requested push.
+Each stage: **discover -> data engineer decision check -> write Markdown plan -> ask approval -> implement -> parse/build -> write phase report -> update context tree -> summarize -> ask commit**. Ask for push only when a non-local GitHub repo is configured or the user requested push.
 
 ## Step 2 - Sources
 
@@ -260,7 +261,7 @@ Use Agents Schema after docs generation or any step that produces `target/manife
 
 ## Step 9 - Final delivery summary
 
-Read [phase-completion-report.md](references/phase-completion-report.md) and [final-delivery.md](references/final-delivery.md) before marking any full pipeline or requested phase complete.
+Read [phase-completion-report.md](references/phase-completion-report.md), [context-tree.md](references/context-tree.md), and [final-delivery.md](references/final-delivery.md) before marking any full pipeline or requested phase complete.
 
 Always finish with a user-facing summary that starts short, then gives the useful details:
 
@@ -295,7 +296,8 @@ Read [stuck-recovery.md](references/stuck-recovery.md) whenever a command hangs,
 6. Assumptions used
 7. dbt debug / parse / build results
 8. Phase report path and status
-9. Commit status (asked / skipped / done / pushed to github)
+9. Context tree update status
+10. Commit status (asked / skipped / done / pushed to github)
 ```
 
 For the final response, use [final-delivery.md](references/final-delivery.md) instead of only the phase template.
@@ -343,6 +345,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 | [skill-inputs.md](references/skill-inputs.md) | Required inputs |
 | [phase-plan-approval.md](references/phase-plan-approval.md) | Markdown plan and approval gate before every phase |
 | [phase-completion-report.md](references/phase-completion-report.md) | Per-phase report files showing done/correct/wrong/open items |
+| [context-tree.md](references/context-tree.md) | Curated project memory: inputs, outputs, decisions, reports, and open items |
 | [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md) | Senior data-engineering decisions that must be explicit before build |
 | [project-naming.md](references/project-naming.md) | Derive project and folder names without using dbt profile |
 | [env-configuration.md](references/env-configuration.md) | Optional `.env` settings and precedence |

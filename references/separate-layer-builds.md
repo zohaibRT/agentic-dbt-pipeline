@@ -53,7 +53,7 @@ dbt parse --no-partial-parse
 ```
 
 Explain the source YAML plan and get approval before running codegen or writing source files.
-Write `reports/agent/sources_report.md`, update `reports/agent/PIPELINE_STATUS.md`, then ask commit for `models/sources/` and `reports/agent/`.
+Write `reports/agent/sources_report.md`, update `reports/agent/PIPELINE_STATUS.md` and `reports/agent/CONTEXT_TREE.md`, then ask commit for `models/sources/` and `reports/agent/`.
 
 ---
 
@@ -80,7 +80,7 @@ dbt build --select +path:models/{layer_1_name}/{domain}
 Warehouse models land in: **`<layer_schema_prefix>_<layer_1_name>`** (default materialization: `view`)
 
 Explain planned staging models, source tables, casts, tests, and schema target before creating files.
-Write `reports/agent/{layer_1_name}_report.md`, update `reports/agent/PIPELINE_STATUS.md`, then ask commit -> push `models/{layer_1_name}/{domain}/` and `reports/agent/`.
+Write `reports/agent/{layer_1_name}_report.md`, update `reports/agent/PIPELINE_STATUS.md` and `reports/agent/CONTEXT_TREE.md`, then ask commit -> push `models/{layer_1_name}/{domain}/` and `reports/agent/`.
 
 ---
 
@@ -106,7 +106,7 @@ dbt build --select +path:models/{layer_2_name}/{domain}
 Warehouse models land in: **`<layer_schema_prefix>_<layer_2_name>`** (default materialization: `view`)
 
 Explain planned intermediate models, joins, grains, mappings, flags, and tests before creating files.
-Write `reports/agent/{layer_2_name}_report.md`, update `reports/agent/PIPELINE_STATUS.md`, then ask commit -> push `models/{layer_2_name}/{domain}/` and `reports/agent/`.
+Write `reports/agent/{layer_2_name}_report.md`, update `reports/agent/PIPELINE_STATUS.md` and `reports/agent/CONTEXT_TREE.md`, then ask commit -> push `models/{layer_2_name}/{domain}/` and `reports/agent/`.
 
 ---
 
@@ -132,7 +132,7 @@ dbt build --select +path:models/{layer_3_name}/{domain}
 Warehouse models land in: **`<layer_schema_prefix>_<layer_3_name>`** (prod defaults: `dim_*`/`mart_*` = `table`, `fct_*` = `incremental`)
 
 Explain planned facts, dimensions, reporting marts, metrics, privacy handling, grains, and materializations before creating files.
-Write `reports/agent/{layer_3_name}_report.md`, update `reports/agent/PIPELINE_STATUS.md`, then ask commit -> push `models/{layer_3_name}/{domain}/`, `reports/agent/`, and `dbt_project.yml` if changed.
+Write `reports/agent/{layer_3_name}_report.md`, update `reports/agent/PIPELINE_STATUS.md` and `reports/agent/CONTEXT_TREE.md`, then ask commit -> push `models/{layer_3_name}/{domain}/`, `reports/agent/`, and `dbt_project.yml` if changed.
 
 ---
 

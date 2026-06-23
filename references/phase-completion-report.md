@@ -17,6 +17,7 @@ Default files:
 ```text
 reports/agent/<phase>_report.md
 reports/agent/PIPELINE_STATUS.md
+reports/agent/CONTEXT_TREE.md
 ```
 
 Examples:
@@ -148,8 +149,12 @@ Update `reports/agent/PIPELINE_STATUS.md` after every phase:
 | Bootstrap | PASS | reports/agent/bootstrap_report.md | <hash or pending> |
 ```
 
+## Context tree
+
+Update `reports/agent/CONTEXT_TREE.md` after every phase using [context-tree.md](context-tree.md). The context tree should summarize the phase input, output, decisions, report link, status, and next action.
+
 ## Commit behavior
 
-Include the phase report and `PIPELINE_STATUS.md` in the same phase commit when commit approval is granted.
+Include the phase report, `PIPELINE_STATUS.md`, and `CONTEXT_TREE.md` in the same phase commit when commit approval is granted.
 
 Do not commit reports that contain secrets, passwords, tokens, or sensitive record samples.

@@ -24,6 +24,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] `AGENT_PLAN.md` created or updated with the approved plan for each implemented phase
 - [ ] `reports/agent/<phase>_report.md` created or updated for each implemented phase
 - [ ] `reports/agent/PIPELINE_STATUS.md` updated after each phase
+- [ ] `reports/agent/CONTEXT_TREE.md` updated with user inputs, decisions, phase outputs, report links, and open items
 
 ## dbt Agent Skills & packages
 
@@ -125,6 +126,6 @@ Verify before marking the dbt pipeline workflow complete.
 
 - [ ] Final handoff notes or README include domain, profile name, schemas, final models, metrics, run commands, and known limitations
 - [ ] Final response starts with a short summary, then includes results, validation, data notes, git/automation status, and open decisions
-- [ ] Final response references `AGENT_PLAN.md`, `reports/agent/PIPELINE_STATUS.md`, and relevant phase reports
+- [ ] Final response references `AGENT_PLAN.md`, `reports/agent/PIPELINE_STATUS.md`, `reports/agent/CONTEXT_TREE.md`, and relevant phase reports
 - [ ] Phase commits created or intentionally skipped
 - [ ] Final response summarizes build status, docs status, evaluator status, Agents Schema status, git status, limitations, and open decisions

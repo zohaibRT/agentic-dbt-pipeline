@@ -24,7 +24,7 @@ After I answer, before each build phase, write/update `AGENT_PLAN.md`, explain i
 
 In each phase plan, include a Data Engineer Decision Check covering grain, keys, joins, mappings, metrics, privacy, materialization, tests, and validation evidence. Ask me before guessing any decision that affects business meaning, privacy, correctness, cost, or downstream usability.
 
-After each completed phase, write/update `reports/agent/<phase>_report.md` and `reports/agent/PIPELINE_STATUS.md` with what was done, what passed, warnings/failures/skips, assumptions, and open decisions.
+After each completed phase, write/update `reports/agent/<phase>_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` with what was done, what passed, warnings/failures/skips, assumptions, user decisions, phase outputs, report links, and open decisions.
 
 Ask me only when required `.env` values are missing, credentials or secrets are needed, a business rule is unclear, phase build approval is needed, or before committing, pushing, or changing schema behavior.
 ```
@@ -63,5 +63,5 @@ Use the dbt Pipeline skill (`agentic-dbt-pipeline`).
 Use settings from `.env`.
 workflow_phase: <init | sources | staging | intermediate | marts | semantic_layer | project_evaluator | docs | ci | agents_schema>
 
-Before building this phase, explain the plan in Markdown and wait for my approval. After it completes, write/update the phase report and pipeline status files.
+Before building this phase, explain the plan in Markdown and wait for my approval. After it completes, write/update the phase report, pipeline status, and context tree files.
 ```

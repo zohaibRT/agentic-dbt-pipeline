@@ -76,4 +76,4 @@ If the user provides requirements, add them to the plan as `project_rules` and u
 - Skip the requirements checkpoint on a new full pipeline.
 - Hide inferred business logic. Explain what was inferred and what still needs confirmation.
 
-After discovery is summarized, create `reports/agent/discovery_report.md` and update `reports/agent/PIPELINE_STATUS.md` if a project root already exists. If the dbt project root does not exist yet, include the discovery report content in chat and create the file during Bootstrap & Init.
+After discovery is summarized, create `reports/agent/discovery_report.md` and update `reports/agent/PIPELINE_STATUS.md` and `reports/agent/CONTEXT_TREE.md` if a project root already exists. If the dbt project root does not exist yet, include the discovery report content in chat and create the files during Bootstrap & Init.
