@@ -75,6 +75,8 @@ Verify before marking the dbt pipeline workflow complete.
 ## Data engineering guardrails
 
 - [ ] Each model has one documented grain
+- [ ] Each phase plan includes a data-engineering decision check with evidence
+- [ ] Any business-impacting decision that could not be proven from source data was approved by the user
 - [ ] Incremental models have a unique key and clear update/filter rule
 - [ ] Snapshots considered for slowly changing dimensions or historical attributes
 - [ ] Source freshness added only when a reliable loaded-at timestamp exists

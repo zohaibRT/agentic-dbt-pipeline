@@ -20,6 +20,8 @@ First, perform read-only discovery only: inspect source schemas/tables, summariz
 
 After I answer, before each build phase, write/update `AGENT_PLAN.md`, explain in Markdown what you will build, and wait for my approval before implementing that phase.
 
+In each phase plan, include a Data Engineer Decision Check covering grain, keys, joins, mappings, metrics, privacy, materialization, tests, and validation evidence. Ask me before guessing any decision that affects business meaning, privacy, correctness, cost, or downstream usability.
+
 After each completed phase, write/update `reports/agent/<phase>_report.md` and `reports/agent/PIPELINE_STATUS.md` with what was done, what passed, warnings/failures/skips, assumptions, and open decisions.
 
 Ask me only when required `.env` values are missing, credentials or secrets are needed, a business rule is unclear, phase build approval is needed, or before committing, pushing, or changing schema behavior.

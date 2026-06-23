@@ -48,6 +48,7 @@ Every phase report must include:
 - Validation results: pass, warn, fail, skipped
 - What looks correct
 - What looks wrong or risky
+- Data-engineering decisions implemented, inferred, or still open
 - Data quality notes
 - Privacy/sensitive-field notes
 - Assumptions used
@@ -98,6 +99,11 @@ Overall: <PASS | WARN | FAIL | SKIPPED | BLOCKED>
 
 ## What Looks Wrong Or Needs Review
 - <warning/risk/question>
+
+## Data Engineer Decisions
+| Decision | Implemented Choice | Evidence / Validation | Still Open? |
+|---|---|---|---|
+| <grain/key/join/privacy/materialization/etc.> | <choice> | <check/result> | <yes/no> |
 
 ## Assumptions
 - <assumption>

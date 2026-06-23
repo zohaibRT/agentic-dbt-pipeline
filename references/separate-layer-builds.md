@@ -35,7 +35,7 @@ Staging comes **before** intermediate. Marts (star schema) come **last**.
 
 Set `workflow_phase:` in the prompt to run **only** that phase.
 
-For every phase: **discover -> write `AGENT_PLAN.md` -> ask approval -> implement -> parse/build -> write `reports/agent/<phase>_report.md` -> summarize -> ask commit**.
+For every phase: **discover -> data engineer decision check -> write `AGENT_PLAN.md` -> ask approval -> implement -> parse/build -> write `reports/agent/<phase>_report.md` -> summarize -> ask commit**.
 
 ### Sources only
 

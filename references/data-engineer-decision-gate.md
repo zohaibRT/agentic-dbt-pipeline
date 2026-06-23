@@ -1,0 +1,87 @@
+# Data Engineer Decision Gate
+
+Use this before approving any phase plan that designs sources, models, tests, metrics, docs, or warehouse behavior.
+
+## Core rule
+
+The agent must make explicit data-engineering decisions before building. Do not leave design choices as hidden agent assumptions.
+
+If the source data does not prove a decision and the choice affects business meaning, privacy, correctness, cost, or downstream usability, ask the user before building.
+
+## Required decision checks
+
+Every build-phase plan must include these checks when relevant:
+
+| Check | What the agent must decide or ask |
+|---|---|
+| Source boundary | Which schemas/tables are read-only inputs, and which tables are excluded |
+| Project shape | Project/root name, folders, source name, and schema prefix derived from domain/source, not profile name |
+| Grain | One clear grain for each planned model |
+| Keys | Candidate primary keys, uniqueness/null checks, and safe surrogate keys when needed |
+| Joins | Join keys, expected cardinality, and whether joins can multiply rows |
+| Layer responsibility | What belongs in staging vs intermediate vs marts |
+| Mapping | Whether codes/statuses need mapping seeds, reference joins, or user-provided definitions |
+| Metrics | Metric definition, grain, filters, numerator/denominator, and semantic-layer target |
+| Privacy | Direct identifiers, PII/PHI, sensitive fields, and whether they may reach marts |
+| History | Whether snapshots or slowly changing dimensions are needed |
+| Incremental strategy | Unique key, update timestamp/filter, late-arriving-data assumption, and full-refresh risk |
+| Tests | Primary key, relationship, accepted value, not-null, and business-rule tests |
+| Documentation | Model purpose, grain, important columns, assumptions, and limitations |
+| Performance | Materialization choice, expected row volume, indexes/sort/cluster hints when relevant |
+| Package outputs | Package/evaluator/audit outputs routed outside source schema |
+| Validation | Exact dbt commands and data checks to prove the phase worked |
+| Rollback/commit | Files and warehouse objects covered by the phase commit |
+
+## Ask instead of guessing
+
+Stop and ask when:
+
+- A metric can be defined more than one reasonable way.
+- A join can change the row count or double-count facts.
+- A source column looks sensitive or unclear.
+- A code/status mapping is incomplete or business-specific.
+- A table is empty but important to the intended marts.
+- The profile default schema equals the source schema.
+- Multiple existing medallion schema prefixes exist.
+- Incremental logic needs a timestamp or unique key that is not reliable.
+- A package would create objects in the source schema.
+- A phase plan changes after approval in a meaningful way.
+
+## Acceptable inference
+
+The agent may infer simple technical defaults when they do not change business meaning:
+
+- Standard dbt folder names from configured layer names.
+- Source name from source schema/domain.
+- Project name from domain/source schema.
+- Basic casts, trimming, and column renames in staging.
+- Generic tests for obvious primary keys when the data confirms uniqueness and non-nullness.
+- Schema prefix from domain/source schema when there is no conflict.
+
+Document inferred choices in the phase plan and phase report.
+
+## Phase plan section
+
+Add this section to every phase plan:
+
+```markdown
+### Data Engineer Decision Check
+| Decision | Choice | Evidence | Needs User Approval? |
+|---|---|---|---|
+| Grain | <one row per ...> | <source/profile evidence> | <yes/no> |
+| Keys | <key columns/tests> | <uniqueness/null checks> | <yes/no> |
+| Joins | <join/cardinality plan> | <relationship/profile evidence> | <yes/no> |
+| Privacy | <include/exclude/mask fields> | <column names/rules> | <yes/no> |
+| Materialization | <view/table/incremental> | <volume/use case> | <yes/no> |
+```
+
+If there is nothing relevant for a decision, write `not applicable` rather than omitting the decision silently.
+
+## Phase report section
+
+Each phase report must include:
+
+- Which data-engineering decisions were implemented.
+- Which decisions were inferred and why they were safe.
+- Which decisions remain open for the user.
+- Any validation that contradicted the original plan.

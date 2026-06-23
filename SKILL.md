@@ -4,7 +4,7 @@ description: >-
   Automate end-to-end dbt with an AI agent: bootstrap, medallion layers
   (bronze/silver/gold by default), packages (codegen, utils, evaluator, audit_helper),
   semantic layer, docs, per-layer git commits, optional GitHub push via gh CLI, and
-  user-facing final run summaries.
+  user-facing final run summaries with senior data-engineering decision gates.
   Use when setting up or extending a dbt analytics project with agentic automation.
 ---
 
@@ -66,6 +66,7 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 | **0 Inputs** | Always first | [skill-inputs.md](references/skill-inputs.md), [project-naming.md](references/project-naming.md), [env-configuration.md](references/env-configuration.md), [security-and-credentials.md](references/security-and-credentials.md), [schema-isolation.md](references/schema-isolation.md), [code-agent-setup.md](references/code-agent-setup.md) |
 | **0b Subagents** | Optional speed-up | [subagent-workflow.md](references/subagent-workflow.md) |
 | **0c Best practices** | Design guardrails | [data-engineering-best-practices.md](references/data-engineering-best-practices.md) |
+| **0d Engineer gate** | Explicit modeling decisions | [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md) |
 | **1 Init** | New project | [project-initialization.md](references/project-initialization.md) |
 | **2 Schemas** | After init | [warehouse-schema-setup.md](references/warehouse-schema-setup.md), [schema-isolation.md](references/schema-isolation.md) |
 | **3 Sources** | Packages + source YAML | [packages-and-sources.md](references/packages-and-sources.md) |
@@ -88,7 +89,7 @@ Context prompt template: [agent-context-prompt.md](references/agent-context-prom
 
 ## Step 0 - Load config
 
-Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), [project-naming.md](references/project-naming.md), [schema-isolation.md](references/schema-isolation.md), [env-configuration.md](references/env-configuration.md), [discovery-requirements.md](references/discovery-requirements.md), [phase-plan-approval.md](references/phase-plan-approval.md), and [phase-completion-report.md](references/phase-completion-report.md).
+Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), [project-naming.md](references/project-naming.md), [schema-isolation.md](references/schema-isolation.md), [env-configuration.md](references/env-configuration.md), [discovery-requirements.md](references/discovery-requirements.md), [phase-plan-approval.md](references/phase-plan-approval.md), [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md), and [phase-completion-report.md](references/phase-completion-report.md).
 
 Resolve paths relative to workspace root. dbt project root = `{project.root}`.
 
@@ -115,6 +116,8 @@ Never hardcode secrets. Ask before production changes.
 ## Step 0.2 - Data engineering guardrails
 
 Read [data-engineering-best-practices.md](references/data-engineering-best-practices.md) before model design and again before final delivery. Apply grain, test, incremental, snapshot, documentation, privacy, and performance guardrails.
+
+Read [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md) before writing each phase plan. The phase plan must show the agent's data-engineering decisions, evidence, and approval needs; do not hide grain, key, join, mapping, privacy, metric, materialization, or validation choices inside code.
 
 ## Step 0.5 - Resolve layer names
 
@@ -202,7 +205,7 @@ Read [separate-layer-builds.md](references/separate-layer-builds.md).
 10. Automation - CI workflow
 11. **Acceptance + final summary** - [acceptance-checklist.md](references/acceptance-checklist.md), [final-delivery.md](references/final-delivery.md)
 
-Each stage: **discover -> write Markdown plan -> ask approval -> implement -> parse/build -> write phase report -> summarize -> ask commit**. Ask for push only when a non-local GitHub repo is configured or the user requested push.
+Each stage: **discover -> data engineer decision check -> write Markdown plan -> ask approval -> implement -> parse/build -> write phase report -> summarize -> ask commit**. Ask for push only when a non-local GitHub repo is configured or the user requested push.
 
 ## Step 2 - Sources
 
@@ -287,11 +290,12 @@ Read [stuck-recovery.md](references/stuck-recovery.md) whenever a command hangs,
 1. Plan approval status
 2. Files created / updated
 3. Grain / business logic
-4. Tests / docs added
-5. Assumptions used
-6. dbt debug / parse / build results
-7. Phase report path and status
-8. Commit status (asked / skipped / done / pushed to github)
+4. Data-engineering decisions and evidence
+5. Tests / docs added
+6. Assumptions used
+7. dbt debug / parse / build results
+8. Phase report path and status
+9. Commit status (asked / skipped / done / pushed to github)
 ```
 
 For the final response, use [final-delivery.md](references/final-delivery.md) instead of only the phase template.
@@ -339,6 +343,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 | [skill-inputs.md](references/skill-inputs.md) | Required inputs |
 | [phase-plan-approval.md](references/phase-plan-approval.md) | Markdown plan and approval gate before every phase |
 | [phase-completion-report.md](references/phase-completion-report.md) | Per-phase report files showing done/correct/wrong/open items |
+| [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md) | Senior data-engineering decisions that must be explicit before build |
 | [project-naming.md](references/project-naming.md) | Derive project and folder names without using dbt profile |
 | [env-configuration.md](references/env-configuration.md) | Optional `.env` settings and precedence |
 | [schema-isolation.md](references/schema-isolation.md) | Keep source, medallion, evaluator, seeds, snapshots, and agent metadata schemas separate |

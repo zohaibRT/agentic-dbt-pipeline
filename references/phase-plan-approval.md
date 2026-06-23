@@ -4,7 +4,7 @@ Use this before every phase that creates files, changes dbt behavior, or builds 
 
 ## Core rule
 
-Before implementation, explain the phase plan in Markdown and wait for user approval.
+Before implementation, explain the phase plan in Markdown and wait for user approval. Include the data-engineering decision check from [data-engineer-decision-gate.md](data-engineer-decision-gate.md) so the design is reviewed before build.
 
 Default plan file:
 
@@ -42,6 +42,7 @@ For each phase, include:
 - Target folders, files, and warehouse schemas
 - Planned models, grains, materializations, and naming
 - Planned joins, mappings, metrics, and privacy handling when relevant
+- Data-engineering decisions, evidence, and which choices need user approval
 - Tests and documentation to add
 - dbt packages/macros involved
 - Validation commands to run after changes
@@ -98,6 +99,15 @@ If the user approves with plain language such as "yes", "go ahead", or "looks go
 - <schema isolation rule>
 - <privacy or mapping rule>
 - <materialization rule>
+
+### Data Engineer Decision Check
+| Decision | Choice | Evidence | Needs User Approval? |
+|---|---|---|---|
+| Grain | <one row per ...> | <source/profile evidence> | <yes/no> |
+| Keys | <key columns/tests> | <uniqueness/null checks> | <yes/no> |
+| Joins | <join/cardinality plan> | <relationship/profile evidence> | <yes/no> |
+| Privacy | <include/exclude/mask fields> | <column names/rules> | <yes/no> |
+| Materialization | <view/table/incremental> | <volume/use case> | <yes/no> |
 
 ### Validation
 ```powershell

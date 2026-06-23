@@ -13,7 +13,7 @@ Use the dbt Pipeline skill (`agentic-dbt-pipeline`) and these dbt-labs skills:
 Read project.config.yml, references/skill-inputs.md, references/project-naming.md, references/schema-isolation.md, references/env-configuration.md, and references/data-engineering-best-practices.md first. If `.env` exists, load non-secret settings from it before asking for missing inputs.
 For a new/full pipeline, run read-only discovery first, explain what you conclude from the source schemas/tables, and ask whether the user wants to add requirements before planning Bootstrap & Init.
 When work can be safely delegated, read references/subagent-workflow.md and use subagents only for read-only analysis or draft review.
-Before each phase that changes files or builds warehouse objects, read references/phase-plan-approval.md, update AGENT_PLAN.md, explain the plan in Markdown, and wait for approval. After each completed phase, read references/phase-completion-report.md, write/update reports/agent/<phase>_report.md, and update reports/agent/PIPELINE_STATUS.md.
+Before each phase that changes files or builds warehouse objects, read references/phase-plan-approval.md and references/data-engineer-decision-gate.md, update AGENT_PLAN.md, explain the plan in Markdown with explicit data-engineering decisions and evidence, and wait for approval. After each completed phase, read references/phase-completion-report.md, write/update reports/agent/<phase>_report.md, and update reports/agent/PIPELINE_STATUS.md.
 
 ## Warehouse (non-secret)
 
@@ -60,7 +60,7 @@ See [dbt-packages-and-skills.md](dbt-packages-and-skills.md): codegen, dbt_utils
 - ref() only in intermediate/marts; source() only in staging
 - Never materialize dbt models, package models, evaluator tables, seeds, snapshots, or audit outputs in source schema
 - Run dbt debug (init), dbt parse, dbt build after changes
-- Before each phase build: write/update AGENT_PLAN.md, explain what will be built, and wait for approval
+- Before each phase build: write/update AGENT_PLAN.md, explain what will be built, include the data-engineering decision check, and wait for approval
 - After each completed phase: write/update reports/agent/<phase>_report.md and reports/agent/PIPELINE_STATUS.md
 - Commit each layer separately; ask before commit/push
 - Keep dbt commands, file edits, commits, pushes, and final decisions with the main agent
