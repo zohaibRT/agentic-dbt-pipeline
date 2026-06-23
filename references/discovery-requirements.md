@@ -47,6 +47,22 @@ Put setup/config context at the end under a short `Inputs Used` section only:
 
 Do not lead the discovery report with profile details, `.env` handling, package setup, bootstrap status, git status, virtualenv setup, CI, or Agents Schema. Those belong in setup/bootstrap reports.
 
+## Discovery files are required
+
+Discovery must be written to files, not only posted in chat.
+
+Before sending the discovery summary in chat, create or update these files:
+
+```text
+reports/agent/discovery_report.md
+reports/agent/PIPELINE_STATUS.md
+reports/agent/CONTEXT_TREE.md
+```
+
+If the dbt project root does not exist yet, create `reports/agent/` in the current workspace/run root. Move or preserve these files in the dbt project root later only if the project root is created elsewhere and the user approves that layout.
+
+The chat response should be a concise summary plus links/paths to these files. Do not use chat as the only discovery record.
+
 ## Requirements checkpoint
 
 Before creating the bootstrap/init plan, ask whether the user wants to add or change requirements.
@@ -76,4 +92,4 @@ If the user provides requirements, add them to the plan as `project_rules` and u
 - Skip the requirements checkpoint on a new full pipeline.
 - Hide inferred business logic. Explain what was inferred and what still needs confirmation.
 
-After discovery is summarized, create `reports/agent/discovery_report.md` and update `reports/agent/PIPELINE_STATUS.md` and `reports/agent/CONTEXT_TREE.md` if a project root already exists. If the dbt project root does not exist yet, include the discovery report content in chat and create the files during Bootstrap & Init.
+After discovery is summarized, confirm that `reports/agent/discovery_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` were created or updated. Do not defer discovery files to Bootstrap & Init.

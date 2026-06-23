@@ -22,6 +22,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Missing required first-run values were requested directly from the user, not found by repo search, terminal inspection, other workspaces, or previous runs
 - [ ] Any subagent delegation was read-only/draft work; main agent kept dbt commands, edits, commits, and final decisions
 - [ ] `AGENT_PLAN.md` created or updated with the approved plan for each implemented phase
+- [ ] Discovery created `reports/agent/discovery_report.md` before the chat summary, even if the dbt project root did not exist yet
 - [ ] `reports/agent/<phase>_report.md` created or updated for each implemented phase
 - [ ] `reports/agent/PIPELINE_STATUS.md` updated after each phase
 - [ ] `reports/agent/CONTEXT_TREE.md` updated with user inputs, decisions, phase outputs, report links, and open items

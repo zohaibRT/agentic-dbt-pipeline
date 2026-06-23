@@ -10,6 +10,12 @@ Create and update:
 reports/agent/CONTEXT_TREE.md
 ```
 
+If the dbt project root does not exist yet, create it under the current workspace/run root:
+
+```text
+<workspace.root>/reports/agent/CONTEXT_TREE.md
+```
+
 Use it as a curated context tree, not a raw chat transcript. Record only project-relevant information that helps future dbt work.
 
 ## When to update
@@ -24,6 +30,8 @@ Update `CONTEXT_TREE.md` after:
 - A user decision changes prior assumptions
 - A validation failure, blocker, or accepted warning appears
 - Final delivery completes
+
+For discovery, update `CONTEXT_TREE.md` before sending the chat summary. The chat summary should point to the context tree, not replace it.
 
 ## What to capture
 

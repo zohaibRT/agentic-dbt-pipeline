@@ -5,7 +5,7 @@ Use this before calling a dbt pipeline complete.
 ## Deliverables
 
 - Source YAML generated from real source schema
-- Discovery summary produced before build planning
+- Discovery report file produced before build planning
 - Staging, intermediate, and mart models built successfully
 - Tests added for primary keys, relationships, accepted values, and mapping coverage where applicable
 - Semantic layer or metrics added on final mart models when requested

@@ -12,6 +12,12 @@ Default folder:
 <project.root>/reports/agent/
 ```
 
+If `{project.root}` does not exist yet, use the current workspace/run root:
+
+```text
+<workspace.root>/reports/agent/
+```
+
 Default files:
 
 ```text
@@ -52,6 +58,8 @@ reports/agent/agents_schema_report.md
 - Inputs used: domain, dbt profile name without credentials, source schema, source tables inspected
 
 Do not lead discovery reports with setup details such as `.env` creation, profile search, venv, package installation, git, CI, or bootstrap tasks. Mention configuration only as brief input context at the end.
+
+Discovery reports are mandatory even before dbt project initialization. Write the file first, then summarize it in chat with the file path.
 
 ## What to include
 
