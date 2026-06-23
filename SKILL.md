@@ -93,7 +93,7 @@ Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skil
 
 Resolve paths relative to workspace root. dbt project root = `{project.root}`.
 
-**User prompt overrides `.env` and config** for schema, domain, layers, materialization, commit mode. Use `.env` for non-secret reusable inputs before asking the user. If `.env` is missing in a fresh clone, follow [env-configuration.md](references/env-configuration.md): create a safe local `.env` from `.env.example`, stop before discovery or dbt commands, and ask the user to fill the required non-secret values. Do not infer active source/profile/domain from sibling projects without user confirmation.
+**User prompt overrides `.env` and config** for schema, domain, layers, materialization, commit mode. Use `.env` for non-secret reusable inputs before asking the user. If `.env` is missing in a fresh clone, follow [env-configuration.md](references/env-configuration.md): create a safe local `.env` from `.env.example`, stop before discovery or dbt commands, and ask the user for `DBT_DOMAIN`, `DBT_PROFILE_NAME`, and `DBT_SOURCE_SCHEMA`. Do not infer, suggest, or summarize values from other workspaces or previous runs.
 
 For normal runs, collect only the values the agent cannot infer safely: `domain`, `dbt_profile_name`, and `source_schema`. Derive project name/root, dbt source name, schema prefix, layer names, commit behavior, and GitHub mode unless the user explicitly overrides them.
 

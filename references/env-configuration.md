@@ -102,13 +102,7 @@ When the user runs the default prompt in a freshly cloned skill or dbt project a
 5. Stop before dbt discovery, `dbt debug`, `dbt deps`, codegen, or build commands.
 6. Tell the user exactly which required values are missing and ask them to update `.env` or provide the values in chat.
 
-Do not infer required first-run values from sibling projects, old dbt projects, old `.env` files, existing medallion schemas, or warehouse object names. Those can be mentioned only as possible hints for the user to confirm.
-
-Never use wording like:
-
-```text
-I'll create `.env` from the sibling project pattern, then run read-only source discovery.
-```
+Do not infer required first-run values from other workspaces, old dbt projects, old `.env` files, existing medallion schemas, warehouse object names, or previous runs. Do not scan or summarize other workspaces to suggest values. Ask the user directly.
 
 Never combine missing-`.env` setup with discovery in the same response. Missing `.env` is a hard stop until the user confirms the required values.
 
@@ -137,26 +131,16 @@ Use this user-facing message shape:
 
 ```text
 I did not find `.env` in this workspace, so I created a local `.env` from `.env.example`.
-Please fill these required non-secret values before I run dbt:
+Please send these required non-secret values and I will update `.env` for this run:
 
-- DBT_DOMAIN
-- DBT_PROFILE_NAME
-- DBT_SOURCE_SCHEMA
+- DBT_DOMAIN: <business domain, for example hospital or retail>
+- DBT_PROFILE_NAME: <dbt profile key from ~/.dbt/profiles.yml>
+- DBT_SOURCE_SCHEMA: <raw/source schema to inspect>
 
 Keep passwords in ~/.dbt/profiles.yml, not in `.env`.
-After you update `.env`, reply "continue".
+After I update `.env`, I will summarize the values and wait for your approval before read-only discovery.
 
 Optional: add project rules in chat if you have mappings, metrics, privacy rules, exclusions, or special instructions.
-```
-
-If useful, add a short hint section, but keep it non-authoritative:
-
-```text
-I noticed possible values in nearby projects, but I will not use them without your confirmation:
-- Possible source schema: <schema>
-- Possible dbt profile: <profile>
-
-Please confirm these in `.env` or provide the correct values in chat.
 ```
 
 Never commit `.env`. Commit `.env.example` only if it contains placeholders and comments, not real project credentials or private connection details.

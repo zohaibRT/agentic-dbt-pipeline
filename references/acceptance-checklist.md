@@ -19,7 +19,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] `.gitignore` excludes credentials and generated files
 - [ ] `.env` loaded for non-secret inputs when present; `.env.example` contains no secrets when committed
 - [ ] Fresh clone without `.env` creates a safe local `.env` template and stops for required user inputs before dbt commands
-- [ ] Missing required first-run values were not inferred from sibling projects or previous runs
+- [ ] Missing required first-run values were requested directly from the user, not inferred or suggested from other workspaces or previous runs
 - [ ] Any subagent delegation was read-only/draft work; main agent kept dbt commands, edits, commits, and final decisions
 - [ ] `AGENT_PLAN.md` created or updated with the approved plan for each implemented phase
 - [ ] `reports/agent/<phase>_report.md` created or updated for each implemented phase

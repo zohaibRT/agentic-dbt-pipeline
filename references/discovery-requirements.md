@@ -8,7 +8,7 @@ Analyze the available source schemas and explain what the agent understands befo
 
 This phase is read-only. Do not create dbt projects, install packages, run codegen, write model files, create warehouse schemas, or change profiles during discovery.
 
-Do not start discovery until the active `domain`, `dbt_profile_name`, and `source_schema` are confirmed from the prompt or `.env`. If `.env` is missing, follow [env-configuration.md](env-configuration.md) and stop for user input first. Sibling projects and prior workspaces are hints only, not authorization to choose a source schema, and not a reason to run discovery.
+Do not start discovery until the active `domain`, `dbt_profile_name`, and `source_schema` are confirmed from the prompt or `.env`. If `.env` is missing, follow [env-configuration.md](env-configuration.md) and stop for user input first. Do not inspect other workspaces or prior workspaces to suggest or choose a source schema.
 
 ## Allowed read-only actions
 

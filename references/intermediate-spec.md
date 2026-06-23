@@ -73,7 +73,7 @@ Only apply this ecommerce example when the source data actually contains these c
 ## Tests
 
 - `not_null` + `unique` on primary keys
-- `relationships` to staging or sibling intermediate models where safe
+- `relationships` to staging or related intermediate models where safe
 - `accepted_values` on boolean flags (`true`, `false`)
 - Use modern generic test `arguments:` nesting when supported by the installed dbt version
 - Add mapping coverage tests when mapping seeds or code translations are used

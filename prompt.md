@@ -16,7 +16,7 @@ Use the dbt Pipeline skill (`agentic-dbt-pipeline`).
 Build the dbt project using the settings from `.env`.
 Run the full pipeline from source discovery through final delivery.
 
-If `.env` is missing, create it safely from `.env.example`, stop before discovery or dbt commands, and ask me to fill the required non-secret values. Do not create `.env` from sibling project patterns. Do not use sibling projects or previous runs as the active source/profile unless I confirm them.
+If `.env` is missing, create it safely from `.env.example`, stop before discovery or dbt commands, and ask me for DBT_DOMAIN, DBT_PROFILE_NAME, and DBT_SOURCE_SCHEMA. Do not inspect, infer, suggest, or summarize values from other workspaces or previous runs.
 
 First, perform read-only discovery only: inspect source schemas/tables, summarize what you conclude from the data, and ask whether I want to add requirements.
 
