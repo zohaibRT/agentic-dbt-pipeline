@@ -123,7 +123,7 @@ Prompt values override `.env`. Do not commit `.env`; commit only `.env.example`.
 
 On a fresh clone, if `.env` is missing, follow [env-configuration.md](env-configuration.md): create a safe local `.env` from `.env.example`, stop, and ask the user to fill `DBT_DOMAIN`, `DBT_PROFILE_NAME`, and `DBT_SOURCE_SCHEMA` before running dbt commands.
 
-Do not satisfy missing required inputs from sibling projects or previous runs. Sibling projects may be shown as hints, but the user must confirm the active domain, profile, and source schema before discovery or dbt commands.
+Do not satisfy missing required inputs from sibling projects or previous runs. Sibling projects may be shown as hints, but the user must confirm the active domain, profile, and source schema before discovery or dbt commands. Do not say the `.env` was created from a "sibling project pattern"; say it was created from `.env.example`.
 
 ## dbt packages & skills stack
 

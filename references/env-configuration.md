@@ -102,7 +102,15 @@ When the user runs the default prompt in a freshly cloned skill or dbt project a
 5. Stop before dbt discovery, `dbt debug`, `dbt deps`, codegen, or build commands.
 6. Tell the user exactly which required values are missing and ask them to update `.env` or provide the values in chat.
 
-Do not infer required first-run values from sibling projects, old dbt projects, old `.env` files, existing medallion schemas, or warehouse object names. Those can be mentioned only as possible hints for the user to confirm. Never say "I found sibling projects, so I will run discovery against `<schema>`" when `.env` is missing.
+Do not infer required first-run values from sibling projects, old dbt projects, old `.env` files, existing medallion schemas, or warehouse object names. Those can be mentioned only as possible hints for the user to confirm.
+
+Never use wording like:
+
+```text
+I'll create `.env` from the sibling project pattern, then run read-only source discovery.
+```
+
+Never combine missing-`.env` setup with discovery in the same response. Missing `.env` is a hard stop until the user confirms the required values.
 
 Required first-run values:
 
@@ -128,7 +136,7 @@ Project rules:
 Use this user-facing message shape:
 
 ```text
-I did not find `.env`, so I created a local `.env` from `.env.example`.
+I did not find `.env` in this workspace, so I created a local `.env` from `.env.example`.
 Please fill these required non-secret values before I run dbt:
 
 - DBT_DOMAIN
