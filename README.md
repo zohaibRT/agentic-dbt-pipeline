@@ -43,7 +43,7 @@ After I answer, before each build phase, write/update `AGENT_PLAN.md`, explain w
 
 For a full copy-paste prompt, see [prompt.md](prompt.md).
 
-Keep repeatable non-secret settings in `.env` by copying `.env.example`. Most projects only need domain, dbt profile, and source schema there. The skill infers project name/root, dbt source name, layer names, schema prefix, commit mode, push behavior, materialization, and Agents Schema handling unless you override them. Add GitHub repo details only when you want the agent to push.
+Keep repeatable non-secret settings in `.env` by copying `.env.example`. If `.env` is missing on a fresh clone, the skill creates a safe local `.env` template and asks you to fill the required values before running dbt. Most projects only need domain, dbt profile, and source schema there. The skill infers project name/root, dbt source name, layer names, schema prefix, commit mode, push behavior, materialization, and Agents Schema handling unless you override them. Add GitHub repo details only when you want the agent to push.
 
 ## Configuration
 

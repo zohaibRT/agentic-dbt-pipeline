@@ -90,3 +90,53 @@ Treat blank values as missing.
 Summarize which non-secret values were loaded, but never print anything that looks like a password, token, or key.
 
 If both `.env` and the prompt specify the same field with different values, use the prompt value and mention the difference in the phase summary.
+
+## First run when `.env` is missing
+
+When the user runs the default prompt in a freshly cloned skill or dbt project and `.env` is missing:
+
+1. Check whether `.env.example` exists.
+2. If `.env.example` exists, create a local `.env` from it only when `.env` is gitignored or clearly excluded from commits.
+3. If `.env.example` is missing, create `.env.example` with the minimal placeholder keys, then create local `.env` from it.
+4. Do not fill fake real values. Leave placeholders for values the user must provide.
+5. Stop before dbt discovery, `dbt debug`, `dbt deps`, codegen, or build commands.
+6. Tell the user exactly which required values are missing and ask them to update `.env` or provide the values in chat.
+
+Required first-run values:
+
+```text
+DBT_DOMAIN=<domain_name>
+DBT_PROFILE_NAME=<dbt_profile_name>
+DBT_SOURCE_SCHEMA=<raw_source_schema>
+```
+
+Optional project rules can be provided in chat after discovery:
+
+```text
+Project rules:
+- Field mappings:
+- Joins:
+- Metrics:
+- Exclusions:
+- Privacy:
+- Naming:
+- Special instructions:
+```
+
+Use this user-facing message shape:
+
+```text
+I did not find `.env`, so I created a local `.env` from `.env.example`.
+Please fill these required non-secret values before I run dbt:
+
+- DBT_DOMAIN
+- DBT_PROFILE_NAME
+- DBT_SOURCE_SCHEMA
+
+Keep passwords in ~/.dbt/profiles.yml, not in `.env`.
+After you update `.env`, reply "continue".
+
+Optional: add project rules in chat if you have mappings, metrics, privacy rules, exclusions, or special instructions.
+```
+
+Never commit `.env`. Commit `.env.example` only if it contains placeholders and comments, not real project credentials or private connection details.

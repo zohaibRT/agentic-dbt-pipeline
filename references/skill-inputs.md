@@ -121,6 +121,8 @@ DBT_GITHUB_REPO_NAME=<repo_name_if_push_is_required>
 
 Prompt values override `.env`. Do not commit `.env`; commit only `.env.example`.
 
+On a fresh clone, if `.env` is missing, follow [env-configuration.md](env-configuration.md): create a safe local `.env` from `.env.example`, stop, and ask the user to fill `DBT_DOMAIN`, `DBT_PROFILE_NAME`, and `DBT_SOURCE_SCHEMA` before running dbt commands.
+
 ## dbt packages & skills stack
 
 See [dbt-packages-and-skills.md](dbt-packages-and-skills.md) - agent installs and uses all six capabilities on full pipeline.
