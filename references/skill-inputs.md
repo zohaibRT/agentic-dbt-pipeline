@@ -123,6 +123,8 @@ Prompt values override `.env`. Do not commit `.env`; commit only `.env.example`.
 
 On a fresh clone, if `.env` is missing, follow [env-configuration.md](env-configuration.md): create a safe local `.env` from `.env.example`, stop, and ask the user to fill `DBT_DOMAIN`, `DBT_PROFILE_NAME`, and `DBT_SOURCE_SCHEMA` before running dbt commands.
 
+Do not satisfy missing required inputs from sibling projects or previous runs. Sibling projects may be shown as hints, but the user must confirm the active domain, profile, and source schema before discovery or dbt commands.
+
 ## dbt packages & skills stack
 
 See [dbt-packages-and-skills.md](dbt-packages-and-skills.md) - agent installs and uses all six capabilities on full pipeline.

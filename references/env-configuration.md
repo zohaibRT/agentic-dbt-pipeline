@@ -102,6 +102,8 @@ When the user runs the default prompt in a freshly cloned skill or dbt project a
 5. Stop before dbt discovery, `dbt debug`, `dbt deps`, codegen, or build commands.
 6. Tell the user exactly which required values are missing and ask them to update `.env` or provide the values in chat.
 
+Do not infer required first-run values from sibling projects, old dbt projects, old `.env` files, existing medallion schemas, or warehouse object names. Those can be mentioned only as possible hints for the user to confirm. Never say "I found sibling projects, so I will run discovery against `<schema>`" when `.env` is missing.
+
 Required first-run values:
 
 ```text
@@ -137,6 +139,16 @@ Keep passwords in ~/.dbt/profiles.yml, not in `.env`.
 After you update `.env`, reply "continue".
 
 Optional: add project rules in chat if you have mappings, metrics, privacy rules, exclusions, or special instructions.
+```
+
+If useful, add a short hint section, but keep it non-authoritative:
+
+```text
+I noticed possible values in nearby projects, but I will not use them without your confirmation:
+- Possible source schema: <schema>
+- Possible dbt profile: <profile>
+
+Please confirm these in `.env` or provide the correct values in chat.
 ```
 
 Never commit `.env`. Commit `.env.example` only if it contains placeholders and comments, not real project credentials or private connection details.
