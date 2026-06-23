@@ -16,7 +16,9 @@ Use the dbt Pipeline skill (`agentic-dbt-pipeline`).
 Build the dbt project using the settings from `.env`.
 Run the full pipeline from source discovery through final delivery.
 
-Before each phase, write/update `AGENT_PLAN.md`, explain in Markdown what you will build, and wait for my approval before implementing that phase.
+First, perform read-only discovery only: inspect source schemas/tables, summarize what you conclude from the data, and ask whether I want to add requirements.
+
+After I answer, before each build phase, write/update `AGENT_PLAN.md`, explain in Markdown what you will build, and wait for my approval before implementing that phase.
 
 Ask me only when required `.env` values are missing, credentials or secrets are needed, a business rule is unclear, phase build approval is needed, or before committing, pushing, or changing schema behavior.
 ```

@@ -32,11 +32,12 @@ The main agent remains responsible for:
 
 After inputs and source access are resolved, split safe work:
 
-1. Main agent runs bootstrap, dependency install, and source generation.
-2. Main agent gives each subagent a narrow task with read-only instructions.
-3. Subagents return concise findings using the handoff format below.
-4. Main agent merges findings into a single implementation plan.
-5. Main agent edits files, runs dbt validation, commits, and summarizes.
+1. Main agent runs read-only discovery and gathers requirements.
+2. Main agent runs approved bootstrap, dependency install, and source generation when needed.
+3. Main agent gives each subagent a narrow task with read-only instructions.
+4. Subagents return concise findings using the handoff format below.
+5. Main agent merges findings into a single implementation plan.
+6. Main agent edits files, runs dbt validation, commits, and summarizes.
 
 ## Handoff format
 

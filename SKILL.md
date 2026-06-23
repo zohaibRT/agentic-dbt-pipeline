@@ -11,15 +11,23 @@ description: >-
 # dbt Pipeline
 
 Full lifecycle orchestrator for the dbt project.
-**On every prompt:** agent runs [bootstrap.md](references/bootstrap.md) first (install skills, codegen, automation).
-**Default full pipeline:** bootstrap -> sources -> bronze -> silver -> gold -> semantic layer -> project evaluator -> docs -> CI, plus Agents Schema when enabled and supported.
+**On every new/full-pipeline prompt:** agent runs read-only [discovery-requirements.md](references/discovery-requirements.md) first, explains what it concluded from the source data, and asks for requirements before any build plan.
+**Default full pipeline:** discovery -> bootstrap -> sources -> bronze -> silver -> gold -> semantic layer -> project evaluator -> docs -> CI, plus Agents Schema when enabled and supported.
 
 Use `workflow_phase:` to run a single phase. Use `auto_bootstrap: false` only for layer-only edits.
 
 **Install (one command):** `npx skills add zohaibRT/agentic-dbt-pipeline` - see [references/install-skill.md](references/install-skill.md).
 Bootstrap auto-installs dbt Agent Skills and dbt packages on first run.
 
-## Bootstrap (mandatory - agent runs automatically)
+## Discovery first, then bootstrap
+
+Read and execute [references/discovery-requirements.md](references/discovery-requirements.md) before bootstrap/init on new projects or full pipeline runs.
+
+Discovery is read-only. It may inspect schemas, tables, columns, row counts, keys, relationships, dates, measures, statuses, and existing files. It must not create files, install packages, run codegen, create warehouse schemas, or change profiles.
+
+After discovery, summarize what the agent concluded from the source data and ask whether the user wants to add requirements such as mappings, metrics, privacy rules, naming rules, included/excluded tables, or priority facts/dimensions. Continue to Bootstrap & Init only after the user replies with requirements or says to continue.
+
+## Bootstrap (build phase - after discovery approval)
 
 Read and execute [references/bootstrap.md](references/bootstrap.md) **before** any layer work:
 
@@ -53,7 +61,8 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 
 | Phase | When | Reference |
 |---|---|---|
-| **Bootstrap** | **Every run** (unless `auto_bootstrap: false`) | [bootstrap.md](references/bootstrap.md) |
+| **Discovery** | First for new/full pipeline runs | [discovery-requirements.md](references/discovery-requirements.md), [source-profiling.md](references/source-profiling.md) |
+| **Bootstrap** | First build phase after discovery | [bootstrap.md](references/bootstrap.md) |
 | **0 Inputs** | Always first | [skill-inputs.md](references/skill-inputs.md), [project-naming.md](references/project-naming.md), [env-configuration.md](references/env-configuration.md), [security-and-credentials.md](references/security-and-credentials.md), [schema-isolation.md](references/schema-isolation.md), [code-agent-setup.md](references/code-agent-setup.md) |
 | **0b Subagents** | Optional speed-up | [subagent-workflow.md](references/subagent-workflow.md) |
 | **0c Best practices** | Design guardrails | [data-engineering-best-practices.md](references/data-engineering-best-practices.md) |
@@ -78,7 +87,7 @@ Context prompt template: [agent-context-prompt.md](references/agent-context-prom
 
 ## Step 0 - Load config
 
-Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), [project-naming.md](references/project-naming.md), [schema-isolation.md](references/schema-isolation.md), [env-configuration.md](references/env-configuration.md), and [phase-plan-approval.md](references/phase-plan-approval.md).
+Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), [project-naming.md](references/project-naming.md), [schema-isolation.md](references/schema-isolation.md), [env-configuration.md](references/env-configuration.md), [discovery-requirements.md](references/discovery-requirements.md), and [phase-plan-approval.md](references/phase-plan-approval.md).
 
 Resolve paths relative to workspace root. dbt project root = `{project.root}`.
 
@@ -180,16 +189,17 @@ Read [separate-layer-builds.md](references/separate-layer-builds.md).
 
 **Full pipeline (default):**
 
-1. **Bootstrap** - [bootstrap.md](references/bootstrap.md)
-2. Init *(if project missing)*
-3. Sources - full `packages.yml`, `dbt deps`, codegen, source YAML
-4. Staging -> Intermediate -> Marts
-5. Semantic layer - metrics on marts facts
-6. Project evaluator - `dbt build --select package:dbt_project_evaluator` after confirming it is routed to `<layer_schema_prefix>_evaluator`
-7. Docs - `dbt docs generate`; use `dbt docs serve` for local viewing when requested or appropriate for an interactive local run
-8. Agents Schema - publish dbt metadata to `AGENTS.*` after `target/manifest.json` exists when enabled and supported
-9. Automation - CI workflow
-10. **Acceptance + final summary** - [acceptance-checklist.md](references/acceptance-checklist.md), [final-delivery.md](references/final-delivery.md)
+1. **Discovery & requirements** - [discovery-requirements.md](references/discovery-requirements.md)
+2. **Bootstrap** - [bootstrap.md](references/bootstrap.md)
+3. Init *(if project missing)*
+4. Sources - full `packages.yml`, `dbt deps`, codegen, source YAML
+5. Staging -> Intermediate -> Marts
+6. Semantic layer - metrics on marts facts
+7. Project evaluator - `dbt build --select package:dbt_project_evaluator` after confirming it is routed to `<layer_schema_prefix>_evaluator`
+8. Docs - `dbt docs generate`; use `dbt docs serve` for local viewing when requested or appropriate for an interactive local run
+9. Agents Schema - publish dbt metadata to `AGENTS.*` after `target/manifest.json` exists when enabled and supported
+10. Automation - CI workflow
+11. **Acceptance + final summary** - [acceptance-checklist.md](references/acceptance-checklist.md), [final-delivery.md](references/final-delivery.md)
 
 Each stage: **discover -> write Markdown plan -> ask approval -> implement -> parse/build -> summarize -> ask commit**. Ask for push only when a non-local GitHub repo is configured or the user requested push.
 
@@ -321,7 +331,8 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 | File | Purpose |
 |---|---|
 | [install-skill.md](references/install-skill.md) | Install via npx or `.agents/skills/` |
-| [bootstrap.md](references/bootstrap.md) | **Auto-run:** skills install, codegen, CI/Agents workflows |
+| [bootstrap.md](references/bootstrap.md) | First approved build phase: skills install, packages, debug, CI/Agents workflows |
+| [discovery-requirements.md](references/discovery-requirements.md) | Read-only schema/data discovery and requirements checkpoint before build planning |
 | [project.config.yml](project.config.yml) | Defaults, paths, git, materialization |
 | [skill-inputs.md](references/skill-inputs.md) | Required inputs |
 | [phase-plan-approval.md](references/phase-plan-approval.md) | Markdown plan and approval gate before every phase |

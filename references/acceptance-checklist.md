@@ -13,6 +13,7 @@ Verify before marking the dbt pipeline workflow complete.
 
 ## Environment
 
+- [ ] New/full pipeline started with read-only Discovery & Requirements before Bootstrap & Init
 - [ ] Python venv and dbt adapter installed
 - [ ] `dbt debug` passes
 - [ ] `.gitignore` excludes credentials and generated files

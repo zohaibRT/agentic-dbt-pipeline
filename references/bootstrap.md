@@ -1,6 +1,8 @@
-# Bootstrap - Agent Runs This First (Mandatory)
+# Bootstrap - First Build Phase After Discovery
 
-On **every** dbt Pipeline skill invocation (full pipeline or single phase), the agent **must** run this bootstrap before layer work. Do not skip unless user sets `auto_bootstrap: false`.
+For a new project or full pipeline, run [discovery-requirements.md](discovery-requirements.md) first. Bootstrap starts only after discovery is summarized and the user approves continuing.
+
+Run this bootstrap before layer work. Do not skip unless user sets `auto_bootstrap: false`.
 
 ## 1. dbt Agent Skills + dbt packages *(agent installs - user does not)*
 

@@ -13,6 +13,8 @@
 
 Default names: `bronze`, `silver`, `gold`.
 
+For a new full pipeline, run read-only Discovery & Requirements before this build order.
+
 **Do not** build intermediate before staging exists.
 **Do not** build marts before intermediate exists.
 

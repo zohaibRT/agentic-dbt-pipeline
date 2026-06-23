@@ -1,6 +1,6 @@
 # Phase Plan Approval
 
-Use this before every phase that creates files, changes dbt behavior, or builds warehouse objects.
+Use this before every phase that creates files, changes dbt behavior, or builds warehouse objects. Run [discovery-requirements.md](discovery-requirements.md) first for a new/full-pipeline request.
 
 ## Core rule
 
@@ -20,7 +20,6 @@ Do not create or modify models, seeds, snapshots, workflows, semantic files, or 
 
 - Init / project setup
 - Packages and source YAML
-- Source profiling
 - Bronze / staging
 - Silver / intermediate
 - Gold / marts

@@ -5,6 +5,7 @@ Use this before calling a dbt pipeline complete.
 ## Deliverables
 
 - Source YAML generated from real source schema
+- Discovery summary produced before build planning
 - Staging, intermediate, and mart models built successfully
 - Tests added for primary keys, relationships, accepted values, and mapping coverage where applicable
 - Semantic layer or metrics added on final mart models when requested
@@ -24,6 +25,7 @@ Update or create project handoff notes with:
 - Layer names and physical schema naming
 - Schema isolation status, including evaluator/seeds/snapshots schemas and whether source schema stayed clean
 - Important source tables
+- Source discovery conclusions and requirements captured before build
 - Final facts, dimensions, marts, and metrics
 - Known empty tables or data quality limitations
 - Incremental, snapshot, exposure, and privacy decisions

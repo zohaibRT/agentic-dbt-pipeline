@@ -36,7 +36,9 @@ Use the dbt Pipeline skill (`agentic-dbt-pipeline`).
 Build the dbt project using the settings from `.env`.
 Run the full pipeline from source discovery through final delivery.
 
-Before each phase, write/update `AGENT_PLAN.md`, explain what will be built, and wait for my approval.
+First, perform read-only discovery only: inspect source schemas/tables, summarize what you conclude from the data, and ask whether I want to add requirements.
+
+After I answer, before each build phase, write/update `AGENT_PLAN.md`, explain what will be built, and wait for my approval.
 ```
 
 For a full copy-paste prompt, see [prompt.md](prompt.md).
@@ -68,6 +70,7 @@ Keep passwords, tokens, and private keys in local profiles or GitHub Secrets.
 
 | Phase | What the skill does |
 |---|---|
+| Discovery | Read-only source/schema analysis, source conclusions, and requirements checkpoint before build planning |
 | Bootstrap | Installs dbt Labs agent skills and dbt packages when needed |
 | Validation | Runs `dbt debug`, `dbt deps`, `dbt parse`, and scoped `dbt build` commands |
 | Environment config | Loads non-secret `.env` values before asking for missing inputs |
@@ -143,6 +146,7 @@ The skill can add and install these dbt packages:
 | [prompt.md](prompt.md) | Copy-paste prompt for an agent session |
 | [project.config.yml](project.config.yml) | Default non-secret configuration |
 | [references/bootstrap.md](references/bootstrap.md) | Bootstrap workflow |
+| [references/discovery-requirements.md](references/discovery-requirements.md) | Read-only discovery and requirements checkpoint before build planning |
 | [references/phase-plan-approval.md](references/phase-plan-approval.md) | Markdown plan and approval gate before every phase |
 | [references/git-workflow.md](references/git-workflow.md) | Commit and push workflow |
 | [references/schema-isolation.md](references/schema-isolation.md) | Source, layer, evaluator, seeds, snapshots, and metadata schema separation |

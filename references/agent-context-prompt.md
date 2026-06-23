@@ -11,6 +11,7 @@ Use the dbt Pipeline skill (`agentic-dbt-pipeline`) and these dbt-labs skills:
 - troubleshooting-dbt-job-errors
 
 Read project.config.yml, references/skill-inputs.md, references/project-naming.md, references/schema-isolation.md, references/env-configuration.md, and references/data-engineering-best-practices.md first. If `.env` exists, load non-secret settings from it before asking for missing inputs.
+For a new/full pipeline, run read-only discovery first, explain what you conclude from the source schemas/tables, and ask whether the user wants to add requirements before planning Bootstrap & Init.
 When work can be safely delegated, read references/subagent-workflow.md and use subagents only for read-only analysis or draft review.
 Before each phase that changes files or builds warehouse objects, read references/phase-plan-approval.md, update AGENT_PLAN.md, explain the plan in Markdown, and wait for approval.
 
