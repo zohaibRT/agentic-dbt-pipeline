@@ -2,9 +2,11 @@
 
 Run when `{project.root}` does not exist or user requests `workflow_phase: init`.
 
-Read [security-and-credentials.md](security-and-credentials.md), [skill-inputs.md](skill-inputs.md), and [project-naming.md](project-naming.md) first.
+Read [security-and-credentials.md](security-and-credentials.md), [skill-inputs.md](skill-inputs.md), [project-naming.md](project-naming.md), and [phase-plan-approval.md](phase-plan-approval.md) first.
 
 Before running `dbt init`, resolve `dbt_project_name` and `dbt_project_root` from [project-naming.md](project-naming.md). Do not use `dbt_profile_name` as the project folder unless the user explicitly provided it as `dbt_project_name`.
+
+Before creating the project, write/update `AGENT_PLAN.md` with the init plan and get approval.
 
 ## 1. Workspace setup
 

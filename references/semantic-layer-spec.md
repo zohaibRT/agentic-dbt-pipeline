@@ -1,5 +1,7 @@
 # Semantic Layer Spec
 
+Before creating or changing semantic layer files, follow [phase-plan-approval.md](phase-plan-approval.md).
+
 **When:** after marts layer builds successfully.
 **Skill:** compose with `building-dbt-semantic-layer`.
 **dbt Core 1.10.x:** use **legacy spec** (top-level `semantic_models:` and `metrics:`).

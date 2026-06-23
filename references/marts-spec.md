@@ -5,6 +5,7 @@
 Create or update **only** the marts star-schema layer from staging + intermediate models.
 
 Read [human-review.md](human-review.md) before marking marts complete if metrics, grain, mappings, or sensitive fields require business approval.
+Before creating or changing marts files, follow [phase-plan-approval.md](phase-plan-approval.md).
 
 ## Folder and naming
 

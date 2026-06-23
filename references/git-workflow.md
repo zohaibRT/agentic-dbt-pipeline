@@ -73,10 +73,10 @@ Examples:
 
 | Role | Stage paths |
 |---|---|
-| Sources | `models/sources/` |
-| Layer 1 | `models/{layer_1_name}/{domain}/` |
-| Layer 2 | `models/{layer_2_name}/{domain}/` |
-| Layer 3 | `models/{layer_3_name}/{domain}/` + `dbt_project.yml` if changed |
+| Sources | `models/sources/` + `AGENT_PLAN.md` |
+| Layer 1 | `models/{layer_1_name}/{domain}/` + `AGENT_PLAN.md` |
+| Layer 2 | `models/{layer_2_name}/{domain}/` + `AGENT_PLAN.md` |
+| Layer 3 | `models/{layer_3_name}/{domain}/` + `dbt_project.yml` if changed + `AGENT_PLAN.md` |
 
 Run from `{project.root}` (where `.git` lives).
 

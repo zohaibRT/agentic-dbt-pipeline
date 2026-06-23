@@ -18,6 +18,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] `.gitignore` excludes credentials and generated files
 - [ ] `.env` loaded for non-secret inputs when present; `.env.example` contains no secrets when committed
 - [ ] Any subagent delegation was read-only/draft work; main agent kept dbt commands, edits, commits, and final decisions
+- [ ] `AGENT_PLAN.md` created or updated with the approved plan for each implemented phase
 
 ## dbt Agent Skills & packages
 
@@ -53,6 +54,7 @@ Verify before marking the dbt pipeline workflow complete.
 
 ## Layers
 
+- [ ] Each phase had Markdown plan approval before implementation
 - [ ] Staging: all source tables, tests pass
 - [ ] Intermediate: domain-appropriate reusable business logic models build successfully
 - [ ] Marts: domain-appropriate facts, dimensions, and reporting marts build successfully
@@ -90,6 +92,7 @@ Verify before marking the dbt pipeline workflow complete.
 
 ## Human review
 
+- [ ] Pre-build plan approval captured for sources/staging/intermediate/marts/semantic/evaluator/docs as applicable
 - [ ] Staging review summary produced
 - [ ] Intermediate review summary produced
 - [ ] Marts and metric review summary produced

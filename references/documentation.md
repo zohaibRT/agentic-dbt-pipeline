@@ -4,6 +4,8 @@ Apply when completing a model layer or `workflow_phase: docs`.
 
 Also use dbt-labs skill: `using-dbt-for-analytics-engineering` -> `references/writing-documentation.md`.
 
+Before docs-only work, write/update `AGENT_PLAN.md` with the docs plan and get approval.
+
 ## Per-model YAML
 
 For each model in staging, intermediate, and marts:

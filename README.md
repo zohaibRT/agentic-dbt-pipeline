@@ -35,6 +35,8 @@ Use the dbt Pipeline skill (`agentic-dbt-pipeline`).
 
 Build the dbt project using the settings from `.env`.
 Run the full pipeline from source discovery through final delivery.
+
+Before each phase, write/update `AGENT_PLAN.md`, explain what will be built, and wait for my approval.
 ```
 
 For a full copy-paste prompt, see [prompt.md](prompt.md).
@@ -70,6 +72,7 @@ Keep passwords, tokens, and private keys in local profiles or GitHub Secrets.
 | Validation | Runs `dbt debug`, `dbt deps`, `dbt parse`, and scoped `dbt build` commands |
 | Environment config | Loads non-secret `.env` values before asking for missing inputs |
 | Subagents | Optionally parallelizes read-only profiling, planning, docs, and review work |
+| Phase planning | Writes a Markdown plan before each phase and waits for approval before building |
 | Sources | Generates source YAML and adds source descriptions |
 | Schema isolation | Keeps source, medallion, evaluator, seeds, snapshots, and agent metadata in separate schemas |
 | Source profiling | Reviews row counts, keys, relationships, dates, measures, and status/code fields before modeling |
@@ -103,6 +106,7 @@ The skill is designed to keep project history readable. It commits each stage se
 11. Add Agents Schema workflow
 
 By default, the agent asks before each commit. It asks about push only when a GitHub remote is configured or requested.
+It also asks for approval before each build phase after showing the Markdown plan.
 
 ## Verification
 
@@ -139,6 +143,7 @@ The skill can add and install these dbt packages:
 | [prompt.md](prompt.md) | Copy-paste prompt for an agent session |
 | [project.config.yml](project.config.yml) | Default non-secret configuration |
 | [references/bootstrap.md](references/bootstrap.md) | Bootstrap workflow |
+| [references/phase-plan-approval.md](references/phase-plan-approval.md) | Markdown plan and approval gate before every phase |
 | [references/git-workflow.md](references/git-workflow.md) | Commit and push workflow |
 | [references/schema-isolation.md](references/schema-isolation.md) | Source, layer, evaluator, seeds, snapshots, and metadata schema separation |
 | [references/agents-schema-setup.md](references/agents-schema-setup.md) | Agents Schema workflow setup |

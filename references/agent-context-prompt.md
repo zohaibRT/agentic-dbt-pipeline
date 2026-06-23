@@ -12,6 +12,7 @@ Use the dbt Pipeline skill (`agentic-dbt-pipeline`) and these dbt-labs skills:
 
 Read project.config.yml, references/skill-inputs.md, references/project-naming.md, references/schema-isolation.md, references/env-configuration.md, and references/data-engineering-best-practices.md first. If `.env` exists, load non-secret settings from it before asking for missing inputs.
 When work can be safely delegated, read references/subagent-workflow.md and use subagents only for read-only analysis or draft review.
+Before each phase that changes files or builds warehouse objects, read references/phase-plan-approval.md, update AGENT_PLAN.md, explain the plan in Markdown, and wait for approval.
 
 ## Warehouse (non-secret)
 
@@ -58,6 +59,7 @@ See [dbt-packages-and-skills.md](dbt-packages-and-skills.md): codegen, dbt_utils
 - ref() only in intermediate/marts; source() only in staging
 - Never materialize dbt models, package models, evaluator tables, seeds, snapshots, or audit outputs in source schema
 - Run dbt debug (init), dbt parse, dbt build after changes
+- Before each phase build: write/update AGENT_PLAN.md, explain what will be built, and wait for approval
 - Commit each layer separately; ask before commit/push
 - Keep dbt commands, file edits, commits, pushes, and final decisions with the main agent
 - Push to `github_repo` only after approval; do not push in local-only mode

@@ -4,6 +4,8 @@ Use Agents Schema to publish dbt metadata into the warehouse so agents can query
 
 Agents Schema complements dbt project files. It does not replace editing-time context such as `dbt_project.yml`, model SQL, source YAML, or `manifest.json`. Use it as the warehouse-side metadata layer after the dbt project has been built and documented.
 
+Before creating or changing Agents Schema workflow files or sync behavior, follow [phase-plan-approval.md](phase-plan-approval.md).
+
 ## What It Gives The Agent
 
 - Queryable dbt model metadata in the warehouse

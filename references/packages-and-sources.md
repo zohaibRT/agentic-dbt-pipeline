@@ -2,6 +2,8 @@
 
 See full stack: [dbt-packages-and-skills.md](dbt-packages-and-skills.md) and schema routing rules in [schema-isolation.md](schema-isolation.md).
 
+Before writing `packages.yml`, running codegen, or creating source YAML, follow [phase-plan-approval.md](phase-plan-approval.md).
+
 ## `packages.yml` - standard packages
 
 ```yaml

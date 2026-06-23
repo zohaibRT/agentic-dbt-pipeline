@@ -2,6 +2,8 @@
 
 Use this after marts are built and before final docs/summary.
 
+Before changing evaluator config, seeds, or exceptions, follow [phase-plan-approval.md](phase-plan-approval.md).
+
 ## Recommended path
 
 Keep the skill's medallion structure: `bronze`, `silver`, `gold`.

@@ -13,6 +13,7 @@ Use this before calling a dbt pipeline complete.
 - Agents Schema workflow prepared after `target/manifest.json` exists, when supported by the warehouse destination
 - CI workflow prepared when GitHub automation is requested
 - Commits created by phase
+- `AGENT_PLAN.md` records approved phase plans and short phase results
 
 ## README or handoff notes
 
@@ -28,6 +29,7 @@ Update or create project handoff notes with:
 - Incremental, snapshot, exposure, and privacy decisions
 - How to run `dbt build`, `dbt docs generate`, and `dbt docs serve`
 - What still needs business review
+- Which phase plans were approved before build
 
 ## Final validation
 
@@ -78,6 +80,7 @@ Use a compact table when helpful:
 | Layers | `<layer_1>` -> `<layer_2>` -> `<layer_3>` |
 | Schemas | `<schema_1>`, `<schema_2>`, `<schema_3>` |
 | Evaluator schema | `<layer_schema_prefix>_evaluator` |
+| Plan file | `AGENT_PLAN.md` |
 | Git | `<commit/push status>` |
 
 ### What changed
@@ -94,6 +97,7 @@ Use a compact table when helpful:
 - Project evaluator result
 - Schema isolation check result
 - Key pass/warn/fail counts when available
+- Phase plan approval status
 
 ### Data notes
 

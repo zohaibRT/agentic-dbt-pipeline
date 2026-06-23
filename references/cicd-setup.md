@@ -2,6 +2,8 @@
 
 Basic dbt validation on pull requests; Agents Schema sync on `main`.
 
+Before creating or changing workflow files, follow [phase-plan-approval.md](phase-plan-approval.md).
+
 ## PR validation workflow
 
 Create `.github/workflows/dbt-ci.yml`:

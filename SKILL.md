@@ -70,6 +70,7 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 | **8 Docs** | After layers | [documentation.md](references/documentation.md) |
 | **9 Git** | After each stage | [github-repo-resolution.md](references/github-repo-resolution.md), [git-workflow.md](references/git-workflow.md) |
 | **10 Agents Schema / CI** | Metadata + automation | [agents-schema-setup.md](references/agents-schema-setup.md), [cicd-setup.md](references/cicd-setup.md) |
+| **Plan approval** | Before each build phase | [phase-plan-approval.md](references/phase-plan-approval.md) |
 | **Review** | Human approval points | [human-review.md](references/human-review.md) |
 | **Done** | Final check + user summary | [acceptance-checklist.md](references/acceptance-checklist.md), [final-delivery.md](references/final-delivery.md) |
 
@@ -77,7 +78,7 @@ Context prompt template: [agent-context-prompt.md](references/agent-context-prom
 
 ## Step 0 - Load config
 
-Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), [project-naming.md](references/project-naming.md), [schema-isolation.md](references/schema-isolation.md), and [env-configuration.md](references/env-configuration.md).
+Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), [project-naming.md](references/project-naming.md), [schema-isolation.md](references/schema-isolation.md), [env-configuration.md](references/env-configuration.md), and [phase-plan-approval.md](references/phase-plan-approval.md).
 
 Resolve paths relative to workspace root. dbt project root = `{project.root}`.
 
@@ -88,6 +89,8 @@ For normal runs, collect only the values the agent cannot infer safely: `domain`
 Resolve `project.name` and `project.root` before `dbt init`. Never use `dbt_profile_name` as the folder/project name unless the user explicitly provides it as `dbt_project_name`. Prefer a clean name derived from `source_schema` or `domain`; use `github_repo_name` only when the user provided it for push.
 
 Keep the source schema read-only. Never build dbt models, package models, evaluator tables, seeds, snapshots, or audit outputs into `source_schema`. Route evaluator outputs to `<layer_schema_prefix>_evaluator` and layer outputs to separate medallion schemas. Resolve `layer_schema_prefix` with [schema-isolation.md](references/schema-isolation.md); do not use short source names like `dh` as physical schema prefixes unless the user explicitly sets them.
+
+Before each phase that changes files or builds warehouse objects, write/update `{project.root}/AGENT_PLAN.md`, explain the planned work in Markdown, and wait for approval for that phase. Read-only discovery is allowed before approval when needed for an accurate plan.
 
 ## Step 0b - Optional subagents
 
@@ -188,7 +191,7 @@ Read [separate-layer-builds.md](references/separate-layer-builds.md).
 9. Automation - CI workflow
 10. **Acceptance + final summary** - [acceptance-checklist.md](references/acceptance-checklist.md), [final-delivery.md](references/final-delivery.md)
 
-Each stage: **parse -> build -> summarize -> ask commit**. Ask for push only when a non-local GitHub repo is configured or the user requested push.
+Each stage: **discover -> write Markdown plan -> ask approval -> implement -> parse/build -> summarize -> ask commit**. Ask for push only when a non-local GitHub repo is configured or the user requested push.
 
 ## Step 2 - Sources
 
@@ -227,6 +230,8 @@ Read [documentation.md](references/documentation.md). Run `dbt docs generate`. U
 ## Step 6b - Human review
 
 Read [human-review.md](references/human-review.md). Summarize business assumptions, data quality notes, and open decisions after each layer. Ask for approval when business meaning, grain, mappings, metrics, or sensitive fields are unclear.
+
+This review happens after implementation. The phase plan approval in [phase-plan-approval.md](references/phase-plan-approval.md) happens before implementation.
 
 ## Step 7 - Git
 
@@ -268,12 +273,13 @@ Read [stuck-recovery.md](references/stuck-recovery.md) whenever a command hangs,
 ## Summary template (end of each phase)
 
 ```text
-1. Files created / updated
-2. Grain / business logic
-3. Tests / docs added
-4. Assumptions used
-5. dbt debug / parse / build results
-6. Commit status (asked / skipped / done / pushed to github)
+1. Plan approval status
+2. Files created / updated
+3. Grain / business logic
+4. Tests / docs added
+5. Assumptions used
+6. dbt debug / parse / build results
+7. Commit status (asked / skipped / done / pushed to github)
 ```
 
 For the final response, use [final-delivery.md](references/final-delivery.md) instead of only the phase template.
@@ -318,6 +324,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 | [bootstrap.md](references/bootstrap.md) | **Auto-run:** skills install, codegen, CI/Agents workflows |
 | [project.config.yml](project.config.yml) | Defaults, paths, git, materialization |
 | [skill-inputs.md](references/skill-inputs.md) | Required inputs |
+| [phase-plan-approval.md](references/phase-plan-approval.md) | Markdown plan and approval gate before every phase |
 | [project-naming.md](references/project-naming.md) | Derive project and folder names without using dbt profile |
 | [env-configuration.md](references/env-configuration.md) | Optional `.env` settings and precedence |
 | [schema-isolation.md](references/schema-isolation.md) | Keep source, medallion, evaluator, seeds, snapshots, and agent metadata schemas separate |

@@ -5,6 +5,7 @@
 Create or update **only** the staging layer from the current source YAML.
 
 Read [source-profiling.md](source-profiling.md) before creating or changing staging models.
+Before creating or changing staging files, follow [phase-plan-approval.md](phase-plan-approval.md).
 
 ## Folder and naming
 

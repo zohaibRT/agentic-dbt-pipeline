@@ -1,6 +1,8 @@
 # Human Review Checkpoint
 
-The agent should build the first working version. The engineer or domain owner should review and approve the business meaning.
+The agent must explain and get approval for the plan before each phase. After the build, the engineer or domain owner should review and approve the business meaning.
+
+Pre-build plan approval: [phase-plan-approval.md](phase-plan-approval.md).
 
 ## Review after each layer
 

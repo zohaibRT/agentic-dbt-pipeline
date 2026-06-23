@@ -16,7 +16,9 @@ Use the dbt Pipeline skill (`agentic-dbt-pipeline`).
 Build the dbt project using the settings from `.env`.
 Run the full pipeline from source discovery through final delivery.
 
-Ask me only when required `.env` values are missing, credentials or secrets are needed, a business rule is unclear, or before committing, pushing, or changing schema behavior.
+Before each phase, write/update `AGENT_PLAN.md`, explain in Markdown what you will build, and wait for my approval before implementing that phase.
+
+Ask me only when required `.env` values are missing, credentials or secrets are needed, a business rule is unclear, phase build approval is needed, or before committing, pushing, or changing schema behavior.
 ```
 
 ## Optional Project Rules
@@ -52,4 +54,6 @@ Use the dbt Pipeline skill (`agentic-dbt-pipeline`).
 
 Use settings from `.env`.
 workflow_phase: <init | sources | staging | intermediate | marts | semantic_layer | project_evaluator | docs | ci | agents_schema>
+
+Before building this phase, explain the plan in Markdown and wait for my approval.
 ```

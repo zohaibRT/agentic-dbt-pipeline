@@ -5,6 +5,7 @@
 Create or update **only** the intermediate layer from completed staging models.
 
 If `project_rules` include manual mappings or code translations, read [mapping-seeds.md](mapping-seeds.md) before modeling.
+Before creating or changing intermediate files, follow [phase-plan-approval.md](phase-plan-approval.md).
 
 ## Folder and naming
 
