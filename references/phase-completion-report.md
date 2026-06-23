@@ -30,6 +30,10 @@ Examples:
 
 ```text
 reports/agent/discovery_report.md
+reports/agent/sources_discovery.md
+reports/agent/bronze_discovery.md
+reports/agent/silver_discovery.md
+reports/agent/gold_discovery.md
 reports/agent/bootstrap_report.md
 reports/agent/sources_report.md
 reports/agent/bronze_report.md

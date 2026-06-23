@@ -4,7 +4,7 @@ Use this before every phase that creates files, changes dbt behavior, or builds 
 
 ## Core rule
 
-Before implementation, explain the phase plan in Markdown and wait for user approval. Include the data-engineering decision check from [data-engineer-decision-gate.md](data-engineer-decision-gate.md) so the design is reviewed before build.
+Before implementation, run phase-specific discovery from [phased-discovery.md](phased-discovery.md), explain the phase plan in Markdown, and wait for user approval. Include the data-engineering decision check from [data-engineer-decision-gate.md](data-engineer-decision-gate.md) so the design is reviewed before build.
 
 Default plan file:
 
@@ -37,6 +37,7 @@ Read-only discovery commands are allowed before approval when they are needed to
 For each phase, include:
 
 - Phase name and goal
+- Phase-specific discovery findings and report path
 - Inputs used: domain, profile, source schema, source tables, project rules
 - What will be created or changed
 - Target folders, files, and warehouse schemas

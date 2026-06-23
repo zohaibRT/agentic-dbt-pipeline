@@ -14,6 +14,7 @@ Verify before marking the dbt pipeline workflow complete.
 ## Environment
 
 - [ ] New/full pipeline started with read-only Discovery & Requirements before Bootstrap & Init
+- [ ] Initial discovery stayed lightweight; detailed discovery happened phase-by-phase before sources/bronze/silver/gold/etc.
 - [ ] Python venv and dbt adapter installed
 - [ ] `dbt debug` passes
 - [ ] `.gitignore` excludes credentials and generated files
@@ -62,6 +63,7 @@ Verify before marking the dbt pipeline workflow complete.
 ## Layers
 
 - [ ] Each phase had Markdown plan approval before implementation
+- [ ] Each phase plan was based on focused phase discovery, not a full upfront design
 - [ ] Each phase report documents what passed, warned, failed, or needs review
 - [ ] Staging: all source tables, tests pass
 - [ ] Intermediate: domain-appropriate reusable business logic models build successfully

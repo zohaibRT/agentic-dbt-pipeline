@@ -1,6 +1,6 @@
 # Source Profiling Checklist
 
-Run lightweight discovery before any build planning with [discovery-requirements.md](discovery-requirements.md). Run this deeper source profiling after source YAML is generated and before staging models are designed.
+Run lightweight project discovery before any build planning with [discovery-requirements.md](discovery-requirements.md). Then use [phased-discovery.md](phased-discovery.md) to profile only what is needed for the current phase. Run this deeper source profiling after source YAML is generated and before staging models are designed.
 
 ## Goal
 

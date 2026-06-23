@@ -4,13 +4,15 @@ Use this as the first phase for a new dbt project or full pipeline request.
 
 ## Goal
 
-Analyze the available source schemas and explain what the agent understands before planning any build work.
+Analyze the available source schemas enough to orient the project and the data engineer before planning any build work.
 
 This phase is read-only. Do not create dbt projects, install packages, run codegen, write model files, create warehouse schemas, or change profiles during discovery.
 
 Do not start discovery until the active `domain`, `dbt_profile_name`, and `source_schema` are confirmed from the prompt or `.env`. If `.env` is missing, follow [env-configuration.md](env-configuration.md) and stop for user input first. Do not inspect the repo, terminal output, other workspaces, or prior workspaces to suggest or choose a source schema.
 
 Discovery is project-oriented, not setup-oriented. The discovery input, report, and chat output should focus on the source data and the future analytics project, not on environment setup, bootstrap, package installation, git, CI, or agent configuration.
+
+Discovery is also phased. Initial discovery should be lightweight and should not fully design every bronze, silver, gold, semantic, evaluator, and docs artifact. See [phased-discovery.md](phased-discovery.md). Deeper discovery happens immediately before each layer/phase.
 
 ## Allowed read-only actions
 
@@ -32,11 +34,12 @@ After discovery, explain in Markdown:
 - Candidate facts, dimensions, and metrics implied by the source
 - Empty tables, suspicious columns, missing keys, date ranges, and data quality notes
 - Privacy/sensitive-field observations
-- Recommended medallion direction: likely bronze/staging coverage, silver/intermediate joins, and gold facts/dimensions
+- High-level medallion direction, without finalizing every layer design
 - Suggested business questions or analytics use cases the source appears able to support
 - What the agent is confident about
 - What the agent is not confident about
 - Required user decisions before modeling
+- Next phase to discover/build first
 
 Put setup/config context at the end under a short `Inputs Used` section only:
 

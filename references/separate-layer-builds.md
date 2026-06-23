@@ -13,7 +13,7 @@
 
 Default names: `bronze`, `silver`, `gold`.
 
-For a new full pipeline, run read-only Discovery & Requirements before this build order.
+For a new full pipeline, run lightweight project Discovery & Requirements before this build order. Then run phase-specific discovery before each layer.
 
 **Do not** build intermediate before staging exists.
 **Do not** build marts before intermediate exists.
@@ -35,7 +35,7 @@ Staging comes **before** intermediate. Marts (star schema) come **last**.
 
 Set `workflow_phase:` in the prompt to run **only** that phase.
 
-For every phase: **discover -> data engineer decision check -> write `AGENT_PLAN.md` -> ask approval -> implement -> parse/build -> write `reports/agent/<phase>_report.md` -> summarize -> ask commit**.
+For every phase: **phase-specific discovery -> data engineer decision check -> write `AGENT_PLAN.md` -> ask approval -> implement -> parse/build -> write `reports/agent/<phase>_report.md` -> summarize -> ask commit**.
 
 ### Sources only
 
@@ -79,7 +79,7 @@ dbt build --select +path:models/{layer_1_name}/{domain}
 
 Warehouse models land in: **`<layer_schema_prefix>_<layer_1_name>`** (default materialization: `view`)
 
-Explain planned staging models, source tables, casts, tests, and schema target before creating files.
+Run bronze discovery first: table grains, column pass/drop decisions, casts, naming, source tests, and sensitive-column handling. Explain planned staging models, source tables, casts, tests, and schema target before creating files.
 Write `reports/agent/{layer_1_name}_report.md`, update `reports/agent/PIPELINE_STATUS.md` and `reports/agent/CONTEXT_TREE.md`, then ask commit -> push `models/{layer_1_name}/{domain}/` and `reports/agent/`.
 
 ---
@@ -105,7 +105,7 @@ dbt build --select +path:models/{layer_2_name}/{domain}
 
 Warehouse models land in: **`<layer_schema_prefix>_<layer_2_name>`** (default materialization: `view`)
 
-Explain planned intermediate models, joins, grains, mappings, flags, and tests before creating files.
+Run silver discovery first: join cardinality, grain preservation, mapping/reference needs, reusable business logic, flags, and tests. Explain planned intermediate models, joins, grains, mappings, flags, and tests before creating files.
 Write `reports/agent/{layer_2_name}_report.md`, update `reports/agent/PIPELINE_STATUS.md` and `reports/agent/CONTEXT_TREE.md`, then ask commit -> push `models/{layer_2_name}/{domain}/` and `reports/agent/`.
 
 ---
@@ -131,7 +131,7 @@ dbt build --select +path:models/{layer_3_name}/{domain}
 
 Warehouse models land in: **`<layer_schema_prefix>_<layer_3_name>`** (prod defaults: `dim_*`/`mart_*` = `table`, `fct_*` = `incremental`)
 
-Explain planned facts, dimensions, reporting marts, metrics, privacy handling, grains, and materializations before creating files.
+Run gold discovery first: approved facts, dimensions, metric grains, privacy exposure, reporting marts, and materializations. Explain planned facts, dimensions, reporting marts, metrics, privacy handling, grains, and materializations before creating files.
 Write `reports/agent/{layer_3_name}_report.md`, update `reports/agent/PIPELINE_STATUS.md` and `reports/agent/CONTEXT_TREE.md`, then ask commit -> push `models/{layer_3_name}/{domain}/`, `reports/agent/`, and `dbt_project.yml` if changed.
 
 ---
@@ -144,10 +144,10 @@ Run the default prompt without `workflow_phase`.
 
 Run in order, **stop for phase plan approval before each build and ask commit after each**:
 
-1. Sources (if needed) -> plan approval -> source files -> phase report -> ask commit
-2. Staging -> plan approval -> build `+path:models/{layer_1_name}/{domain}` -> phase report -> ask commit
-3. Intermediate -> plan approval -> build `+path:models/{layer_2_name}/{domain}` -> phase report -> ask commit
-4. Marts -> plan approval -> build `+path:models/{layer_3_name}/{domain}` -> phase report -> ask commit
+1. Sources (if needed) -> source discovery -> plan approval -> source files -> phase report -> ask commit
+2. Staging -> bronze discovery -> plan approval -> build `+path:models/{layer_1_name}/{domain}` -> phase report -> ask commit
+3. Intermediate -> silver discovery -> plan approval -> build `+path:models/{layer_2_name}/{domain}` -> phase report -> ask commit
+4. Marts -> gold discovery -> plan approval -> build `+path:models/{layer_3_name}/{domain}` -> phase report -> ask commit
 
 Each layer is a separate build and optional separate git push.
 

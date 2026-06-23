@@ -70,7 +70,7 @@ Keep passwords, tokens, and private keys in local profiles or GitHub Secrets.
 
 | Phase | What the skill does |
 |---|---|
-| Discovery | Project-oriented source/schema analysis written to `reports/agent/discovery_report.md`, source conclusions, data quality notes, candidate models/metrics, and requirements checkpoint before build planning |
+| Discovery | Project-oriented and phased source/schema analysis written to `reports/agent/discovery_report.md`; each layer gets focused discovery before build planning |
 | Bootstrap | Installs dbt Labs agent skills and dbt packages when needed |
 | Validation | Runs `dbt debug`, `dbt deps`, `dbt parse`, and scoped `dbt build` commands |
 | Environment config | Loads non-secret `.env` values before asking for missing inputs |
