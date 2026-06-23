@@ -35,6 +35,23 @@ reports/agent/ci_report.md
 reports/agent/agents_schema_report.md
 ```
 
+## Discovery report exception
+
+`reports/agent/discovery_report.md` must be project-oriented, not setup-oriented. Use discovery sections such as:
+
+- Project/domain summary
+- Source tables and row counts
+- Entities and relationships
+- Candidate business processes
+- Candidate facts, dimensions, and metrics
+- Data quality and completeness notes
+- Privacy/sensitive-field observations
+- Recommended medallion direction
+- Open modeling decisions for the data engineer
+- Inputs used: domain, dbt profile name without credentials, source schema, source tables inspected
+
+Do not lead discovery reports with setup details such as `.env` creation, profile search, venv, package installation, git, CI, or bootstrap tasks. Mention configuration only as brief input context at the end.
+
 ## What to include
 
 Every phase report must include:

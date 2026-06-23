@@ -10,6 +10,8 @@ This phase is read-only. Do not create dbt projects, install packages, run codeg
 
 Do not start discovery until the active `domain`, `dbt_profile_name`, and `source_schema` are confirmed from the prompt or `.env`. If `.env` is missing, follow [env-configuration.md](env-configuration.md) and stop for user input first. Do not inspect the repo, terminal output, other workspaces, or prior workspaces to suggest or choose a source schema.
 
+Discovery is project-oriented, not setup-oriented. The discovery input, report, and chat output should focus on the source data and the future analytics project, not on environment setup, bootstrap, package installation, git, CI, or agent configuration.
+
 ## Allowed read-only actions
 
 - Load `.env` and non-secret config values
@@ -23,15 +25,27 @@ Do not start discovery until the active `domain`, `dbt_profile_name`, and `sourc
 
 After discovery, explain in Markdown:
 
-- Resolved config: domain, dbt profile, source schema, inferred project name, inferred source name, inferred layer schemas
+- Project/domain being analyzed
 - Source schemas/tables found and row counts
 - Important entities and likely relationships
 - Candidate business processes, such as appointments, encounters, claims, orders, tickets, or events
 - Candidate facts, dimensions, and metrics implied by the source
 - Empty tables, suspicious columns, missing keys, date ranges, and data quality notes
 - Privacy/sensitive-field observations
+- Recommended medallion direction: likely bronze/staging coverage, silver/intermediate joins, and gold facts/dimensions
+- Suggested business questions or analytics use cases the source appears able to support
 - What the agent is confident about
 - What the agent is not confident about
+- Required user decisions before modeling
+
+Put setup/config context at the end under a short `Inputs Used` section only:
+
+- Domain
+- dbt profile name, without credentials
+- Source schema
+- Source tables inspected
+
+Do not lead the discovery report with profile details, `.env` handling, package setup, bootstrap status, git status, virtualenv setup, CI, or Agents Schema. Those belong in setup/bootstrap reports.
 
 ## Requirements checkpoint
 

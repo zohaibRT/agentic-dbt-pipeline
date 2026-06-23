@@ -23,7 +23,7 @@ Bootstrap auto-installs dbt Agent Skills and dbt packages on first run.
 
 Read and execute [references/discovery-requirements.md](references/discovery-requirements.md) before bootstrap/init on new projects or full pipeline runs.
 
-Discovery is read-only. It may inspect schemas, tables, columns, row counts, keys, relationships, dates, measures, statuses, and existing files. It must not create files, install packages, run codegen, create warehouse schemas, or change profiles.
+Discovery is read-only and project-oriented. It may inspect schemas, tables, columns, row counts, keys, relationships, dates, measures, and statuses. Its input/report/output must focus on the source data and analytics project, not environment setup. It must not create files, install packages, run codegen, create warehouse schemas, or change profiles.
 
 After discovery, summarize what the agent concluded from the source data and ask whether the user wants to add requirements such as mappings, metrics, privacy rules, naming rules, included/excluded tables, or priority facts/dimensions. Continue to Bootstrap & Init only after the user replies with requirements or says to continue.
 
