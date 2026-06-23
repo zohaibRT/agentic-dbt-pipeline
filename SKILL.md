@@ -81,13 +81,14 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 | **10 Agents Schema / CI** | Metadata + automation | [agents-schema-setup.md](references/agents-schema-setup.md), [cicd-setup.md](references/cicd-setup.md) |
 | **Plan approval** | Before each build phase | [phase-plan-approval.md](references/phase-plan-approval.md) |
 | **Review** | Human approval points | [human-review.md](references/human-review.md) |
+| **Phase report** | After each completed phase | [phase-completion-report.md](references/phase-completion-report.md) |
 | **Done** | Final check + user summary | [acceptance-checklist.md](references/acceptance-checklist.md), [final-delivery.md](references/final-delivery.md) |
 
 Context prompt template: [agent-context-prompt.md](references/agent-context-prompt.md)
 
 ## Step 0 - Load config
 
-Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), [project-naming.md](references/project-naming.md), [schema-isolation.md](references/schema-isolation.md), [env-configuration.md](references/env-configuration.md), [discovery-requirements.md](references/discovery-requirements.md), and [phase-plan-approval.md](references/phase-plan-approval.md).
+Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), [project-naming.md](references/project-naming.md), [schema-isolation.md](references/schema-isolation.md), [env-configuration.md](references/env-configuration.md), [discovery-requirements.md](references/discovery-requirements.md), [phase-plan-approval.md](references/phase-plan-approval.md), and [phase-completion-report.md](references/phase-completion-report.md).
 
 Resolve paths relative to workspace root. dbt project root = `{project.root}`.
 
@@ -201,7 +202,7 @@ Read [separate-layer-builds.md](references/separate-layer-builds.md).
 10. Automation - CI workflow
 11. **Acceptance + final summary** - [acceptance-checklist.md](references/acceptance-checklist.md), [final-delivery.md](references/final-delivery.md)
 
-Each stage: **discover -> write Markdown plan -> ask approval -> implement -> parse/build -> summarize -> ask commit**. Ask for push only when a non-local GitHub repo is configured or the user requested push.
+Each stage: **discover -> write Markdown plan -> ask approval -> implement -> parse/build -> write phase report -> summarize -> ask commit**. Ask for push only when a non-local GitHub repo is configured or the user requested push.
 
 ## Step 2 - Sources
 
@@ -256,7 +257,7 @@ Use Agents Schema after docs generation or any step that produces `target/manife
 
 ## Step 9 - Final delivery summary
 
-Read [final-delivery.md](references/final-delivery.md) before marking any full pipeline or requested phase complete.
+Read [phase-completion-report.md](references/phase-completion-report.md) and [final-delivery.md](references/final-delivery.md) before marking any full pipeline or requested phase complete.
 
 Always finish with a user-facing summary that starts short, then gives the useful details:
 
@@ -289,7 +290,8 @@ Read [stuck-recovery.md](references/stuck-recovery.md) whenever a command hangs,
 4. Tests / docs added
 5. Assumptions used
 6. dbt debug / parse / build results
-7. Commit status (asked / skipped / done / pushed to github)
+7. Phase report path and status
+8. Commit status (asked / skipped / done / pushed to github)
 ```
 
 For the final response, use [final-delivery.md](references/final-delivery.md) instead of only the phase template.
@@ -336,6 +338,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 | [project.config.yml](project.config.yml) | Defaults, paths, git, materialization |
 | [skill-inputs.md](references/skill-inputs.md) | Required inputs |
 | [phase-plan-approval.md](references/phase-plan-approval.md) | Markdown plan and approval gate before every phase |
+| [phase-completion-report.md](references/phase-completion-report.md) | Per-phase report files showing done/correct/wrong/open items |
 | [project-naming.md](references/project-naming.md) | Derive project and folder names without using dbt profile |
 | [env-configuration.md](references/env-configuration.md) | Optional `.env` settings and precedence |
 | [schema-isolation.md](references/schema-isolation.md) | Keep source, medallion, evaluator, seeds, snapshots, and agent metadata schemas separate |

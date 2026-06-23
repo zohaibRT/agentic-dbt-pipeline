@@ -121,9 +121,10 @@ After the user approves:
 1. Implement only the approved phase.
 2. Run the promised validation.
 3. Update `AGENT_PLAN.md` with a short result section for the phase.
-4. Summarize actual files/models built, test results, assumptions used, and open decisions.
-5. Ask for commit approval according to [git-workflow.md](git-workflow.md).
-6. Move to the next phase and repeat the plan/approval process.
+4. Create/update the phase report in `reports/agent/` using [phase-completion-report.md](phase-completion-report.md).
+5. Summarize actual files/models built, test results, assumptions used, open decisions, and report path.
+6. Ask for commit approval according to [git-workflow.md](git-workflow.md).
+7. Move to the next phase and repeat the plan/approval process.
 
 ## Do not
 

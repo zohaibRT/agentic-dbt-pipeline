@@ -35,7 +35,7 @@ Staging comes **before** intermediate. Marts (star schema) come **last**.
 
 Set `workflow_phase:` in the prompt to run **only** that phase.
 
-For every phase: **discover -> write `AGENT_PLAN.md` -> ask approval -> implement -> parse/build -> summarize -> ask commit**.
+For every phase: **discover -> write `AGENT_PLAN.md` -> ask approval -> implement -> parse/build -> write `reports/agent/<phase>_report.md` -> summarize -> ask commit**.
 
 ### Sources only
 
@@ -53,7 +53,7 @@ dbt parse --no-partial-parse
 ```
 
 Explain the source YAML plan and get approval before running codegen or writing source files.
-Ask commit for `models/sources/` only.
+Write `reports/agent/sources_report.md`, update `reports/agent/PIPELINE_STATUS.md`, then ask commit for `models/sources/` and `reports/agent/`.
 
 ---
 
@@ -80,7 +80,7 @@ dbt build --select +path:models/{layer_1_name}/{domain}
 Warehouse models land in: **`<layer_schema_prefix>_<layer_1_name>`** (default materialization: `view`)
 
 Explain planned staging models, source tables, casts, tests, and schema target before creating files.
-Ask commit -> push `models/{layer_1_name}/{domain}/` only.
+Write `reports/agent/{layer_1_name}_report.md`, update `reports/agent/PIPELINE_STATUS.md`, then ask commit -> push `models/{layer_1_name}/{domain}/` and `reports/agent/`.
 
 ---
 
@@ -106,7 +106,7 @@ dbt build --select +path:models/{layer_2_name}/{domain}
 Warehouse models land in: **`<layer_schema_prefix>_<layer_2_name>`** (default materialization: `view`)
 
 Explain planned intermediate models, joins, grains, mappings, flags, and tests before creating files.
-Ask commit -> push `models/{layer_2_name}/{domain}/` only.
+Write `reports/agent/{layer_2_name}_report.md`, update `reports/agent/PIPELINE_STATUS.md`, then ask commit -> push `models/{layer_2_name}/{domain}/` and `reports/agent/`.
 
 ---
 
@@ -132,7 +132,7 @@ dbt build --select +path:models/{layer_3_name}/{domain}
 Warehouse models land in: **`<layer_schema_prefix>_<layer_3_name>`** (prod defaults: `dim_*`/`mart_*` = `table`, `fct_*` = `incremental`)
 
 Explain planned facts, dimensions, reporting marts, metrics, privacy handling, grains, and materializations before creating files.
-Ask commit -> push `models/{layer_3_name}/{domain}/` (+ `dbt_project.yml` if changed).
+Write `reports/agent/{layer_3_name}_report.md`, update `reports/agent/PIPELINE_STATUS.md`, then ask commit -> push `models/{layer_3_name}/{domain}/`, `reports/agent/`, and `dbt_project.yml` if changed.
 
 ---
 
@@ -144,10 +144,10 @@ Run the default prompt without `workflow_phase`.
 
 Run in order, **stop for phase plan approval before each build and ask commit after each**:
 
-1. Sources (if needed) -> plan approval -> source files -> ask commit
-2. Staging -> plan approval -> build `+path:models/{layer_1_name}/{domain}` -> ask commit
-3. Intermediate -> plan approval -> build `+path:models/{layer_2_name}/{domain}` -> ask commit
-4. Marts -> plan approval -> build `+path:models/{layer_3_name}/{domain}` -> ask commit
+1. Sources (if needed) -> plan approval -> source files -> phase report -> ask commit
+2. Staging -> plan approval -> build `+path:models/{layer_1_name}/{domain}` -> phase report -> ask commit
+3. Intermediate -> plan approval -> build `+path:models/{layer_2_name}/{domain}` -> phase report -> ask commit
+4. Marts -> plan approval -> build `+path:models/{layer_3_name}/{domain}` -> phase report -> ask commit
 
 Each layer is a separate build and optional separate git push.
 

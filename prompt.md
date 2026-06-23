@@ -20,6 +20,8 @@ First, perform read-only discovery only: inspect source schemas/tables, summariz
 
 After I answer, before each build phase, write/update `AGENT_PLAN.md`, explain in Markdown what you will build, and wait for my approval before implementing that phase.
 
+After each completed phase, write/update `reports/agent/<phase>_report.md` and `reports/agent/PIPELINE_STATUS.md` with what was done, what passed, warnings/failures/skips, assumptions, and open decisions.
+
 Ask me only when required `.env` values are missing, credentials or secrets are needed, a business rule is unclear, phase build approval is needed, or before committing, pushing, or changing schema behavior.
 ```
 
@@ -57,5 +59,5 @@ Use the dbt Pipeline skill (`agentic-dbt-pipeline`).
 Use settings from `.env`.
 workflow_phase: <init | sources | staging | intermediate | marts | semantic_layer | project_evaluator | docs | ci | agents_schema>
 
-Before building this phase, explain the plan in Markdown and wait for my approval.
+Before building this phase, explain the plan in Markdown and wait for my approval. After it completes, write/update the phase report and pipeline status files.
 ```

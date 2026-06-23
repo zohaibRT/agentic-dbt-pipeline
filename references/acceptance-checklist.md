@@ -20,6 +20,8 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] `.env` loaded for non-secret inputs when present; `.env.example` contains no secrets when committed
 - [ ] Any subagent delegation was read-only/draft work; main agent kept dbt commands, edits, commits, and final decisions
 - [ ] `AGENT_PLAN.md` created or updated with the approved plan for each implemented phase
+- [ ] `reports/agent/<phase>_report.md` created or updated for each implemented phase
+- [ ] `reports/agent/PIPELINE_STATUS.md` updated after each phase
 
 ## dbt Agent Skills & packages
 
@@ -56,6 +58,7 @@ Verify before marking the dbt pipeline workflow complete.
 ## Layers
 
 - [ ] Each phase had Markdown plan approval before implementation
+- [ ] Each phase report documents what passed, warned, failed, or needs review
 - [ ] Staging: all source tables, tests pass
 - [ ] Intermediate: domain-appropriate reusable business logic models build successfully
 - [ ] Marts: domain-appropriate facts, dimensions, and reporting marts build successfully
@@ -118,5 +121,6 @@ Verify before marking the dbt pipeline workflow complete.
 
 - [ ] Final handoff notes or README include domain, profile name, schemas, final models, metrics, run commands, and known limitations
 - [ ] Final response starts with a short summary, then includes results, validation, data notes, git/automation status, and open decisions
+- [ ] Final response references `AGENT_PLAN.md`, `reports/agent/PIPELINE_STATUS.md`, and relevant phase reports
 - [ ] Phase commits created or intentionally skipped
 - [ ] Final response summarizes build status, docs status, evaluator status, Agents Schema status, git status, limitations, and open decisions

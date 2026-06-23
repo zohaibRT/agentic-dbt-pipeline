@@ -1,0 +1,132 @@
+# Phase Completion Report
+
+Use this after every phase that performs discovery, changes files, runs dbt commands, or builds warehouse objects.
+
+## Core rule
+
+After each phase, create or update a Markdown report that tells the user what happened, what is correct, what is warning or wrong, and what needs review.
+
+Default folder:
+
+```text
+<project.root>/reports/agent/
+```
+
+Default files:
+
+```text
+reports/agent/<phase>_report.md
+reports/agent/PIPELINE_STATUS.md
+```
+
+Examples:
+
+```text
+reports/agent/discovery_report.md
+reports/agent/bootstrap_report.md
+reports/agent/sources_report.md
+reports/agent/bronze_report.md
+reports/agent/silver_report.md
+reports/agent/gold_report.md
+reports/agent/semantic_report.md
+reports/agent/evaluator_report.md
+reports/agent/docs_report.md
+reports/agent/ci_report.md
+reports/agent/agents_schema_report.md
+```
+
+## What to include
+
+Every phase report must include:
+
+- Phase name and date/time
+- Approval status and approved plan reference
+- Files created or changed
+- Warehouse schemas/tables/views created or changed
+- Models, seeds, semantic files, workflows, or docs created
+- Commands run
+- Validation results: pass, warn, fail, skipped
+- What looks correct
+- What looks wrong or risky
+- Data quality notes
+- Privacy/sensitive-field notes
+- Assumptions used
+- Open questions or user decisions
+- Commit status
+- Next recommended phase
+
+## Status labels
+
+Use these labels consistently:
+
+| Label | Meaning |
+|---|---|
+| `PASS` | Completed and validated |
+| `WARN` | Works, but user should review |
+| `FAIL` | Failed validation or unsafe to continue |
+| `SKIPPED` | Intentionally not run |
+| `BLOCKED` | Waiting on user/external action |
+
+## Phase report template
+
+```markdown
+# <Phase> Report
+
+## Status
+Overall: <PASS | WARN | FAIL | SKIPPED | BLOCKED>
+
+## What Was Done
+- <action>
+
+## Files Changed
+| File | Purpose |
+|---|---|
+| <path> | <why changed> |
+
+## Warehouse Changes
+| Object | Type | Purpose |
+|---|---|---|
+| <schema.object> | <table/view/schema> | <why created/changed> |
+
+## Validation Results
+| Check | Result | Notes |
+|---|---|---|
+| <command/check> | <PASS/WARN/FAIL/SKIPPED> | <important output> |
+
+## What Looks Correct
+- <confirmed-good point>
+
+## What Looks Wrong Or Needs Review
+- <warning/risk/question>
+
+## Assumptions
+- <assumption>
+
+## Open Decisions
+- <decision needed, or "None">
+
+## Commit Status
+<not asked / skipped / committed <hash> / pushed>
+
+## Next Step
+<recommended next phase>
+```
+
+## Pipeline status file
+
+Update `reports/agent/PIPELINE_STATUS.md` after every phase:
+
+```markdown
+# Pipeline Status
+
+| Phase | Status | Report | Commit |
+|---|---|---|---|
+| Discovery | PASS | reports/agent/discovery_report.md | n/a |
+| Bootstrap | PASS | reports/agent/bootstrap_report.md | <hash or pending> |
+```
+
+## Commit behavior
+
+Include the phase report and `PIPELINE_STATUS.md` in the same phase commit when commit approval is granted.
+
+Do not commit reports that contain secrets, passwords, tokens, or sensitive record samples.

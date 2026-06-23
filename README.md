@@ -2,7 +2,7 @@
 
 `dbt Pipeline` is an agent skill for setting up and maintaining dbt projects with a structured, agent-assisted workflow.
 
-It helps an agent initialize a dbt project, configure sources, build bronze/silver/gold medallion layers, add semantic layer assets, run quality checks, generate docs, create CI workflows, publish dbt metadata to Agents Schema, commit each stage separately, and finish with a clear user-facing run summary.
+It helps an agent initialize a dbt project, configure sources, build bronze/silver/gold medallion layers, add semantic layer assets, run quality checks, generate docs, create CI workflows, publish dbt metadata to Agents Schema, write per-phase status reports, commit each stage separately, and finish with a clear user-facing run summary.
 
 ## Installation
 
@@ -38,7 +38,7 @@ Run the full pipeline from source discovery through final delivery.
 
 First, perform read-only discovery only: inspect source schemas/tables, summarize what you conclude from the data, and ask whether I want to add requirements.
 
-After I answer, before each build phase, write/update `AGENT_PLAN.md`, explain what will be built, and wait for my approval.
+After I answer, before each build phase, write/update `AGENT_PLAN.md`, explain what will be built, and wait for my approval. After each completed phase, write/update `reports/agent/<phase>_report.md` and `reports/agent/PIPELINE_STATUS.md`.
 ```
 
 For a full copy-paste prompt, see [prompt.md](prompt.md).
@@ -76,6 +76,7 @@ Keep passwords, tokens, and private keys in local profiles or GitHub Secrets.
 | Environment config | Loads non-secret `.env` values before asking for missing inputs |
 | Subagents | Optionally parallelizes read-only profiling, planning, docs, and review work |
 | Phase planning | Writes a Markdown plan before each phase and waits for approval before building |
+| Phase reports | Writes `reports/agent/<phase>_report.md` and `reports/agent/PIPELINE_STATUS.md` after each phase |
 | Sources | Generates source YAML and adds source descriptions |
 | Schema isolation | Keeps source, medallion, evaluator, seeds, snapshots, and agent metadata in separate schemas |
 | Source profiling | Reviews row counts, keys, relationships, dates, measures, and status/code fields before modeling |
@@ -110,6 +111,7 @@ The skill is designed to keep project history readable. It commits each stage se
 
 By default, the agent asks before each commit. It asks about push only when a GitHub remote is configured or requested.
 It also asks for approval before each build phase after showing the Markdown plan.
+After each completed phase, it writes a phase report showing what passed, warned, failed, was skipped, and still needs review.
 
 ## Verification
 
@@ -148,6 +150,7 @@ The skill can add and install these dbt packages:
 | [references/bootstrap.md](references/bootstrap.md) | Bootstrap workflow |
 | [references/discovery-requirements.md](references/discovery-requirements.md) | Read-only discovery and requirements checkpoint before build planning |
 | [references/phase-plan-approval.md](references/phase-plan-approval.md) | Markdown plan and approval gate before every phase |
+| [references/phase-completion-report.md](references/phase-completion-report.md) | Per-phase reports and pipeline status file |
 | [references/git-workflow.md](references/git-workflow.md) | Commit and push workflow |
 | [references/schema-isolation.md](references/schema-isolation.md) | Source, layer, evaluator, seeds, snapshots, and metadata schema separation |
 | [references/agents-schema-setup.md](references/agents-schema-setup.md) | Agents Schema workflow setup |
