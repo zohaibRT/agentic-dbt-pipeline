@@ -30,6 +30,7 @@ Update or create project handoff notes with:
 - Source discovery conclusions and requirements captured before build
 - Final facts, dimensions, marts, and metrics
 - Presentation layer recommendation, including possible key performance indicators, semantic metrics, suggested report or dashboard pages, and query handoff options
+- Power BI as code status when requested, including PBIP structure validation and open/refresh notes
 - Known empty tables or data quality limitations
 - Confidence notes: what was validated vs what still needs confirmation
 - Mermaid diagrams created or updated, with visibility verification status

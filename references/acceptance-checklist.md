@@ -129,6 +129,9 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] `dbt docs generate` -> manifest + catalog exist
 - [ ] Documentation serve command or local documentation URL provided when user wants to view documentation
 - [ ] Presentation options were recommended after documentation: documentation only, business-facing report, dashboard design, semantic layer refinement, or query handoff
+- [ ] Power BI as code was created only when explicitly requested and approved
+- [ ] If Power BI as code was created, PBIP includes the project file, Report artifact, SemanticModel artifact, TMDL/definition files, relationships, measures, parameters, and handoff README
+- [ ] If Power BI as code was created, JSON parse checks, TMDL structure checks, and file-tree checks were run and recorded
 
 ## Human review
 
