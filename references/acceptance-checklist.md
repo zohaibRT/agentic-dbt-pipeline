@@ -27,6 +27,8 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Discovery announced the selected profile and adapter before querying the warehouse
 - [ ] Discovery used only the selected dbt profile adapter and did not probe unrelated warehouses or cloud connectors
 - [ ] Fresh clone without `.env` creates a safe local `.env` template and stops for required user inputs before dbt commands
+- [ ] Generated `.env` contains placeholders only until the user provides real values
+- [ ] The agent did not fill `.env` from profile target schema, profile database name, warehouse schemas, previous runs, examples, or guesses
 - [ ] Missing required first-run values were requested directly from the user, not found by repository search, terminal inspection, other workspaces, or previous runs
 - [ ] When `DBT_PROFILE_NAME` was missing or ambiguous, available profiles were listed with adapter and non-secret notes, and the agent did not choose one automatically
 - [ ] Any subagent delegation was read-only/draft work; main agent kept dbt commands, edits, commits, and final decisions

@@ -105,11 +105,52 @@ When the user runs the default prompt in a freshly cloned skill or dbt project a
 6. Stop before dbt discovery, `dbt debug`, `dbt deps`, codegen, or build commands.
 7. Tell the user exactly which required values are missing and ask them to update `.env` or provide the values in chat.
 
+## Placeholder `.env` hard stop
+
+When the agent creates `.env` from `.env.example`, the generated file must keep placeholder values:
+
+```text
+DBT_DOMAIN=<domain_name>
+DBT_PROFILE_NAME=<dbt_profile_name>
+DBT_SOURCE_SCHEMA=<raw_source_schema>
+```
+
+These placeholders are not valid configuration. Treat placeholder values, blank values, `auto`, `default`, `example`, `raw`, `schema`, `source`, `na`, and `none` as missing until the user provides real values.
+
+Do not replace placeholder values with inferred values from:
+
+- `~/.dbt/profiles.yml`
+- Profile target schema
+- Profile database name
+- Existing warehouse schemas
+- Existing dbt project folders
+- Old `.env` files
+- Previous runs
+- Terminal output
+- Nearby workspaces
+- Source names found in examples or documentation
+
+Only update `.env` with real values that came from the current user prompt or the current user reply. After updating `.env` from the user reply, summarize the exact non-secret values and wait for approval before discovery.
+
 When `.env` is missing, do not search the repo for alternate config files, inspect terminal history/output, inspect other workspaces, inspect old dbt projects, query warehouse schemas, or look at previous runs to decide what to do. The data engineer controls the active project inputs.
 
 Do not infer required first-run values from other workspaces, old dbt projects, old `.env` files, existing medallion schemas, warehouse object names, terminal output, or previous runs. Do not scan or summarize other workspaces to suggest values. Ask the user directly. Listing available profile names from `~/.dbt/profiles.yml` is allowed only as a choice aid; it is not permission to choose a profile.
 
 When `.env` is missing, do not say that the agent will resolve the profile or run adapter-specific discovery. The agent does not know the active adapter yet. Use adapter-neutral wording until the user provides `DBT_PROFILE_NAME`.
+
+Do not use wording like:
+
+```text
+I will create `.env` from the profile and warehouse schema, then run discovery on <schema>.
+```
+
+Instead use:
+
+```text
+I did not find `.env`, so I created a placeholder `.env` from `.env.example`.
+Please provide `DBT_DOMAIN`, `DBT_PROFILE_NAME`, and `DBT_SOURCE_SCHEMA`.
+I will not run discovery or fill these values automatically.
+```
 
 Never combine missing-`.env` setup with discovery in the same response. Missing `.env` is a hard stop until the user confirms the required values.
 
