@@ -16,6 +16,17 @@ This applies to:
 - Metric or semantic-layer diagrams
 - Any other process, data, or architecture diagram
 
+## Discovery diagrams
+
+During project discovery, create Mermaid diagrams that help the data engineer understand the source before any build work:
+
+- Create an entity relationship diagram with `erDiagram` when credible relationships exist.
+- Create a source inventory or source relationship flow when multiple source tables need a quick visual summary.
+- Create a high-level medallion direction diagram when the recommended next path is clearer visually.
+- Create a candidate business process flow when the source has an obvious process sequence, such as appointment -> encounter -> claim.
+
+Only include evidence-supported relationships or flows in diagrams. Put uncertain items in notes outside the diagram.
+
 ## Entity relationships
 
 For entity relationships, prefer Mermaid `erDiagram`.

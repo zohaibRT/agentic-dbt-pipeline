@@ -53,6 +53,7 @@ reports/agent/agents_schema_report.md
 - Project/domain summary
 - Source tables and row counts
 - Entities and relationships
+- Mermaid discovery diagrams, including entity relationship diagram when credible relationships exist
 - Candidate business processes
 - Candidate facts, dimensions, and metrics
 - Data quality and completeness notes

@@ -14,6 +14,8 @@ Discovery is project-oriented, not setup-oriented. The discovery input, report, 
 
 Discovery is also phased. Initial discovery should be lightweight and should not fully design every bronze, silver, gold, semantic, evaluator, and documentation artifact. See [phased-discovery.md](phased-discovery.md). Deeper discovery happens immediately before each layer/phase.
 
+Discovery must include Mermaid diagrams when the source data has enough evidence to support them. Create an entity relationship diagram during discovery when any credible table relationships exist. Create other necessary Mermaid diagrams when they make the project easier to review, such as source inventory, candidate business process flow, or high-level medallion direction. Do not draw relationships or flows that are only guesses; list uncertain items as notes outside the diagram.
+
 ## Allowed read-only actions
 
 - Load `.env` and non-secret config values
@@ -30,7 +32,8 @@ After discovery, explain in Markdown:
 - Project/domain being analyzed
 - Source schemas/tables found and row counts
 - Important entities and likely relationships
-- Entity relationship diagram in Mermaid `erDiagram` when relationships are clear enough to visualize
+- Entity relationship diagram in Mermaid `erDiagram` when credible relationships are found
+- Other necessary Mermaid diagrams, such as source inventory, business process flow, or high-level medallion direction, when they help the data engineer review the source
 - Candidate business processes, such as appointments, encounters, claims, orders, tickets, or events
 - Candidate facts, dimensions, and metrics implied by the source
 - Empty tables, suspicious columns, missing keys, date ranges, and data quality notes
@@ -70,6 +73,29 @@ reports/agent/CONTEXT_TREE.md
 If the dbt project root does not exist yet, create `reports/agent/` in the current workspace/run root. Move or preserve these files in the dbt project root later only if the project root is created elsewhere and the user approves that layout.
 
 The chat response should be a concise summary plus links/paths to these files. Do not use chat as the only discovery record.
+
+## Required discovery diagrams
+
+Add a `Diagrams` section to `reports/agent/discovery_report.md`.
+
+Required:
+
+- Mermaid entity relationship diagram using `erDiagram` when profiling, constraints, column naming, or user-approved rules reveal credible relationships.
+- Mermaid source inventory or source relationship flow when the schema has multiple tables and the entity relationship diagram alone is not enough to explain the source shape.
+- Mermaid high-level medallion direction diagram when the next recommended path would be clearer visually.
+
+Optional:
+
+- Candidate business process flow, such as appointment -> encounter -> claim, order -> shipment -> invoice, or ticket -> assignment -> resolution.
+- Metric or semantic-layer concept diagram only when useful for the requirements conversation; do not finalize metric design during initial discovery.
+
+For every discovery diagram:
+
+- Use Mermaid only.
+- Use full wording in titles and notes.
+- Verify visibility or parse status with [mermaid-diagrams.md](mermaid-diagrams.md).
+- Record the verification result in `reports/agent/discovery_report.md` and `reports/agent/CONTEXT_TREE.md`.
+- Mark uncertain relationships as notes outside the diagram instead of drawing them as confirmed edges.
 
 ## Requirements checkpoint
 
