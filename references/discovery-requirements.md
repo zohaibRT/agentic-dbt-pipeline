@@ -40,7 +40,7 @@ After discovery, explain in Markdown:
 - Candidate facts, dimensions, and metrics implied by the source
 - Empty tables, suspicious columns, missing keys, date ranges, and data quality notes
 - Privacy/sensitive-field observations
-- High-level medallion direction, without finalizing every layer design
+- Recommended medallion direction for sources, bronze/staging, silver/intermediate, and gold/marts, without finalizing every model design
 - Suggested business questions or analytics use cases the source appears able to support
 - Agent recommendation with evidence
 - What looks right for the next phase
@@ -99,6 +99,34 @@ For every discovery diagram:
 - Verify visibility or parse status with [mermaid-diagrams.md](mermaid-diagrams.md).
 - Record the verification result in `reports/agent/discovery_report.md` and `reports/agent/CONTEXT_TREE.md`.
 - Mark uncertain relationships as notes outside the diagram instead of drawing them as confirmed edges.
+
+## Recommended medallion direction
+
+Add a `Recommended Medallion Direction` section to `reports/agent/discovery_report.md`.
+
+This section must cover the full path:
+
+| Area | What to include |
+|---|---|
+| Sources | Source schemas, source tables, source naming, tables to include or ignore, and source tests/codegen direction |
+| Bronze / staging | One source-shaped staging model per included table, expected grain, basic casts/renames, sensitive columns to pass, drop, or hold for approval |
+| Silver / intermediate | Likely reusable joins, relationship checks, mapping needs, business flags, grain-preserving intermediate models, and items that need more discovery before joining |
+| Gold / marts | Candidate facts, dimensions, reporting marts, metric areas, privacy exposure concerns, and final business approvals needed before building |
+
+Use this template:
+
+```markdown
+## Recommended Medallion Direction
+
+| Layer area | Recommendation | Evidence | Not ready yet | Approval needed |
+|---|---|---|---|---|
+| Sources | <source YAML and source table direction> | <tables, columns, profile evidence> | <missing/unclear source items> | <source exclusions or naming approvals> |
+| Bronze / staging | <staging direction> | <grain, columns, data quality evidence> | <ambiguous columns or sensitive fields> | <privacy/pass-through approvals> |
+| Silver / intermediate | <intermediate direction> | <relationship/cardinality evidence> | <joins, mappings, or empty tables needing more profiling> | <business rule approvals> |
+| Gold / marts | <facts, dimensions, marts, and metrics direction> | <business processes and measures found> | <metric definitions or privacy decisions not proven> | <metric, grain, and exposure approvals> |
+```
+
+Keep this section directional during initial discovery. Do not list every final model as if it is approved. The goal is to help the data engineer understand the recommended path and decide whether to add requirements before build planning.
 
 ## Requirements checkpoint
 

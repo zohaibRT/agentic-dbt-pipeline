@@ -26,6 +26,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Any subagent delegation was read-only/draft work; main agent kept dbt commands, edits, commits, and final decisions
 - [ ] `AGENT_PLAN.md` created or updated with the approved plan for each implemented phase
 - [ ] Discovery created `reports/agent/discovery_report.md` before the chat summary, even if the dbt project root did not exist yet
+- [ ] Discovery report includes recommended medallion direction for sources, bronze/staging, silver/intermediate, and gold/marts
 - [ ] Discovery report includes a Mermaid entity relationship diagram when credible relationships exist
 - [ ] Discovery report includes other necessary Mermaid diagrams, such as source inventory, business process flow, or high-level medallion direction, when they help review the project
 - [ ] `reports/agent/<phase>_report.md` created or updated for each implemented phase

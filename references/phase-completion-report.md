@@ -58,7 +58,7 @@ reports/agent/agents_schema_report.md
 - Candidate facts, dimensions, and metrics
 - Data quality and completeness notes
 - Privacy/sensitive-field observations
-- Recommended medallion direction
+- Recommended medallion direction for sources, bronze/staging, silver/intermediate, and gold/marts
 - Agent recommendation
 - What looks right
 - What is not ready yet

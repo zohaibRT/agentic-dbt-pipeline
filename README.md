@@ -36,7 +36,7 @@ Use the dbt Pipeline skill (`agentic-dbt-pipeline`).
 Build the dbt project using the settings from `.env`.
 Run the full pipeline from source discovery through final delivery.
 
-First, perform read-only discovery only: inspect source schemas/tables, create necessary Mermaid discovery diagrams including an entity relationship diagram when credible relationships exist, summarize what you conclude from the data, recommend the best next path with evidence, and ask whether I want to add or change requirements.
+First, perform read-only discovery only: inspect source schemas/tables, create necessary Mermaid discovery diagrams including an entity relationship diagram when credible relationships exist, summarize what you conclude from the data, include a recommended medallion direction for sources, bronze/staging, silver/intermediate, and gold/marts, recommend the best next path with evidence, and ask whether I want to add or change requirements.
 
 After I answer, before each build phase, write/update `AGENT_PLAN.md`, explain what will be built, what looks right, what is not ready yet, confidence about proven vs uncertain items, and what needs my approval, then wait for approval. After each completed phase, write/update `reports/agent/<phase>_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md`.
 ```
@@ -74,7 +74,7 @@ Keep passwords, tokens, and private keys in local profiles or GitHub Secrets.
 
 | Phase | What the skill does |
 |---|---|
-| Discovery | Project-oriented and phased source/schema analysis written to `reports/agent/discovery_report.md`; includes necessary Mermaid discovery diagrams; each layer gets focused discovery before build planning |
+| Discovery | Project-oriented and phased source/schema analysis written to `reports/agent/discovery_report.md`; includes necessary Mermaid discovery diagrams and recommended medallion direction for sources, bronze/staging, silver/intermediate, and gold/marts; each layer gets focused discovery before build planning |
 | Bootstrap | Installs dbt Labs agent skills and dbt packages when needed |
 | Validation | Runs `dbt debug`, `dbt deps`, `dbt parse`, and scoped `dbt build` commands |
 | Environment configuration | Loads non-secret `.env` values before asking for missing inputs |
