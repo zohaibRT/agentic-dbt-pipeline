@@ -10,6 +10,8 @@ This phase is read-only. Do not create dbt projects, install packages, run codeg
 
 Do not start discovery until the active `domain`, `dbt_profile_name`, and `source_schema` are confirmed from the prompt or `.env`. If `.env` is missing, follow [env-configuration.md](env-configuration.md) and stop for user input first. Do not inspect the repository, terminal output, other workspaces, or prior workspaces to suggest or choose a source schema.
 
+Before any source discovery, follow [warehouse-adapter-routing.md](warehouse-adapter-routing.md). Resolve the selected dbt profile adapter from `~/.dbt/profiles.yml` and use only that adapter's metadata queries. If `.env` selects a PostgreSQL profile, use PostgreSQL discovery only. Do not call AWS, Redshift, or any other warehouse-specific connector unless the selected profile adapter is that warehouse type or the user explicitly changes profiles.
+
 Discovery is project-oriented, not setup-oriented. The discovery input, report, and chat output should focus on the source data and the future analytics project, not on environment setup, bootstrap, package installation, git, continuous integration, or agent configuration.
 
 Discovery is also phased. Initial discovery should be lightweight and should not fully design every bronze, silver, gold, semantic, evaluator, and documentation artifact. See [phased-discovery.md](phased-discovery.md). Deeper discovery happens immediately before each layer/phase.
@@ -53,6 +55,7 @@ Put setup/config context at the end under a short `Inputs Used` section only:
 
 - Domain
 - dbt profile name, without credentials
+- Adapter selected from the dbt profile
 - Source schema
 - Source tables inspected
 
@@ -105,6 +108,9 @@ Use this wording:
 
 ```text
 Discovery is complete. I have not built or changed anything yet.
+
+Discovery route:
+Using `.env` profile `<profile_name>` with adapter `<adapter_type>`. I did not query other warehouses.
 
 Here is what I concluded from the source data:
 <short Markdown summary>

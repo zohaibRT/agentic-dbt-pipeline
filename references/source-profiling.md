@@ -20,7 +20,9 @@ For each source table, capture:
 - Duplicate keys
 - Empty tables
 
-Use warehouse SQL, dbt source metadata, or codegen output. Keep queries lightweight and avoid full table scans when tables are large.
+Use warehouse SQL, dbt source metadata, or codegen output through the adapter selected by the active dbt profile. Follow [warehouse-adapter-routing.md](warehouse-adapter-routing.md) before profiling. Keep queries lightweight and avoid full table scans when tables are large.
+
+Do not use another warehouse connector as a profiling fallback. If the selected profile is PostgreSQL, profile PostgreSQL only. If the selected profile is Redshift, profile Redshift only. If the selected profile fails, stop and ask whether to fix the profile or switch profiles.
 
 ## Record findings
 

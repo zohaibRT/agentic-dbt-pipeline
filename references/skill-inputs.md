@@ -1,6 +1,6 @@
 # Skill Inputs - Resolve Before Any Work
 
-Read [project.config.yml](../project.config.yml), [project-naming.md](project-naming.md), [schema-isolation.md](schema-isolation.md), and [env-configuration.md](env-configuration.md). Ask the user only for values the agent cannot infer safely.
+Read [project.config.yml](../project.config.yml), [project-naming.md](project-naming.md), [schema-isolation.md](schema-isolation.md), [env-configuration.md](env-configuration.md), and [warehouse-adapter-routing.md](warehouse-adapter-routing.md). Ask the user only for values the agent cannot infer safely.
 
 ## Normal user inputs
 
@@ -68,6 +68,7 @@ Only resolve GitHub when the user asks to push, provides `github_repo_name` / `D
 - Use GitHub Secrets in CI (`WAREHOUSE_CREDENTIALS` for Agents Schema).
 - Treat config values like `auto`, `my_dbt_project`, `default`, `example`, or `<...>` as placeholders, not real project/profile inputs.
 - If multiple dbt profiles exist, ask for `dbt_profile_name` before running `dbt debug`, `dbt deps`, `dbt parse`, or `dbt build`.
+- After `dbt_profile_name` is selected from the prompt or `.env`, use that profile's adapter as the only discovery route. Do not probe unrelated warehouses or cloud connectors.
 - Do not use `dbt_profile_name` as the project folder. The profile is only the connection key. Derive project name/root from [project-naming.md](project-naming.md).
 - Keep `source_schema` read-only. If the dbt profile target schema equals `source_schema`, stop and follow [schema-isolation.md](schema-isolation.md) before any build.
 - Ask for `source_schema` before running codegen or writing layer config. Derive `source_name` from `source_schema` or `domain` unless the user explicitly overrides it. Derive `layer_schema_prefix` with [schema-isolation.md](schema-isolation.md); do not default physical schemas to short source names such as `dh`. Do not guess the source schema from the dbt profile target schema.

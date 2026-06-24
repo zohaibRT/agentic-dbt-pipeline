@@ -47,6 +47,8 @@ All diagrams created by the skill use Mermaid. Entity relationships use Mermaid 
 
 Keep repeatable non-secret settings in `.env` by copying `.env.example`. If `.env` is missing on a fresh clone, the skill creates a safe local `.env` template and asks you to fill the required values before running dbt. Most projects only need domain, dbt profile, and source schema there. The skill infers project name/root, dbt source name, layer names, schema prefix, commit mode, push behavior, materialization, and Agents Schema handling unless you override them. Add GitHub repository details only when you want the agent to push.
 
+Discovery uses the adapter from the selected dbt profile. If `.env` points to a PostgreSQL profile, the skill uses PostgreSQL discovery only; it does not probe AWS, Redshift, or other warehouses unless you explicitly change profiles.
+
 ## Configuration
 
 After installation, edit:
@@ -76,6 +78,7 @@ Keep passwords, tokens, and private keys in local profiles or GitHub Secrets.
 | Bootstrap | Installs dbt Labs agent skills and dbt packages when needed |
 | Validation | Runs `dbt debug`, `dbt deps`, `dbt parse`, and scoped `dbt build` commands |
 | Environment configuration | Loads non-secret `.env` values before asking for missing inputs |
+| Warehouse adapter routing | Uses only the adapter from the selected dbt profile for discovery |
 | Subagents | Optionally parallelizes read-only profiling, planning, documentation, and review work |
 | Phase planning | Writes a Markdown plan before each phase and waits for approval before building |
 | Agent recommendations | Recommends the best path with evidence, confidence, and risks, then asks the data engineer to approve or change business-impacting choices |
@@ -157,6 +160,7 @@ The skill can add and install these dbt packages:
 | [references/phase-plan-approval.md](references/phase-plan-approval.md) | Markdown plan and approval gate before every phase |
 | [references/recommendation-and-review.md](references/recommendation-and-review.md) | Agent recommendations, what looks right, risks, and approval boundaries |
 | [references/writing-style.md](references/writing-style.md) | Full wording for user-facing output |
+| [references/warehouse-adapter-routing.md](references/warehouse-adapter-routing.md) | Use the selected dbt profile adapter for discovery |
 | [references/mermaid-diagrams.md](references/mermaid-diagrams.md) | Mermaid-only diagrams and visibility verification |
 | [references/phase-completion-report.md](references/phase-completion-report.md) | Per-phase reports and pipeline status file |
 | [references/context-tree.md](references/context-tree.md) | Curated project memory for inputs, decisions, outputs, and report links |

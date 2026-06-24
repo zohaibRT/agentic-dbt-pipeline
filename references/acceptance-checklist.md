@@ -19,6 +19,8 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] `dbt debug` passes
 - [ ] `.gitignore` excludes credentials and generated files
 - [ ] `.env` loaded for non-secret inputs when present; `.env.example` contains no secrets when committed
+- [ ] Active dbt profile adapter was resolved before discovery
+- [ ] Discovery used only the selected dbt profile adapter and did not probe unrelated warehouses or cloud connectors
 - [ ] Fresh clone without `.env` creates a safe local `.env` template and stops for required user inputs before dbt commands
 - [ ] Missing required first-run values were requested directly from the user, not found by repository search, terminal inspection, other workspaces, or previous runs
 - [ ] Any subagent delegation was read-only/draft work; main agent kept dbt commands, edits, commits, and final decisions

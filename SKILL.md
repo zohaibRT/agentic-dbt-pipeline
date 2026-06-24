@@ -63,7 +63,7 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 |---|---|---|
 | **Discovery** | First for new/full pipeline runs | [discovery-requirements.md](references/discovery-requirements.md), [source-profiling.md](references/source-profiling.md) |
 | **Bootstrap** | First build phase after discovery | [bootstrap.md](references/bootstrap.md) |
-| **0 Inputs** | Always first | [skill-inputs.md](references/skill-inputs.md), [project-naming.md](references/project-naming.md), [env-configuration.md](references/env-configuration.md), [security-and-credentials.md](references/security-and-credentials.md), [schema-isolation.md](references/schema-isolation.md), [code-agent-setup.md](references/code-agent-setup.md) |
+| **0 Inputs** | Always first | [skill-inputs.md](references/skill-inputs.md), [project-naming.md](references/project-naming.md), [env-configuration.md](references/env-configuration.md), [warehouse-adapter-routing.md](references/warehouse-adapter-routing.md), [security-and-credentials.md](references/security-and-credentials.md), [schema-isolation.md](references/schema-isolation.md), [code-agent-setup.md](references/code-agent-setup.md) |
 | **0b Subagents** | Optional speed-up | [subagent-workflow.md](references/subagent-workflow.md) |
 | **0c Best practices** | Design guardrails | [data-engineering-best-practices.md](references/data-engineering-best-practices.md) |
 | **0c Writing style** | Full wording in user-facing output | [writing-style.md](references/writing-style.md) |
@@ -94,11 +94,13 @@ Context prompt template: [agent-context-prompt.md](references/agent-context-prom
 
 ## Step 0 - Load configuration
 
-Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), [project-naming.md](references/project-naming.md), [schema-isolation.md](references/schema-isolation.md), [env-configuration.md](references/env-configuration.md), [discovery-requirements.md](references/discovery-requirements.md), [phased-discovery.md](references/phased-discovery.md), [recommendation-and-review.md](references/recommendation-and-review.md), [writing-style.md](references/writing-style.md), [mermaid-diagrams.md](references/mermaid-diagrams.md), [phase-plan-approval.md](references/phase-plan-approval.md), [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md), [phase-completion-report.md](references/phase-completion-report.md), and [context-tree.md](references/context-tree.md).
+Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), [project-naming.md](references/project-naming.md), [schema-isolation.md](references/schema-isolation.md), [env-configuration.md](references/env-configuration.md), [warehouse-adapter-routing.md](references/warehouse-adapter-routing.md), [discovery-requirements.md](references/discovery-requirements.md), [phased-discovery.md](references/phased-discovery.md), [recommendation-and-review.md](references/recommendation-and-review.md), [writing-style.md](references/writing-style.md), [mermaid-diagrams.md](references/mermaid-diagrams.md), [phase-plan-approval.md](references/phase-plan-approval.md), [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md), [phase-completion-report.md](references/phase-completion-report.md), and [context-tree.md](references/context-tree.md).
 
 Resolve paths relative to workspace root. dbt project root = `{project.root}`.
 
 **User prompt overrides `.env` and configuration** for schema, domain, layers, materialization, commit mode. Use `.env` for non-secret reusable inputs before asking the user. If `.env` is missing in a fresh clone, follow [env-configuration.md](references/env-configuration.md): create a safe local `.env` from `.env.example`, stop before discovery or dbt commands, and ask the user for `DBT_DOMAIN`, `DBT_PROFILE_NAME`, and `DBT_SOURCE_SCHEMA`. Do not search the repository, inspect terminal output, infer, suggest, or summarize values from other workspaces or previous runs.
+
+Read [warehouse-adapter-routing.md](references/warehouse-adapter-routing.md) immediately after loading `.env` and before any discovery. Resolve the active dbt profile and adapter from `~/.dbt/profiles.yml`; use only that adapter's discovery path. Do not call AWS, Redshift, or any other warehouse-specific path unless the selected profile adapter requires it or the user explicitly changes profiles.
 
 For normal runs, collect only the values the agent cannot infer safely: `domain`, `dbt_profile_name`, and `source_schema`. Derive project name/root, dbt source name, schema prefix, layer names, commit behavior, and GitHub mode unless the user explicitly overrides them.
 
@@ -367,6 +369,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 | [mermaid-diagrams.md](references/mermaid-diagrams.md) | Mermaid-only diagrams and visibility verification |
 | [project-naming.md](references/project-naming.md) | Derive project and folder names without using dbt profile |
 | [env-configuration.md](references/env-configuration.md) | Optional `.env` settings and precedence |
+| [warehouse-adapter-routing.md](references/warehouse-adapter-routing.md) | Use the selected dbt profile adapter for discovery; do not probe unrelated warehouses |
 | [schema-isolation.md](references/schema-isolation.md) | Keep source, medallion, evaluator, seeds, snapshots, and agent metadata schemas separate |
 | [subagent-workflow.md](references/subagent-workflow.md) | Optional parallel analysis and review |
 | [data-engineering-best-practices.md](references/data-engineering-best-practices.md) | Grain, tests, history, contracts, privacy, operations |
