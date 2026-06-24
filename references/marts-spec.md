@@ -5,6 +5,7 @@
 Create or update **only** the marts star-schema layer from staging + intermediate models.
 
 Read [human-review.md](human-review.md) before marking marts complete if metrics, grain, mappings, or sensitive fields require business approval.
+Read [privacy-and-unknown-fields.md](privacy-and-unknown-fields.md) before exposing direct identifiers, sensitive fields, protected health information, personally identifiable information, or unclear coded fields in marts.
 Before creating or changing marts files, follow [phase-plan-approval.md](phase-plan-approval.md).
 
 ## Folder and naming
@@ -66,7 +67,9 @@ Create reporting marts only when the required metrics and grain are clear. Do no
 - Do not assume unavailable columns (`currency_code`, `source_system`, etc.)
 - Do not allocate refunds to order items (refunds are order-grain only)
 - Expose business-friendly mapped fields from intermediate models; keep raw codes only when useful for audit
-- Do not expose private, sensitive, PII, or PHI fields in marts unless the user explicitly approves
+- Do not expose private, sensitive, protected health information, personally identifiable information, or direct identifier fields in marts unless the user explicitly approves
+- Default to excluding, masking, or hashing direct identifiers in marts; clear-text exposure is not the default even for local development
+- Exclude unclear coded fields such as `field_1`, `field_2`, and `field_3` from marts by default unless definitions are provided or the user approves raw audit exposure
 - Keep one clear grain per fact or dimension; do not mix event, entity, and summary grains in the same model
 - Add surrogate keys only when natural keys are missing, composite, unstable, or too wide for downstream use
 

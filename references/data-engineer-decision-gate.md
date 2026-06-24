@@ -6,7 +6,7 @@ Use this before approving any phase plan that designs sources, models, tests, me
 
 The agent must make explicit data-engineering decisions before building. Do not leave design choices as hidden agent assumptions.
 
-If the source data does not prove a decision and the choice affects business meaning, privacy, correctness, cost, or downstream usability, ask the user before building.
+If the source data does not prove a decision and the choice affects business meaning, privacy, correctness, cost, or downstream usability, recommend the safest professional default first, then ask the user to approve or override it before building.
 
 ## Required decision checks
 
@@ -22,7 +22,7 @@ Every build-phase plan must include these checks when relevant:
 | Layer responsibility | What belongs in staging vs intermediate vs marts |
 | Mapping | Whether codes/statuses need mapping seeds, reference joins, or user-provided definitions |
 | Metrics | Metric definition, grain, filters, numerator/denominator, and semantic-layer target |
-| Privacy | Direct identifiers, PII/PHI, sensitive fields, and whether they may reach marts |
+| Privacy | Direct identifiers, personally identifiable information, protected health information, sensitive fields, and whether they may reach marts |
 | History | Whether snapshots or slowly changing dimensions are needed |
 | Incremental strategy | Unique key, update timestamp/filter, late-arriving-data assumption, and full-refresh risk |
 | Tests | Primary key, relationship, accepted value, not-null, and business-rule tests |
@@ -59,6 +59,19 @@ The agent may infer simple technical defaults when they do not change business m
 - Schema prefix from domain/source schema when there is no conflict.
 
 Document inferred choices in the phase plan and phase report.
+
+## Required recommendations for sensitive or unclear fields
+
+Read [privacy-and-unknown-fields.md](privacy-and-unknown-fields.md) when direct identifiers, sensitive fields, protected health information, personally identifiable information, or unclear coded fields appear.
+
+Default recommendation:
+
+- Keep sensitive and unclear fields source-shaped in bronze/staging when needed for traceability.
+- Do not expose clear-text direct identifiers in gold/marts unless the user approves.
+- Do not rename or map unclear coded fields unless a reliable definition exists.
+- Exclude unclear coded fields from gold/marts by default, or keep them only as explicitly approved raw audit fields.
+
+The agent should ask the user to approve this recommendation or provide definitions. Do not simply ask "what should I do?" without a recommended path.
 
 ## Phase plan section
 

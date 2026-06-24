@@ -2,6 +2,8 @@
 
 Use this when `project_rules` include manual mappings, code translations, department/group mappings, category mappings, or user-provided business labels.
 
+Read [privacy-and-unknown-fields.md](privacy-and-unknown-fields.md) before creating mappings for unclear coded fields.
+
 Read [schema-isolation.md](schema-isolation.md). Seeds must not build into the source schema.
 
 ## When to create seeds
@@ -15,6 +17,8 @@ Create dbt seeds when mappings are stable business reference data, for example:
 - Location code -> region
 
 Do not create seeds for mappings that already exist as reliable warehouse reference tables. Use those source tables instead.
+
+Do not create mapping seeds for unclear fields such as `field_1`, `field_2`, and `field_3` from guessed meanings. If definitions are missing, recommend passing them through bronze/staging as raw unmapped codes, deferring mappings, and excluding them from gold/marts by default.
 
 ## Seed location and naming
 
@@ -59,6 +63,8 @@ When a mapping seed is used, add tests or validation queries for:
 - No inactive mapping is used in final marts unless explicitly allowed
 
 If unmapped values exist, summarize them and ask whether to add mappings, keep an "Unknown" bucket, or exclude them.
+
+If a field has no confirmed business definition, do not treat its observed values as "unmapped values" for a seed yet. First ask the user to approve the safe default or provide definitions.
 
 ## Commit
 

@@ -46,6 +46,7 @@ For each phase, include:
 - Target folders, files, and warehouse schemas
 - Planned models, grains, materializations, and naming
 - Planned joins, mappings, metrics, and privacy handling when relevant
+- Sensitive fields and unclear coded fields, with the agent's recommended safe default
 - Agent recommendation: recommended path, evidence, what looks right, what is not ready yet, confidence, and what requires data engineer approval
 - Data-engineering decisions, evidence, and which choices need user approval
 - Tests and documentation to add
@@ -125,6 +126,11 @@ If the user approves with plain language such as "yes", "go ahead", or "looks go
 
 ### Not Deciding Alone
 - <privacy, metric, mapping, grain, schema, cost, or production behavior I will not choose silently>
+
+### Sensitive And Unclear Fields
+| Field | Source table | Concern | Recommended default | Needs User Approval? |
+|---|---|---|---|---|
+| <field_name> | <table_name> | <sensitive/unclear/business meaning unknown> | <exclude/mask/hash/pass through raw/defer mapping> | <yes/no> |
 
 ### Data Engineer Decision Check
 | Decision | Choice | Evidence | Needs User Approval? |

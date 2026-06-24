@@ -18,6 +18,8 @@ Discovery is also phased. Initial discovery should be lightweight and should not
 
 Discovery must include Mermaid diagrams when the source data has enough evidence to support them. Create an entity relationship diagram during discovery when any credible table relationships exist. Create other necessary Mermaid diagrams when they make the project easier to review, such as source inventory, candidate business process flow, or high-level medallion direction. Do not draw relationships or flows that are only guesses; list uncertain items as notes outside the diagram.
 
+When discovery finds sensitive fields or unclear coded fields, read [privacy-and-unknown-fields.md](privacy-and-unknown-fields.md). Recommend a safe default in the discovery report instead of only asking what to do. For example, recommend excluding or masking direct identifiers from gold/marts by default, and recommend passing unclear fields such as `field_1`, `field_2`, and `field_3` through bronze/staging as raw unmapped codes while excluding them from gold/marts until definitions are provided.
+
 ## Allowed read-only actions
 
 - Load `.env` and non-secret config values
@@ -40,6 +42,7 @@ After discovery, explain in Markdown:
 - Candidate facts, dimensions, and metrics implied by the source
 - Empty tables, suspicious columns, missing keys, date ranges, and data quality notes
 - Privacy/sensitive-field observations
+- Unknown coded fields, recommended default handling, and needed business definitions
 - Recommended medallion direction for sources, bronze/staging, silver/intermediate, and gold/marts, without finalizing every model design
 - Suggested business questions or analytics use cases the source appears able to support
 - Agent recommendation with evidence
@@ -160,7 +163,7 @@ Needs your approval:
 <business-impacting choices before the next build phase>
 
 Before I run setup-only Bootstrap, do you want to add any requirements?
-Examples: field mappings, columns to exclude, metric definitions, privacy rules, naming rules, facts/dimensions to prioritize, or tables to ignore.
+Examples: field mappings, coded-field definitions, columns to exclude, metric definitions, privacy rules, naming rules, facts/dimensions to prioritize, or tables to ignore.
 
 Reply with your changes/requirements, or reply "continue" if you approve the recommendation and want me to run setup-only Bootstrap automatically.
 ```

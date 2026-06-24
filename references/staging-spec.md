@@ -5,6 +5,7 @@
 Create or update **only** the staging layer from the current source YAML.
 
 Read [source-profiling.md](source-profiling.md) before creating or changing staging models.
+Read [privacy-and-unknown-fields.md](privacy-and-unknown-fields.md) when source columns look sensitive or unclear.
 Before creating or changing staging files, follow [phase-plan-approval.md](phase-plan-approval.md).
 
 ## Folder and naming
@@ -26,6 +27,10 @@ Before creating or changing staging files, follow [phase-plan-approval.md](phase
 ## Safe standardization
 
 Preserve raw mapping/code columns so later layers can apply business mappings safely.
+
+For unclear coded fields such as `field_1`, `field_2`, and `field_3`, keep them as raw columns in staging, document them as raw unmapped codes, and do not rename them to business-friendly fields unless the source metadata, a reliable reference table, or the user provides definitions.
+
+For direct identifiers or sensitive fields, keep them only when needed for source traceability or validation, document the sensitivity, and do not include full sensitive sample values in model descriptions or reports.
 
 - Lowercase: `email`, status fields, `customer_segment`
 - Uppercase: `currency_code` (only if column exists in source)

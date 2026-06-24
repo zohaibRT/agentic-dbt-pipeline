@@ -105,6 +105,9 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Source freshness added only when a reliable loaded-at timestamp exists
 - [ ] Exposures added or recommended for known dashboards and downstream consumers
 - [ ] Sensitive fields reviewed before reaching marts
+- [ ] Direct identifiers and sensitive fields were excluded, masked, hashed, or explicitly approved before reaching gold/marts
+- [ ] Unclear coded fields were passed through bronze/staging as raw unmapped codes, mapped from approved definitions, or explicitly approved for raw audit exposure
+- [ ] The agent recommended safe defaults for sensitive and unclear fields instead of only asking the user what to do
 
 ## Git
 

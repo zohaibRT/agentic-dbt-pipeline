@@ -165,6 +165,7 @@ The skill can add and install these dbt packages:
 | [references/phase-completion-report.md](references/phase-completion-report.md) | Per-phase reports and pipeline status file |
 | [references/context-tree.md](references/context-tree.md) | Curated project memory for inputs, decisions, outputs, and report links |
 | [references/data-engineer-decision-gate.md](references/data-engineer-decision-gate.md) | Required senior data-engineering decision checks before build |
+| [references/privacy-and-unknown-fields.md](references/privacy-and-unknown-fields.md) | Safe defaults for sensitive fields and unclear coded fields |
 | [references/git-workflow.md](references/git-workflow.md) | Commit and push workflow |
 | [references/schema-isolation.md](references/schema-isolation.md) | Source, layer, evaluator, seeds, snapshots, and metadata schema separation |
 | [references/agents-schema-setup.md](references/agents-schema-setup.md) | Agents Schema workflow setup |

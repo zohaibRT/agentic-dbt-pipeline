@@ -30,6 +30,8 @@ Before each non-bootstrap build phase, write/update `AGENT_PLAN.md`, explain in 
 
 In each discovery summary and phase plan, recommend the best next path with evidence, show what looks right, what is not ready yet, confidence about proven vs uncertain items, and what needs my approval. Do not ask me to design everything from scratch.
 
+When sensitive fields or unclear coded fields appear, propose the safe default instead of only asking me what to do. For direct identifiers such as patient names or medical record numbers, recommend excluding, masking, or hashing them from gold/marts by default. For unclear fields such as `field_1`, `field_2`, and `field_3`, recommend passing them through bronze/staging as raw unmapped codes, deferring mapping seeds until definitions are provided, and excluding them from gold/marts unless I approve raw audit exposure.
+
 In each phase plan, include a Data Engineer Decision Check covering grain, keys, joins, mappings, metrics, privacy, materialization, tests, and validation evidence. Ask me before guessing any decision that affects business meaning, privacy, correctness, cost, or downstream usability.
 
 After each completed phase, write/update `reports/agent/<phase>_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` with what was done, what passed, warnings/failures/skips, assumptions, user decisions, phase outputs, report links, and open decisions.
@@ -52,7 +54,7 @@ Project rules:
 - Exclusions:
   - <tables/columns/records to ignore>
 - Privacy:
-  - <PII/PHI handling, masking, or exclusion rules>
+  - <personally identifiable information / protected health information handling, masking, or exclusion rules>
 - Naming:
   - <custom naming conventions>
 - Special instructions:
