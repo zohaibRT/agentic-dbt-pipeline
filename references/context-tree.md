@@ -41,6 +41,7 @@ Capture:
 - User-approved requirements and rules
 - Discovery conclusions
 - Agent recommendations and whether they were approved, changed, or deferred
+- Confidence notes: what is proven, what is uncertain, and what needs business confirmation
 - Important data-engineering decisions
 - Assumptions and their approval status
 - Open decisions
@@ -93,6 +94,11 @@ Use this structure:
 | Phase | Recommendation | Evidence | Outcome |
 |---|---|---|---|
 | <phase> | <recommended path> | <evidence> | approved/changed/deferred/open |
+
+## Confidence
+| Phase | Confident About | Less Confident About |
+|---|---|---|
+| <phase> | <validated facts> | <uncertain business or data assumptions> |
 
 ## Phase Tree
 - Discovery

@@ -124,7 +124,7 @@ Read [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md)
 
 Read [phased-discovery.md](references/phased-discovery.md) before each phase. Discover only what is needed for the next layer or workflow step; do not fully design silver/gold/semantic outputs during initial discovery or bronze work.
 
-Read [recommendation-and-review.md](references/recommendation-and-review.md) before writing discovery summaries, phase plans, phase reports, and final handoffs. The agent must recommend the best path with evidence, show what looks right and what is not ready, and ask the data engineer only for business-impacting approvals. Do not make the user design everything from scratch.
+Read [recommendation-and-review.md](references/recommendation-and-review.md) before writing discovery summaries, phase plans, phase reports, and final handoffs. The agent must recommend the best path with evidence, show what looks right and what is not ready, state confidence about proven vs uncertain items, and ask the data engineer only for business-impacting approvals. Do not make the user design everything from scratch.
 
 ## Step 0.5 - Resolve layer names
 
@@ -298,7 +298,7 @@ Read [stuck-recovery.md](references/stuck-recovery.md) whenever a command hangs,
 2. Files created / updated
 3. Grain / business logic
 4. Data-engineering decisions and evidence
-5. Agent recommendation, what looks right, and what is not ready
+5. Agent recommendation, what looks right, what is not ready, and confidence
 6. Tests / docs added
 7. Assumptions used
 8. dbt debug / parse / build results

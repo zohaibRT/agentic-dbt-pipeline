@@ -64,7 +64,7 @@ Verify before marking the dbt pipeline workflow complete.
 
 - [ ] Each phase had Markdown plan approval before implementation
 - [ ] Each phase plan was based on focused phase discovery, not a full upfront design
-- [ ] Each phase plan included an agent recommendation, evidence, what looks right, what is not ready, and approval needs
+- [ ] Each phase plan included an agent recommendation, evidence, what looks right, what is not ready, confidence, and approval needs
 - [ ] The agent recommended a path instead of asking the user to design every model from scratch
 - [ ] Each phase report documents what passed, warned, failed, or needs review
 - [ ] Staging: all source tables, tests pass
@@ -85,6 +85,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Each model has one documented grain
 - [ ] Each phase plan includes a data-engineering decision check with evidence
 - [ ] Recommendations are recorded in `CONTEXT_TREE.md` with approved/changed/deferred status
+- [ ] Confidence notes are recorded in `CONTEXT_TREE.md` with proven facts separated from uncertain business assumptions
 - [ ] Any business-impacting decision that could not be proven from source data was approved by the user
 - [ ] Incremental models have a unique key and clear update/filter rule
 - [ ] Snapshots considered for slowly changing dimensions or historical attributes

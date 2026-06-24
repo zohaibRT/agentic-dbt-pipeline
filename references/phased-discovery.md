@@ -31,7 +31,7 @@ Each phase should discover only what is needed to make the next plan accurate, r
 Before every build phase:
 
 1. Run only the read-only checks needed for that phase.
-2. State the agent recommendation, what looks right, what is not ready yet, and what needs data engineer approval.
+2. State the agent recommendation, what looks right, what is not ready yet, confidence, and what needs data engineer approval.
 3. Update `AGENT_PLAN.md` with the phase-specific discovery findings and recommendation.
 4. Add or update the related phase report under `reports/agent/`.
 5. Update `reports/agent/CONTEXT_TREE.md`.
@@ -63,6 +63,10 @@ Here are the 3-5 key findings:
 
 My recommendation:
 - ...
+
+Confidence:
+- Confident about: ...
+- Less confident about: ...
 
 What needs your approval:
 - ...

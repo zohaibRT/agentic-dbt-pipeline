@@ -38,7 +38,7 @@ Run the full pipeline from source discovery through final delivery.
 
 First, perform read-only discovery only: inspect source schemas/tables, summarize what you conclude from the data, recommend the best next path with evidence, and ask whether I want to add or change requirements.
 
-After I answer, before each build phase, write/update `AGENT_PLAN.md`, explain what will be built, what looks right, what is not ready yet, and what needs my approval, then wait for approval. After each completed phase, write/update `reports/agent/<phase>_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md`.
+After I answer, before each build phase, write/update `AGENT_PLAN.md`, explain what will be built, what looks right, what is not ready yet, confidence about proven vs uncertain items, and what needs my approval, then wait for approval. After each completed phase, write/update `reports/agent/<phase>_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md`.
 ```
 
 For a full copy-paste prompt, see [prompt.md](prompt.md).
@@ -76,7 +76,7 @@ Keep passwords, tokens, and private keys in local profiles or GitHub Secrets.
 | Environment config | Loads non-secret `.env` values before asking for missing inputs |
 | Subagents | Optionally parallelizes read-only profiling, planning, docs, and review work |
 | Phase planning | Writes a Markdown plan before each phase and waits for approval before building |
-| Agent recommendations | Recommends the best path with evidence, then asks the data engineer to approve or change business-impacting choices |
+| Agent recommendations | Recommends the best path with evidence, confidence, and risks, then asks the data engineer to approve or change business-impacting choices |
 | Data engineer decision gate | Documents grain, keys, joins, mappings, metrics, privacy, tests, materialization, and validation evidence before build |
 | Phase reports | Writes `reports/agent/<phase>_report.md`, `PIPELINE_STATUS.md`, and `CONTEXT_TREE.md` after each phase |
 | Sources | Generates source YAML and adds source descriptions |

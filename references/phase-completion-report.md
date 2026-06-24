@@ -83,6 +83,7 @@ Every phase report must include:
 - Agent recommendation followed, changed, or deferred
 - What looks correct
 - What looks wrong or risky
+- Confidence: what is proven vs what still needs confirmation
 - Data-engineering decisions implemented, inferred, or still open
 - Data quality notes
 - Privacy/sensitive-field notes
@@ -139,6 +140,10 @@ Overall: <PASS | WARN | FAIL | SKIPPED | BLOCKED>
 
 ## What Is Not Ready Yet
 - <warning/risk/question>
+
+## Confidence
+- Confident about: <validated facts, passing tests, proven relationships, or safe technical defaults>
+- Less confident about: <business meaning, privacy choices, ambiguous fields, metric dates, rebuild/refactor choices, or anything not proven yet>
 
 ## Needs Data Engineer Approval
 - <open approval item, or "None">

@@ -43,7 +43,7 @@ For each phase, include:
 - Target folders, files, and warehouse schemas
 - Planned models, grains, materializations, and naming
 - Planned joins, mappings, metrics, and privacy handling when relevant
-- Agent recommendation: recommended path, evidence, what looks right, what is not ready yet, and what requires data engineer approval
+- Agent recommendation: recommended path, evidence, what looks right, what is not ready yet, confidence, and what requires data engineer approval
 - Data-engineering decisions, evidence, and which choices need user approval
 - Tests and documentation to add
 - dbt packages/macros involved
@@ -111,6 +111,10 @@ If the user approves with plain language such as "yes", "go ahead", or "looks go
 
 ### What Is Not Ready Yet
 - <risk, missing data, ambiguous field, or weak assumption>
+
+### Confidence
+- Confident about: <validated facts, stable grains/keys/relationships, or safe technical defaults>
+- Less confident about: <business meaning, privacy choices, ambiguous fields, metric dates, rebuild/refactor choices, or anything not proven yet>
 
 ### Needs Data Engineer Approval
 - <business-impacting choice that must be approved before build>

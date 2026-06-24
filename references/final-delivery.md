@@ -29,6 +29,7 @@ Update or create project handoff notes with:
 - Source discovery conclusions and requirements captured before build
 - Final facts, dimensions, marts, and metrics
 - Known empty tables or data quality limitations
+- Confidence notes: what was validated vs what still needs confirmation
 - Incremental, snapshot, exposure, and privacy decisions
 - How to run `dbt build`, `dbt docs generate`, and `dbt docs serve`
 - What still needs business review
@@ -112,6 +113,7 @@ Use a compact table when helpful:
 - Source row counts and empty tables
 - Known data quality limitations
 - Important assumptions used
+- Confidence: what is proven and what is uncertain
 - PII/PHI or sensitive-field decisions
 
 ### Git and automation

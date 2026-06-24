@@ -90,6 +90,10 @@ What looks right:
 What is not ready yet:
 <risks, missing data, ambiguous fields, or weak assumptions>
 
+Confidence:
+- Confident about: <validated source/project facts>
+- Less confident about: <business meaning, privacy choices, metric dates, ambiguous fields, rebuild/refactor decisions, or anything not proven yet>
+
 Needs your approval:
 <business-impacting choices before the next build phase>
 
