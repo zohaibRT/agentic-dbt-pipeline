@@ -65,7 +65,7 @@ reports/agent/agents_schema_report.md
 - Open modeling decisions for the data engineer
 - Inputs used: domain, dbt profile name without credentials, source schema, source tables inspected
 
-Do not lead discovery reports with setup details such as `.env` creation, profile search, venv, package installation, git, CI, or bootstrap tasks. Mention configuration only as brief input context at the end.
+Do not lead discovery reports with setup details such as `.env` creation, profile search, virtual environment, package installation, git, continuous integration, or bootstrap tasks. Mention configuration only as brief input context at the end.
 
 Discovery reports are mandatory even before dbt project initialization. Write the file first, then summarize it in chat with the file path.
 
@@ -77,7 +77,7 @@ Every phase report must include:
 - Approval status and approved plan reference
 - Files created or changed
 - Warehouse schemas/tables/views created or changed
-- Models, seeds, semantic files, workflows, or docs created
+- Models, seeds, semantic files, workflows, or documentation created
 - Commands run
 - Validation results: pass, warn, fail, skipped
 - Agent recommendation followed, changed, or deferred

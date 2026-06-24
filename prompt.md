@@ -16,11 +16,13 @@ Use the dbt Pipeline skill (`agentic-dbt-pipeline`).
 Build the dbt project using the settings from `.env`.
 Run the full pipeline from source discovery through final delivery.
 
-If `.env` is missing, create it safely from `.env.example`, stop before discovery or dbt commands, and ask me for DBT_DOMAIN, DBT_PROFILE_NAME, and DBT_SOURCE_SCHEMA. Do not search the repo, inspect terminal output, infer, suggest, or summarize values from other workspaces or previous runs.
+If `.env` is missing, create it safely from `.env.example`, stop before discovery or dbt commands, and ask me for DBT_DOMAIN, DBT_PROFILE_NAME, and DBT_SOURCE_SCHEMA. Do not search the repository, inspect terminal output, infer, suggest, or summarize values from other workspaces or previous runs.
 
-First, perform lightweight read-only project discovery only: inspect source schemas/tables, write `reports/agent/discovery_report.md`, update `reports/agent/PIPELINE_STATUS.md` and `reports/agent/CONTEXT_TREE.md`, summarize what you conclude about the data project, and ask whether I want to add requirements. Keep discovery output focused on source data, entities, relationships, data quality, candidate models/metrics, and open modeling decisions; keep setup details out of the discovery summary except for a short inputs-used note. Do not fully design every layer upfront; run focused discovery again before sources, bronze, silver, gold, semantic, evaluator, and docs phases.
+First, perform lightweight read-only project discovery only: inspect source schemas/tables, write `reports/agent/discovery_report.md`, update `reports/agent/PIPELINE_STATUS.md` and `reports/agent/CONTEXT_TREE.md`, summarize what you conclude about the data project, and ask whether I want to add requirements. Keep discovery output focused on source data, entities, relationships, data quality, candidate models/metrics, and open modeling decisions; keep setup details out of the discovery summary except for a short inputs-used note. Do not fully design every layer upfront; run focused discovery again before sources, bronze, silver, gold, semantic, evaluator, and documentation phases.
 
 Use Mermaid for every diagram. For entity relationships, use Mermaid `erDiagram`. Verify every Mermaid diagram you add or change is visible/parseable, and record the result in the phase report.
+
+Use full wording in all user-facing plans, reports, summaries, diagram notes, and final handoffs. Avoid shorthand such as primary key abbreviations, foreign key abbreviations, entity relationship diagram abbreviations, documentation abbreviations, repository abbreviations, and continuous integration abbreviations unless quoting a command, filename, package name, environment variable, or official tool name.
 
 After I answer, before each build phase, write/update `AGENT_PLAN.md`, explain in Markdown what you will build, and wait for my approval before implementing that phase.
 
@@ -66,6 +68,8 @@ Use the dbt Pipeline skill (`agentic-dbt-pipeline`).
 
 Use settings from `.env`.
 workflow_phase: <init | sources | staging | intermediate | marts | semantic_layer | project_evaluator | docs | ci | agents_schema>
+
+Use `docs` and `ci` only as exact workflow phase values. In explanations, write `documentation` and `continuous integration`.
 
 Before building this phase, explain the plan in Markdown with your recommendation, evidence, confidence, risks, and approval needs, then wait for my approval. After it completes, write/update the phase report, pipeline status, and context tree files.
 ```

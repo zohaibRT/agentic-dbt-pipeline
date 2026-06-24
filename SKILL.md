@@ -3,7 +3,7 @@ name: agentic-dbt-pipeline
 description: >-
   Automate end-to-end dbt with an AI agent: bootstrap, medallion layers
   (bronze/silver/gold by default), packages (codegen, utils, evaluator, audit_helper),
-  semantic layer, docs, per-layer git commits, optional GitHub push via gh CLI, and
+  semantic layer, documentation, per-layer git commits, optional GitHub push via GitHub command line interface, and
   user-facing final run summaries with senior data-engineering decision gates.
   Use when setting up or extending a dbt analytics project with agentic automation.
 ---
@@ -12,7 +12,7 @@ description: >-
 
 Full lifecycle orchestrator for the dbt project.
 **On every new/full-pipeline prompt:** agent runs read-only [discovery-requirements.md](references/discovery-requirements.md) first, explains what it concluded from the source data, and asks for requirements before any build plan.
-**Default full pipeline:** discovery -> bootstrap -> sources -> bronze -> silver -> gold -> semantic layer -> project evaluator -> docs -> CI, plus Agents Schema when enabled and supported.
+**Default full pipeline:** discovery -> bootstrap -> sources -> bronze -> silver -> gold -> semantic layer -> project evaluator -> documentation -> continuous integration, plus Agents Schema when enabled and supported.
 
 Use `workflow_phase:` to run a single phase. Use `auto_bootstrap: false` only for layer-only edits.
 
@@ -35,9 +35,9 @@ Read and execute [references/bootstrap.md](references/bootstrap.md) **before** a
 2. **`dbt debug`** - verify connection
 3. **`dbt deps` + codegen** - when sources/full pipeline
 4. **Resolve git mode** - local commits by default; GitHub only when push is requested - [github-repo-resolution.md](references/github-repo-resolution.md)
-5. **Create CI + Agents Schema workflows** - when requested, or when `auto_agents_schema: true` and the destination is supported
+5. **Create continuous integration and Agents Schema workflows** - when requested, or when `auto_agents_schema: true` and the destination is supported
 
-User one-time manual steps: **profiles.yml password**, plus **GitHub repo/secret** only when remote push, CI, or Agents Schema sync is requested.
+User one-time manual steps: **profiles.yml password**, plus **GitHub repository or secret** only when remote push, continuous integration, or Agents Schema synchronization is requested.
 
 If `dbt_profile_name` is provided in the prompt, use it as `{project.profile}` for dbt commands and generated `dbt_project.yml`. If it is missing and multiple profiles exist in `~/.dbt/profiles.yml`, ask the user which profile to use before running dbt commands. Never guess from the first profile.
 
@@ -66,6 +66,7 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 | **0 Inputs** | Always first | [skill-inputs.md](references/skill-inputs.md), [project-naming.md](references/project-naming.md), [env-configuration.md](references/env-configuration.md), [security-and-credentials.md](references/security-and-credentials.md), [schema-isolation.md](references/schema-isolation.md), [code-agent-setup.md](references/code-agent-setup.md) |
 | **0b Subagents** | Optional speed-up | [subagent-workflow.md](references/subagent-workflow.md) |
 | **0c Best practices** | Design guardrails | [data-engineering-best-practices.md](references/data-engineering-best-practices.md) |
+| **0c Writing style** | Full wording in user-facing output | [writing-style.md](references/writing-style.md) |
 | **0d Engineer gate** | Explicit modeling decisions | [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md) |
 | **0e Phased discovery** | Discover just enough per phase | [phased-discovery.md](references/phased-discovery.md) |
 | **0f Recommendations** | Agent recommends; data engineer approves | [recommendation-and-review.md](references/recommendation-and-review.md) |
@@ -82,7 +83,7 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 | **7c Evaluator** | Best-practice audit | [project-evaluator.md](references/project-evaluator.md), [dbt-packages-and-skills.md](references/dbt-packages-and-skills.md) |
 | **8 Docs** | After layers | [documentation.md](references/documentation.md) |
 | **9 Git** | After each stage | [github-repo-resolution.md](references/github-repo-resolution.md), [git-workflow.md](references/git-workflow.md) |
-| **10 Agents Schema / CI** | Metadata + automation | [agents-schema-setup.md](references/agents-schema-setup.md), [cicd-setup.md](references/cicd-setup.md) |
+| **10 Agents Schema / continuous integration** | Metadata + automation | [agents-schema-setup.md](references/agents-schema-setup.md), [cicd-setup.md](references/cicd-setup.md) |
 | **Plan approval** | Before each build phase | [phase-plan-approval.md](references/phase-plan-approval.md) |
 | **Review** | Human approval points | [human-review.md](references/human-review.md) |
 | **Phase report** | After each completed phase | [phase-completion-report.md](references/phase-completion-report.md) |
@@ -91,13 +92,13 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 
 Context prompt template: [agent-context-prompt.md](references/agent-context-prompt.md)
 
-## Step 0 - Load config
+## Step 0 - Load configuration
 
-Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), [project-naming.md](references/project-naming.md), [schema-isolation.md](references/schema-isolation.md), [env-configuration.md](references/env-configuration.md), [discovery-requirements.md](references/discovery-requirements.md), [phased-discovery.md](references/phased-discovery.md), [recommendation-and-review.md](references/recommendation-and-review.md), [mermaid-diagrams.md](references/mermaid-diagrams.md), [phase-plan-approval.md](references/phase-plan-approval.md), [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md), [phase-completion-report.md](references/phase-completion-report.md), and [context-tree.md](references/context-tree.md).
+Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), [project-naming.md](references/project-naming.md), [schema-isolation.md](references/schema-isolation.md), [env-configuration.md](references/env-configuration.md), [discovery-requirements.md](references/discovery-requirements.md), [phased-discovery.md](references/phased-discovery.md), [recommendation-and-review.md](references/recommendation-and-review.md), [writing-style.md](references/writing-style.md), [mermaid-diagrams.md](references/mermaid-diagrams.md), [phase-plan-approval.md](references/phase-plan-approval.md), [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md), [phase-completion-report.md](references/phase-completion-report.md), and [context-tree.md](references/context-tree.md).
 
 Resolve paths relative to workspace root. dbt project root = `{project.root}`.
 
-**User prompt overrides `.env` and config** for schema, domain, layers, materialization, commit mode. Use `.env` for non-secret reusable inputs before asking the user. If `.env` is missing in a fresh clone, follow [env-configuration.md](references/env-configuration.md): create a safe local `.env` from `.env.example`, stop before discovery or dbt commands, and ask the user for `DBT_DOMAIN`, `DBT_PROFILE_NAME`, and `DBT_SOURCE_SCHEMA`. Do not search the repo, inspect terminal output, infer, suggest, or summarize values from other workspaces or previous runs.
+**User prompt overrides `.env` and configuration** for schema, domain, layers, materialization, commit mode. Use `.env` for non-secret reusable inputs before asking the user. If `.env` is missing in a fresh clone, follow [env-configuration.md](references/env-configuration.md): create a safe local `.env` from `.env.example`, stop before discovery or dbt commands, and ask the user for `DBT_DOMAIN`, `DBT_PROFILE_NAME`, and `DBT_SOURCE_SCHEMA`. Do not search the repository, inspect terminal output, infer, suggest, or summarize values from other workspaces or previous runs.
 
 For normal runs, collect only the values the agent cannot infer safely: `domain`, `dbt_profile_name`, and `source_schema`. Derive project name/root, dbt source name, schema prefix, layer names, commit behavior, and GitHub mode unless the user explicitly overrides them.
 
@@ -109,7 +110,7 @@ Before each phase that changes files or builds warehouse objects, write/update `
 
 ## Step 0b - Optional subagents
 
-Read [subagent-workflow.md](references/subagent-workflow.md) when source profiling, mapping review, model planning, docs, or evaluator review can safely run in parallel. The main agent decides when to delegate and keeps dbt commands, shared file edits, commits, pushes, and final decisions.
+Read [subagent-workflow.md](references/subagent-workflow.md) when source profiling, mapping review, model planning, documentation, or evaluator review can safely run in parallel. The main agent decides when to delegate and keeps dbt commands, shared file edits, commits, pushes, and final decisions.
 
 ## Step 0.1 - Security
 
@@ -120,6 +121,8 @@ Never hardcode secrets. Ask before production changes.
 ## Step 0.2 - Data engineering guardrails
 
 Read [data-engineering-best-practices.md](references/data-engineering-best-practices.md) before model design and again before final delivery. Apply grain, test, incremental, snapshot, documentation, privacy, and performance guardrails.
+
+Read [writing-style.md](references/writing-style.md) before writing user-facing prompts, plans, reports, summaries, diagram notes, or final handoffs. Use full wording instead of shorthand, except for official tool names, commands, filenames, environment variables, and code identifiers.
 
 Read [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md) before writing each phase plan. The phase plan must show the agent's data-engineering decisions, evidence, and approval needs; do not hide grain, key, join, mapping, privacy, metric, materialization, or validation choices inside code.
 
@@ -141,7 +144,7 @@ Use `layer_names` from the prompt, `.env`, or `project.config.yml` when provided
 - Layer 2 (`int_*`): `silver`
 - Layer 3 (`dim_*`/`fct_*`/`mart_*`): `gold`
 
-Do not ask for layer names unless the user requests a non-default naming convention or an existing project already uses different folders. Resolve `layer_schema_prefix` from explicit config, existing medallion schemas, domain, source schema, or descriptive source name. Ask only when existing schemas create a real conflict that the agent cannot resolve safely.
+Do not ask for layer names unless the user requests a non-default naming convention or an existing project already uses different folders. Resolve `layer_schema_prefix` from explicit configuration, existing medallion schemas, domain, source schema, or descriptive source name. Ask only when existing schemas create a real conflict that the agent cannot resolve safely.
 
 Write `dbt_project.yml` per [materialization-rules.md](references/materialization-rules.md):
 
@@ -210,9 +213,9 @@ Read [separate-layer-builds.md](references/separate-layer-builds.md).
 5. Staging -> Intermediate -> Marts
 6. Semantic layer - metrics on marts facts
 7. Project evaluator - `dbt build --select package:dbt_project_evaluator` after confirming it is routed to `<layer_schema_prefix>_evaluator`
-8. Docs - `dbt docs generate`; use `dbt docs serve` for local viewing when requested or appropriate for an interactive local run
+8. Documentation - `dbt docs generate`; use `dbt docs serve` for local viewing when requested or appropriate for an interactive local run
 9. Agents Schema - publish dbt metadata to `AGENTS.*` after `target/manifest.json` exists when enabled and supported
-10. Automation - CI workflow
+10. Automation - continuous integration workflow
 11. **Acceptance + final summary** - [acceptance-checklist.md](references/acceptance-checklist.md), [final-delivery.md](references/final-delivery.md)
 
 Each stage: **phase-specific discovery -> agent recommendation -> data engineer decision check -> write Markdown plan -> ask approval -> implement -> parse/build -> write phase report -> update context tree -> summarize -> ask commit**. Ask for push only when a non-local GitHub repo is configured or the user requested push.
@@ -261,12 +264,12 @@ This review happens after implementation. The phase plan approval in [phase-plan
 
 Read [git-workflow.md](references/git-workflow.md). Ask before every commit/push.
 
-## Step 8 - CI/CD & Agents Schema *(when requested)*
+## Step 8 - Continuous Integration, Continuous Delivery, And Agents Schema *(when requested)*
 
 - [agents-schema-setup.md](references/agents-schema-setup.md)
 - [cicd-setup.md](references/cicd-setup.md)
 
-Use Agents Schema after docs generation or any step that produces `target/manifest.json`. Do not treat it as a replacement for dbt project files while editing; use it as the warehouse-side metadata layer that helps agents answer questions and understand built models.
+Use Agents Schema after documentation generation or any step that produces `target/manifest.json`. Do not treat it as a replacement for dbt project files while editing; use it as the warehouse-side metadata layer that helps agents answer questions and understand built models.
 
 ## Step 9 - Final delivery summary
 
@@ -277,9 +280,9 @@ Always finish with a user-facing summary that starts short, then gives the usefu
 1. Short summary: what was built and whether it passed.
 2. Results: profile, domain, source, schemas, layers, row counts when known.
 3. Models created or changed by layer.
-4. Validation: dbt debug/parse/build/docs/evaluator results.
+4. Validation: dbt debug, parse, build, documentation, and evaluator results.
 5. Data quality notes and assumptions.
-6. Git, CI, and Agents Schema status.
+6. Git, continuous integration, and Agents Schema status.
 7. Open decisions and recommended next actions.
 
 Keep the first section concise enough for a new user to understand in under one minute.
@@ -302,13 +305,13 @@ Read [stuck-recovery.md](references/stuck-recovery.md) whenever a command hangs,
 3. Grain / business logic
 4. Data-engineering decisions and evidence
 5. Agent recommendation, what looks right, what is not ready, and confidence
-6. Tests / docs added
+6. Tests / documentation added
 7. Assumptions used
-8. dbt debug / parse / build results
+8. dbt debug, parse, build, and documentation results
 9. Mermaid diagram verification status when diagrams were added or changed
 10. Phase report path and status
 11. Context tree update status
-12. Commit status (asked / skipped / done / pushed to github)
+12. Commit status (asked / skipped / completed / pushed to GitHub)
 ```
 
 For the final response, use [final-delivery.md](references/final-delivery.md) instead of only the phase template.
@@ -329,7 +332,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 - `auto_install_dbt_skills:` true *(default)* | false
 - `layer_names:` layer_1, layer_2, layer_3 *(default: bronze, silver, gold)*
 - `domain:` (default from `project.config.yml`)
-- `github_repo_name:` optional repo slug; ask only when push is requested and no repo can be inferred
+- `github_repo_name:` optional repository slug; ask only when push is requested and no repository can be inferred
 - `github_repo:` full URL or `owner/repo` *(optional override)*
 - `push_to_github:` true | false *(default: false for `local-only`, otherwise ask before pushing)*
 - `commit:` ask | auto_yes | skip_all
@@ -350,7 +353,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 | File | Purpose |
 |---|---|
 | [install-skill.md](references/install-skill.md) | Install via npx or `.agents/skills/` |
-| [bootstrap.md](references/bootstrap.md) | First approved build phase: skills install, packages, debug, CI/Agents workflows |
+| [bootstrap.md](references/bootstrap.md) | First approved build phase: skills install, packages, debug, continuous integration and Agents Schema workflows |
 | [discovery-requirements.md](references/discovery-requirements.md) | Read-only schema/data discovery and requirements checkpoint before build planning |
 | [project.config.yml](project.config.yml) | Defaults, paths, git, materialization |
 | [skill-inputs.md](references/skill-inputs.md) | Required inputs |
@@ -360,6 +363,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 | [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md) | Senior data-engineering decisions that must be explicit before build |
 | [phased-discovery.md](references/phased-discovery.md) | Layer-by-layer discovery that keeps the data engineer in control |
 | [recommendation-and-review.md](references/recommendation-and-review.md) | Agent recommendations, risks, and approval boundaries |
+| [writing-style.md](references/writing-style.md) | Full wording for user-facing output |
 | [mermaid-diagrams.md](references/mermaid-diagrams.md) | Mermaid-only diagrams and visibility verification |
 | [project-naming.md](references/project-naming.md) | Derive project and folder names without using dbt profile |
 | [env-configuration.md](references/env-configuration.md) | Optional `.env` settings and precedence |
@@ -372,7 +376,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 | [dbt-packages-and-skills.md](references/dbt-packages-and-skills.md) | codegen, utils, evaluator, audit_helper, agent skills |
 | [project-evaluator.md](references/project-evaluator.md) | Align dbt_project_evaluator with bronze/silver/gold and accepted warnings |
 | [semantic-layer-spec.md](references/semantic-layer-spec.md) | MetricFlow / semantic metrics |
-| [github-repo-resolution.md](references/github-repo-resolution.md) | `gh` CLI owner + repo name |
+| [github-repo-resolution.md](references/github-repo-resolution.md) | `gh` command line interface owner and repository name |
 | [packages-and-sources.md](references/packages-and-sources.md) | Codegen, source YAML |
 | [source-profiling.md](references/source-profiling.md) | Row counts, keys, dates, status/code values |
 | [staging-spec.md](references/staging-spec.md) | Layer 1 |
@@ -382,7 +386,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 | [documentation.md](references/documentation.md) | Docs generate |
 | [human-review.md](references/human-review.md) | Engineer/domain review checkpoints |
 | [final-delivery.md](references/final-delivery.md) | Final handoff checklist |
-| [validation-commands.md](references/validation-commands.md) | debug, parse, build, docs |
+| [validation-commands.md](references/validation-commands.md) | debug, parse, build, documentation |
 | [stuck-recovery.md](references/stuck-recovery.md) | Stuck command and blocker recovery |
 | [github-setup.md](references/github-setup.md) | Initial git + commit order |
 | [git-workflow.md](references/git-workflow.md) | Per-layer commits |

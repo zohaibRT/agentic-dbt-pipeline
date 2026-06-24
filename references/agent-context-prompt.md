@@ -10,11 +10,12 @@ Use the dbt Pipeline skill (`agentic-dbt-pipeline`) and these dbt-labs skills:
 - running-dbt-commands
 - troubleshooting-dbt-job-errors
 
-Read project.config.yml, references/skill-inputs.md, references/project-naming.md, references/schema-isolation.md, references/env-configuration.md, and references/data-engineering-best-practices.md first. If `.env` exists, load non-secret settings from it before asking for missing inputs. If `.env` is missing, create a safe local `.env` from `.env.example`, stop before discovery or dbt commands, and ask the user for `DBT_DOMAIN`, `DBT_PROFILE_NAME`, and `DBT_SOURCE_SCHEMA`. Do not search the repo, inspect terminal output, infer, suggest, or summarize values from other workspaces or previous runs.
-For a new/full pipeline, run lightweight read-only project discovery first, write reports/agent/discovery_report.md, update reports/agent/PIPELINE_STATUS.md and reports/agent/CONTEXT_TREE.md, explain what you conclude from the source schemas/tables, recommend the best next path with evidence, and ask whether the user wants to add or change requirements before planning Bootstrap & Init. If the dbt project root does not exist yet, create reports/agent/ under the current workspace/run root. Do not design every layer upfront; read references/phased-discovery.md and references/recommendation-and-review.md, then run focused discovery before sources, bronze, silver, gold, semantic, evaluator, and docs phases.
+Read project.config.yml, references/skill-inputs.md, references/project-naming.md, references/schema-isolation.md, references/env-configuration.md, references/writing-style.md, and references/data-engineering-best-practices.md first. If `.env` exists, load non-secret settings from it before asking for missing inputs. If `.env` is missing, create a safe local `.env` from `.env.example`, stop before discovery or dbt commands, and ask the user for `DBT_DOMAIN`, `DBT_PROFILE_NAME`, and `DBT_SOURCE_SCHEMA`. Do not search the repository, inspect terminal output, infer, suggest, or summarize values from other workspaces or previous runs.
+For a new/full pipeline, run lightweight read-only project discovery first, write reports/agent/discovery_report.md, update reports/agent/PIPELINE_STATUS.md and reports/agent/CONTEXT_TREE.md, explain what you conclude from the source schemas/tables, recommend the best next path with evidence, and ask whether the user wants to add or change requirements before planning Bootstrap & Init. If the dbt project root does not exist yet, create reports/agent/ under the current workspace/run root. Do not design every layer upfront; read references/phased-discovery.md and references/recommendation-and-review.md, then run focused discovery before sources, bronze, silver, gold, semantic, evaluator, and documentation phases.
 When work can be safely delegated, read references/subagent-workflow.md and use subagents only for read-only analysis or draft review.
 Before each phase that changes files or builds warehouse objects, read references/phase-plan-approval.md, references/recommendation-and-review.md, and references/data-engineer-decision-gate.md, update AGENT_PLAN.md, explain the plan in Markdown with the agent recommendation, explicit data-engineering decisions, evidence, confidence, risks, and approval needs, and wait for approval. After each completed phase, read references/phase-completion-report.md and references/context-tree.md, write/update reports/agent/<phase>_report.md, reports/agent/PIPELINE_STATUS.md, and reports/agent/CONTEXT_TREE.md.
 Use Mermaid for every diagram. Read references/mermaid-diagrams.md before creating or changing diagrams. Entity relationships must use Mermaid erDiagram, and every added or changed Mermaid diagram must be verified as visible/parseable with the result recorded in the phase report.
+Use full wording in user-facing plans, reports, summaries, diagram notes, and final handoffs. Read references/writing-style.md before writing user-facing output, and avoid shorthand unless it is an official tool name, command, filename, environment variable, package name, or code identifier.
 
 ## Warehouse (non-secret)
 
@@ -34,7 +35,7 @@ Use Mermaid for every diagram. Read references/mermaid-diagrams.md before creati
 ## Credentials
 
 - Use existing dbt profile: <project.profile>
-- Derive dbt project name/root from source schema or domain. Use repo name only when the user provided one for push. Do not use the profile name as the folder unless explicitly requested.
+- Derive dbt project name/root from source schema or domain. Use repository name only when the user provided one for push. Do not use the profile name as the folder unless explicitly requested.
 - Do not hardcode passwords
 - Do not commit profiles.yml or .env
 - Commit `.env.example` only when it contains no secrets
@@ -42,9 +43,9 @@ Use Mermaid for every diagram. Read references/mermaid-diagrams.md before creati
 ## Git
 
 - Commit locally by default
-- Use GitHub only when the user requests push or provides a repo
+- Use GitHub only when the user requests push or provides a repository
 - When pushing, run `gh api user` for owner - do not hardcode accounts
-- Ask user for repo slug only when push is requested and no repo is configured
+- Ask user for repository slug only when push is requested and no repository is configured
 - Commit per layer; push on approval
 
 ## dbt packages & skills *(full pipeline)*
@@ -64,6 +65,7 @@ See [dbt-packages-and-skills.md](dbt-packages-and-skills.md): codegen, dbt_utils
 - Run focused phase discovery before each phase plan; recommend the best path with evidence, but do not replace the data engineer's business decisions
 - Before each phase build: write/update AGENT_PLAN.md, explain what will be built, include recommendation, confidence, and data-engineering decision check, and wait for approval
 - Use Mermaid for all diagrams; verify Mermaid visibility/parse status before marking the phase complete
+- Use full wording in user-facing output; avoid shorthand such as primary key abbreviations, foreign key abbreviations, entity relationship diagram abbreviations, documentation abbreviations, repository abbreviations, and continuous integration abbreviations
 - After each completed phase: write/update reports/agent/<phase>_report.md, reports/agent/PIPELINE_STATUS.md, and reports/agent/CONTEXT_TREE.md
 - Commit each layer separately; ask before commit/push
 - Keep dbt commands, file edits, commits, pushes, and final decisions with the main agent

@@ -9,10 +9,10 @@ Use this before calling a dbt pipeline complete.
 - Staging, intermediate, and mart models built successfully
 - Tests added for primary keys, relationships, accepted values, and mapping coverage where applicable
 - Semantic layer or metrics added on final mart models when requested
-- dbt docs generated
+- dbt documentation generated
 - Project evaluator run and warnings summarized
 - Agents Schema workflow prepared after `target/manifest.json` exists, when supported by the warehouse destination
-- CI workflow prepared when GitHub automation is requested
+- Continuous integration workflow prepared when GitHub automation is requested
 - Commits created by phase
 - `AGENT_PLAN.md` records approved phase plans and short phase results
 - `reports/agent/` contains phase reports, `PIPELINE_STATUS.md`, and `CONTEXT_TREE.md`
@@ -50,7 +50,7 @@ dbt docs generate
 
 If a full `dbt build` is too expensive, explain why and run the most complete safe build.
 
-For local docs viewing after `dbt docs generate`:
+For local documentation viewing after `dbt docs generate`:
 
 ```powershell
 dbt docs serve --host 127.0.0.1 --port 8080
@@ -97,13 +97,13 @@ Use a compact table when helpful:
 - Files/layers created
 - Important models created by layer
 - Semantic models and metrics added
-- CI or Agents Schema workflow changes
+- Continuous integration or Agents Schema workflow changes
 - Mermaid diagrams created or updated
-- Docs generated and docs serve URL when started
+- Documentation generated and documentation serve URL when started
 
 ### Validation results
 
-- Build and docs results
+- Build and documentation results
 - Project evaluator result
 - Schema isolation check result
 - Key pass/warn/fail counts when available
@@ -123,7 +123,7 @@ Use a compact table when helpful:
 
 - Git commit status
 - Agents Schema status
-- CI status
+- Continuous integration status
 
 ### Open decisions
 

@@ -20,7 +20,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] `.gitignore` excludes credentials and generated files
 - [ ] `.env` loaded for non-secret inputs when present; `.env.example` contains no secrets when committed
 - [ ] Fresh clone without `.env` creates a safe local `.env` template and stops for required user inputs before dbt commands
-- [ ] Missing required first-run values were requested directly from the user, not found by repo search, terminal inspection, other workspaces, or previous runs
+- [ ] Missing required first-run values were requested directly from the user, not found by repository search, terminal inspection, other workspaces, or previous runs
 - [ ] Any subagent delegation was read-only/draft work; main agent kept dbt commands, edits, commits, and final decisions
 - [ ] `AGENT_PLAN.md` created or updated with the approved plan for each implemented phase
 - [ ] Discovery created `reports/agent/discovery_report.md` before the chat summary, even if the dbt project root did not exist yet
@@ -28,6 +28,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] `reports/agent/PIPELINE_STATUS.md` updated after each phase
 - [ ] `reports/agent/CONTEXT_TREE.md` updated with user inputs, decisions, phase outputs, report links, and open items
 - [ ] Any diagram created or changed uses Mermaid and has visibility/parse verification recorded
+- [ ] User-facing output uses full wording and avoids shorthand except for official tool names, commands, filenames, environment variables, package names, or code identifiers
 
 ## dbt Agent Skills & packages
 
@@ -97,20 +98,20 @@ Verify before marking the dbt pipeline workflow complete.
 
 ## Git
 
-- [ ] Git mode is local-only by default; GitHub repo/owner resolved only when push was requested
+- [ ] Git mode is local-only by default; GitHub repository owner resolved only when push was requested
 - [ ] Staged commits per layer ([github-setup.md](github-setup.md))
-- [ ] Pushed only when repo is not `local-only` and user approved
+- [ ] Pushed only when repository mode is not `local-only` and user approved
 - [ ] No secrets in commits
 
 ## Documentation
 
 - [ ] Model/column descriptions in YAML
 - [ ] `dbt docs generate` -> manifest + catalog exist
-- [ ] Docs serve command or local docs URL provided when user wants to view docs
+- [ ] Documentation serve command or local documentation URL provided when user wants to view documentation
 
 ## Human review
 
-- [ ] Pre-build plan approval captured for sources/staging/intermediate/marts/semantic/evaluator/docs as applicable
+- [ ] Pre-build plan approval captured for sources, staging, intermediate, marts, semantic, evaluator, and documentation as applicable
 - [ ] Staging review summary produced
 - [ ] Intermediate review summary produced
 - [ ] Marts and metric review summary produced
@@ -118,7 +119,7 @@ Verify before marking the dbt pipeline workflow complete.
 
 ## Automation *(optional)*
 
-- [ ] CI workflow: deps + parse (+ build when creds available)
+- [ ] Continuous integration workflow: dependencies + parse (+ build when credentials available)
 - [ ] Agents Schema workflow present
 - [ ] `target/manifest.json` generated and committed when Agents Schema workflow needs it
 - [ ] `WAREHOUSE_CREDENTIALS` secret configured for Snowflake, Databricks, or BigQuery
@@ -137,4 +138,4 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Final response starts with a short summary, then includes results, validation, data notes, git/automation status, and open decisions
 - [ ] Final response references `AGENT_PLAN.md`, `reports/agent/PIPELINE_STATUS.md`, `reports/agent/CONTEXT_TREE.md`, and relevant phase reports
 - [ ] Phase commits created or intentionally skipped
-- [ ] Final response summarizes build status, docs status, evaluator status, Agents Schema status, git status, limitations, and open decisions
+- [ ] Final response summarizes build status, documentation status, evaluator status, Agents Schema status, git status, limitations, and open decisions

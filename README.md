@@ -2,7 +2,7 @@
 
 `dbt Pipeline` is an agent skill for setting up and maintaining dbt projects with a structured, agent-assisted workflow.
 
-It helps an agent initialize a dbt project, configure sources, build bronze/silver/gold medallion layers, add semantic layer assets, run quality checks, generate docs, create CI workflows, publish dbt metadata to Agents Schema, write per-phase status reports, commit each stage separately, and finish with a clear user-facing run summary. It also requires explicit data-engineering decisions before each build phase, so the agent does not silently guess grain, joins, metrics, privacy, or materialization.
+It helps an agent initialize a dbt project, configure sources, build bronze/silver/gold medallion layers, add semantic layer assets, run quality checks, generate documentation, create continuous integration workflows, publish dbt metadata to Agents Schema, write per-phase status reports, commit each stage separately, and finish with a clear user-facing run summary. It also requires explicit data-engineering decisions before each build phase, so the agent does not silently guess grain, joins, metrics, privacy, or materialization.
 
 ## Installation
 
@@ -20,7 +20,7 @@ This is the only skill users need to install manually. During bootstrap, the ski
 - `dbt-core` and the required dbt adapter, such as `dbt-postgres`
 - A valid local dbt profile in `~/.dbt/profiles.yml`
 - Node.js for `npx skills`
-- GitHub CLI authenticated with `gh auth login`, if GitHub push is enabled
+- GitHub command line interface authenticated with `gh auth login`, if GitHub push is enabled
 - Warehouse access for `dbt debug` and `dbt build`
 - Snowflake, Databricks, or BigQuery credentials for Agents Schema sync, if enabled
 
@@ -45,7 +45,7 @@ For a full copy-paste prompt, see [prompt.md](prompt.md).
 
 All diagrams created by the skill use Mermaid. Entity relationships use Mermaid `erDiagram`, and added or changed diagrams must be verified as visible/parseable before the related phase is marked complete.
 
-Keep repeatable non-secret settings in `.env` by copying `.env.example`. If `.env` is missing on a fresh clone, the skill creates a safe local `.env` template and asks you to fill the required values before running dbt. Most projects only need domain, dbt profile, and source schema there. The skill infers project name/root, dbt source name, layer names, schema prefix, commit mode, push behavior, materialization, and Agents Schema handling unless you override them. Add GitHub repo details only when you want the agent to push.
+Keep repeatable non-secret settings in `.env` by copying `.env.example`. If `.env` is missing on a fresh clone, the skill creates a safe local `.env` template and asks you to fill the required values before running dbt. Most projects only need domain, dbt profile, and source schema there. The skill infers project name/root, dbt source name, layer names, schema prefix, commit mode, push behavior, materialization, and Agents Schema handling unless you override them. Add GitHub repository details only when you want the agent to push.
 
 ## Configuration
 
@@ -63,7 +63,7 @@ Use this file for non-secret defaults and advanced overrides:
 - source schema and source YAML path
 - layer names and model paths, when your team does not use the default bronze/silver/gold flow
 - materialization profile
-- GitHub repo behavior, only when pushing to a remote
+- GitHub repository behavior, only when pushing to a remote
 - Agents Schema settings
 
 Keep passwords, tokens, and private keys in local profiles or GitHub Secrets.
@@ -75,8 +75,8 @@ Keep passwords, tokens, and private keys in local profiles or GitHub Secrets.
 | Discovery | Project-oriented and phased source/schema analysis written to `reports/agent/discovery_report.md`; each layer gets focused discovery before build planning |
 | Bootstrap | Installs dbt Labs agent skills and dbt packages when needed |
 | Validation | Runs `dbt debug`, `dbt deps`, `dbt parse`, and scoped `dbt build` commands |
-| Environment config | Loads non-secret `.env` values before asking for missing inputs |
-| Subagents | Optionally parallelizes read-only profiling, planning, docs, and review work |
+| Environment configuration | Loads non-secret `.env` values before asking for missing inputs |
+| Subagents | Optionally parallelizes read-only profiling, planning, documentation, and review work |
 | Phase planning | Writes a Markdown plan before each phase and waits for approval before building |
 | Agent recommendations | Recommends the best path with evidence, confidence, and risks, then asks the data engineer to approve or change business-impacting choices |
 | Data engineer decision gate | Documents grain, keys, joins, mappings, metrics, privacy, tests, materialization, and validation evidence before build |
@@ -84,18 +84,18 @@ Keep passwords, tokens, and private keys in local profiles or GitHub Secrets.
 | Sources | Generates source YAML and adds source descriptions |
 | Schema isolation | Keeps source, medallion, evaluator, seeds, snapshots, and agent metadata in separate schemas |
 | Source profiling | Reviews row counts, keys, relationships, dates, measures, and status/code fields before modeling |
-| Mermaid diagrams | Uses Mermaid for all diagrams, including ERDs, and records visibility/parse verification |
+| Mermaid diagrams | Uses Mermaid for all diagrams, including entity relationship diagrams, and records visibility/parse verification |
 | Data engineering guardrails | Checks grain, tests, incremental strategy, snapshots, exposures, privacy, and performance |
 | Staging | Builds source-cleaning models with `source()` references |
 | Intermediate | Builds reusable business logic models with `ref()` references and mapping seeds when needed |
 | Marts | Builds final dimension, fact, and reporting models with business-friendly fields |
 | Semantic layer | Adds MetricFlow / dbt semantic layer YAML for mart metrics |
 | Quality | Runs `dbt_project_evaluator` and uses `audit_helper` where useful |
-| Documentation | Runs `dbt docs generate`, verifies manifest/catalog output, and can serve docs locally for viewing |
+| Documentation | Runs `dbt docs generate`, verifies manifest/catalog output, and can serve documentation locally for viewing |
 | Human review | Summarizes assumptions, data quality notes, mappings, metrics, and open decisions |
-| Git | Commits initialization, sources, each model layer, docs, CI, and Agents Schema separately |
+| Git | Commits initialization, sources, each model layer, documentation, continuous integration, and Agents Schema separately |
 | Agents Schema | Publishes dbt metadata into `AGENTS.*` so agents can query project context from the warehouse |
-| CI | Creates GitHub Actions workflows for dbt validation and Agents Schema sync |
+| Continuous integration | Creates GitHub Actions workflows for dbt validation and Agents Schema synchronization |
 | Final delivery | Produces a short summary plus handoff notes with run commands, build status, known limitations, and next decisions |
 
 ## Commit Strategy
@@ -111,7 +111,7 @@ The skill is designed to keep project history readable. It commits each stage se
 7. Add mart models
 8. Add semantic layer metrics
 9. Add tests and documentation
-10. Add CI workflows
+10. Add continuous integration workflows
 11. Add Agents Schema workflow
 
 By default, the agent asks before each commit. It asks about push only when a GitHub remote is configured or requested.
@@ -128,7 +128,7 @@ After the first run, confirm the installed files exist:
 .agents/skills/using-dbt-for-analytics-engineering/
 ```
 
-The repository also includes a local config validator:
+The repository also includes a local configuration validator:
 
 ```bash
 python scripts/validate_config.py --root .
@@ -156,6 +156,7 @@ The skill can add and install these dbt packages:
 | [references/discovery-requirements.md](references/discovery-requirements.md) | Read-only discovery and requirements checkpoint before build planning |
 | [references/phase-plan-approval.md](references/phase-plan-approval.md) | Markdown plan and approval gate before every phase |
 | [references/recommendation-and-review.md](references/recommendation-and-review.md) | Agent recommendations, what looks right, risks, and approval boundaries |
+| [references/writing-style.md](references/writing-style.md) | Full wording for user-facing output |
 | [references/mermaid-diagrams.md](references/mermaid-diagrams.md) | Mermaid-only diagrams and visibility verification |
 | [references/phase-completion-report.md](references/phase-completion-report.md) | Per-phase reports and pipeline status file |
 | [references/context-tree.md](references/context-tree.md) | Curated project memory for inputs, decisions, outputs, and report links |

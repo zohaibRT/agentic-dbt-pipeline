@@ -63,6 +63,8 @@ npx -y @mermaid-js/mermaid-cli -i <diagram-or-markdown-file> -o <output.svg>
 
 Record the verification result in the phase report.
 
+Use full wording in diagram titles, notes, and phase reports. For example, write `entity relationship diagram`, not the abbreviation.
+
 ## Report requirement
 
 When a phase includes diagrams, the phase report must list:
