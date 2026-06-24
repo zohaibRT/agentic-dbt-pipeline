@@ -30,6 +30,8 @@ Preserve raw mapping/code columns so later layers can apply business mappings sa
 
 For unclear coded fields such as `field_1`, `field_2`, and `field_3`, keep them as raw columns in staging, document them as raw unmapped codes, and do not rename them to business-friendly fields unless the source metadata, a reliable reference table, or the user provides definitions.
 
+If the user asks the agent to suggest names for unclear fields, run a read-only value-pattern review first and report candidate names with confidence. Do not apply those names in staging until the user approves the exact final column names. If the user approves staging but does not approve final names, keep the original source names.
+
 For direct identifiers or sensitive fields, keep them only when needed for source traceability or validation, document the sensitivity, and do not include full sensitive sample values in model descriptions or reports.
 
 - Lowercase: `email`, status fields, `customer_segment`

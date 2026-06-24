@@ -69,6 +69,8 @@ Default recommendation:
 - Keep sensitive and unclear fields source-shaped in bronze/staging when needed for traceability.
 - Do not expose clear-text direct identifiers in gold/marts unless the user approves.
 - Do not rename or map unclear coded fields unless a reliable definition exists.
+- Treat user approval to analyze or suggest names for unclear fields as discovery approval only, not implementation approval.
+- Rename unclear fields only after the user approves the exact final column names.
 - Exclude unclear coded fields from gold/marts by default, or keep them only as explicitly approved raw audit fields.
 
 The agent should ask the user to approve this recommendation or provide definitions. Do not simply ask "what should I do?" without a recommended path.

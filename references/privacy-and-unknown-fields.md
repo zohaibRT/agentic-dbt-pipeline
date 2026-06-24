@@ -48,6 +48,8 @@ Do not create guessed mappings such as `M = Male`, `P1 = Priority 1`, or `WEB = 
 
 Do not present an `Agent guess` column for unclear coded fields. Use wording such as `Possible meaning, not confirmed` only when it is useful, and keep the recommended action as defer mapping until definitions are provided. Never let a possible meaning drive model names, mappings, tests, metrics, or gold/marts fields without confirmation.
 
+Do not rename unclear generic fields by default. Columns such as `field_1`, `field_2`, `field_3`, short unexplained code fields, or system-looking placeholders must keep their source column names in bronze/staging until the user provides definitions or explicitly asks the agent to suggest possible names. If the user asks for suggestions, first profile distinct values and patterns, propose candidate names with confidence and evidence, then stop for approval before changing model SQL or YAML. Suggested names are advisory only; they must not be implemented until the user approves the exact final names.
+
 ## Mapping seeds
 
 Create mapping seeds only when:

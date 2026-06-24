@@ -69,6 +69,7 @@ See [dbt-packages-and-skills.md](dbt-packages-and-skills.md): codegen, dbt_utils
 - Do not probe unrelated warehouses or cloud connectors before or during discovery
 - Run setup-only Bootstrap automatically after discovery requirements are accepted, unless a bootstrap safety gate is triggered
 - Run focused phase discovery before each non-bootstrap phase plan; recommend the best path with evidence, but do not replace the data engineer's business decisions
+- Keep unclear fields such as field_1, field_2, and field_3 unchanged unless the user provides definitions or explicitly asks for suggested names; suggestions require value-pattern evidence and separate approval before SQL or YAML changes
 - Before each non-bootstrap phase build: write/update AGENT_PLAN.md, explain what will be built, include recommendation, confidence, and data-engineering decision check, and wait for approval
 - Use Mermaid for all diagrams; verify Mermaid visibility/parse status before marking the phase complete
 - Use full wording in user-facing output; avoid shorthand such as primary key abbreviations, foreign key abbreviations, entity relationship diagram abbreviations, documentation abbreviations, repository abbreviations, and continuous integration abbreviations
