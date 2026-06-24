@@ -61,7 +61,7 @@ See [dbt-packages-and-skills.md](dbt-packages-and-skills.md): codegen, dbt_utils
 
 ## dbt rules
 
-- sources: models/sources/
+- sources: models/sources/ only; never place source YAML under bronze, silver, or gold layer folders
 - layer 1: models/{layer_1_name}/{domain}/ - stg_{source}__* (default layer name: bronze)
 - layer 2: models/{layer_2_name}/{domain}/ - int_{source}__* (default layer name: silver)
 - layer 3: models/{layer_3_name}/{domain}/ - dim_*, fct_*, mart_* (default layer name: gold)

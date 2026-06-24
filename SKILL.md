@@ -238,7 +238,7 @@ After project setup and connection validation, each stage: **phase-specific disc
 
 Read [packages-and-sources.md](references/packages-and-sources.md), [source-profiling.md](references/source-profiling.md), [schema-isolation.md](references/schema-isolation.md), and [dbt-packages-and-skills.md](references/dbt-packages-and-skills.md).
 
-All four packages in `packages.yml`. Codegen for sources. Derive `source.name` from `source.schema` / `domain` unless explicitly provided. Add the configured `source.schema` to source YAML after generate. Profile row counts, candidate keys, relationships, important dates, measures, and status/code fields before staging.
+All four packages in `packages.yml`. Codegen for sources. Derive `source.name` from `source.schema` / `domain` unless explicitly provided. Write source YAML only under `models/sources/`, never under bronze, silver, or gold layer folders. Add the configured `source.schema` to source YAML after generate. Profile row counts, candidate keys, relationships, important dates, measures, and status/code fields before staging.
 
 ## Step 3 - Layer 1 (staging)
 

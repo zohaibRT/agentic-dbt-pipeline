@@ -79,6 +79,7 @@ Every phase report must include:
 - Files created or changed
 - Warehouse schemas/tables/views created or changed
 - Models, seeds, semantic files, workflows, or documentation created
+- Source YAML location for the Sources phase; generated or curated source YAML must be under `models/sources/`
 - Commands run
 - Validation results: pass, warn, fail, skipped
 - Agent recommendation followed, changed, or deferred

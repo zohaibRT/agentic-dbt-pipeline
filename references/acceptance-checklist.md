@@ -80,6 +80,7 @@ Verify before marking the dbt pipeline workflow complete.
 
 - [ ] Project name/root were derived from source/domain or explicitly provided; not accidentally copied from `dbt_profile_name`
 - [ ] Source YAML UTF-8 with `schema:` set
+- [ ] Source YAML is stored under `models/sources/`, not under bronze/silver/gold layer folders
 - [ ] `dbt_project.yml` layer blocks match user layer names
 - [ ] Materialization matches `materialization_profile`
 

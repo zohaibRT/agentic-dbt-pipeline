@@ -5,7 +5,7 @@
 ## Correct layer order (always - all layers)
 
 ```
-1. Sources     ->  models/sources/
+1. Sources     ->  models/sources/ only
 2. Layer 1     ->  models/{layer_1_name}/{domain}/  ->  warehouse schema: {layer_schema_prefix}_{layer_1_name}
 3. Layer 2     ->  models/{layer_2_name}/{domain}/  ->  warehouse schema: {layer_schema_prefix}_{layer_2_name}
 4. Layer 3     ->  models/{layer_3_name}/{domain}/  ->  warehouse schema: {layer_schema_prefix}_{layer_3_name}
@@ -53,6 +53,7 @@ dbt parse --no-partial-parse
 ```
 
 Explain the source YAML plan and get approval before running codegen or writing source files.
+Generated and curated source YAML must stay under `models/sources/`; do not place source YAML in `models/<layer_1_name>/`, `models/<layer_2_name>/`, or `models/<layer_3_name>/`.
 Write `reports/agent/sources_report.md`, update `reports/agent/PIPELINE_STATUS.md` and `reports/agent/CONTEXT_TREE.md`, then ask commit for `models/sources/` and `reports/agent/`.
 
 ---

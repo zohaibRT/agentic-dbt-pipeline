@@ -41,6 +41,32 @@ $dbt = "dbt"
 
 This step reads `<source.schema>` only. It must not create models, package tables, or evaluator artifacts in the source schema.
 
+## Source YAML location
+
+Source definitions must live under:
+
+```text
+models/sources/
+```
+
+Do not place generated or curated source YAML in medallion layer folders such as:
+
+```text
+models/bronze/
+models/silver/
+models/gold/
+```
+
+Layer folders are for dbt models and layer-specific model YAML only. For example:
+
+```text
+models/sources/<source.name>_sources.yml
+models/<layer_1_name>/<domain>/stg_<source.name>__<table>.sql
+models/<layer_1_name>/<domain>/_stg_<source.name>.yml
+```
+
+If codegen output is accidentally written to a layer folder, move it to `models/sources/`, update references if needed, and run `dbt parse --no-partial-parse` before continuing.
+
 ## Resolve dbt source name
 
 The user does not need to provide a source name. Derive `source.name` before writing source YAML:
