@@ -12,7 +12,7 @@ description: >-
 
 Full lifecycle orchestrator for the dbt project.
 **On every new/full-pipeline prompt:** agent runs read-only [discovery-requirements.md](references/discovery-requirements.md) first, explains what it concluded from the source data, and asks for requirements before any build plan.
-**Default full pipeline:** discovery -> bootstrap -> sources -> bronze -> silver -> gold -> semantic layer -> project evaluator -> documentation -> continuous integration, plus Agents Schema when enabled and supported.
+**Default full pipeline:** discovery -> bootstrap -> sources -> bronze -> silver -> gold -> semantic layer -> project evaluator -> documentation -> presentation layer recommendation -> continuous integration, plus Agents Schema when enabled and supported.
 
 Use `workflow_phase:` to run a single phase. Use `auto_bootstrap: false` only for layer-only edits.
 
@@ -86,6 +86,7 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 | **7b Semantic** | Metrics on marts | [semantic-layer-spec.md](references/semantic-layer-spec.md) |
 | **7c Evaluator** | Best-practice audit | [project-evaluator.md](references/project-evaluator.md), [dbt-packages-and-skills.md](references/dbt-packages-and-skills.md) |
 | **8 Docs** | After layers | [documentation.md](references/documentation.md) |
+| **8b Presentation layer** | Optional final user-facing layer | [presentation-layer.md](references/presentation-layer.md) |
 | **9 Git** | After each stage | [github-repo-resolution.md](references/github-repo-resolution.md), [git-workflow.md](references/git-workflow.md) |
 | **10 Agents Schema / continuous integration** | Metadata + automation | [agents-schema-setup.md](references/agents-schema-setup.md), [cicd-setup.md](references/cicd-setup.md) |
 | **Plan approval** | Before each non-bootstrap build phase | [phase-plan-approval.md](references/phase-plan-approval.md) |
@@ -224,9 +225,10 @@ Read [separate-layer-builds.md](references/separate-layer-builds.md).
 6. Semantic layer - metrics on marts facts
 7. Project evaluator - `dbt build --select package:dbt_project_evaluator` after confirming it is routed to `<layer_schema_prefix>_evaluator`
 8. Documentation - `dbt docs generate`; use `dbt docs serve` for local viewing when requested or appropriate for an interactive local run
-9. Agents Schema - publish dbt metadata to `AGENTS.*` after `target/manifest.json` exists when enabled and supported
-10. Automation - continuous integration workflow
-11. **Acceptance + final summary** - [acceptance-checklist.md](references/acceptance-checklist.md), [final-delivery.md](references/final-delivery.md)
+9. Presentation layer recommendation - ask whether the user wants documentation only, a business-facing report, dashboard design, semantic refinement, or query handoff
+10. Agents Schema - publish dbt metadata to `AGENTS.*` after `target/manifest.json` exists when enabled and supported
+11. Automation - continuous integration workflow
+12. **Acceptance + final summary** - [acceptance-checklist.md](references/acceptance-checklist.md), [final-delivery.md](references/final-delivery.md)
 
 After Bootstrap, each stage: **phase-specific discovery -> agent recommendation -> data engineer decision check -> write Markdown plan -> ask approval -> implement -> parse/build -> write phase report -> update context tree -> summarize -> ask commit**. Ask for push only when a non-local GitHub repository is configured or the user requested push.
 
@@ -263,6 +265,10 @@ Read [project-evaluator.md](references/project-evaluator.md). Before running eva
 ## Step 6 - Documentation
 
 Read [documentation.md](references/documentation.md). Run `dbt docs generate`. Use `dbt docs serve` only as a non-blocking local viewing step and report the URL when started.
+
+## Step 6a - Presentation layer recommendation
+
+Read [presentation-layer.md](references/presentation-layer.md). After final validation, recommend the best presentation-layer option with possible key performance indicators, semantic metrics, dashboard or report pages, source models, caveats, and privacy notes. Ask whether the user wants to create a presentation layer artifact. Do not build dashboards, reports, slides, notebooks, or business intelligence artifacts without approval.
 
 ## Step 6b - Human review
 
@@ -328,7 +334,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 
 ## Ambiguity - prompt overrides
 
-- `workflow_phase:` init | sources | staging | intermediate | marts | semantic_layer | project_evaluator | docs | ci | agents_schema
+- `workflow_phase:` init | sources | staging | intermediate | marts | semantic_layer | project_evaluator | docs | presentation_layer | ci | agents_schema
 - `dbt_profile_name:` dbt profile key from `~/.dbt/profiles.yml`; ask if missing or ambiguous
 - `dbt_project_name:` optional explicit dbt project name; otherwise derive from source/domain
 - `dbt_project_root:` optional explicit folder name; otherwise use `dbt_project_name`
@@ -397,6 +403,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 | [mapping-seeds.md](references/mapping-seeds.md) | Manual mapping seeds and coverage tests |
 | [marts-spec.md](references/marts-spec.md) | Star schema |
 | [documentation.md](references/documentation.md) | Docs generate |
+| [presentation-layer.md](references/presentation-layer.md) | Optional presentation-layer recommendation after final validation |
 | [human-review.md](references/human-review.md) | Engineer/domain review checkpoints |
 | [final-delivery.md](references/final-delivery.md) | Final handoff checklist |
 | [validation-commands.md](references/validation-commands.md) | debug, parse, build, documentation |

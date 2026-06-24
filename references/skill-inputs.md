@@ -99,7 +99,7 @@ push_to_github: <true|false>             # optional; omit for approval-based def
 layer_names: bronze, silver, gold        # optional; defaults shown
 commit: ask | auto_yes | skip_all
 materialization_profile: prod | dev
-workflow_phase: init | sources | staging | intermediate | marts | semantic_layer | project_evaluator | docs | ci | agents_schema
+workflow_phase: init | sources | staging | intermediate | marts | semantic_layer | project_evaluator | docs | presentation_layer | ci | agents_schema
 ```
 
 ## Optional `.env`

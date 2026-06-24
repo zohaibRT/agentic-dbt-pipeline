@@ -16,6 +16,7 @@ For a new/full pipeline, run lightweight read-only project discovery first, writ
 After the user accepts discovery requirements, read references/bootstrap.md and run automatic setup-only Bootstrap when auto_bootstrap is true. Write/update AGENT_PLAN.md with Bootstrap marked automatic setup-only, run only scaffold/dependency/debug/parse setup actions, and write reports/agent/bootstrap_report.md, reports/agent/PIPELINE_STATUS.md, and reports/agent/CONTEXT_TREE.md. Stop and ask before Bootstrap only when a bootstrap safety gate is triggered.
 When work can be safely delegated, read references/subagent-workflow.md and use subagents only for read-only analysis or draft review.
 Before each non-bootstrap phase that changes files or builds warehouse objects, read references/phase-plan-approval.md, references/recommendation-and-review.md, and references/data-engineer-decision-gate.md, update AGENT_PLAN.md, explain the plan in Markdown with the agent recommendation, explicit data-engineering decisions, evidence, confidence, risks, and approval needs, and wait for approval. After each completed phase, read references/phase-completion-report.md and references/context-tree.md, write/update reports/agent/<phase>_report.md, reports/agent/PIPELINE_STATUS.md, and reports/agent/CONTEXT_TREE.md.
+After marts, semantic layer, evaluator, and documentation are complete, read references/presentation-layer.md, recommend the best presentation-layer option with possible key performance indicators, semantic metrics, suggested report or dashboard pages, source models, caveats, and privacy notes, then ask whether the user wants a presentation artifact. Do not create dashboards, reports, slides, notebooks, or business intelligence artifacts without approval.
 Use Mermaid for every diagram. Read references/mermaid-diagrams.md before creating or changing diagrams. Entity relationships must use Mermaid erDiagram, and every added or changed Mermaid diagram must be verified as visible/parseable with the result recorded in the phase report.
 Use full wording in user-facing plans, reports, summaries, diagram notes, and final handoffs. Read references/writing-style.md before writing user-facing output, and avoid shorthand unless it is an official tool name, command, filename, environment variable, package name, or code identifier.
 
@@ -70,6 +71,7 @@ See [dbt-packages-and-skills.md](dbt-packages-and-skills.md): codegen, dbt_utils
 - Run setup-only Bootstrap automatically after discovery requirements are accepted, unless a bootstrap safety gate is triggered
 - Run focused phase discovery before each non-bootstrap phase plan; recommend the best path with evidence, but do not replace the data engineer's business decisions
 - Keep ambiguous, placeholder, abbreviated, generic, or poorly named fields unchanged unless the user provides definitions or explicitly asks for suggested names; suggestions require value-pattern evidence and separate approval before SQL or YAML changes
+- After documentation, ask whether the user wants a presentation layer and recommend documentation only, a business-facing report, dashboard design, semantic layer refinement, or query handoff based on final mart evidence
 - Before each non-bootstrap phase build: write/update AGENT_PLAN.md, explain what will be built, include recommendation, confidence, and data-engineering decision check, and wait for approval
 - Use Mermaid for all diagrams; verify Mermaid visibility/parse status before marking the phase complete
 - Use full wording in user-facing output; avoid shorthand such as primary key abbreviations, foreign key abbreviations, entity relationship diagram abbreviations, documentation abbreviations, repository abbreviations, and continuous integration abbreviations
@@ -94,6 +96,7 @@ See [dbt-packages-and-skills.md](dbt-packages-and-skills.md): codegen, dbt_utils
 | `intermediate` | [intermediate-spec.md](intermediate-spec.md) |
 | `marts` | [marts-spec.md](marts-spec.md) |
 | `docs` | [documentation.md](documentation.md) |
+| `presentation_layer` | [presentation-layer.md](presentation-layer.md) |
 | `ci` | [cicd-setup.md](cicd-setup.md) |
 | `agents_schema` | [agents-schema-setup.md](agents-schema-setup.md) |
 | `semantic_layer` | [semantic-layer-spec.md](semantic-layer-spec.md) |

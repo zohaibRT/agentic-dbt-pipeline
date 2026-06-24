@@ -11,6 +11,7 @@ Use this before calling a dbt pipeline complete.
 - Semantic layer or metrics added on final mart models when requested
 - dbt documentation generated
 - Project evaluator run and warnings summarized
+- Presentation layer recommendation produced after final validation, with user-facing options and suggested metrics
 - Agents Schema workflow prepared after `target/manifest.json` exists, when supported by the warehouse destination
 - Continuous integration workflow prepared when GitHub automation is requested
 - Commits created by phase
@@ -28,6 +29,7 @@ Update or create project handoff notes with:
 - Important source tables
 - Source discovery conclusions and requirements captured before build
 - Final facts, dimensions, marts, and metrics
+- Presentation layer recommendation, including possible key performance indicators, semantic metrics, suggested report or dashboard pages, and query handoff options
 - Known empty tables or data quality limitations
 - Confidence notes: what was validated vs what still needs confirmation
 - Mermaid diagrams created or updated, with visibility verification status
@@ -97,6 +99,7 @@ Use a compact table when helpful:
 - Files/layers created
 - Important models created by layer
 - Semantic models and metrics added
+- Presentation layer recommendation and whether the user approved any follow-up artifact
 - Continuous integration or Agents Schema workflow changes
 - Mermaid diagrams created or updated
 - Documentation generated and documentation serve URL when started
@@ -128,6 +131,7 @@ Use a compact table when helpful:
 ### Open decisions
 
 - Open user decisions
+- Whether to create a presentation layer artifact such as a business-facing report, dashboard design, semantic layer refinement, or query handoff
 - Recommended next actions
 
 Keep the final response readable for a new dbt user. Do not bury blockers, failed validation, unsupported Agents Schema destinations, or sensitive-data risks inside long prose.

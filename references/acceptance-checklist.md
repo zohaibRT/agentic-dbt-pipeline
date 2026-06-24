@@ -42,6 +42,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] `reports/agent/<phase>_report.md` created or updated for each implemented phase
 - [ ] `reports/agent/PIPELINE_STATUS.md` updated after each phase
 - [ ] `reports/agent/CONTEXT_TREE.md` updated with user inputs, decisions, phase outputs, report links, and open items
+- [ ] Final delivery included a presentation layer recommendation and asked whether the user wants a presentation artifact
 - [ ] Any diagram created or changed uses Mermaid and has visibility/parse verification recorded
 - [ ] User-facing output uses full wording and avoids shorthand except for official tool names, commands, filenames, environment variables, package names, or code identifiers
 
@@ -127,6 +128,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Model/column descriptions in YAML
 - [ ] `dbt docs generate` -> manifest + catalog exist
 - [ ] Documentation serve command or local documentation URL provided when user wants to view documentation
+- [ ] Presentation options were recommended after documentation: documentation only, business-facing report, dashboard design, semantic layer refinement, or query handoff
 
 ## Human review
 
@@ -158,3 +160,4 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Final response references `AGENT_PLAN.md`, `reports/agent/PIPELINE_STATUS.md`, `reports/agent/CONTEXT_TREE.md`, and relevant phase reports
 - [ ] Phase commits created or intentionally skipped
 - [ ] Final response summarizes build status, documentation status, evaluator status, Agents Schema status, git status, limitations, and open decisions
+- [ ] Final response includes possible key performance indicators, semantic metrics, and presentation pages when enough final mart evidence exists

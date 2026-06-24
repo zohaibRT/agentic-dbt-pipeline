@@ -26,6 +26,8 @@ Use full wording in all user-facing plans, reports, summaries, diagram notes, an
 
 After I answer, run setup-only Bootstrap automatically when `auto_bootstrap` is true: write/update `AGENT_PLAN.md` with Bootstrap marked as automatic setup-only, create the local dbt scaffold if needed, install missing dependencies, run `dbt debug`, run `dbt deps`, run `dbt parse`, and write the bootstrap report. Stop and ask first if required settings are missing, the selected profile is unsafe or failing, existing project files would be overwritten, warehouse objects would be created or replaced, credentials are needed, or I explicitly disabled automatic Bootstrap.
 
+After marts, semantic layer, evaluator, and documentation are complete, ask whether I want a presentation layer. Recommend the best option with evidence and list possible key performance indicators, semantic metrics, report or dashboard pages, source models, caveats, and privacy notes. Do not create dashboards, reports, slides, notebooks, or business intelligence artifacts unless I approve that follow-up work.
+
 Before each non-bootstrap build phase, write/update `AGENT_PLAN.md`, explain in Markdown what you will build, and wait for my approval before implementing that phase.
 
 In each discovery summary and phase plan, recommend the best next path with evidence, show what looks right, what is not ready yet, confidence about proven vs uncertain items, and what needs my approval. Do not ask me to design everything from scratch.
@@ -71,7 +73,7 @@ Use this only when you want one part of the workflow:
 Use the dbt Pipeline skill (`agentic-dbt-pipeline`).
 
 Use settings from `.env`.
-workflow_phase: <init | sources | staging | intermediate | marts | semantic_layer | project_evaluator | docs | ci | agents_schema>
+workflow_phase: <init | sources | staging | intermediate | marts | semantic_layer | project_evaluator | docs | presentation_layer | ci | agents_schema>
 
 Use `docs` and `ci` only as exact workflow phase values. In explanations, write `documentation` and `continuous integration`.
 
