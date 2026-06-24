@@ -34,6 +34,8 @@ Add short notes to source YAML descriptions or a project note when helpful:
 - Data quality concerns
 - Empty or low-row-count tables
 
+When relationship findings are diagrammed, use Mermaid `erDiagram` per [mermaid-diagrams.md](mermaid-diagrams.md). Only draw relationships that are supported by profiling, constraints, source metadata, or user-approved rules. Record uncertain relationships as notes outside the diagram.
+
 ## Stop and ask
 
 Ask the user before modeling if:

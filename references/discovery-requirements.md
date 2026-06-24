@@ -30,6 +30,7 @@ After discovery, explain in Markdown:
 - Project/domain being analyzed
 - Source schemas/tables found and row counts
 - Important entities and likely relationships
+- Entity relationship diagram in Mermaid `erDiagram` when relationships are clear enough to visualize
 - Candidate business processes, such as appointments, encounters, claims, orders, tickets, or events
 - Candidate facts, dimensions, and metrics implied by the source
 - Empty tables, suspicious columns, missing keys, date ranges, and data quality notes
@@ -43,6 +44,7 @@ After discovery, explain in Markdown:
 - What the agent is not confident about
 - Required user decisions before modeling
 - Next phase to discover/build first
+- Mermaid visibility/parse verification for any diagram included
 
 Put setup/config context at the end under a short `Inputs Used` section only:
 

@@ -30,6 +30,7 @@ Update or create project handoff notes with:
 - Final facts, dimensions, marts, and metrics
 - Known empty tables or data quality limitations
 - Confidence notes: what was validated vs what still needs confirmation
+- Mermaid diagrams created or updated, with visibility verification status
 - Incremental, snapshot, exposure, and privacy decisions
 - How to run `dbt build`, `dbt docs generate`, and `dbt docs serve`
 - What still needs business review
@@ -97,6 +98,7 @@ Use a compact table when helpful:
 - Important models created by layer
 - Semantic models and metrics added
 - CI or Agents Schema workflow changes
+- Mermaid diagrams created or updated
 - Docs generated and docs serve URL when started
 
 ### Validation results
@@ -107,6 +109,7 @@ Use a compact table when helpful:
 - Key pass/warn/fail counts when available
 - Phase plan approval status
 - Phase report status and path
+- Mermaid diagram visibility/parse status when diagrams were created or changed
 
 ### Data notes
 

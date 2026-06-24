@@ -46,6 +46,7 @@ Capture:
 - Assumptions and their approval status
 - Open decisions
 - Phase outputs and report links
+- Mermaid diagrams and their verification status
 - Validation status
 - Commit status
 - Next recommended action
@@ -99,6 +100,11 @@ Use this structure:
 | Phase | Confident About | Less Confident About |
 |---|---|---|
 | <phase> | <validated facts> | <uncertain business or data assumptions> |
+
+## Diagrams
+| Phase | Diagram | Mermaid Type | Verification |
+|---|---|---|---|
+| <phase> | <file or section> | <erDiagram/flowchart/etc.> | <PASS/WARN/FAIL/SKIPPED> |
 
 ## Phase Tree
 - Discovery

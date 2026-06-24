@@ -20,6 +20,8 @@ If `.env` is missing, create it safely from `.env.example`, stop before discover
 
 First, perform lightweight read-only project discovery only: inspect source schemas/tables, write `reports/agent/discovery_report.md`, update `reports/agent/PIPELINE_STATUS.md` and `reports/agent/CONTEXT_TREE.md`, summarize what you conclude about the data project, and ask whether I want to add requirements. Keep discovery output focused on source data, entities, relationships, data quality, candidate models/metrics, and open modeling decisions; keep setup details out of the discovery summary except for a short inputs-used note. Do not fully design every layer upfront; run focused discovery again before sources, bronze, silver, gold, semantic, evaluator, and docs phases.
 
+Use Mermaid for every diagram. For entity relationships, use Mermaid `erDiagram`. Verify every Mermaid diagram you add or change is visible/parseable, and record the result in the phase report.
+
 After I answer, before each build phase, write/update `AGENT_PLAN.md`, explain in Markdown what you will build, and wait for my approval before implementing that phase.
 
 In each discovery summary and phase plan, recommend the best next path with evidence, show what looks right, what is not ready yet, confidence about proven vs uncertain items, and what needs my approval. Do not ask me to design everything from scratch.

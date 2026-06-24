@@ -46,6 +46,7 @@ For each phase, include:
 - Agent recommendation: recommended path, evidence, what looks right, what is not ready yet, confidence, and what requires data engineer approval
 - Data-engineering decisions, evidence, and which choices need user approval
 - Tests and documentation to add
+- Mermaid diagrams to add or update, plus verification method when relevant
 - dbt packages/macros involved
 - Validation commands to run after changes
 - Commit boundary for the phase
@@ -135,6 +136,11 @@ If the user approves with plain language such as "yes", "go ahead", or "looks go
 ```powershell
 <commands>
 ```
+
+### Mermaid Diagrams
+| Diagram | Mermaid type | Purpose | Verification plan |
+|---|---|---|---|
+| <file or section> | <erDiagram/flowchart/etc.> | <what it shows> | <viewer or Mermaid CLI check> |
 
 ### Commit Boundary
 <what files belong in the phase commit>

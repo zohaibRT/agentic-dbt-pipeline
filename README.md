@@ -43,6 +43,8 @@ After I answer, before each build phase, write/update `AGENT_PLAN.md`, explain w
 
 For a full copy-paste prompt, see [prompt.md](prompt.md).
 
+All diagrams created by the skill use Mermaid. Entity relationships use Mermaid `erDiagram`, and added or changed diagrams must be verified as visible/parseable before the related phase is marked complete.
+
 Keep repeatable non-secret settings in `.env` by copying `.env.example`. If `.env` is missing on a fresh clone, the skill creates a safe local `.env` template and asks you to fill the required values before running dbt. Most projects only need domain, dbt profile, and source schema there. The skill infers project name/root, dbt source name, layer names, schema prefix, commit mode, push behavior, materialization, and Agents Schema handling unless you override them. Add GitHub repo details only when you want the agent to push.
 
 ## Configuration
@@ -82,6 +84,7 @@ Keep passwords, tokens, and private keys in local profiles or GitHub Secrets.
 | Sources | Generates source YAML and adds source descriptions |
 | Schema isolation | Keeps source, medallion, evaluator, seeds, snapshots, and agent metadata in separate schemas |
 | Source profiling | Reviews row counts, keys, relationships, dates, measures, and status/code fields before modeling |
+| Mermaid diagrams | Uses Mermaid for all diagrams, including ERDs, and records visibility/parse verification |
 | Data engineering guardrails | Checks grain, tests, incremental strategy, snapshots, exposures, privacy, and performance |
 | Staging | Builds source-cleaning models with `source()` references |
 | Intermediate | Builds reusable business logic models with `ref()` references and mapping seeds when needed |
@@ -153,6 +156,7 @@ The skill can add and install these dbt packages:
 | [references/discovery-requirements.md](references/discovery-requirements.md) | Read-only discovery and requirements checkpoint before build planning |
 | [references/phase-plan-approval.md](references/phase-plan-approval.md) | Markdown plan and approval gate before every phase |
 | [references/recommendation-and-review.md](references/recommendation-and-review.md) | Agent recommendations, what looks right, risks, and approval boundaries |
+| [references/mermaid-diagrams.md](references/mermaid-diagrams.md) | Mermaid-only diagrams and visibility verification |
 | [references/phase-completion-report.md](references/phase-completion-report.md) | Per-phase reports and pipeline status file |
 | [references/context-tree.md](references/context-tree.md) | Curated project memory for inputs, decisions, outputs, and report links |
 | [references/data-engineer-decision-gate.md](references/data-engineer-decision-gate.md) | Required senior data-engineering decision checks before build |

@@ -27,6 +27,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] `reports/agent/<phase>_report.md` created or updated for each implemented phase
 - [ ] `reports/agent/PIPELINE_STATUS.md` updated after each phase
 - [ ] `reports/agent/CONTEXT_TREE.md` updated with user inputs, decisions, phase outputs, report links, and open items
+- [ ] Any diagram created or changed uses Mermaid and has visibility/parse verification recorded
 
 ## dbt Agent Skills & packages
 
@@ -50,6 +51,7 @@ Verify before marking the dbt pipeline workflow complete.
 
 - [ ] Row counts reviewed for each source table
 - [ ] Candidate primary keys and important relationships reviewed
+- [ ] Entity relationships, when diagrammed, use Mermaid `erDiagram`
 - [ ] Important date, amount/measure, status, type, and code columns identified
 - [ ] Empty tables, duplicate keys, null keys, and major data quality concerns summarized
 

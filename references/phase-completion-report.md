@@ -85,6 +85,7 @@ Every phase report must include:
 - What looks wrong or risky
 - Confidence: what is proven vs what still needs confirmation
 - Data-engineering decisions implemented, inferred, or still open
+- Mermaid diagrams added/changed and visibility verification status
 - Data quality notes
 - Privacy/sensitive-field notes
 - Assumptions used
@@ -129,6 +130,11 @@ Overall: <PASS | WARN | FAIL | SKIPPED | BLOCKED>
 | Check | Result | Notes |
 |---|---|---|
 | <command/check> | <PASS/WARN/FAIL/SKIPPED> | <important output> |
+
+## Mermaid Diagrams
+| Diagram | Mermaid type | Verification | Notes |
+|---|---|---|---|
+| <file or section> | <erDiagram/flowchart/etc.> | <PASS/WARN/FAIL/SKIPPED> | <visibility/parse notes or omitted relationships> |
 
 ## Agent Recommendation Outcome
 | Recommendation | Outcome | Evidence / Reason |
