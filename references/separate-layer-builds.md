@@ -6,9 +6,9 @@
 
 ```
 1. Sources     ->  models/sources/
-2. Layer 1     ->  models/{layer_1_name}/{domain}/  ->  Postgres: {target}_{layer_1_name}
-3. Layer 2     ->  models/{layer_2_name}/{domain}/  ->  Postgres: {target}_{layer_2_name}
-4. Layer 3     ->  models/{layer_3_name}/{domain}/  ->  Postgres: {target}_{layer_3_name}
+2. Layer 1     ->  models/{layer_1_name}/{domain}/  ->  warehouse schema: {layer_schema_prefix}_{layer_1_name}
+3. Layer 2     ->  models/{layer_2_name}/{domain}/  ->  warehouse schema: {layer_schema_prefix}_{layer_2_name}
+4. Layer 3     ->  models/{layer_3_name}/{domain}/  ->  warehouse schema: {layer_schema_prefix}_{layer_3_name}
 ```
 
 Default names: `bronze`, `silver`, `gold`.

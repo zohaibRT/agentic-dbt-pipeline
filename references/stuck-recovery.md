@@ -62,5 +62,5 @@ Should I wait, stop it, or inspect logs in a new terminal?
 
 ```text
 Agents Schema supports Snowflake, Databricks, and BigQuery.
-This project uses Postgres. Should I keep the workflow file but skip live sync?
+The selected profile adapter is unsupported. Should I keep the workflow file but skip live sync?
 ```

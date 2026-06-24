@@ -16,15 +16,17 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\activate
 python --version
 python -m pip install --upgrade pip setuptools wheel
-python -m pip install --force-reinstall "dbt-core==1.10.15" "dbt-postgres==1.10.0"
+python -m pip install --force-reinstall "dbt-core==1.10.15" "<dbt-adapter-package-for-selected-profile>"
 dbt --version
 ```
+
+Choose the adapter package only after `DBT_PROFILE_NAME` is selected and the profile target `type` is known. Examples: `dbt-postgres`, `dbt-redshift`, `dbt-snowflake`, `dbt-bigquery`, or `dbt-databricks`.
 
 ## 2. Initialize dbt project
 
 ```powershell
 dbt init <dbt_project_name>
-# Select the adapter from database.adapter when prompted
+# Select the adapter from the chosen dbt profile target type when prompted
 cd <dbt_project_root>
 ```
 
@@ -103,10 +105,10 @@ Use defaults for anything not listed. Do not hardcode secrets in project files.
 Project name: <dbt_project_name>
 Project folder: <dbt_project_root>
 dbt profile name: <dbt_profile_name>
-Adapter: <database.adapter>
-Host: <database.host>
-Port: <database.port>
-Database: <database.dbname>
+Adapter: <selected profile target type>
+Host: <selected profile host, if applicable>
+Port: <selected profile port, if applicable>
+Database: <selected profile database/dbname/project, if applicable>
 User: <warehouse_user>
 Password: use local profiles.yml - do not commit
 Source schema: <source.schema>

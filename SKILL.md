@@ -385,7 +385,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 | [privacy-and-unknown-fields.md](references/privacy-and-unknown-fields.md) | Safe defaults for sensitive fields and unclear coded fields |
 | [security-and-credentials.md](references/security-and-credentials.md) | Secrets & gitignore |
 | [project-initialization.md](references/project-initialization.md) | venv, dbt init, debug |
-| [warehouse-schema-setup.md](references/warehouse-schema-setup.md) | Postgres schemas |
+| [warehouse-schema-setup.md](references/warehouse-schema-setup.md) | Warehouse schemas |
 | [dbt-packages-and-skills.md](references/dbt-packages-and-skills.md) | codegen, utils, evaluator, audit_helper, agent skills |
 | [project-evaluator.md](references/project-evaluator.md) | Align dbt_project_evaluator with bronze/silver/gold and accepted warnings |
 | [semantic-layer-spec.md](references/semantic-layer-spec.md) | MetricFlow / semantic metrics |

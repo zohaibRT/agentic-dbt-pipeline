@@ -109,6 +109,8 @@ When `.env` is missing, do not search the repo for alternate config files, inspe
 
 Do not infer required first-run values from other workspaces, old dbt projects, old `.env` files, existing medallion schemas, warehouse object names, terminal output, or previous runs. Do not scan or summarize other workspaces to suggest values. Ask the user directly. Listing available profile names from `~/.dbt/profiles.yml` is allowed only as a choice aid; it is not permission to choose a profile.
 
+When `.env` is missing, do not say that the agent will resolve the profile or run adapter-specific discovery. The agent does not know the active adapter yet. Use adapter-neutral wording until the user provides `DBT_PROFILE_NAME`.
+
 Never combine missing-`.env` setup with discovery in the same response. Missing `.env` is a hard stop until the user confirms the required values.
 
 Required first-run values:
@@ -149,7 +151,7 @@ Available profiles in your `profiles.yml`:
 | <profile_key> | <adapter_type> | <non-secret host kind or host> / <target schema> |
 
 Keep passwords in ~/.dbt/profiles.yml, not in `.env`.
-After I update `.env`, I will summarize the values and wait for your approval before read-only discovery.
+After I update `.env`, I will summarize the values, resolve the selected profile adapter, and wait for your approval before read-only discovery.
 
 Optional: add project rules in chat if you have mappings, metrics, privacy rules, exclusions, or special instructions.
 ```

@@ -7,7 +7,7 @@ What the agent needs before dbt pipeline work.
 - [ ] dbt project folder: `{project.root}`
 - [ ] dbt profile name: prompt `dbt_profile_name` or configured `project.profile`
 - [ ] dbt CLI: active environment `dbt`; fallback rules in [validation-commands.md](validation-commands.md)
-- [ ] Python 3.12 venv with `dbt-core` + `dbt-postgres`
+- [ ] Python 3.12 venv with `dbt-core` + the adapter package for the selected dbt profile
 - [ ] Warehouse credentials via `~/.dbt/profiles.yml` - never in repo
 - [ ] `agentic-dbt-pipeline` skill installed - [install-skill.md](install-skill.md)
 - [ ] dbt-labs skills installed - [install-dbt-agent-skills.md](install-dbt-agent-skills.md)
@@ -28,7 +28,7 @@ What the agent needs before dbt pipeline work.
 ```text
 1. Load project.config.yml
 2. Confirm dbt debug passes (or run init phase)
-3. Confirm `dbt_profile_name` if multiple profiles exist
+3. Confirm `dbt_profile_name` if multiple profiles exist, then resolve the adapter package from that selected profile
 4. Confirm workflow_phase and commit mode from user prompt
 4. Compose with using-dbt-for-analytics-engineering + running-dbt-commands
 ```

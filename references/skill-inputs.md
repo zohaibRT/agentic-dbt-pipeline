@@ -21,10 +21,10 @@ Do not ask a new user for project name, dbt source name, layer schema prefix, la
 | dbt project name | `dbt_project_name`, `DBT_PROJECT_NAME`, or derived by [project-naming.md](project-naming.md) | derive from source/domain |
 | dbt project root | `dbt_project_root`, `DBT_PROJECT_ROOT`, or derived project name | same as project name |
 | dbt profile name | `dbt_profile_name` prompt, `DBT_PROFILE_NAME`, or `project.profile` | ask if missing or ambiguous |
-| Adapter | `database.adapter` | `postgres` |
-| Host | `database.host` | `warehouse_host` |
-| Port | `database.port` | `5432` |
-| Database | `database.dbname` | `analytics` |
+| Adapter | selected profile target `type` | resolve from `DBT_PROFILE_NAME`; no adapter default before selection |
+| Host | selected profile target host, when applicable | resolve from selected profile |
+| Port | selected profile target port, when applicable | resolve from selected profile |
+| Database | selected profile target database/dbname/project, when applicable | resolve from selected profile |
 | Profile target schema | `database.target_schema` | `dbt_work`; must not equal `source_schema` |
 | Source/raw schema | `source_schema` prompt, `DBT_SOURCE_SCHEMA`, or `source.schema` | required human input when missing |
 | Source name | `source_name`, `DBT_SOURCE_NAME`, or derived from `source_schema` / `domain` | derive; ask only for existing-project collisions |

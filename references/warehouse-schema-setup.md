@@ -22,7 +22,7 @@ To get those exact names instead of `analytics_<layer_schema_prefix>_bronze`, th
 
 With `layer_schema_prefix` and layer config:
 
-| Layer | `+schema` | Postgres schema created |
+| Layer | `+schema` | Physical warehouse schema created |
 |---|---|---|
 | Raw source | *(source tables)* | `<source_schema>` |
 | Bronze | `<layer_schema_prefix>_bronze` | `<layer_schema_prefix>_bronze` |

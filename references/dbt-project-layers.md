@@ -34,7 +34,7 @@ Example:
 <layer_schema_prefix>_gold
 ```
 
-| Role | User name (example) | `dbt_project.yml` | Folder | Postgres schema |
+| Role | User name (example) | `dbt_project.yml` | Folder | Physical warehouse schema |
 |---|---|---|---|---|
 | Layer 1 | `bronze` | `bronze:` | `models/bronze/{domain}/` | `{layer_schema_prefix}_bronze` |
 | Layer 2 | `silver` | `silver:` | `models/silver/{domain}/` | `{layer_schema_prefix}_silver` |

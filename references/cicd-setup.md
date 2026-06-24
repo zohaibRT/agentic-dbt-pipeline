@@ -28,7 +28,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: pip install "dbt-core==1.10.15" "dbt-postgres==1.10.0"
+      - run: pip install "dbt-core==1.10.15" "<dbt-adapter-package-for-selected-profile>"
       - run: dbt deps
       - run: dbt parse --no-partial-parse
       # Uncomment when CI warehouse credentials are configured:
@@ -38,6 +38,8 @@ jobs:
 ```
 
 Use GitHub Secrets for CI warehouse credentials - never commit profiles.
+
+Replace `<dbt-adapter-package-for-selected-profile>` only after the dbt profile adapter is known. Examples: `dbt-postgres`, `dbt-redshift`, `dbt-snowflake`, `dbt-bigquery`, or `dbt-databricks`.
 
 ## Production deployment
 

@@ -7,10 +7,10 @@ project:
   profile: auto              # use DBT_PROFILE_NAME or ask; never infer from project name
 
 database:
-  adapter: postgres
-  host: warehouse_host
-  port: 5432
-  dbname: analytics
+  adapter: auto               # resolve from selected DBT_PROFILE_NAME in ~/.dbt/profiles.yml
+  host: selected_profile_host
+  port: selected_profile_port
+  dbname: selected_profile_database
   target_schema: dbt_work
   threads: 4
   # password: NEVER store here - use ~/.dbt/profiles.yml
