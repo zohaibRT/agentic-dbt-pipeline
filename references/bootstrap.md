@@ -1,16 +1,16 @@
-# Bootstrap - Automatic Setup-Only Phase After Discovery
+# Project Setup And Connection Validation - Automatic Setup-Only Phase After Discovery
 
-For a new project or full pipeline, run [discovery-requirements.md](discovery-requirements.md) first. Bootstrap starts only after discovery is summarized and the user accepts the discovery recommendation by replying with requirements, `continue`, `no changes`, `go ahead`, or similar.
+For a new project or full pipeline, run [discovery-requirements.md](discovery-requirements.md) first. The setup phase starts only after discovery is summarized and the user accepts the discovery recommendation by replying with requirements, `continue`, `no changes`, `go ahead`, or similar.
 
-Run this bootstrap before layer work. Do not skip unless user sets `auto_bootstrap: false`.
+Run this setup phase before layer work. Do not skip unless user sets `auto_bootstrap: false`.
 
-## Automatic bootstrap rule
+## Automatic setup rule
 
-Bootstrap is foundational setup, so it auto-runs by default when `auto_bootstrap: true`. Do not ask for a separate `approve bootstrap` response after the discovery requirements checkpoint is accepted.
+Project setup and connection validation is foundational, so it auto-runs by default when `auto_bootstrap: true`. Do not ask for a separate `approve bootstrap` response after the discovery requirements checkpoint is accepted.
 
 Before running it, write or update `AGENT_PLAN.md` with:
 
-- Phase: Bootstrap
+- Phase: Project setup and connection validation
 - Status: Automatic setup-only
 - Discovery report used
 - Exact setup actions to run
@@ -25,9 +25,9 @@ reports/agent/PIPELINE_STATUS.md
 reports/agent/CONTEXT_TREE.md
 ```
 
-## Bootstrap boundary
+## Setup boundary
 
-Bootstrap may:
+Project setup and connection validation may:
 
 - Create a local dbt project scaffold when the project root is missing
 - Create baseline local files required to make dbt parse, such as `dbt_project.yml`, `packages.yml`, `.gitignore`, safe profile examples, and the schema naming macro
@@ -37,7 +37,7 @@ Bootstrap may:
 - Resolve local-only or user-requested GitHub mode without pushing
 - Write or update setup reports
 
-Bootstrap must not:
+Project setup and connection validation must not:
 
 - Run codegen or create source YAML unless the current approved workflow phase is Sources
 - Create bronze/staging, silver/intermediate, gold/marts, semantic layer, documentation, continuous integration, or Agents Schema files
@@ -45,13 +45,13 @@ Bootstrap must not:
 - Change `~/.dbt/profiles.yml` without explicit user approval
 - Commit or push without the configured git approval flow
 
-## Stop and ask before Bootstrap when
+## Stop and ask before setup when
 
 - Required `.env` values are missing
 - The selected dbt profile is missing, ambiguous, or failing
 - The selected profile target schema equals the source schema and needs a safer work schema
 - Existing project files would be overwritten or moved
-- Bootstrap would need to create or replace warehouse objects beyond setup validation
+- Setup would need to create or replace warehouse objects beyond setup validation
 - Credentials, secrets, GitHub remote creation, or GitHub Secrets are needed
 - `auto_bootstrap: false` is set
 - The user explicitly asked to approve setup manually
@@ -131,7 +131,7 @@ If the adapter is unsupported, skip Agents Schema and summarize that it can be e
 
 Confirm `.agents/skills/agentic-dbt-pipeline/SKILL.md` and `project.config.yml` are readable.
 
-## Bootstrap complete when
+## Project setup and connection validation complete when
 
 | Check | Status |
 |---|---|
@@ -141,6 +141,8 @@ Confirm `.agents/skills/agentic-dbt-pipeline/SKILL.md` and `project.config.yml` 
 | Git mode resolved: local-only or GitHub remote prepared when requested | PASS |
 | `dbt parse --no-partial-parse` passes or skipped with documented reason | PASS |
 | Workflow files not created unless automation was explicitly approved | PASS |
+
+Use this full wording in user-facing summaries. Do not write `Bootstrap complete` as the only completion message; write `Project setup and connection validation complete`.
 
 Then proceed to layer phases.
 

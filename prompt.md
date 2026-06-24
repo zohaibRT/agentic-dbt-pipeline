@@ -24,7 +24,7 @@ Use Mermaid for every diagram. For entity relationships, use Mermaid `erDiagram`
 
 Use full wording in all user-facing plans, reports, summaries, diagram notes, and final handoffs. Avoid shorthand such as primary key abbreviations, foreign key abbreviations, entity relationship diagram abbreviations, documentation abbreviations, repository abbreviations, and continuous integration abbreviations unless quoting a command, filename, package name, environment variable, or official tool name.
 
-After I answer, run setup-only Bootstrap automatically when `auto_bootstrap` is true: write/update `AGENT_PLAN.md` with Bootstrap marked as automatic setup-only, create the local dbt scaffold if needed, install missing dependencies, run `dbt debug`, run `dbt deps`, run `dbt parse`, and write the bootstrap report. Stop and ask first if required settings are missing, the selected profile is unsafe or failing, existing project files would be overwritten, warehouse objects would be created or replaced, credentials are needed, or I explicitly disabled automatic Bootstrap.
+After I answer, run project setup and connection validation automatically when `auto_bootstrap` is true: write/update `AGENT_PLAN.md` with the setup phase marked as automatic setup-only, create the local dbt scaffold if needed, install missing dependencies, run `dbt debug`, run `dbt deps`, run `dbt parse`, and write the setup report. Stop and ask first if required settings are missing, the selected profile is unsafe or failing, existing project files would be overwritten, warehouse objects would be created or replaced, credentials are needed, or I explicitly disabled automatic setup.
 
 After marts, semantic layer, evaluator, and documentation are complete, ask whether I want a presentation layer. Recommend the best option with evidence and list possible key performance indicators, semantic metrics, report or dashboard pages, source models, caveats, and privacy notes. Do not create dashboards, reports, slides, notebooks, or business intelligence artifacts unless I approve that follow-up work.
 
@@ -38,7 +38,7 @@ In each phase plan, include a Data Engineer Decision Check covering grain, keys,
 
 After each completed phase, write/update `reports/agent/<phase>_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` with what was done, what passed, warnings/failures/skips, assumptions, user decisions, phase outputs, report links, and open decisions.
 
-Ask me only when required `.env` values are missing, credentials or secrets are needed, automatic Bootstrap hits a safety gate, a business rule is unclear, non-bootstrap phase build approval is needed, or before committing, pushing, or changing schema behavior.
+Ask me only when required `.env` values are missing, credentials or secrets are needed, automatic project setup hits a safety gate, a business rule is unclear, non-bootstrap phase build approval is needed, or before committing, pushing, or changing schema behavior.
 ```
 
 ## Optional Project Rules

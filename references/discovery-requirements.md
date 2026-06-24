@@ -140,7 +140,7 @@ Keep this section directional during initial discovery. Do not list every final 
 
 ## Requirements checkpoint
 
-Before automatic Bootstrap, ask whether the user wants to add or change requirements.
+Before automatic project setup and connection validation, ask whether the user wants to add or change requirements.
 
 Use this wording:
 
@@ -169,13 +169,13 @@ Confidence:
 Needs your approval:
 <business-impacting choices before the next build phase>
 
-Before I run setup-only Bootstrap, do you want to add any requirements?
+Before I run project setup and connection validation, do you want to add any requirements?
 Examples: field mappings, coded-field definitions, columns to exclude, metric definitions, privacy rules, naming rules, facts/dimensions to prioritize, or tables to ignore.
 
-Reply with your changes/requirements, or reply "continue" if you approve the recommendation and want me to run setup-only Bootstrap automatically.
+Reply with your changes/requirements, or reply "continue" if you approve the recommendation and want me to run project setup and connection validation automatically.
 ```
 
-If the user replies `continue`, `no changes`, `go ahead`, or similar, proceed to automatic setup-only Bootstrap in [bootstrap.md](bootstrap.md). Do not ask for a separate `approve bootstrap` response unless a bootstrap safety gate is triggered.
+If the user replies `continue`, `no changes`, `go ahead`, or similar, proceed to automatic project setup and connection validation in [bootstrap.md](bootstrap.md). Do not ask for a separate `approve bootstrap` response unless a setup safety gate is triggered.
 
 If the user provides requirements, add them to the plan as `project_rules` and use them in later phases.
 
@@ -188,4 +188,4 @@ If the user provides requirements, add them to the plan as `project_rules` and u
 - Switch to a different database, dataset, catalog, schema, table, tenant, client, domain, environment, or assumption because it "looks likely" without user approval.
 - Profile candidate tables or write discovery reports for a guessed replacement source before approval.
 
-After discovery is summarized, confirm that `reports/agent/discovery_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` were created or updated. Do not defer discovery files to Bootstrap and Initialization.
+After discovery is summarized, confirm that `reports/agent/discovery_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` were created or updated. Do not defer discovery files to project setup and initialization.

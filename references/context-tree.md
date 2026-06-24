@@ -112,7 +112,7 @@ Use this structure:
   - Output: <main conclusion>
   - Report: reports/agent/discovery_report.md
   - Status: <status>
-- Bootstrap
+- Project setup and connection validation
   - Plan: <approved/not approved>
   - Report: reports/agent/bootstrap_report.md
   - Status: <status>

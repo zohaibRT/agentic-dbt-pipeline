@@ -183,7 +183,7 @@ Update `reports/agent/PIPELINE_STATUS.md` after every phase:
 | Phase | Status | Report | Commit |
 |---|---|---|---|
 | Discovery | PASS | reports/agent/discovery_report.md | n/a |
-| Bootstrap | PASS | reports/agent/bootstrap_report.md | <hash or pending> |
+| Project setup and connection validation | PASS | reports/agent/bootstrap_report.md | <hash or pending> |
 ```
 
 ## Context tree
