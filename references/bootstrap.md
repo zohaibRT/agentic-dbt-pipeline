@@ -1,8 +1,60 @@
-# Bootstrap - First Build Phase After Discovery
+# Bootstrap - Automatic Setup-Only Phase After Discovery
 
-For a new project or full pipeline, run [discovery-requirements.md](discovery-requirements.md) first. Bootstrap starts only after discovery is summarized and the user approves continuing.
+For a new project or full pipeline, run [discovery-requirements.md](discovery-requirements.md) first. Bootstrap starts only after discovery is summarized and the user accepts the discovery recommendation by replying with requirements, `continue`, `no changes`, `go ahead`, or similar.
 
 Run this bootstrap before layer work. Do not skip unless user sets `auto_bootstrap: false`.
+
+## Automatic bootstrap rule
+
+Bootstrap is foundational setup, so it auto-runs by default when `auto_bootstrap: true`. Do not ask for a separate `approve bootstrap` response after the discovery requirements checkpoint is accepted.
+
+Before running it, write or update `AGENT_PLAN.md` with:
+
+- Phase: Bootstrap
+- Status: Automatic setup-only
+- Discovery report used
+- Exact setup actions to run
+- Validation commands
+- Safety gates checked
+
+Then run only the setup actions allowed in this file and write:
+
+```text
+reports/agent/bootstrap_report.md
+reports/agent/PIPELINE_STATUS.md
+reports/agent/CONTEXT_TREE.md
+```
+
+## Bootstrap boundary
+
+Bootstrap may:
+
+- Create a local dbt project scaffold when the project root is missing
+- Create baseline local files required to make dbt parse, such as `dbt_project.yml`, `packages.yml`, `.gitignore`, safe profile examples, and the schema naming macro
+- Install missing dbt Agent Skills when `auto_install_dbt_skills: true`
+- Install dbt package dependencies with `dbt deps`
+- Run `dbt debug` and `dbt parse --no-partial-parse`
+- Resolve local-only or user-requested GitHub mode without pushing
+- Write or update setup reports
+
+Bootstrap must not:
+
+- Run codegen or create source YAML unless the current approved workflow phase is Sources
+- Create bronze/staging, silver/intermediate, gold/marts, semantic layer, documentation, continuous integration, or Agents Schema files
+- Build, drop, replace, or full-refresh warehouse models
+- Change `~/.dbt/profiles.yml` without explicit user approval
+- Commit or push without the configured git approval flow
+
+## Stop and ask before Bootstrap when
+
+- Required `.env` values are missing
+- The selected dbt profile is missing, ambiguous, or failing
+- The selected profile target schema equals the source schema and needs a safer work schema
+- Existing project files would be overwritten or moved
+- Bootstrap would need to create or replace warehouse objects beyond setup validation
+- Credentials, secrets, GitHub remote creation, or GitHub Secrets are needed
+- `auto_bootstrap: false` is set
+- The user explicitly asked to approve setup manually
 
 ## 1. dbt Agent Skills + dbt packages *(agent installs - user does not)*
 
@@ -48,9 +100,11 @@ dbt debug
 
 If profile missing -> guide user to `~/.dbt/profiles.yml` (never commit passwords).
 
-## 5. Sources bootstrap (codegen)
+## 5. Sources readiness
 
-When running **sources** phase or full pipeline:
+Prepare the project so the Sources phase can run next, but do not generate source YAML during automatic Bootstrap.
+
+When the **Sources** phase is approved later:
 
 1. Ensure full `packages.yml` exists
 2. Run `dbt deps`
@@ -60,9 +114,11 @@ When running **sources** phase or full pipeline:
 
 See [packages-and-sources.md](packages-and-sources.md).
 
-## 6. Agents Schema (automation bootstrap)
+## 6. Agents Schema readiness
 
-When `auto_agents_schema: true` and the warehouse destination is supported:
+Prepare the project so Agents Schema can be enabled later, but do not create Agents Schema workflow files during automatic Bootstrap unless the user explicitly approved the automation phase.
+
+When `auto_agents_schema: true`, the warehouse destination is supported, and the automation phase is approved:
 
 1. Run `dbt docs generate` (requires layers built)
 2. Create `.github/workflows/agents-schema-dbt.yml` if missing
@@ -83,7 +139,8 @@ Confirm `.agents/skills/agentic-dbt-pipeline/SKILL.md` and `project.config.yml` 
 | All 4 dbt packages in `packages.yml` + `dbt deps` | PASS |
 | `dbt debug` passes | PASS |
 | Git mode resolved: local-only or GitHub remote prepared when requested | PASS |
-| Workflow files created (if automation requested) | PASS |
+| `dbt parse --no-partial-parse` passes or skipped with documented reason | PASS |
+| Workflow files not created unless automation was explicitly approved | PASS |
 
 Then proceed to layer phases.
 

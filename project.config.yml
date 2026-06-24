@@ -174,6 +174,7 @@ auto_bootstrap:
   default: true
   install_dbt_labs_skills: true
   run_dbt_deps_on_sources: true
-  create_ci_workflow: true
+  create_ci_workflow: false
   create_agents_schema_workflow: false
+  # Continuous integration and Agents Schema workflows belong to approved automation phases.
   # User must add WAREHOUSE_CREDENTIALS in GitHub UI - agent cannot create secrets

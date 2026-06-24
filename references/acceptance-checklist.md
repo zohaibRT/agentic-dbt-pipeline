@@ -13,7 +13,10 @@ Verify before marking the dbt pipeline workflow complete.
 
 ## Environment
 
-- [ ] New/full pipeline started with read-only Discovery & Requirements before Bootstrap & Init
+- [ ] New/full pipeline started with read-only Discovery & Requirements before automatic setup-only Bootstrap
+- [ ] Bootstrap auto-ran only after discovery requirements were accepted, or stopped because a bootstrap safety gate was triggered
+- [ ] Bootstrap stayed setup-only: scaffold, dependency install, connection validation, parse validation, and reports only
+- [ ] Bootstrap did not generate source YAML, build medallion layers, create automation workflows, replace warehouse objects, commit, or push
 - [ ] Initial discovery stayed lightweight; detailed discovery happened phase-by-phase before sources/bronze/silver/gold/etc.
 - [ ] Python venv and dbt adapter installed
 - [ ] `dbt debug` passes
@@ -24,7 +27,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Fresh clone without `.env` creates a safe local `.env` template and stops for required user inputs before dbt commands
 - [ ] Missing required first-run values were requested directly from the user, not found by repository search, terminal inspection, other workspaces, or previous runs
 - [ ] Any subagent delegation was read-only/draft work; main agent kept dbt commands, edits, commits, and final decisions
-- [ ] `AGENT_PLAN.md` created or updated with the approved plan for each implemented phase
+- [ ] `AGENT_PLAN.md` created or updated with automatic setup-only Bootstrap status and approved plans for each implemented non-bootstrap phase
 - [ ] Discovery created `reports/agent/discovery_report.md` before the chat summary, even if the dbt project root did not exist yet
 - [ ] Discovery report includes recommended medallion direction for sources, bronze/staging, silver/intermediate, and gold/marts
 - [ ] Discovery report includes a Mermaid entity relationship diagram when credible relationships exist
@@ -70,7 +73,7 @@ Verify before marking the dbt pipeline workflow complete.
 
 ## Layers
 
-- [ ] Each phase had Markdown plan approval before implementation
+- [ ] Each non-bootstrap phase had Markdown plan approval before implementation
 - [ ] Each phase plan was based on focused phase discovery, not a full upfront design
 - [ ] Each phase plan included an agent recommendation, evidence, what looks right, what is not ready, confidence, and approval needs
 - [ ] The agent recommended a path instead of asking the user to design every model from scratch

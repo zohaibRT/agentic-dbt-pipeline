@@ -1,6 +1,8 @@
 # Phase Plan Approval
 
-Use this before every phase that creates files, changes dbt behavior, or builds warehouse objects. Run [discovery-requirements.md](discovery-requirements.md) first for a new/full-pipeline request.
+Use this before every non-bootstrap phase that creates models, seeds, snapshots, semantic files, documentation files, workflow files, or warehouse objects. Run [discovery-requirements.md](discovery-requirements.md) first for a new/full-pipeline request.
+
+Bootstrap is handled by [bootstrap.md](bootstrap.md). It auto-runs as setup-only when `auto_bootstrap: true` after the discovery requirements checkpoint is accepted, unless a bootstrap safety gate requires user approval.
 
 ## Core rule
 
@@ -14,11 +16,10 @@ Default plan file:
 
 The same Markdown should also be summarized in chat so the user can approve without opening files.
 
-Do not create or modify models, seeds, snapshots, workflows, semantic files, or warehouse schemas for a phase until the user approves that phase plan.
+Do not create or modify models, seeds, snapshots, workflows, semantic files, documentation files, or warehouse schemas for a phase until the user approves that phase plan.
 
 ## Applies to these phases
 
-- Init / project setup
 - Packages and source YAML
 - Bronze / staging
 - Silver / intermediate
@@ -29,6 +30,8 @@ Do not create or modify models, seeds, snapshots, workflows, semantic files, or 
 - CI
 - Agents Schema
 - Refactors, cleanup, or schema behavior changes
+
+Initialization/project setup belongs to automatic Bootstrap only when it stays inside the setup-only boundary. If setup would overwrite files, change profile behavior, create warehouse objects, or alter schema behavior, stop and ask before continuing.
 
 Read-only discovery commands are allowed before approval when they are needed to make the plan accurate, such as `dbt debug`, `dbt ls`, metadata queries, row counts, or file inspection. Keep discovery lightweight and summarize what was learned.
 

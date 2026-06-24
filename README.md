@@ -2,7 +2,7 @@
 
 `dbt Pipeline` is an agent skill for setting up and maintaining dbt projects with a structured, agent-assisted workflow.
 
-It helps an agent initialize a dbt project, configure sources, build bronze/silver/gold medallion layers, add semantic layer assets, run quality checks, generate documentation, create continuous integration workflows, publish dbt metadata to Agents Schema, write per-phase status reports, commit each stage separately, and finish with a clear user-facing run summary. It also requires explicit data-engineering decisions before each build phase, so the agent does not silently guess grain, joins, metrics, privacy, or materialization.
+It helps an agent initialize a dbt project, configure sources, build bronze/silver/gold medallion layers, add semantic layer assets, run quality checks, generate documentation, create continuous integration workflows, publish dbt metadata to Agents Schema, write per-phase status reports, commit each stage separately, and finish with a clear user-facing run summary. It also requires explicit data-engineering decisions before each non-bootstrap build phase, so the agent does not silently guess grain, joins, metrics, privacy, or materialization.
 
 ## Installation
 
@@ -38,7 +38,7 @@ Run the full pipeline from source discovery through final delivery.
 
 First, perform read-only discovery only: inspect source schemas/tables, create necessary Mermaid discovery diagrams including an entity relationship diagram when credible relationships exist, summarize what you conclude from the data, include a recommended medallion direction for sources, bronze/staging, silver/intermediate, and gold/marts, recommend the best next path with evidence, and ask whether I want to add or change requirements.
 
-After I answer, before each build phase, write/update `AGENT_PLAN.md`, explain what will be built, what looks right, what is not ready yet, confidence about proven vs uncertain items, and what needs my approval, then wait for approval. After each completed phase, write/update `reports/agent/<phase>_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md`.
+After I answer, run setup-only Bootstrap automatically when `auto_bootstrap` is true, then before each non-bootstrap build phase, write/update `AGENT_PLAN.md`, explain what will be built, what looks right, what is not ready yet, confidence about proven vs uncertain items, and what needs my approval, then wait for approval. After each completed phase, write/update `reports/agent/<phase>_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md`.
 ```
 
 For a full copy-paste prompt, see [prompt.md](prompt.md).
@@ -75,12 +75,12 @@ Keep passwords, tokens, and private keys in local profiles or GitHub Secrets.
 | Phase | What the skill does |
 |---|---|
 | Discovery | Project-oriented and phased source/schema analysis written to `reports/agent/discovery_report.md`; includes necessary Mermaid discovery diagrams and recommended medallion direction for sources, bronze/staging, silver/intermediate, and gold/marts; each layer gets focused discovery before build planning |
-| Bootstrap | Installs dbt Labs agent skills and dbt packages when needed |
+| Bootstrap | Runs automatically after discovery requirements are accepted; setup-only scaffold, dependency install, connection validation, parse validation, and bootstrap reports |
 | Validation | Runs `dbt debug`, `dbt deps`, `dbt parse`, and scoped `dbt build` commands |
 | Environment configuration | Loads non-secret `.env` values before asking for missing inputs |
 | Warehouse adapter routing | Uses only the adapter from the selected dbt profile for discovery |
 | Subagents | Optionally parallelizes read-only profiling, planning, documentation, and review work |
-| Phase planning | Writes a Markdown plan before each phase and waits for approval before building |
+| Phase planning | Writes a Markdown plan before each non-bootstrap phase and waits for approval before building |
 | Agent recommendations | Recommends the best path with evidence, confidence, and risks, then asks the data engineer to approve or change business-impacting choices |
 | Data engineer decision gate | Documents grain, keys, joins, mappings, metrics, privacy, tests, materialization, and validation evidence before build |
 | Phase reports | Writes `reports/agent/<phase>_report.md`, `PIPELINE_STATUS.md`, and `CONTEXT_TREE.md` after each phase |
@@ -118,7 +118,7 @@ The skill is designed to keep project history readable. It commits each stage se
 11. Add Agents Schema workflow
 
 By default, the agent asks before each commit. It asks about push only when a GitHub remote is configured or requested.
-It also asks for approval before each build phase after showing the Markdown plan.
+It asks for approval before each non-bootstrap build phase after showing the Markdown plan. Bootstrap is automatic setup-only unless a safety gate is triggered.
 After each completed phase, it writes a phase report showing what passed, warned, failed, was skipped, and still needs review, then updates the context tree for future phases.
 
 ## Verification
@@ -155,7 +155,7 @@ The skill can add and install these dbt packages:
 | [SKILL.md](SKILL.md) | Main skill orchestration instructions |
 | [prompt.md](prompt.md) | Copy-paste prompt for an agent session |
 | [project.config.yml](project.config.yml) | Default non-secret configuration |
-| [references/bootstrap.md](references/bootstrap.md) | Bootstrap workflow |
+| [references/bootstrap.md](references/bootstrap.md) | Automatic setup-only Bootstrap workflow |
 | [references/discovery-requirements.md](references/discovery-requirements.md) | Read-only discovery and requirements checkpoint before build planning |
 | [references/phase-plan-approval.md](references/phase-plan-approval.md) | Markdown plan and approval gate before every phase |
 | [references/recommendation-and-review.md](references/recommendation-and-review.md) | Agent recommendations, what looks right, risks, and approval boundaries |

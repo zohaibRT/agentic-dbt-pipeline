@@ -130,7 +130,7 @@ Keep this section directional during initial discovery. Do not list every final 
 
 ## Requirements checkpoint
 
-Before creating the bootstrap/init plan, ask whether the user wants to add or change requirements.
+Before automatic Bootstrap, ask whether the user wants to add or change requirements.
 
 Use this wording:
 
@@ -159,13 +159,13 @@ Confidence:
 Needs your approval:
 <business-impacting choices before the next build phase>
 
-Before I plan the dbt build, do you want to add any requirements?
+Before I run setup-only Bootstrap, do you want to add any requirements?
 Examples: field mappings, columns to exclude, metric definitions, privacy rules, naming rules, facts/dimensions to prioritize, or tables to ignore.
 
-Reply with your changes/requirements, or reply "continue" if you approve the recommendation and want me to prepare the Bootstrap & Init plan for approval.
+Reply with your changes/requirements, or reply "continue" if you approve the recommendation and want me to run setup-only Bootstrap automatically.
 ```
 
-If the user replies `continue`, `no changes`, `go ahead`, or similar, proceed to [phase-plan-approval.md](phase-plan-approval.md) for Bootstrap & Init.
+If the user replies `continue`, `no changes`, `go ahead`, or similar, proceed to automatic setup-only Bootstrap in [bootstrap.md](bootstrap.md). Do not ask for a separate `approve bootstrap` response unless a bootstrap safety gate is triggered.
 
 If the user provides requirements, add them to the plan as `project_rules` and use them in later phases.
 
@@ -176,4 +176,4 @@ If the user provides requirements, add them to the plan as `project_rules` and u
 - Skip the requirements checkpoint on a new full pipeline.
 - Hide inferred business logic. Explain what was inferred and what still needs confirmation.
 
-After discovery is summarized, confirm that `reports/agent/discovery_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` were created or updated. Do not defer discovery files to Bootstrap & Init.
+After discovery is summarized, confirm that `reports/agent/discovery_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` were created or updated. Do not defer discovery files to Bootstrap and Initialization.

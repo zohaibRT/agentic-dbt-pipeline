@@ -25,9 +25,9 @@ Read and execute [references/discovery-requirements.md](references/discovery-req
 
 Discovery is read-only and project-oriented. It may inspect schemas, tables, columns, row counts, keys, relationships, dates, measures, and statuses. Its input/report/output must focus on the source data and analytics project, not environment setup. It must write `reports/agent/discovery_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` before the chat summary, even when the dbt project has not been initialized yet. It must create Mermaid discovery diagrams when the source evidence supports them, including an entity relationship diagram when credible relationships exist, plus other necessary source inventory, business process, or medallion direction diagrams. It must not install packages, run codegen, create warehouse schemas, or change profiles.
 
-After discovery, summarize what the agent concluded from the source data and ask whether the user wants to add requirements such as mappings, metrics, privacy rules, naming rules, included/excluded tables, or priority facts/dimensions. Continue to Bootstrap & Init only after the user replies with requirements or says to continue.
+After discovery, summarize what the agent concluded from the source data and ask whether the user wants to add requirements such as mappings, metrics, privacy rules, naming rules, included/excluded tables, or priority facts/dimensions. Continue to Bootstrap and Initialization only after the user replies with requirements or says to continue.
 
-## Bootstrap (build phase - after discovery approval)
+## Bootstrap (setup-only phase - automatic after discovery)
 
 Read and execute [references/bootstrap.md](references/bootstrap.md) **before** any layer work:
 
@@ -40,6 +40,10 @@ Read and execute [references/bootstrap.md](references/bootstrap.md) **before** a
 User one-time manual steps: **profiles.yml password**, plus **GitHub repository or secret** only when remote push, continuous integration, or Agents Schema synchronization is requested.
 
 If `dbt_profile_name` is provided in the prompt, use it as `{project.profile}` for dbt commands and generated `dbt_project.yml`. If it is missing and multiple profiles exist in `~/.dbt/profiles.yml`, ask the user which profile to use before running dbt commands. Never guess from the first profile.
+
+Bootstrap is setup-only and auto-runs by default when `auto_bootstrap: true` after the discovery requirements checkpoint is accepted. Do not ask for a separate `approve bootstrap` response unless a bootstrap safety gate is triggered. Bootstrap may create the local dbt project scaffold, install missing dbt Agent Skills and dbt packages, run `dbt debug`, run `dbt deps`, run `dbt parse`, and write bootstrap reports. Bootstrap does not approve source YAML generation, bronze/staging models, silver/intermediate models, gold/marts models, semantic layer files, documentation changes, continuous integration workflows, Agents Schema synchronization, warehouse model replacement, commits, or pushes.
+
+Stop and ask before Bootstrap if required `.env` values are missing, the selected profile is ambiguous or failing, the profile target schema equals the source schema and needs a user-approved change, existing project files would be overwritten, warehouse objects would be created or replaced beyond setup validation, credentials or secrets are needed, `auto_bootstrap: false` is set, or the user explicitly asked to approve setup manually.
 
 ## dbt packages & agent skills (mandatory stack)
 
@@ -62,7 +66,7 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 | Phase | When | Reference |
 |---|---|---|
 | **Discovery** | First for new/full pipeline runs | [discovery-requirements.md](references/discovery-requirements.md), [source-profiling.md](references/source-profiling.md) |
-| **Bootstrap** | First build phase after discovery | [bootstrap.md](references/bootstrap.md) |
+| **Bootstrap** | Automatic setup-only phase after discovery requirements are accepted | [bootstrap.md](references/bootstrap.md) |
 | **0 Inputs** | Always first | [skill-inputs.md](references/skill-inputs.md), [project-naming.md](references/project-naming.md), [env-configuration.md](references/env-configuration.md), [warehouse-adapter-routing.md](references/warehouse-adapter-routing.md), [security-and-credentials.md](references/security-and-credentials.md), [schema-isolation.md](references/schema-isolation.md), [code-agent-setup.md](references/code-agent-setup.md) |
 | **0b Subagents** | Optional speed-up | [subagent-workflow.md](references/subagent-workflow.md) |
 | **0c Best practices** | Design guardrails | [data-engineering-best-practices.md](references/data-engineering-best-practices.md) |
@@ -84,7 +88,7 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 | **8 Docs** | After layers | [documentation.md](references/documentation.md) |
 | **9 Git** | After each stage | [github-repo-resolution.md](references/github-repo-resolution.md), [git-workflow.md](references/git-workflow.md) |
 | **10 Agents Schema / continuous integration** | Metadata + automation | [agents-schema-setup.md](references/agents-schema-setup.md), [cicd-setup.md](references/cicd-setup.md) |
-| **Plan approval** | Before each build phase | [phase-plan-approval.md](references/phase-plan-approval.md) |
+| **Plan approval** | Before each non-bootstrap build phase | [phase-plan-approval.md](references/phase-plan-approval.md) |
 | **Review** | Human approval points | [human-review.md](references/human-review.md) |
 | **Phase report** | After each completed phase | [phase-completion-report.md](references/phase-completion-report.md) |
 | **Context tree** | Ongoing project memory | [context-tree.md](references/context-tree.md) |
@@ -108,7 +112,9 @@ Resolve `project.name` and `project.root` before `dbt init`. Never use `dbt_prof
 
 Keep the source schema read-only. Never build dbt models, package models, evaluator tables, seeds, snapshots, or audit outputs into `source_schema`. Route evaluator outputs to `<layer_schema_prefix>_evaluator` and layer outputs to separate medallion schemas. Resolve `layer_schema_prefix` with [schema-isolation.md](references/schema-isolation.md); do not use short source names like `dh` as physical schema prefixes unless the user explicitly sets them.
 
-Before each phase that changes files or builds warehouse objects, write/update `{project.root}/AGENT_PLAN.md`, explain the planned work in Markdown, and wait for approval for that phase. Read-only discovery is allowed before approval when needed for an accurate plan.
+Before each phase that changes models, semantic files, documentation files, workflow files, or warehouse objects, write/update `{project.root}/AGENT_PLAN.md`, explain the planned work in Markdown, and wait for approval for that phase. Read-only discovery is allowed before approval when needed for an accurate plan.
+
+Bootstrap is the exception: after the user accepts discovery requirements and `auto_bootstrap: true`, write/update `{project.root}/AGENT_PLAN.md` with Bootstrap marked as automatic setup-only, run Bootstrap, then write `reports/agent/bootstrap_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md`. If any bootstrap safety gate from [bootstrap.md](references/bootstrap.md) is triggered, stop and ask before continuing.
 
 ## Step 0b - Optional subagents
 
@@ -209,7 +215,7 @@ Read [separate-layer-builds.md](references/separate-layer-builds.md).
 **Full pipeline (default):**
 
 1. **Discovery & requirements** - [discovery-requirements.md](references/discovery-requirements.md)
-2. **Bootstrap** - [bootstrap.md](references/bootstrap.md)
+2. **Bootstrap** - setup-only and automatic after discovery requirements are accepted - [bootstrap.md](references/bootstrap.md)
 3. Init *(if project missing)*
 4. Sources - full `packages.yml`, `dbt deps`, codegen, source YAML
 5. Staging -> Intermediate -> Marts
@@ -220,7 +226,7 @@ Read [separate-layer-builds.md](references/separate-layer-builds.md).
 10. Automation - continuous integration workflow
 11. **Acceptance + final summary** - [acceptance-checklist.md](references/acceptance-checklist.md), [final-delivery.md](references/final-delivery.md)
 
-Each stage: **phase-specific discovery -> agent recommendation -> data engineer decision check -> write Markdown plan -> ask approval -> implement -> parse/build -> write phase report -> update context tree -> summarize -> ask commit**. Ask for push only when a non-local GitHub repo is configured or the user requested push.
+After Bootstrap, each stage: **phase-specific discovery -> agent recommendation -> data engineer decision check -> write Markdown plan -> ask approval -> implement -> parse/build -> write phase report -> update context tree -> summarize -> ask commit**. Ask for push only when a non-local GitHub repository is configured or the user requested push.
 
 ## Step 2 - Sources
 
@@ -355,7 +361,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 | File | Purpose |
 |---|---|
 | [install-skill.md](references/install-skill.md) | Install via npx or `.agents/skills/` |
-| [bootstrap.md](references/bootstrap.md) | First approved build phase: skills install, packages, debug, continuous integration and Agents Schema workflows |
+| [bootstrap.md](references/bootstrap.md) | Automatic setup-only phase: skills install, packages, debug, dependency install, parse, and bootstrap reports |
 | [discovery-requirements.md](references/discovery-requirements.md) | Read-only schema/data discovery and requirements checkpoint before build planning |
 | [project.config.yml](project.config.yml) | Defaults, paths, git, materialization |
 | [skill-inputs.md](references/skill-inputs.md) | Required inputs |
