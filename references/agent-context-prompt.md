@@ -11,7 +11,7 @@ Use the dbt Pipeline skill (`agentic-dbt-pipeline`) and these dbt-labs skills:
 - troubleshooting-dbt-job-errors
 
 Read project.config.yml, references/skill-inputs.md, references/project-naming.md, references/schema-isolation.md, references/env-configuration.md, references/warehouse-adapter-routing.md, references/writing-style.md, and references/data-engineering-best-practices.md first. If `.env` exists, load non-secret settings from it before asking for missing inputs. If `.env` is missing, create a safe local `.env` from `.env.example`, stop before discovery or dbt commands, and ask the user for `DBT_DOMAIN`, `DBT_PROFILE_NAME`, and `DBT_SOURCE_SCHEMA`. Do not search the repository, inspect terminal output, infer, suggest, or summarize values from other workspaces or previous runs.
-After `.env` is loaded, resolve the active dbt profile adapter from `~/.dbt/profiles.yml` and use only that adapter's discovery path. Do not call AWS, Redshift, or any unrelated warehouse connector unless the selected profile adapter requires it or the user explicitly changes profiles.
+After `.env` is loaded, resolve the active dbt profile adapter from `~/.dbt/profiles.yml`, announce the selected profile and adapter, and use only that adapter's discovery path. Do not call AWS, Redshift, PostgreSQL, Snowflake, BigQuery, Databricks, cloud identity checks, warehouse connectors, metadata queries, or Model Context Protocol discovery servers before `.env` and the selected dbt profile adapter are resolved. Do not call AWS, Redshift, or any unrelated warehouse connector unless the selected profile adapter requires it or the user explicitly changes profiles.
 For a new/full pipeline, run lightweight read-only project discovery first, write reports/agent/discovery_report.md, update reports/agent/PIPELINE_STATUS.md and reports/agent/CONTEXT_TREE.md, create necessary Mermaid discovery diagrams including an entity relationship diagram when credible relationships exist, explain what you conclude from the source schemas/tables, include recommended medallion direction for sources, bronze/staging, silver/intermediate, and gold/marts, recommend the best next path with evidence, and ask whether the user wants to add or change requirements before automatic setup-only Bootstrap. If the dbt project root does not exist yet, create reports/agent/ under the current workspace/run root. Do not design every layer upfront; read references/phased-discovery.md and references/recommendation-and-review.md, then run focused discovery before sources, bronze, silver, gold, semantic, evaluator, and documentation phases.
 After the user accepts discovery requirements, read references/bootstrap.md and run automatic setup-only Bootstrap when auto_bootstrap is true. Write/update AGENT_PLAN.md with Bootstrap marked automatic setup-only, run only scaffold/dependency/debug/parse setup actions, and write reports/agent/bootstrap_report.md, reports/agent/PIPELINE_STATUS.md, and reports/agent/CONTEXT_TREE.md. Stop and ask before Bootstrap only when a bootstrap safety gate is triggered.
 When work can be safely delegated, read references/subagent-workflow.md and use subagents only for read-only analysis or draft review.
@@ -38,6 +38,7 @@ Use full wording in user-facing plans, reports, summaries, diagram notes, and fi
 
 - Use existing dbt profile: <project.profile>
 - Use only the adapter from the selected dbt profile for discovery
+- Do not call any warehouse or cloud connector until `.env` and the selected dbt profile adapter are resolved and announced
 - Derive dbt project name/root from source schema or domain. Use repository name only when the user provided one for push. Do not use the profile name as the folder unless explicitly requested.
 - Do not hardcode passwords
 - Do not commit profiles.yml or .env
@@ -65,7 +66,7 @@ See [dbt-packages-and-skills.md](dbt-packages-and-skills.md): codegen, dbt_utils
 - ref() only in intermediate/marts; source() only in staging
 - Never materialize dbt models, package models, evaluator tables, seeds, snapshots, or audit outputs in source schema
 - Run dbt debug (init), dbt parse, dbt build after changes
-- Do not probe unrelated warehouses or cloud connectors during discovery
+- Do not probe unrelated warehouses or cloud connectors before or during discovery
 - Run setup-only Bootstrap automatically after discovery requirements are accepted, unless a bootstrap safety gate is triggered
 - Run focused phase discovery before each non-bootstrap phase plan; recommend the best path with evidence, but do not replace the data engineer's business decisions
 - Before each non-bootstrap phase build: write/update AGENT_PLAN.md, explain what will be built, include recommendation, confidence, and data-engineering decision check, and wait for approval

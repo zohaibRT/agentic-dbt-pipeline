@@ -91,7 +91,7 @@ Summarize which non-secret values were loaded, but never print anything that loo
 
 If both `.env` and the prompt specify the same field with different values, use the prompt value and mention the difference in the phase summary.
 
-After resolving `DBT_PROFILE_NAME`, follow [warehouse-adapter-routing.md](warehouse-adapter-routing.md) before discovery. Read the selected profile key from `~/.dbt/profiles.yml`, resolve its adapter `type`, and use only that adapter's discovery path. Do not probe AWS, Redshift, Snowflake, BigQuery, Databricks, or any unrelated connector just because credentials, tools, or other profiles exist.
+After resolving `DBT_PROFILE_NAME`, follow [warehouse-adapter-routing.md](warehouse-adapter-routing.md) before discovery. Read the selected profile key from `~/.dbt/profiles.yml`, resolve its adapter `type`, announce the selected profile and adapter, and use only that adapter's discovery path. Before this route is locked, do not call AWS, Redshift, PostgreSQL, Snowflake, BigQuery, Databricks, cloud identity checks, warehouse connectors, metadata queries, or Model Context Protocol discovery servers. Do not probe any unrelated connector just because credentials, tools, or other profiles exist.
 
 ## First run when `.env` is missing
 

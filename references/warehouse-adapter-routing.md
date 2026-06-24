@@ -4,7 +4,7 @@ Use the warehouse adapter selected by the active dbt profile. Do not probe unrel
 
 ## Core rule
 
-Resolve the active warehouse in this order before discovery or dbt commands:
+Resolve the active warehouse in this order before any discovery, dbt command, warehouse connector call, cloud identity call, or metadata query:
 
 1. Load prompt values.
 2. Load `.env`.
@@ -13,6 +13,33 @@ Resolve the active warehouse in this order before discovery or dbt commands:
 5. Use that profile target's `type` as the warehouse adapter.
 
 The selected dbt profile is the source of truth for discovery routing. If `.env` selects a PostgreSQL profile, use PostgreSQL discovery only. Do not call AWS, Redshift, Snowflake, BigQuery, Databricks, or connector-specific discovery paths unless the selected profile adapter is that warehouse type or the user explicitly asks for that warehouse.
+
+## Route lock
+
+Before the route lock is established, the agent may read only local files needed to resolve routing:
+
+- `.env`
+- `.env.example`
+- `project.config.yml`
+- `~/.dbt/profiles.yml`, limited to resolving the selected profile key and target type
+- Skill reference files needed for routing
+
+The route lock is established only after the agent can state:
+
+```text
+Using `.env` profile `<profile_name>` with adapter `<adapter_type>` for discovery. I will not query other warehouses unless you ask me to change profiles.
+```
+
+Before this line is true, do not call:
+
+- AWS identity or credential checks
+- Redshift, Snowflake, BigQuery, Databricks, or PostgreSQL connectors
+- Cloud metadata APIs
+- Warehouse metadata queries
+- Model Context Protocol servers for unrelated warehouse discovery
+- Fallback discovery scripts
+
+If a tool or previous context suggests a warehouse before `.env` and the selected dbt profile are resolved, ignore that suggestion and continue resolving local configuration only.
 
 ## Adapter-specific discovery
 
@@ -31,10 +58,12 @@ Do not use cloud account probes, identity calls, or external warehouse connector
 ## Prohibited behavior
 
 - Do not call AWS identity APIs when `.env` selects a PostgreSQL profile.
+- Do not call AWS identity APIs before reading `.env` and resolving the selected dbt profile adapter.
 - Do not use Redshift discovery because a Redshift profile exists elsewhere in `profiles.yml`.
 - Do not inspect sibling projects, prior workspaces, terminal history, or old `.env` files to choose a warehouse.
 - Do not switch adapters because one connector has expired credentials.
 - Do not summarize expired credentials for unrelated adapters unless the active selected profile uses that adapter.
+- Do not say "AWS credentials expired" or similar for an unrelated adapter during a PostgreSQL run; it is noise and signals that the wrong path was touched.
 
 ## If the selected profile fails
 

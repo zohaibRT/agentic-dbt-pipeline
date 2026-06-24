@@ -23,6 +23,8 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] `.gitignore` excludes credentials and generated files
 - [ ] `.env` loaded for non-secret inputs when present; `.env.example` contains no secrets when committed
 - [ ] Active dbt profile adapter was resolved before discovery
+- [ ] No warehouse connector, cloud identity check, metadata query, or Model Context Protocol warehouse discovery ran before `.env` and the selected dbt profile adapter were resolved
+- [ ] Discovery announced the selected profile and adapter before querying the warehouse
 - [ ] Discovery used only the selected dbt profile adapter and did not probe unrelated warehouses or cloud connectors
 - [ ] Fresh clone without `.env` creates a safe local `.env` template and stops for required user inputs before dbt commands
 - [ ] Missing required first-run values were requested directly from the user, not found by repository search, terminal inspection, other workspaces, or previous runs
