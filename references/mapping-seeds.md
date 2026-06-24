@@ -18,7 +18,7 @@ Create dbt seeds when mappings are stable business reference data, for example:
 
 Do not create seeds for mappings that already exist as reliable warehouse reference tables. Use those source tables instead.
 
-Do not create mapping seeds for unclear fields such as `field_1`, `field_2`, and `field_3` from guessed meanings. If definitions are missing, recommend passing them through bronze/staging as raw unmapped codes, deferring mappings, and excluding them from gold/marts by default.
+Do not create mapping seeds for ambiguous, placeholder, abbreviated, generic, or poorly named fields from guessed meanings. If definitions are missing, recommend passing them through bronze/staging as raw unmapped fields, deferring mappings, and excluding them from gold/marts by default.
 
 ## Seed location and naming
 

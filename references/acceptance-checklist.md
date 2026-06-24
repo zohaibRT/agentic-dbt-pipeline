@@ -112,7 +112,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Sensitive fields reviewed before reaching marts
 - [ ] Direct identifiers and sensitive fields were excluded, masked, hashed, or explicitly approved before reaching gold/marts
 - [ ] Unclear coded fields were passed through bronze/staging as raw unmapped codes, mapped from approved definitions, or explicitly approved for raw audit exposure
-- [ ] Unclear generic fields such as `field_1`, `field_2`, and `field_3` were not renamed unless the user approved exact final names after value-pattern review
+- [ ] Ambiguous, placeholder, abbreviated, generic, or poorly named fields were not renamed unless the user approved exact final names after value-pattern review
 - [ ] The agent recommended safe defaults for sensitive and unclear fields instead of only asking the user what to do
 
 ## Git

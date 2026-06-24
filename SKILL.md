@@ -130,7 +130,7 @@ Never hardcode secrets. Ask before production changes.
 
 Read [data-engineering-best-practices.md](references/data-engineering-best-practices.md) before model design and again before final delivery. Apply grain, test, incremental, snapshot, documentation, privacy, and performance guardrails.
 
-Read [privacy-and-unknown-fields.md](references/privacy-and-unknown-fields.md) when discovery finds direct identifiers, sensitive fields, protected health information, personally identifiable information, or unclear coded fields such as `field_1`, `field_2`, and `field_3`. The agent must recommend a safe default, document the recommendation, and ask only for approval or business definitions instead of leaving the whole decision to the user.
+Read [privacy-and-unknown-fields.md](references/privacy-and-unknown-fields.md) when discovery finds direct identifiers, sensitive fields, protected health information, personally identifiable information, or ambiguous, placeholder, abbreviated, or poorly named fields. The agent must recommend a safe default, document the recommendation, and ask only for approval or business definitions instead of leaving the whole decision to the user.
 
 Read [writing-style.md](references/writing-style.md) before writing user-facing prompts, plans, reports, summaries, diagram notes, or final handoffs. Use full wording instead of shorthand, except for official tool names, commands, filenames, environment variables, and code identifiers.
 

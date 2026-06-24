@@ -53,7 +53,7 @@ Good recommendation:
 ```markdown
 ### Agent Recommendation
 - Recommended path: Build bronze for all confirmed source tables and exclude unclear placeholder columns from silver/gold until their meaning is provided.
-- Why: Source profiling found stable primary keys and populated appointment/provider/patient tables, but `field_1`, `field_2`, and `field_3` have no clear business definition.
+- Why: Source profiling found stable primary keys and populated source tables, but some ambiguous or poorly named fields have no clear business definition.
 
 ### What Looks Right
 - Appointments can be the first fact area because row counts, date fields, status values, and patient/provider keys are present.
@@ -65,7 +65,7 @@ Good recommendation:
 
 ### Confidence
 - Confident about: table inventory, source grains, tested key integrity, appointment/provider/patient relationships, and the first-pass star-schema shape.
-- Less confident about: business meaning of `field_1`, `field_2`, and `field_3`, whether patient names should appear in gold, which date drives each metric, and whether to rebuild from scratch or align with existing warehouse models.
+- Less confident about: business meaning of ambiguous source fields, whether direct identifiers should appear in gold, which date drives each metric, and whether to rebuild from scratch or align with existing warehouse models.
 
 ### Needs Data Engineer Approval
 - Whether patient names or insurance fields may appear in gold models.

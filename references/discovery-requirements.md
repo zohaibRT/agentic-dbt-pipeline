@@ -18,7 +18,7 @@ Discovery is also phased. Initial discovery should be lightweight and should not
 
 Discovery must include Mermaid diagrams when the source data has enough evidence to support them. Create an entity relationship diagram during discovery when any credible table relationships exist. Create other necessary Mermaid diagrams when they make the project easier to review, such as source inventory, candidate business process flow, or high-level medallion direction. Do not draw relationships or flows that are only guesses; list uncertain items as notes outside the diagram.
 
-When discovery finds sensitive fields or unclear coded fields, read [privacy-and-unknown-fields.md](privacy-and-unknown-fields.md). Recommend a safe default in the discovery report instead of only asking what to do. For example, recommend excluding or masking direct identifiers from gold/marts by default, and recommend passing unclear fields such as `field_1`, `field_2`, and `field_3` through bronze/staging as raw unmapped codes while excluding them from gold/marts until definitions are provided.
+When discovery finds sensitive fields or ambiguous, placeholder, abbreviated, generic, or poorly named fields, read [privacy-and-unknown-fields.md](privacy-and-unknown-fields.md). Recommend a safe default in the discovery report instead of only asking what to do. For example, recommend excluding or masking direct identifiers from gold/marts by default, and recommend passing unclear source fields through bronze/staging as raw unmapped fields while excluding them from gold/marts until definitions are provided.
 
 ## Allowed read-only actions
 

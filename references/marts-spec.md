@@ -69,7 +69,7 @@ Create reporting marts only when the required metrics and grain are clear. Do no
 - Expose business-friendly mapped fields from intermediate models; keep raw codes only when useful for audit
 - Do not expose private, sensitive, protected health information, personally identifiable information, or direct identifier fields in marts unless the user explicitly approves
 - Default to excluding, masking, or hashing direct identifiers in marts; clear-text exposure is not the default even for local development
-- Exclude unclear coded fields such as `field_1`, `field_2`, and `field_3` from marts by default unless definitions are provided or the user approves raw audit exposure
+- Exclude ambiguous, placeholder, abbreviated, generic, or poorly named fields from marts by default unless definitions are provided or the user approves raw audit exposure
 - Keep one clear grain per fact or dimension; do not mix event, entity, and summary grains in the same model
 - Add surrogate keys only when natural keys are missing, composite, unstable, or too wide for downstream use
 
