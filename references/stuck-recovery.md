@@ -29,7 +29,7 @@ Use one of these labels:
 - Git remote, commit, or push issue
 - Agents Schema unsupported destination
 - Source data missing or empty
-- Wrong database, dataset, catalog, or source schema
+- Wrong database, dataset, catalog, schema, table, tenant, client, domain, environment, or source assumption
 
 ## Try One Safe Recovery
 
@@ -42,7 +42,7 @@ Pick only one safe action before asking again:
 - Ask for the missing profile/schema/source/rule
 - Skip optional CI or Agents Schema when running local-only
 
-Metadata listing is not approval to switch. If the configured source is empty or a better candidate appears, stop and ask the user to approve the exact database/schema before profiling rows, columns, keys, relationships, or writing discovery files.
+Metadata listing is not approval to switch. If the configured source is empty or a better candidate appears, stop and ask the user to approve the exact source before profiling rows, columns, keys, relationships, business entities, tenants, clients, domains, environments, or writing discovery files.
 
 ## Ask For A Decision
 

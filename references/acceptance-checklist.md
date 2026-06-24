@@ -26,8 +26,10 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] No warehouse connector, cloud identity check, metadata query, or Model Context Protocol warehouse discovery ran before `.env` and the selected dbt profile adapter were resolved
 - [ ] Discovery announced the selected profile and adapter before querying the warehouse
 - [ ] Discovery used only the selected dbt profile adapter and did not probe unrelated warehouses or cloud connectors
-- [ ] If the configured source database/schema was missing, empty, or wrong, the agent stopped after metadata-only candidate listing and asked for approval before switching
+- [ ] If the configured source was missing, empty, inaccessible, ambiguous, mismatched, or wrong, the agent stopped after metadata-only candidate listing and asked for approval before switching
+- [ ] The agent did not change database, dataset, catalog, schema, table, tenant, client, domain, environment, assumption, `.env`, or profile settings before source approval
 - [ ] The agent did not profile candidate tables, infer relationships, create diagrams, update `.env`, or write discovery reports for a replacement source before approval
+- [ ] Once a source was approved, the approved source stayed locked for the run unless the user approved a later switch
 - [ ] Fresh clone without `.env` creates a safe local `.env` template and stops for required user inputs before dbt commands
 - [ ] Generated `.env` contains placeholders only until the user provides real values
 - [ ] The agent did not fill `.env` from profile target schema, profile database name, warehouse schemas, previous runs, examples, or guesses

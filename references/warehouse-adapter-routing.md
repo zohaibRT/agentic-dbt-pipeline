@@ -74,33 +74,34 @@ If discovery fails against the selected profile:
 3. Ask the user whether to fix that profile or choose a different profile.
 4. Do not try another adapter automatically.
 
-## If the selected database or source schema is wrong
+## If the selected source is wrong
 
-If the selected profile connects successfully but the configured database, dataset, catalog, or `source_schema` is missing, empty, or appears to be the wrong source:
+If the selected profile connects successfully but the configured database, dataset, catalog, schema, table, tenant, client, domain, environment, or source assumption is missing, empty, inaccessible, ambiguous, or appears to be wrong, read [source-confirmation.md](source-confirmation.md).
 
 1. Stop active discovery on that source.
-2. Report the exact selected profile, adapter, database or database-equivalent, and source schema that were checked.
-3. You may run only lightweight metadata listing through the same selected adapter to show candidate databases, datasets, catalogs, schemas, or table counts when the adapter supports it without switching credentials.
-4. Do not profile rows, inspect columns, infer relationships, create diagrams, write discovery reports, or update `.env` for any candidate database or schema before user approval.
+2. Report the exact selected profile, adapter, database or database-equivalent, source schema, table scope, tenant/client/domain/environment context, and assumptions that were checked.
+3. You may run only lightweight metadata listing through the same selected adapter to show candidate databases, datasets, catalogs, schemas, tables, or table counts when the adapter supports it without switching credentials.
+4. Do not profile rows, inspect columns, infer relationships, create diagrams, write discovery reports, or update `.env` for any candidate source before user approval.
 5. Recommend the most likely candidate only as a recommendation, not as a decision.
-6. Ask the user to approve the exact database or database-equivalent and `source_schema` before continuing.
+6. Ask the user to approve the exact replacement source before continuing.
 
 Use this wording:
 
 ```text
-The configured source did not contain usable tables:
+The configured source did not contain usable data:
 - Profile: <profile_name>
 - Adapter: <adapter_type>
 - Database or equivalent: <database_name>
 - Source schema: <source_schema>
+- Table scope / tenant / client / domain / environment: <context when relevant>
 
 I found these possible candidates from metadata only:
-| Candidate database/schema | Evidence |
+| Candidate source | Evidence |
 |---|---|
 | <candidate> | <table count or non-secret metadata> |
 
 My recommendation is <candidate> because <evidence>.
-Should I update `.env` / profile settings to use this candidate and run read-only discovery there?
+Should I use this source and run read-only discovery there?
 ```
 
 Do not say "profiling core tables there next" or continue automatically. Candidate discovery is a decision checkpoint, not approval to switch.

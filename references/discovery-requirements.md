@@ -12,7 +12,7 @@ Do not start discovery until the active `domain`, `dbt_profile_name`, and `sourc
 
 Before any source discovery, follow [warehouse-adapter-routing.md](warehouse-adapter-routing.md). Resolve the selected dbt profile adapter from `~/.dbt/profiles.yml`, announce the selected profile and adapter, and use only that adapter's metadata queries. Before this route is locked, do not call AWS, Redshift, PostgreSQL, Snowflake, BigQuery, Databricks, cloud identity checks, warehouse connectors, metadata queries, or Model Context Protocol discovery servers. If `.env` selects a PostgreSQL profile, use PostgreSQL discovery only. Do not call AWS, Redshift, or any other warehouse-specific connector unless the selected profile adapter is that warehouse type or the user explicitly changes profiles.
 
-If the confirmed source schema is missing, empty, or appears to be the wrong source, stop discovery and follow the wrong-source checkpoint in [warehouse-adapter-routing.md](warehouse-adapter-routing.md). The agent may list candidate databases, datasets, catalogs, schemas, or table counts as metadata only, but must not profile candidate tables, infer business entities, draw diagrams, write discovery reports, update `.env`, or continue with a different database/schema until the user approves the exact replacement.
+If the configured source is missing, empty, inaccessible, ambiguous, mismatched, or appears to be the wrong source, stop discovery and follow [source-confirmation.md](source-confirmation.md) plus the wrong-source checkpoint in [warehouse-adapter-routing.md](warehouse-adapter-routing.md). The agent may list candidate databases, datasets, catalogs, schemas, tables, tenants, clients, domains, environments, or table counts as metadata only, but must not profile candidate tables, infer business entities, draw diagrams, write discovery reports, update `.env`, or continue with a different source until the user approves the exact replacement.
 
 Discovery is project-oriented, not setup-oriented. The discovery input, report, and chat output should focus on the source data and the future analytics project, not on environment setup, bootstrap, package installation, git, continuous integration, or agent configuration.
 
@@ -28,7 +28,7 @@ When discovery finds sensitive fields or ambiguous, placeholder, abbreviated, ge
 - Confirm the selected dbt profile name and adapter
 - Run `dbt debug` only when a dbt project/profile already exists and the command is needed to verify read-only access
 - Inspect source schemas, tables, columns, and row counts
-- List candidate databases, datasets, catalogs, schemas, or table counts as metadata only when the confirmed source is missing or empty, then stop for user approval before profiling any candidate
+- List candidate databases, datasets, catalogs, schemas, tables, tenants, clients, domains, environments, or table counts as metadata only when the confirmed source is missing, empty, or mismatched, then stop for user approval before profiling any candidate
 - Check candidate primary keys, foreign keys, date columns, measures, status/code columns, and empty tables
 - Inspect existing project files if the project already exists
 
@@ -73,7 +73,7 @@ Discovery must be written to files, not only posted in chat, but only after requ
 
 If `.env` is missing, invalid, or contains placeholders, do not create or update discovery files. Do not create `reports/agent/discovery_report.md`, `reports/agent/PIPELINE_STATUS.md`, or `reports/agent/CONTEXT_TREE.md` for discovery until the user provides valid `DBT_DOMAIN`, `DBT_PROFILE_NAME`, and `DBT_SOURCE_SCHEMA`.
 
-If the confirmed source schema is empty or the agent recommends a different database/schema, do not create or update discovery files for the candidate source until the user approves that replacement.
+If the configured source is empty or the agent recommends a different database, dataset, catalog, schema, table, tenant, client, domain, environment, or assumption, do not create or update discovery files for the candidate source until the user approves that replacement.
 
 Before sending the discovery summary in chat, create or update these files:
 
@@ -185,7 +185,7 @@ If the user provides requirements, add them to the plan as `project_rules` and u
 - Ask for commit approval during discovery because no files should change.
 - Skip the requirements checkpoint on a new full pipeline.
 - Hide inferred business logic. Explain what was inferred and what still needs confirmation.
-- Switch to a different database, dataset, catalog, or schema because it "looks likely" without user approval.
+- Switch to a different database, dataset, catalog, schema, table, tenant, client, domain, environment, or assumption because it "looks likely" without user approval.
 - Profile candidate tables or write discovery reports for a guessed replacement source before approval.
 
 After discovery is summarized, confirm that `reports/agent/discovery_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` were created or updated. Do not defer discovery files to Bootstrap and Initialization.

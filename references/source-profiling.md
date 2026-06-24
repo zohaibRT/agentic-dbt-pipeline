@@ -24,7 +24,7 @@ Use warehouse SQL, dbt source metadata, or codegen output through the adapter se
 
 Do not use another warehouse connector as a profiling fallback. If the selected profile is PostgreSQL, profile PostgreSQL only. If the selected profile is Redshift, profile Redshift only. If the selected profile fails, stop and ask whether to fix the profile or switch profiles.
 
-If the configured source schema is missing, empty, or clearly not the intended data source, stop profiling. You may list candidate databases, datasets, catalogs, schemas, or table counts through the selected adapter as metadata only, but do not inspect candidate table columns, row samples, keys, relationships, or business entities before the user approves the exact replacement database or schema. Do not update `.env`, change `profiles.yml`, write discovery reports, or continue into candidate discovery without that approval.
+If the configured source is missing, empty, inaccessible, ambiguous, mismatched, or clearly not the intended data source, stop profiling and read [source-confirmation.md](source-confirmation.md). You may list candidate databases, datasets, catalogs, schemas, tables, tenants, clients, domains, environments, or table counts through the selected adapter as metadata only, but do not inspect candidate table columns, row samples, keys, relationships, or business entities before the user approves the exact replacement source. Do not update `.env`, change `profiles.yml`, write discovery reports, or continue into candidate discovery without that approval.
 
 ## Record findings
 
@@ -46,7 +46,7 @@ Ask the user before modeling if:
 
 - No stable primary key can be found for an important table
 - A required table is empty
-- The configured source schema is empty or the real source appears to be in another database, dataset, catalog, or schema
+- The configured source is empty or the real source appears to be in another database, dataset, catalog, schema, table scope, tenant, client, domain, or environment
 - A relationship is unclear
 - Multiple date columns could drive the same fact
 - Important columns have ambiguous names
