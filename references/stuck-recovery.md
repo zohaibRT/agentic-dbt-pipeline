@@ -29,6 +29,7 @@ Use one of these labels:
 - Git remote, commit, or push issue
 - Agents Schema unsupported destination
 - Source data missing or empty
+- Wrong database, dataset, catalog, or source schema
 
 ## Try One Safe Recovery
 
@@ -37,9 +38,11 @@ Pick only one safe action before asking again:
 - Run `dbt debug`
 - Run `dbt parse --no-partial-parse`
 - Run a scoped build: `dbt build --select +path:<layer_path>`
-- Inspect available schemas/tables
+- Inspect available databases, datasets, catalogs, schemas, or table counts as metadata only
 - Ask for the missing profile/schema/source/rule
 - Skip optional CI or Agents Schema when running local-only
+
+Metadata listing is not approval to switch. If the configured source is empty or a better candidate appears, stop and ask the user to approve the exact database/schema before profiling rows, columns, keys, relationships, or writing discovery files.
 
 ## Ask For A Decision
 
@@ -51,6 +54,19 @@ Examples:
 I cannot find source_schema: Source.
 I found these schemas: analytics, raw_source, public.
 Which schema should I use?
+```
+
+```text
+The configured source schema is empty:
+- Profile: zension_crm
+- Database: dbt
+- Source schema: source
+
+I found a possible candidate from metadata only:
+- Database/schema: zension.source
+- Evidence: contains CRM-like tables
+
+Should I switch to this candidate and run read-only discovery there?
 ```
 
 ```text
