@@ -101,12 +101,13 @@ When the user runs the default prompt in a freshly cloned skill or dbt project a
 2. If `.env.example` exists, create a local `.env` from it only when `.env` is gitignored or clearly excluded from commits.
 3. If `.env.example` is missing, create `.env.example` with the minimal placeholder keys, then create local `.env` from it.
 4. Do not fill fake real values. Leave placeholders for values the user must provide.
-5. Stop before dbt discovery, `dbt debug`, `dbt deps`, codegen, or build commands.
-6. Tell the user exactly which required values are missing and ask them to update `.env` or provide the values in chat.
+5. Read [profile-listing.md](profile-listing.md) and list available profiles from `~/.dbt/profiles.yml` when readable.
+6. Stop before dbt discovery, `dbt debug`, `dbt deps`, codegen, or build commands.
+7. Tell the user exactly which required values are missing and ask them to update `.env` or provide the values in chat.
 
 When `.env` is missing, do not search the repo for alternate config files, inspect terminal history/output, inspect other workspaces, inspect old dbt projects, query warehouse schemas, or look at previous runs to decide what to do. The data engineer controls the active project inputs.
 
-Do not infer required first-run values from other workspaces, old dbt projects, old `.env` files, existing medallion schemas, warehouse object names, terminal output, or previous runs. Do not scan or summarize other workspaces to suggest values. Ask the user directly.
+Do not infer required first-run values from other workspaces, old dbt projects, old `.env` files, existing medallion schemas, warehouse object names, terminal output, or previous runs. Do not scan or summarize other workspaces to suggest values. Ask the user directly. Listing available profile names from `~/.dbt/profiles.yml` is allowed only as a choice aid; it is not permission to choose a profile.
 
 Never combine missing-`.env` setup with discovery in the same response. Missing `.env` is a hard stop until the user confirms the required values.
 
@@ -140,6 +141,12 @@ Please send these required non-secret values and I will update `.env` for this r
 - DBT_DOMAIN: <business domain, for example hospital or retail>
 - DBT_PROFILE_NAME: <dbt profile key from ~/.dbt/profiles.yml>
 - DBT_SOURCE_SCHEMA: <raw/source schema to inspect>
+
+Available profiles in your `profiles.yml`:
+
+| Profile | Adapter | Notes |
+|---|---|---|
+| <profile_key> | <adapter_type> | <non-secret host kind or host> / <target schema> |
 
 Keep passwords in ~/.dbt/profiles.yml, not in `.env`.
 After I update `.env`, I will summarize the values and wait for your approval before read-only discovery.

@@ -21,7 +21,7 @@ Before the route lock is established, the agent may read only local files needed
 - `.env`
 - `.env.example`
 - `project.config.yml`
-- `~/.dbt/profiles.yml`, limited to resolving the selected profile key and target type
+- `~/.dbt/profiles.yml`, limited to resolving the selected profile key and target type, or listing available profile names with non-secret notes according to [profile-listing.md](profile-listing.md)
 - Skill reference files needed for routing
 
 The route lock is established only after the agent can state:

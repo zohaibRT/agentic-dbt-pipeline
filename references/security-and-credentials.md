@@ -17,6 +17,7 @@
   - CI: GitHub Actions secrets
   - Agents Schema: `WAREHOUSE_CREDENTIALS` secret (YAML in GitHub)
 - Ask for the dbt profile key, such as `dbt_profile_name: hospital_analytics`, instead of asking for passwords.
+- When listing available dbt profiles, show only profile name, adapter, and non-secret notes such as host kind, database, target, or schema. Never show passwords, `pass` values, tokens, private keys, full connection strings, or the full `profiles.yml`.
 
 ## `.gitignore` minimum entries
 

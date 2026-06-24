@@ -1,6 +1,6 @@
 # Skill Inputs - Resolve Before Any Work
 
-Read [project.config.yml](../project.config.yml), [project-naming.md](project-naming.md), [schema-isolation.md](schema-isolation.md), [env-configuration.md](env-configuration.md), and [warehouse-adapter-routing.md](warehouse-adapter-routing.md). Ask the user only for values the agent cannot infer safely.
+Read [project.config.yml](../project.config.yml), [profile-listing.md](profile-listing.md), [project-naming.md](project-naming.md), [schema-isolation.md](schema-isolation.md), [env-configuration.md](env-configuration.md), and [warehouse-adapter-routing.md](warehouse-adapter-routing.md). Ask the user only for values the agent cannot infer safely.
 
 ## Normal user inputs
 
@@ -68,6 +68,7 @@ Only resolve GitHub when the user asks to push, provides `github_repo_name` / `D
 - Use GitHub Secrets in CI (`WAREHOUSE_CREDENTIALS` for Agents Schema).
 - Treat config values like `auto`, `my_dbt_project`, `default`, `example`, or `<...>` as placeholders, not real project/profile inputs.
 - If multiple dbt profiles exist, ask for `dbt_profile_name` before running `dbt debug`, `dbt deps`, `dbt parse`, or `dbt build`.
+- When asking for `dbt_profile_name`, list available profiles using [profile-listing.md](profile-listing.md). Show profile name, adapter, and non-secret notes only. Do not choose one automatically.
 - After `dbt_profile_name` is selected from the prompt or `.env`, use that profile's adapter as the only discovery route. Do not probe unrelated warehouses or cloud connectors.
 - Do not use `dbt_profile_name` as the project folder. The profile is only the connection key. Derive project name/root from [project-naming.md](project-naming.md).
 - Keep `source_schema` read-only. If the dbt profile target schema equals `source_schema`, stop and follow [schema-isolation.md](schema-isolation.md) before any build.
@@ -122,7 +123,7 @@ DBT_GITHUB_REPO_NAME=<repo_name_if_push_is_required>
 
 Prompt values override `.env`. Do not commit `.env`; commit only `.env.example`.
 
-On a fresh clone, if `.env` is missing, follow [env-configuration.md](env-configuration.md): create a safe local `.env` from `.env.example`, stop, and ask the user to provide `DBT_DOMAIN`, `DBT_PROFILE_NAME`, and `DBT_SOURCE_SCHEMA` before running discovery or dbt commands.
+On a fresh clone, if `.env` is missing, follow [env-configuration.md](env-configuration.md): create a safe local `.env` from `.env.example`, list available profiles from `~/.dbt/profiles.yml` when readable, stop, and ask the user to provide `DBT_DOMAIN`, `DBT_PROFILE_NAME`, and `DBT_SOURCE_SCHEMA` before running discovery or dbt commands.
 
 Do not satisfy missing required inputs from repo search, terminal output, other workspaces, previous runs, existing schemas, or guessed warehouse patterns. Do not suggest values. Ask the user directly for `DBT_DOMAIN`, `DBT_PROFILE_NAME`, and `DBT_SOURCE_SCHEMA`, then update `.env` from the user's answer.
 

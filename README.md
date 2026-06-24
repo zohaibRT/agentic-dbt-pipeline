@@ -45,7 +45,7 @@ For a full copy-paste prompt, see [prompt.md](prompt.md).
 
 All diagrams created by the skill use Mermaid. Entity relationships use Mermaid `erDiagram`, and added or changed diagrams must be verified as visible/parseable before the related phase is marked complete.
 
-Keep repeatable non-secret settings in `.env` by copying `.env.example`. If `.env` is missing on a fresh clone, the skill creates a safe local `.env` template and asks you to fill the required values before running dbt. Most projects only need domain, dbt profile, and source schema there. The skill infers project name/root, dbt source name, layer names, schema prefix, commit mode, push behavior, materialization, and Agents Schema handling unless you override them. Add GitHub repository details only when you want the agent to push.
+Keep repeatable non-secret settings in `.env` by copying `.env.example`. If `.env` is missing on a fresh clone, the skill creates a safe local `.env` template, lists available dbt profiles with adapter and non-secret notes, and asks you to fill the required values before running dbt. Most projects only need domain, dbt profile, and source schema there. The skill infers project name/root, dbt source name, layer names, schema prefix, commit mode, push behavior, materialization, and Agents Schema handling unless you override them. Add GitHub repository details only when you want the agent to push.
 
 Discovery uses the adapter from the selected dbt profile. If `.env` points to a PostgreSQL profile, the skill uses PostgreSQL discovery only; it does not probe AWS, Redshift, or other warehouses unless you explicitly change profiles.
 
@@ -157,6 +157,7 @@ The skill can add and install these dbt packages:
 | [project.config.yml](project.config.yml) | Default non-secret configuration |
 | [references/bootstrap.md](references/bootstrap.md) | Automatic setup-only Bootstrap workflow |
 | [references/discovery-requirements.md](references/discovery-requirements.md) | Read-only discovery and requirements checkpoint before build planning |
+| [references/profile-listing.md](references/profile-listing.md) | Safe available-profile table when `DBT_PROFILE_NAME` is missing or ambiguous |
 | [references/phase-plan-approval.md](references/phase-plan-approval.md) | Markdown plan and approval gate before every phase |
 | [references/recommendation-and-review.md](references/recommendation-and-review.md) | Agent recommendations, what looks right, risks, and approval boundaries |
 | [references/writing-style.md](references/writing-style.md) | Full wording for user-facing output |
