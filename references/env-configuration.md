@@ -103,7 +103,8 @@ When the user runs the default prompt in a freshly cloned skill or dbt project a
 4. Do not fill fake real values. Leave placeholders for values the user must provide.
 5. Read [profile-listing.md](profile-listing.md) and list available profiles from `~/.dbt/profiles.yml` when readable.
 6. Stop before dbt discovery, `dbt debug`, `dbt deps`, codegen, or build commands.
-7. Tell the user exactly which required values are missing and ask them to update `.env` or provide the values in chat.
+7. Ask the user to choose the dbt profile first using the question format from [profile-listing.md](profile-listing.md), then ask for `DBT_DOMAIN` and `DBT_SOURCE_SCHEMA`.
+8. Tell the user exactly which required values are missing and ask them to update `.env` or provide the values in chat.
 
 ## Placeholder `.env` hard stop
 
@@ -179,17 +180,20 @@ Use this user-facing message shape:
 
 ```text
 I did not find `.env` in this workspace, so I created a local `.env` from `.env.example`.
-Please send these required non-secret values and I will update `.env` for this run:
 
-- DBT_DOMAIN: <business domain, for example hospital or retail>
-- DBT_PROFILE_NAME: <dbt profile key from ~/.dbt/profiles.yml>
-- DBT_SOURCE_SCHEMA: <raw/source schema to inspect>
+Question: Which dbt profile should this pipeline use?
+Help: Select the warehouse connection for discovery and builds.
 
 Available profiles in your `profiles.yml`:
 
 | Profile | Adapter | Notes |
 |---|---|---|
 | <profile_key> | <adapter_type> | <non-secret host kind or host> / <target schema> |
+
+Please also provide:
+
+- DBT_DOMAIN: <business domain, for example hospital or retail>
+- DBT_SOURCE_SCHEMA: <raw/source schema to inspect>
 
 Keep passwords in ~/.dbt/profiles.yml, not in `.env`.
 After I update `.env`, I will summarize the values, resolve the selected profile adapter, and wait for your approval before read-only discovery.

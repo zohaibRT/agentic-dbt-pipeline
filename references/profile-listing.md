@@ -8,6 +8,20 @@ List available dbt profiles to help the data engineer choose. Do not choose a pr
 
 Reading `~/.dbt/profiles.yml` for this purpose is allowed before discovery because it is local configuration inspection, not warehouse access. Do not run `dbt debug`, call cloud identity checks, query warehouses, or probe connectors while listing profiles.
 
+When the agent UI supports a user-question or choice prompt, prefer that over a plain paragraph. Ask one clear question:
+
+```text
+Which dbt profile should this pipeline use?
+```
+
+Use the help text:
+
+```text
+Select the warehouse connection for discovery and builds.
+```
+
+Each choice label should include the profile key, adapter, database or database-equivalent, and profile schema. Include an "Other" or free-form option when available. The question must not preselect a profile unless the user already supplied `DBT_PROFILE_NAME`.
+
 ## What to show
 
 Show a concise table:
@@ -36,7 +50,10 @@ Do not show:
 When `.env` is missing or `DBT_PROFILE_NAME` is missing, use this shape:
 
 ```text
-I did not find a selected dbt profile yet. Here are the available profiles from `~/.dbt/profiles.yml`:
+I did not find a selected dbt profile yet.
+
+Question: Which dbt profile should this pipeline use?
+Help: Select the warehouse connection for discovery and builds.
 
 | Profile | Adapter | Notes |
 |---|---|---|

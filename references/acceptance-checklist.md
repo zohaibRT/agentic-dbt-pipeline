@@ -31,6 +31,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] The agent did not fill `.env` from profile target schema, profile database name, warehouse schemas, previous runs, examples, or guesses
 - [ ] Discovery reports were not created or updated while `.env` was missing, invalid, or placeholder-only
 - [ ] Missing required first-run values were requested directly from the user, not found by repository search, terminal inspection, other workspaces, or previous runs
+- [ ] Missing `DBT_PROFILE_NAME` was requested as a clear profile-selection question with adapter/database/schema context for each option
 - [ ] When `DBT_PROFILE_NAME` was missing or ambiguous, available profiles were listed with adapter and non-secret notes, and the agent did not choose one automatically
 - [ ] Any subagent delegation was read-only/draft work; main agent kept dbt commands, edits, commits, and final decisions
 - [ ] `AGENT_PLAN.md` created or updated with automatic setup-only Bootstrap status and approved plans for each implemented non-bootstrap phase
