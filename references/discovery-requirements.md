@@ -8,7 +8,7 @@ Analyze the available source schemas enough to orient the project and the data e
 
 This phase is read-only. Do not create dbt projects, install packages, run codegen, write model files, create warehouse schemas, or change profiles during discovery.
 
-Do not start discovery until the active `domain`, `dbt_profile_name`, and `source_schema` are confirmed from the prompt or `.env`. If `.env` is missing, follow [env-configuration.md](env-configuration.md) and stop for user input first. Do not inspect the repository, terminal output, other workspaces, or prior workspaces to suggest or choose a source schema.
+Do not start discovery until the active `domain`, `dbt_profile_name`, and `source_schema` are confirmed from the current user prompt or a valid `.env`. If `.env` is missing or still contains placeholder values, follow [env-configuration.md](env-configuration.md) and stop for user input first. Do not inspect the repository, terminal output, other workspaces, prior workspaces, profile target schemas, warehouse schemas, or old runs to suggest or choose a source schema.
 
 Before any source discovery, follow [warehouse-adapter-routing.md](warehouse-adapter-routing.md). Resolve the selected dbt profile adapter from `~/.dbt/profiles.yml`, announce the selected profile and adapter, and use only that adapter's metadata queries. Before this route is locked, do not call AWS, Redshift, PostgreSQL, Snowflake, BigQuery, Databricks, cloud identity checks, warehouse connectors, metadata queries, or Model Context Protocol discovery servers. If `.env` selects a PostgreSQL profile, use PostgreSQL discovery only. Do not call AWS, Redshift, or any other warehouse-specific connector unless the selected profile adapter is that warehouse type or the user explicitly changes profiles.
 
@@ -66,7 +66,9 @@ Do not lead the discovery report with profile details, `.env` handling, package 
 
 ## Discovery files are required
 
-Discovery must be written to files, not only posted in chat.
+Discovery must be written to files, not only posted in chat, but only after required inputs are confirmed.
+
+If `.env` is missing, invalid, or contains placeholders, do not create or update discovery files. Do not create `reports/agent/discovery_report.md`, `reports/agent/PIPELINE_STATUS.md`, or `reports/agent/CONTEXT_TREE.md` for discovery until the user provides valid `DBT_DOMAIN`, `DBT_PROFILE_NAME`, and `DBT_SOURCE_SCHEMA`.
 
 Before sending the discovery summary in chat, create or update these files:
 
