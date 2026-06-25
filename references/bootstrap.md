@@ -1,4 +1,4 @@
-# Project Setup And Connection Validation - Automatic Setup-Only Phase After Discovery
+# Project Setup And Configuration - Automatic Setup-Only Phase After Discovery
 
 For a new project or full pipeline, run [discovery-requirements.md](discovery-requirements.md) first. The setup phase starts only after discovery is summarized and the user accepts the discovery recommendation by replying with requirements, `continue`, `no changes`, `go ahead`, or similar.
 
@@ -13,15 +13,15 @@ Run this setup phase before layer work. Do not skip unless user sets `auto_boots
 | Not allowed | Source YAML generation, model layer creation, warehouse model builds, continuous integration workflows, Agents Schema workflows, profile edits without approval, commits, or pushes |
 | Commands to run | `dbt --version`, `dbt debug`, `dbt deps`, `dbt parse --no-partial-parse`, plus skill/config validation when available |
 | Completion criteria | dbt connection works, packages install, parse succeeds or skip is documented, profile target schema hygiene is safe or blocked, and next phase is ready |
-| Report required | `reports/agent/bootstrap_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
+| Report required | `reports/agent/setup_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
 
 ## Automatic setup rule
 
-Project setup and connection validation is foundational, so it auto-runs by default when `auto_bootstrap: true`. Do not ask for a separate `approve bootstrap` response after the discovery requirements checkpoint is accepted.
+Project setup and configuration is foundational, so it auto-runs by default when `auto_bootstrap: true`. Do not ask for a separate setup approval response after the discovery requirements checkpoint is accepted.
 
 Before running it, write or update `AGENT_PLAN.md` with:
 
-- Phase: Project setup and connection validation
+- Phase: Project setup and configuration
 - Status: Automatic setup-only
 - Discovery report used
 - Exact setup actions to run
@@ -32,14 +32,14 @@ Before running it, write or update `AGENT_PLAN.md` with:
 Then run only the setup actions allowed in this file and write:
 
 ```text
-reports/agent/bootstrap_report.md
+reports/agent/setup_report.md
 reports/agent/PIPELINE_STATUS.md
 reports/agent/CONTEXT_TREE.md
 ```
 
 ## Setup boundary
 
-Project setup and connection validation may:
+Project setup and configuration may:
 
 - Create a local dbt project scaffold when the project root is missing
 - Create baseline local files required to make dbt parse, such as `dbt_project.yml`, `packages.yml`, `.gitignore`, safe profile examples, and the schema naming macro
@@ -49,7 +49,7 @@ Project setup and connection validation may:
 - Resolve local-only or user-requested GitHub mode without pushing
 - Write or update setup reports
 
-Project setup and connection validation must not:
+Project setup and configuration must not:
 
 - Run codegen or create source YAML unless the current approved workflow phase is Sources
 - Create bronze/staging, silver/intermediate, gold/marts, semantic layer, documentation, continuous integration, or Agents Schema files
@@ -117,7 +117,7 @@ After `dbt debug`, perform the profile target schema hygiene check from [schema-
 
 ## 5. Sources readiness
 
-Prepare the project so the Sources phase can run next, but do not generate source YAML during automatic Bootstrap.
+Prepare the project so the Sources phase can run next, but do not generate source YAML during automatic project setup and configuration.
 
 When the **Sources** phase is approved later:
 
@@ -131,7 +131,7 @@ See [packages-and-sources.md](packages-and-sources.md).
 
 ## 6. Agents Schema readiness
 
-Prepare the project so Agents Schema can be enabled later, but do not create Agents Schema workflow files during automatic Bootstrap unless the user explicitly approved the automation phase.
+Prepare the project so Agents Schema can be enabled later, but do not create Agents Schema workflow files during automatic project setup and configuration unless the user explicitly approved the automation phase.
 
 When `auto_agents_schema: true`, the warehouse destination is supported, and the automation phase is approved:
 
@@ -146,7 +146,7 @@ If the adapter is unsupported, skip Agents Schema and summarize that it can be e
 
 Confirm `.agents/skills/agentic-dbt-pipeline/SKILL.md` and `project.config.yml` are readable.
 
-## Project setup and connection validation complete when
+## Project setup and configuration complete when
 
 | Check | Status |
 |---|---|
@@ -158,7 +158,7 @@ Confirm `.agents/skills/agentic-dbt-pipeline/SKILL.md` and `project.config.yml` 
 | `dbt parse --no-partial-parse` passes or skipped with documented reason | PASS |
 | Workflow files not created unless automation was explicitly approved | PASS |
 
-Use this full wording in user-facing summaries. Do not write `Bootstrap complete` as the only completion message; write `Project setup and connection validation complete`.
+Use this full wording in user-facing summaries. Do not use bootstrap wording; write `Project setup and configuration complete`.
 
 Then proceed to layer phases.
 

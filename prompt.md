@@ -30,9 +30,9 @@ Use Mermaid for every diagram. For entity relationships, use Mermaid `erDiagram`
 
 Use full wording in all user-facing plans, reports, summaries, diagram notes, and final handoffs. Avoid shorthand such as primary key abbreviations, foreign key abbreviations, entity relationship diagram abbreviations, documentation abbreviations, repository abbreviations, and continuous integration abbreviations unless quoting a command, filename, package name, environment variable, or official tool name.
 
-After I answer, run project setup and connection validation automatically when `auto_bootstrap` is true: write/update `AGENT_PLAN.md` with the setup phase marked as automatic setup-only, create the local dbt scaffold if needed, install missing dependencies, run `dbt debug`, run `dbt deps`, run `dbt parse`, and write the setup report. Stop and ask first if required settings are missing, the selected profile is unsafe or failing, existing project files would be overwritten, warehouse objects would be created or replaced, credentials are needed, or I explicitly disabled automatic setup.
+After I answer, run project setup and configuration automatically when `auto_bootstrap` is true: write/update `AGENT_PLAN.md` with the setup phase marked as automatic setup-only, create the local dbt scaffold if needed, install missing dependencies, run `dbt debug`, run `dbt deps`, run `dbt parse`, and write the setup report. Stop and ask first if required settings are missing, the selected profile is unsafe or failing, existing project files would be overwritten, warehouse objects would be created or replaced, credentials are needed, or I explicitly disabled automatic setup.
 
-During setup, perform profile target schema hygiene and write the result into `reports/agent/bootstrap_report.md` and `reports/agent/PIPELINE_STATUS.md`: active profile, adapter, database, target schema, source schema, whether the target schema is safe, and any required mitigation. Treat unsafe target schema routing as a setup blocker, not an optional follow-up.
+During project setup and configuration, perform profile target schema hygiene and write the result into `reports/agent/setup_report.md` and `reports/agent/PIPELINE_STATUS.md`: active profile, adapter, database, target schema, source schema, whether the target schema is safe, and any required mitigation. Treat unsafe target schema routing as a setup blocker, not an optional follow-up.
 
 After every bronze/staging, silver/intermediate, and gold/marts build, run warehouse data validation queries before moving to the next layer. Verify row counts, expected-empty evidence, grain, keys, relationships, row-count movement, date coverage, status/category distributions, important measures, mapping coverage, and privacy exposure. Write `Data Verification Results` into the layer report, share the important results with me, and stop when a model expected to contain data is empty or any validation issue is unexplained.
 
@@ -44,7 +44,7 @@ The presentation-layer recommendation and my decision are required for full pipe
 
 Before final delivery, perform an advanced data-engineering review covering source lock, schema hygiene, layer validation, grain, tests, data quality, privacy, key performance indicators, semantic layer, evaluator, documentation, presentation-layer recommendation, and operations.
 
-Before each non-bootstrap build phase, write/update `AGENT_PLAN.md`, explain in Markdown what you will build, and wait for my approval before implementing that phase.
+Before each non-setup build phase, write/update `AGENT_PLAN.md`, explain in Markdown what you will build, and wait for my approval before implementing that phase.
 
 In each discovery summary and phase plan, recommend the best next path with evidence, show what looks right, what is not ready yet, confidence about proven vs uncertain items, and what needs my approval. Do not ask me to design everything from scratch.
 
@@ -56,7 +56,7 @@ If you cannot properly understand source tables, relationships, business process
 
 After each completed phase, write/update `reports/agent/<phase>_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` with what was done, what passed, warnings/failures/skips, assumptions, user decisions, phase outputs, report links, and open decisions.
 
-Ask me only when required `.env` values are missing, credentials or secrets are needed, automatic project setup hits a safety gate, a business rule is unclear, non-bootstrap phase build approval is needed, or before committing, pushing, or changing schema behavior.
+Ask me only when required `.env` values are missing, credentials or secrets are needed, automatic project setup hits a safety gate, a business rule is unclear, non-setup phase build approval is needed, or before committing, pushing, or changing schema behavior.
 ```
 
 ## Optional Project Rules

@@ -16,7 +16,7 @@ The pipeline uses **seven dbt capabilities** together. Agent installs and runs t
 
 ## 1. dbt Agent Skills (bootstrap - not manual install)
 
-User installs **only** `agentic-dbt-pipeline`. Bootstrap runs `npx skills add dbt-labs/dbt-agent-skills/skills/dbt` when skills are missing - see [install-dbt-agent-skills.md](install-dbt-agent-skills.md).
+User installs **only** `agentic-dbt-pipeline`. Project setup and configuration runs `npx skills add dbt-labs/dbt-agent-skills/skills/dbt` when skills are missing - see [install-dbt-agent-skills.md](install-dbt-agent-skills.md).
 
 Install when `auto_install_dbt_skills: true` (default).
 
@@ -166,7 +166,7 @@ Validate:
 
 ---
 
-## Bootstrap package checklist
+## Project setup package checklist
 
 | Step | Command / action |
 |---|---|

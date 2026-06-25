@@ -5,7 +5,7 @@ This repository contains a dbt analytics engineering agent workflow. Use `SKILL.
 ## Default Workflow
 
 1. Discovery and requirements
-2. Project setup and connection validation
+2. Project setup and configuration
 3. Sources
 4. Staging
 5. Intermediate
@@ -20,7 +20,7 @@ Semantic layer, project evaluator, presentation layer, continuous integration, A
 - Read `project.config.yml`.
 - Identify the current workflow phase.
 - Read the matching reference file in `references/`.
-- Explain the plan before non-bootstrap build changes.
+- Explain the plan before non-setup build changes.
 - Keep changes limited to the approved phase.
 
 ## Safety Rules

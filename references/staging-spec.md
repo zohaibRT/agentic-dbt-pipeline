@@ -26,6 +26,8 @@ Before creating or changing staging files, follow [phase-plan-approval.md](phase
 - SQL: `stg_{source}__<table_name>.sql`
 - YAML: `_stg_{source}.yml`
 
+Do not create `models/staging/` unless `{layer_1_name}` is explicitly configured as `staging`. With default layer names, staging models live in `models/bronze/{domain}/`.
+
 ## Rules
 
 - `{{ config(materialized='view') }}` on every model

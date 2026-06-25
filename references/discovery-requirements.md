@@ -171,7 +171,7 @@ Keep this section directional during initial discovery. Do not list every final 
 
 ## Requirements checkpoint
 
-Before automatic project setup and connection validation, ask whether the user wants to add or change requirements.
+Before automatic project setup and configuration, ask whether the user wants to add or change requirements.
 
 Use this wording:
 
@@ -200,13 +200,13 @@ Confidence:
 Needs your approval:
 <business-impacting choices before the next build phase>
 
-Before I run project setup and connection validation, do you want to add any requirements?
+Before I run project setup and configuration, do you want to add any requirements?
 Examples: field mappings, coded-field definitions, columns to exclude, metric definitions, privacy rules, naming rules, facts/dimensions to prioritize, or tables to ignore.
 
-Reply with your changes/requirements, or reply "continue" if you approve the recommendation and want me to run project setup and connection validation automatically.
+Reply with your changes/requirements, or reply "continue" if you approve the recommendation and want me to run project setup and configuration automatically.
 ```
 
-If the user replies `continue`, `no changes`, `go ahead`, or similar, proceed to automatic project setup and connection validation in [bootstrap.md](bootstrap.md). Do not ask for a separate `approve bootstrap` response unless a setup safety gate is triggered.
+If the user replies `continue`, `no changes`, `go ahead`, or similar, proceed to automatic project setup and configuration in [bootstrap.md](bootstrap.md). Do not ask for a separate setup approval response unless a setup safety gate is triggered.
 
 If the user provides requirements, add them to the plan as `project_rules` and use them in later phases.
 

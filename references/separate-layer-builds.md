@@ -13,7 +13,9 @@
 
 Default names: `bronze`, `silver`, `gold`.
 
-For a new full pipeline, run lightweight project Discovery & Requirements, then automatic project setup and connection validation, before this build order. Then run phase-specific discovery before each layer.
+`staging`, `intermediate`, and `marts` are workflow/model roles. They are not additional physical folders when the active layer names are `bronze`, `silver`, and `gold`. Do not create duplicate folders such as both `models/bronze/` and `models/staging/`, or both `models/gold/` and `models/marts/`, in the same project unless the user explicitly approves a migration plan.
+
+For a new full pipeline, run lightweight project Discovery & Requirements, then automatic project setup and configuration, before this build order. Then run phase-specific discovery before each layer.
 
 **Do not** build intermediate before staging exists.
 **Do not** build marts before intermediate exists.
@@ -35,7 +37,7 @@ Staging comes **before** intermediate. Marts (star schema) come **last**.
 
 Set `workflow_phase:` in the prompt to run **only** that phase.
 
-After project setup and connection validation, for every non-bootstrap phase: **phase-specific discovery -> agent recommendation -> data engineer decision check -> write `AGENT_PLAN.md` -> ask approval -> implement -> parse/build -> run layer data validation queries -> write `reports/agent/<phase>_report.md` with results -> update context tree -> summarize validation results -> ask commit**.
+After project setup and configuration, for every non-setup phase: **phase-specific discovery -> agent recommendation -> data engineer decision check -> write `AGENT_PLAN.md` -> ask approval -> implement -> parse/build -> run layer data validation queries -> write `reports/agent/<phase>_report.md` with results -> update context tree -> summarize validation results -> ask commit**.
 
 ### Sources only
 
@@ -146,7 +148,7 @@ Write `reports/agent/{layer_3_name}_report.md`, update `reports/agent/PIPELINE_S
 Run the default prompt without `workflow_phase`.
 ```
 
-Run in order after automatic project setup and connection validation, **stop for phase plan approval before each non-bootstrap build and ask commit after each**:
+Run in order after automatic project setup and configuration, **stop for phase plan approval before each non-setup build and ask commit after each**:
 
 1. Sources (if needed) -> source discovery -> plan approval -> source files -> phase report -> ask commit
 2. Staging -> bronze discovery -> plan approval -> build `+path:models/{layer_1_name}/{domain}` -> layer data validation -> phase report -> share results -> ask commit

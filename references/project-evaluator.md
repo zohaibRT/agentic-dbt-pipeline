@@ -21,6 +21,8 @@ Keep the skill's medallion structure: `bronze`, `silver`, `gold`.
 
 Do not rename folders to `staging`, `intermediate`, and `marts` only to satisfy `dbt_project_evaluator`. Instead, configure the package to understand the project conventions.
 
+Do not create additional `staging`, `intermediate`, or `marts` folders when the active layer folders are `bronze`, `silver`, and `gold`. Evaluator folder names must be configured to the active layer names.
+
 Do not move generated or curated source YAML from `models/sources/` into the bronze/staging folder only to clear `fct_source_directories` warnings. Source YAML belongs in `models/sources/` for this skill. Fix evaluator alignment through package vars, reviewed exceptions, or documentation; do not change the architecture silently.
 
 ## Required `dbt_project.yml` config

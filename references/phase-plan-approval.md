@@ -1,8 +1,8 @@
 # Phase Plan Approval
 
-Use this before every non-bootstrap phase that creates models, seeds, snapshots, semantic files, documentation files, workflow files, or warehouse objects. Run [discovery-requirements.md](discovery-requirements.md) first for a new/full-pipeline request.
+Use this before every non-setup phase that creates models, seeds, snapshots, semantic files, documentation files, workflow files, or warehouse objects. Run [discovery-requirements.md](discovery-requirements.md) first for a new/full-pipeline request.
 
-Bootstrap is handled by [bootstrap.md](bootstrap.md). It auto-runs as setup-only when `auto_bootstrap: true` after the discovery requirements checkpoint is accepted, unless a bootstrap safety gate requires user approval.
+Project setup and configuration is handled by [bootstrap.md](bootstrap.md). It auto-runs as setup-only when `auto_bootstrap: true` after the discovery requirements checkpoint is accepted, unless a setup safety gate requires user approval.
 
 ## Core rule
 
@@ -31,7 +31,7 @@ Do not create or modify models, seeds, snapshots, workflows, semantic files, doc
 - Agents Schema
 - Refactors, cleanup, or schema behavior changes
 
-Initialization/project setup belongs to automatic Bootstrap only when it stays inside the setup-only boundary. If setup would overwrite files, change profile behavior, create warehouse objects, or alter schema behavior, stop and ask before continuing.
+Initialization/project setup belongs to automatic project setup and configuration only when it stays inside the setup-only boundary. If setup would overwrite files, change profile behavior, create warehouse objects, or alter schema behavior, stop and ask before continuing.
 
 Read-only discovery commands are allowed before approval when they are needed to make the plan accurate, such as `dbt debug`, `dbt ls`, metadata queries, row counts, or file inspection. Keep discovery lightweight and summarize what was learned.
 
@@ -102,6 +102,11 @@ If the user approves with plain language such as "yes", "go ahead", or "looks go
 | Item | Type | Grain / purpose | Target |
 |---|---|---|---|
 | <name> | <model/source/seed/workflow> | <grain or purpose> | <folder/schema> |
+
+### Layer Folder Convention
+- Active physical layer folders: `models/<layer_1_name>/`, `models/<layer_2_name>/`, `models/<layer_3_name>/`
+- Role names: staging, intermediate, marts
+- Duplicate alias folders found? <yes/no; if yes, stop and ask which convention is canonical>
 
 ### Rules I Will Follow
 - <source/ref rule>

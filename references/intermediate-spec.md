@@ -25,6 +25,8 @@ Before creating or changing intermediate files, follow [phase-plan-approval.md](
 - SQL: `int_{source}__<name>.sql`
 - YAML: `_int_{source}.yml`
 
+Do not create `models/intermediate/` unless `{layer_2_name}` is explicitly configured as `intermediate`. With default layer names, intermediate models live in `models/silver/{domain}/`.
+
 ## Model design pattern
 
 Create intermediate models that match the source domain and business process. Do not force ecommerce-shaped models unless the source data is ecommerce.

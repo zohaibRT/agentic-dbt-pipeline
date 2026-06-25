@@ -26,6 +26,8 @@ Before creating or changing marts files, follow [phase-plan-approval.md](phase-p
 - Folder: `models/{layer_3_name}/{domain}/` (default: `models/gold/{domain}/`)
 - YAML: `_<domain>_marts.yml`
 
+Do not create `models/marts/` unless `{layer_3_name}` is explicitly configured as `marts`. With default layer names, facts, dimensions, and reporting marts live in `models/gold/{domain}/`.
+
 ## Domain-driven design
 
 Build marts from the actual source profile and business requirements. Do not force ecommerce-shaped dimensions or facts unless the source data is ecommerce.

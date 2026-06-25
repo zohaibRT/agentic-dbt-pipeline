@@ -13,10 +13,10 @@ Verify before marking the dbt pipeline workflow complete.
 
 ## Environment
 
-- [ ] New/full pipeline started with read-only Discovery & Requirements before automatic project setup and connection validation
-- [ ] Project setup and connection validation auto-ran only after discovery requirements were accepted, or stopped because a setup safety gate was triggered
-- [ ] Project setup and connection validation stayed setup-only: scaffold, dependency install, connection validation, parse validation, and reports only
-- [ ] Project setup and connection validation did not generate source YAML, build medallion layers, create automation workflows, replace warehouse objects, commit, or push
+- [ ] New/full pipeline started with read-only Discovery & Requirements before automatic project setup and configuration
+- [ ] Project setup and configuration auto-ran only after discovery requirements were accepted, or stopped because a setup safety gate was triggered
+- [ ] Project setup and configuration stayed setup-only: scaffold, dependency install, connection validation, parse validation, and reports only
+- [ ] Project setup and configuration did not generate source YAML, build medallion layers, create automation workflows, replace warehouse objects, commit, or push
 - [ ] Initial discovery stayed lightweight; detailed discovery happened phase-by-phase before sources/bronze/silver/gold/etc.
 - [ ] Python venv and dbt adapter installed
 - [ ] `dbt debug` passes
@@ -41,7 +41,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Missing `DBT_PROFILE_NAME` was requested as a clear profile-selection question with adapter/database/schema context for each option
 - [ ] When `DBT_PROFILE_NAME` was missing or ambiguous, available profiles were listed with adapter and non-secret notes, and the agent did not choose one automatically
 - [ ] Any subagent delegation was read-only/draft work; main agent kept dbt commands, edits, commits, and final decisions
-- [ ] `AGENT_PLAN.md` created or updated with automatic setup-only project setup status and approved plans for each implemented non-bootstrap phase
+- [ ] `AGENT_PLAN.md` created or updated with automatic setup-only project setup status and approved plans for each implemented non-setup phase
 - [ ] After valid required inputs were confirmed, discovery created `reports/agent/discovery_report.md` before the chat summary, even if the dbt project root did not exist yet
 - [ ] Discovery report includes recommended medallion direction for sources, bronze/staging, silver/intermediate, and gold/marts
 - [ ] Discovery report includes a Mermaid entity relationship diagram when credible relationships exist
@@ -94,7 +94,7 @@ Verify before marking the dbt pipeline workflow complete.
 
 ## Layers
 
-- [ ] Each non-bootstrap phase had Markdown plan approval before implementation
+- [ ] Each non-setup phase had Markdown plan approval before implementation
 - [ ] Each phase plan was based on focused phase discovery, not a full upfront design
 - [ ] Each phase plan included an agent recommendation, evidence, what looks right, what is not ready, confidence, and approval needs
 - [ ] The agent recommended a path instead of asking the user to design every model from scratch

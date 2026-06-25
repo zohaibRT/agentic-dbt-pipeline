@@ -34,7 +34,7 @@ reports/agent/sources_discovery.md
 reports/agent/bronze_discovery.md
 reports/agent/silver_discovery.md
 reports/agent/gold_discovery.md
-reports/agent/bootstrap_report.md
+reports/agent/setup_report.md
 reports/agent/sources_report.md
 reports/agent/bronze_report.md
 reports/agent/silver_report.md
@@ -92,7 +92,7 @@ Every phase report must include:
 - Mermaid diagrams added/changed and visibility verification status
 - Data quality notes
 - Privacy/sensitive-field notes
-- Profile target schema hygiene for project setup and connection validation
+- Profile target schema hygiene for project setup and configuration
 - Key performance indicator definitions for gold/marts, semantic layer, presentation layer, and final delivery
 - Assumptions used
 - Open questions or user decisions
@@ -213,7 +213,7 @@ Update `reports/agent/PIPELINE_STATUS.md` after every phase:
 | Phase | Status | Report | Commit |
 |---|---|---|---|
 | Discovery | PASS | reports/agent/discovery_report.md | n/a |
-| Project setup and connection validation | PASS | reports/agent/bootstrap_report.md | <hash or pending> |
+| Project setup and configuration | PASS | reports/agent/setup_report.md | <hash or pending> |
 ```
 
 ## Context tree

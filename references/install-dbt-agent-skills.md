@@ -1,7 +1,7 @@
-# Install dbt Agent Skills (Auto - Bootstrap)
+# Install dbt Agent Skills (Automatic Project Setup)
 
 **User does not run this manually.**
-Bootstrap runs this when `auto_install_dbt_skills: true` (default) and dbt skills are missing.
+Project setup and configuration runs this when `auto_install_dbt_skills: true` (default) and dbt skills are missing.
 
 User only installs:
 

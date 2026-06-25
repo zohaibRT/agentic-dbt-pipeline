@@ -74,4 +74,4 @@ Not allowed before approval:
 - Create Mermaid diagrams from candidate sources.
 - Write discovery reports for candidate sources.
 - Update `.env` or `profiles.yml`.
-- Continue to Bootstrap, codegen, source YAML, or modeling.
+- Continue to project setup and configuration, codegen, source YAML, or modeling.

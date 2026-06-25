@@ -56,7 +56,7 @@ Do not store secrets, passwords, tokens, private keys, or sensitive row-level da
 
 ## Phase plan section
 
-Add this section to each non-bootstrap phase plan when knowledge files or `project_rules` exist:
+Add this section to each non-setup phase plan when knowledge files or `project_rules` exist:
 
 ```markdown
 ### Project Knowledge Used

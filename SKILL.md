@@ -17,7 +17,7 @@ Full lifecycle orchestrator for the dbt project.
 Use `workflow_phase:` to run a single phase. Use `auto_bootstrap: false` only for layer-only edits.
 
 **Install (one command):** `npx skills add zohaibRT/agentic-dbt-pipeline` - see [references/install-skill.md](references/install-skill.md).
-Bootstrap auto-installs dbt Agent Skills and dbt packages on first run.
+Project setup and configuration auto-installs dbt Agent Skills and dbt packages on first run.
 
 ## Discovery first, then bootstrap
 
@@ -29,9 +29,9 @@ Do not assume the business domain. During discovery, understand source tables, t
 
 If any of those areas cannot be properly understood or proven, do not assume. Ask the user for missing business meaning or approval, and defer dependent models, tests, metrics, semantic definitions, or presentation outputs until the uncertainty is resolved.
 
-After discovery, summarize what the agent concluded from the source data and ask whether the user wants to add requirements such as mappings, metrics, privacy rules, naming rules, included/excluded tables, or priority facts/dimensions. Continue to project setup and connection validation only after the user replies with requirements or says to continue.
+After discovery, summarize what the agent concluded from the source data and ask whether the user wants to add requirements such as mappings, metrics, privacy rules, naming rules, included/excluded tables, or priority facts/dimensions. Continue to project setup and configuration only after the user replies with requirements or says to continue.
 
-## Project setup and connection validation (automatic setup-only phase after discovery)
+## Project setup and configuration (automatic setup-only phase after discovery)
 
 Read and execute [references/bootstrap.md](references/bootstrap.md) **before** any layer work:
 
@@ -45,9 +45,9 @@ User one-time manual steps: **profiles.yml password**, plus **GitHub repository 
 
 If `dbt_profile_name` is provided in the prompt, use it as `{project.profile}` for dbt commands and generated `dbt_project.yml`. If it is missing and multiple profiles exist in `~/.dbt/profiles.yml`, ask the user which profile to use before running dbt commands. Never guess from the first profile.
 
-Project setup and connection validation is setup-only and auto-runs by default when `auto_bootstrap: true` after the discovery requirements checkpoint is accepted. Do not ask for a separate `approve bootstrap` response unless a setup safety gate is triggered. This phase may create the local dbt project scaffold, install missing dbt Agent Skills and dbt packages, run `dbt debug`, run `dbt deps`, run `dbt parse`, and write setup reports. This phase does not approve source YAML generation, bronze/staging models, silver/intermediate models, gold/marts models, semantic layer files, documentation changes, continuous integration workflows, Agents Schema synchronization, warehouse model replacement, commits, or pushes.
+Project setup and configuration is setup-only and auto-runs by default when `auto_bootstrap: true` after the discovery requirements checkpoint is accepted. Do not ask for a separate setup approval response unless a setup safety gate is triggered. This phase may create the local dbt project scaffold, install missing dbt Agent Skills and dbt packages, run `dbt debug`, run `dbt deps`, run `dbt parse`, and write setup reports. This phase does not approve source YAML generation, bronze/staging models, silver/intermediate models, gold/marts models, semantic layer files, documentation changes, continuous integration workflows, Agents Schema synchronization, warehouse model replacement, commits, or pushes.
 
-Stop and ask before project setup and connection validation if required `.env` values are missing, the selected profile is ambiguous or failing, the profile target schema equals the source schema and needs a user-approved change, existing project files would be overwritten, warehouse objects would be created or replaced beyond setup validation, credentials or secrets are needed, `auto_bootstrap: false` is set, or the user explicitly asked to approve setup manually.
+Stop and ask before project setup and configuration if required `.env` values are missing, the selected profile is ambiguous or failing, the profile target schema equals the source schema and needs a user-approved change, existing project files would be overwritten, warehouse objects would be created or replaced beyond setup validation, credentials or secrets are needed, `auto_bootstrap: false` is set, or the user explicitly asked to approve setup manually.
 
 ## dbt packages & agent skills (mandatory stack)
 
@@ -55,7 +55,7 @@ Read [references/dbt-packages-and-skills.md](references/dbt-packages-and-skills.
 
 | Capability | Install / use |
 |---|---|
-| dbt Agent Skills | **Bootstrap auto-installs** if missing (`auto_install_dbt_skills: true`) |
+| dbt Agent Skills | **Project setup auto-installs** if missing (`auto_install_dbt_skills: true`) |
 | codegen | `packages.yml` + `generate_source` |
 | dbt_utils | `packages.yml` - macros in models/tests |
 | dbt_project_evaluator | `packages.yml` + `dispatch` + `dbt build --select package:dbt_project_evaluator` |
@@ -70,7 +70,7 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 | Phase | When | Reference |
 |---|---|---|
 | **Discovery** | First for new/full pipeline runs | [discovery-requirements.md](references/discovery-requirements.md), [source-profiling.md](references/source-profiling.md) |
-| **Project setup and connection validation** | Automatic setup-only phase after discovery requirements are accepted | [bootstrap.md](references/bootstrap.md) |
+| **Project setup and configuration** | Automatic setup-only phase after discovery requirements are accepted | [bootstrap.md](references/bootstrap.md) |
 | **0 Inputs** | Always first | [skill-inputs.md](references/skill-inputs.md), [profile-listing.md](references/profile-listing.md), [project-naming.md](references/project-naming.md), [env-configuration.md](references/env-configuration.md), [source-confirmation.md](references/source-confirmation.md), [warehouse-adapter-routing.md](references/warehouse-adapter-routing.md), [security-and-credentials.md](references/security-and-credentials.md), [schema-isolation.md](references/schema-isolation.md), [code-agent-setup.md](references/code-agent-setup.md) |
 | **0a Knowledge layers** | Built-in reusable knowledge plus user dbt standards and domain rules | [skill-knowledge.md](references/skill-knowledge.md), [project-knowledge.md](references/project-knowledge.md) |
 | **0b Subagents** | Optional speed-up | [subagent-workflow.md](references/subagent-workflow.md) |
@@ -98,7 +98,7 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 | **8b Presentation layer** | Optional final user-facing layer | [presentation-layer.md](references/presentation-layer.md) |
 | **9 Git** | After each stage | [github-repo-resolution.md](references/github-repo-resolution.md), [git-workflow.md](references/git-workflow.md) |
 | **10 Agents Schema / continuous integration** | Metadata + automation | [agents-schema-setup.md](references/agents-schema-setup.md), [cicd-setup.md](references/cicd-setup.md) |
-| **Plan approval** | Before each non-bootstrap build phase | [phase-plan-approval.md](references/phase-plan-approval.md) |
+| **Plan approval** | Before each non-setup build phase | [phase-plan-approval.md](references/phase-plan-approval.md) |
 | **Review** | Human approval points | [human-review.md](references/human-review.md) |
 | **Phase report** | After each completed phase | [phase-completion-report.md](references/phase-completion-report.md) |
 | **Context tree** | Ongoing project memory | [context-tree.md](references/context-tree.md) |
@@ -128,7 +128,7 @@ Keep the source schema read-only. Never build dbt models, package models, evalua
 
 Before each phase that changes models, semantic files, documentation files, workflow files, or warehouse objects, write/update `{project.root}/AGENT_PLAN.md`, explain the planned work in Markdown, and wait for approval for that phase. Read-only discovery is allowed before approval when needed for an accurate plan.
 
-Project setup and connection validation is the exception: after the user accepts discovery requirements and `auto_bootstrap: true`, write/update `{project.root}/AGENT_PLAN.md` with the phase marked as automatic setup-only, run setup, then write `reports/agent/bootstrap_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md`. If any setup safety gate from [bootstrap.md](references/bootstrap.md) is triggered, stop and ask before continuing.
+Project setup and configuration is the exception: after the user accepts discovery requirements and `auto_bootstrap: true`, write/update `{project.root}/AGENT_PLAN.md` with the phase marked as automatic setup-only, run setup, then write `reports/agent/setup_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md`. If any setup safety gate from [bootstrap.md](references/bootstrap.md) is triggered, stop and ask before continuing.
 
 ## Step 0b - Optional subagents
 
@@ -169,6 +169,8 @@ Read [advanced-data-engineering-review.md](references/advanced-data-engineering-
 Read [references/dbt-project-layers.md](references/dbt-project-layers.md).
 
 **Always build all model layers** unless `workflow_phase` limits scope.
+
+Layer role names and physical folder names must not be mixed. With default layer names, staging models go in `models/bronze/`, intermediate models go in `models/silver/`, and facts/dimensions/reporting marts go in `models/gold/`. Do not also create `models/staging/`, `models/intermediate/`, or `models/marts/` unless the user explicitly configured those as the physical layer names.
 
 Use `layer_names` from the prompt, `.env`, or `project.config.yml` when provided. Otherwise use:
 
@@ -241,7 +243,7 @@ Read [separate-layer-builds.md](references/separate-layer-builds.md).
 **Full pipeline (default):**
 
 1. **Discovery & requirements** - [discovery-requirements.md](references/discovery-requirements.md)
-2. **Project setup and connection validation** - setup-only and automatic after discovery requirements are accepted - [bootstrap.md](references/bootstrap.md)
+2. **Project setup and configuration** - setup-only and automatic after discovery requirements are accepted - [bootstrap.md](references/bootstrap.md)
 3. Init *(if project missing)*
 4. Sources - full `packages.yml`, `dbt deps`, codegen, source YAML
 5. Staging -> Intermediate -> Marts
@@ -253,7 +255,7 @@ Read [separate-layer-builds.md](references/separate-layer-builds.md).
 11. Automation - continuous integration workflow
 12. **Advanced review, acceptance + final summary** - [advanced-data-engineering-review.md](references/advanced-data-engineering-review.md), [acceptance-checklist.md](references/acceptance-checklist.md), [final-delivery.md](references/final-delivery.md)
 
-After project setup and connection validation, each stage: **phase-specific discovery -> agent recommendation -> data engineer decision check -> write Markdown plan -> ask approval -> implement -> parse/build -> warehouse data validation queries -> write phase report with validation results -> update context tree -> summarize validation results -> ask commit**. Ask for push only when a non-local GitHub repository is configured or the user requested push.
+After project setup and configuration, each stage: **phase-specific discovery -> agent recommendation -> data engineer decision check -> write Markdown plan -> ask approval -> implement -> parse/build -> warehouse data validation queries -> write phase report with validation results -> update context tree -> summarize validation results -> ask commit**. Ask for push only when a non-local GitHub repository is configured or the user requested push.
 
 ## Step 2 - Sources
 

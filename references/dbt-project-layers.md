@@ -20,6 +20,22 @@ Examples of valid custom names:
 
 Each name becomes the `dbt_project.yml` key and folder under `models/`.
 
+## One physical folder convention
+
+Layer roles and physical folder names are different concepts:
+
+| Role wording | Default physical folder | Default warehouse schema |
+|---|---|---|
+| Staging role / Layer 1 | `models/bronze/<domain>/` | `<layer_schema_prefix>_bronze` |
+| Intermediate role / Layer 2 | `models/silver/<domain>/` | `<layer_schema_prefix>_silver` |
+| Marts role / Layer 3 | `models/gold/<domain>/` | `<layer_schema_prefix>_gold` |
+
+When the configured layer names are `bronze`, `silver`, and `gold`, do not also create `models/staging/`, `models/intermediate/`, or `models/marts/`. Those words describe model roles and workflow phases only.
+
+When the user explicitly configures layer names as `staging`, `intermediate`, and `marts`, then those become the physical folders and schema suffixes. In that case, do not also create `models/bronze/`, `models/silver/`, or `models/gold/`.
+
+Before creating a model layer, inspect the existing `models/` folders and `dbt_project.yml`. If both naming conventions exist, stop and ask which convention is canonical. Do not continue by adding files to both conventions, and do not move or delete existing folders without explicit approval.
+
 For physical warehouse schemas, resolve `layer_schema_prefix` with [schema-isolation.md](schema-isolation.md). Do not default to a short source name such as `dh` unless explicitly requested:
 
 ```text
