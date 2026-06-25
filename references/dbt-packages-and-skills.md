@@ -1,11 +1,11 @@
 # dbt Packages & Agent Skills Stack
 
-The pipeline uses **seven dbt capabilities** together. Agent installs and runs them during bootstrap and the full pipeline.
+The pipeline uses **seven dbt capabilities** together. The agent installs and runs them during project setup and configuration and the full pipeline.
 
 | # | Capability | Type | Purpose in pipeline |
 |---|---|---|---|
 | 1 | **dbt Agent Skills** | Agent skills | Orchestration, CLI, troubleshooting, semantic layer authoring |
-| 2 | **dbt-codegen** | dbt package | `generate_source` for source YAML bootstrap |
+| 2 | **dbt-codegen** | dbt package | `generate_source` for source YAML generation |
 | 3 | **dbt-utils** | dbt package | `star()`, `surrogate_key`, generic tests, cross-db macros |
 | 4 | **dbt-expectations** | dbt package | Expressive data quality tests such as ranges, row counts, and column value expectations |
 | 5 | **dbt-project-evaluator** | dbt package | Best-practice checks on DAG, tests, docs, structure |
@@ -14,7 +14,7 @@ The pipeline uses **seven dbt capabilities** together. Agent installs and runs t
 
 ---
 
-## 1. dbt Agent Skills (bootstrap - not manual install)
+## 1. dbt Agent Skills (project setup - not manual install)
 
 User installs **only** `agentic-dbt-pipeline`. Project setup and configuration runs `npx skills add dbt-labs/dbt-agent-skills/skills/dbt` when skills are missing - see [install-dbt-agent-skills.md](install-dbt-agent-skills.md).
 
@@ -33,7 +33,7 @@ Install when `auto_install_dbt_skills: true` (default).
 | `answering-natural-language-questions-with-dbt` | Ad-hoc metric questions *(optional)* |
 
 ```bash
-npx skills add dbt-labs/dbt-agent-skills/skills/dbt   # agent runs this in bootstrap if missing
+npx skills add dbt-labs/dbt-agent-skills/skills/dbt   # agent runs this during project setup if missing
 ```
 
 User's only manual skill install:
@@ -66,7 +66,7 @@ packages:
 dbt deps
 ```
 
-### codegen - source bootstrap
+### codegen - source YAML generation
 
 ```powershell
 $dbt = "dbt"

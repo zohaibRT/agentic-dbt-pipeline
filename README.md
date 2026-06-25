@@ -12,7 +12,7 @@ Install the skill with:
 npx skills add zohaibRT/agentic-dbt-pipeline
 ```
 
-This is the only skill users need to install manually. During bootstrap, the skill can install the required dbt Labs agent skills and dbt packages when they are missing.
+This is the only skill users need to install manually. During project setup and configuration, the skill can install the required dbt Labs agent skills and dbt packages when they are missing.
 
 ## Prerequisites
 
@@ -38,7 +38,7 @@ Run the full pipeline from source discovery through final delivery.
 
 First, perform read-only discovery only: inspect source schemas/tables, create necessary Mermaid discovery diagrams including an entity relationship diagram when credible relationships exist, summarize what you conclude from the data, include a recommended medallion direction for sources, bronze/staging, silver/intermediate, and gold/marts, recommend the best next path with evidence, and ask whether I want to add or change requirements.
 
-After I answer, run project setup and configuration automatically when `auto_bootstrap` is true, then before each non-setup build phase, write/update `AGENT_PLAN.md`, explain what will be built, what looks right, what is not ready yet, confidence about proven vs uncertain items, and what needs my approval, then wait for approval. After each completed phase, write/update `reports/agent/<phase>_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md`.
+After I answer, run project setup and configuration automatically, then before each build phase, write/update `AGENT_PLAN.md`, explain what will be built, what looks right, what is not ready yet, confidence about proven vs uncertain items, and what needs my approval, then wait for approval. After each completed phase, write/update `reports/agent/<phase>_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md`.
 ```
 
 For a full copy-paste prompt, see [prompt.md](prompt.md).

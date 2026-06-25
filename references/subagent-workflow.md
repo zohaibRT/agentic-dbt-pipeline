@@ -33,7 +33,7 @@ The main agent remains responsible for:
 After inputs and source access are resolved, split safe work:
 
 1. Main agent runs read-only discovery and gathers requirements.
-2. Main agent runs approved bootstrap, dependency install, and source generation when needed.
+2. Main agent runs project setup and configuration, dependency install, and source generation when needed.
 3. Main agent gives each subagent a narrow task with read-only instructions.
 4. Subagents return concise findings using the handoff format below.
 5. Main agent merges findings into a single implementation plan.

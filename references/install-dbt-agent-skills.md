@@ -9,7 +9,7 @@ User only installs:
 npx skills add zohaibRT/agentic-dbt-pipeline
 ```
 
-## Agent check (bootstrap step 1)
+## Agent check (project setup step 1)
 
 ```text
 .agents/skills/using-dbt-for-analytics-engineering/SKILL.md exists?

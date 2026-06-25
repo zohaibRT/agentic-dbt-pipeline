@@ -43,7 +43,7 @@ Before any source discovery, follow [warehouse-adapter-routing.md](warehouse-ada
 
 If the configured source is missing, empty, inaccessible, ambiguous, mismatched, or appears to be the wrong source, stop discovery and follow [source-confirmation.md](source-confirmation.md) plus the wrong-source checkpoint in [warehouse-adapter-routing.md](warehouse-adapter-routing.md). The agent may list candidate databases, datasets, catalogs, schemas, tables, tenants, clients, domains, environments, or table counts as metadata only, but must not profile candidate tables, infer business entities, draw diagrams, write discovery reports, update `.env`, or continue with a different source until the user approves the exact replacement.
 
-Discovery is project-oriented, not setup-oriented. The discovery input, report, and chat output should focus on the source data and the future analytics project, not on environment setup, bootstrap, package installation, git, continuous integration, or agent configuration.
+Discovery is project-oriented, not setup-oriented. The discovery input, report, and chat output should focus on the source data and the future analytics project, not on environment setup, package installation, git, continuous integration, or agent configuration.
 
 Discovery is also phased. Initial discovery should be lightweight and should not fully design every bronze, silver, gold, semantic, evaluator, and documentation artifact. See [phased-discovery.md](phased-discovery.md). Deeper discovery happens immediately before each layer/phase.
 
@@ -96,7 +96,7 @@ Put setup/config context at the end under a short `Inputs Used` section only:
 - Source schema
 - Source tables inspected
 
-Do not lead the discovery report with profile details, `.env` handling, package setup, bootstrap status, git status, virtual environment setup, continuous integration, or Agents Schema. Those belong in setup/bootstrap reports.
+Do not lead the discovery report with profile details, `.env` handling, package setup, setup status, git status, virtual environment setup, continuous integration, or Agents Schema. Those belong in setup reports.
 
 ## Discovery files are required
 

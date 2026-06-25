@@ -2,7 +2,7 @@
 
 For a new project or full pipeline, run [discovery-requirements.md](discovery-requirements.md) first. The setup phase starts only after discovery is summarized and the user accepts the discovery recommendation by replying with requirements, `continue`, `no changes`, `go ahead`, or similar.
 
-Run this setup phase before layer work. Do not skip unless user sets `auto_bootstrap: false`.
+Run this setup phase before layer work. Do not skip unless the user explicitly disables automatic project setup.
 
 ## Phase contract
 
@@ -17,7 +17,7 @@ Run this setup phase before layer work. Do not skip unless user sets `auto_boots
 
 ## Automatic setup rule
 
-Project setup and configuration is foundational, so it auto-runs by default when `auto_bootstrap: true`. Do not ask for a separate setup approval response after the discovery requirements checkpoint is accepted.
+Project setup and configuration is foundational, so it auto-runs by default. Do not ask for a separate setup approval response after the discovery requirements checkpoint is accepted.
 
 Before running it, write or update `AGENT_PLAN.md` with:
 
@@ -66,7 +66,7 @@ Project setup and configuration must not:
 - Existing project files would be overwritten or moved
 - Setup would need to create or replace warehouse objects beyond setup validation
 - Credentials, secrets, GitHub remote creation, or GitHub Secrets are needed
-- `auto_bootstrap: false` is set
+- Automatic project setup is explicitly disabled
 - The user explicitly asked to approve setup manually
 
 ## 1. dbt Agent Skills + dbt packages *(agent installs - user does not)*
@@ -165,10 +165,10 @@ Then proceed to layer phases.
 ## Advanced prompt flags
 
 ```text
-auto_bootstrap: true
+# Optional advanced config: disable automatic project setup only for layer-only edits on a fully set up project.
 auto_agents_schema: false
 auto_install_dbt_skills: true
 github_repo_name: analytics    # optional; only when pushing to GitHub
 ```
 
-Set `auto_bootstrap: false` only for layer-only edits on a fully set up project.
+Keep automatic project setup enabled for new/full pipeline work. Disable it only for layer-only edits on a fully set up project.

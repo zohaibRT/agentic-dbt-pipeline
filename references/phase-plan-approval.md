@@ -2,7 +2,7 @@
 
 Use this before every non-setup phase that creates models, seeds, snapshots, semantic files, documentation files, workflow files, or warehouse objects. Run [discovery-requirements.md](discovery-requirements.md) first for a new/full-pipeline request.
 
-Project setup and configuration is handled by [bootstrap.md](bootstrap.md). It auto-runs as setup-only when `auto_bootstrap: true` after the discovery requirements checkpoint is accepted, unless a setup safety gate requires user approval.
+Project setup and configuration is handled by [bootstrap.md](bootstrap.md). It auto-runs as setup-only after the discovery requirements checkpoint is accepted, unless a setup safety gate requires user approval.
 
 ## Core rule
 

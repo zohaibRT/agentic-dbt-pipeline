@@ -8,7 +8,7 @@ npx skills add zohaibRT/agentic-dbt-pipeline
 
 Repository: https://github.com/zohaibRT/agentic-dbt-pipeline
 
-**You do not install dbt Agent Skills separately.** On first pipeline run, bootstrap installs them automatically when `auto_install_dbt_skills: true` (default):
+**You do not install dbt Agent Skills separately.** On first pipeline run, project setup and configuration installs them automatically when `auto_install_dbt_skills: true` (default):
 
 ```bash
 npx skills add dbt-labs/dbt-agent-skills/skills/dbt
@@ -29,7 +29,7 @@ See [prompt.md](../prompt.md) for the full prompt.
 | What | Who installs | When |
 |---|---|---|
 | `agentic-dbt-pipeline` | **You** (`npx skills add ...`) | Once, before first use |
-| dbt Agent Skills (9 skills) | **Agent** (bootstrap) | First run if missing |
+| dbt Agent Skills (9 skills) | **Agent** (project setup and configuration) | First run if missing |
 | dbt packages (codegen, utils, etc.) | **Agent** (`dbt deps`) | Sources / full pipeline |
 | dbt project + layers | **Agent** | Full pipeline |
 

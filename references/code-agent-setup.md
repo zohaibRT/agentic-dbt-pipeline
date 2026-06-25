@@ -14,7 +14,7 @@ What the agent needs before dbt pipeline work.
 
 ## Agent behavior rules
 
-1. Run [bootstrap.md](bootstrap.md) **first** on every invocation (`auto_bootstrap: true` default).
+1. Run [bootstrap.md](bootstrap.md) **first** on every new/full pipeline invocation. This is automatic project setup and configuration.
 2. Install dbt-labs skills automatically if missing - do not tell user to install manually.
 3. Run `dbt deps` + codegen during sources phase - do not tell user to run manually.
 4. Create CI + Agents Schema workflow files during full pipeline.
