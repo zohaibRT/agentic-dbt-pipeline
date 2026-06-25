@@ -6,7 +6,7 @@ Use this after marts, semantic layer, project evaluator, and documentation have 
 
 Help the data engineer decide whether the completed dbt project should expose a user-facing presentation layer beyond dbt models and documentation.
 
-The presentation layer is optional. Do not create dashboards, reports, slides, notebooks, or business intelligence artifacts unless the user approves.
+The presentation artifact is optional, but the recommendation is required for full pipeline final delivery. Do not create dashboards, reports, slides, notebooks, or business intelligence artifacts unless the user approves.
 
 ## What to recommend
 
@@ -64,6 +64,8 @@ I can prepare one of these:
 ```
 
 Do not force the user to choose all options. Recommend the best next option based on the project evidence.
+
+If the recommendation cannot be produced, mark it `BLOCKED` or `SKIPPED` with the exact reason in the final report, pipeline status, context tree, and final response. Do not silently omit the presentation-layer section.
 
 ## Guardrails
 

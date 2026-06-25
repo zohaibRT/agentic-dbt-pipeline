@@ -12,6 +12,7 @@ Use this before calling a dbt pipeline complete.
 - dbt documentation generated
 - Project evaluator run and warnings summarized
 - Presentation layer recommendation produced after final validation, with user-facing options and suggested metrics
+- Advanced data-engineering review completed before final delivery
 - Agents Schema workflow prepared after `target/manifest.json` exists, when supported by the warehouse destination
 - Continuous integration workflow prepared when GitHub automation is requested
 - Commits created by phase
@@ -31,6 +32,7 @@ Update or create project handoff notes with:
 - Final facts, dimensions, marts, and metrics
 - Key performance indicator definitions with numerator, denominator, filters, time field, source model, caveats, validation evidence, and approval status
 - Presentation layer recommendation, including possible key performance indicators, semantic metrics, suggested report or dashboard pages, and query handoff options
+- Project knowledge used, including `project_rules`, `AGENT_KNOWLEDGE.md`, `docs/dbt_knowledge.md`, `docs/business_rules.md`, `.agents/project_knowledge.md`, or context tree decisions when present
 - Power BI as code status when requested, including PBIP structure validation and open/refresh notes
 - Known empty tables or data quality limitations
 - Confidence notes: what was validated vs what still needs confirmation
@@ -102,6 +104,7 @@ Use a compact table when helpful:
 - Important models created by layer
 - Semantic models and metrics added
 - Presentation layer recommendation and whether the user approved any follow-up artifact
+- Advanced data-engineering review result
 - Continuous integration or Agents Schema workflow changes
 - Mermaid diagrams created or updated
 - Documentation generated and documentation serve URL when started
@@ -117,6 +120,7 @@ Use a compact table when helpful:
 - Phase plan approval status
 - Phase report status and path
 - Mermaid diagram visibility/parse status when diagrams were created or changed
+- Advanced data-engineering review status
 
 ### Data notes
 
@@ -131,12 +135,14 @@ Use a compact table when helpful:
 - Git commit status
 - Agents Schema status
 - Continuous integration status
+- Advanced data-engineering review status
 
 ### Open decisions
 
 - Open user decisions
 - Any deferred or blocked key performance indicator definitions
 - Whether to create a presentation layer artifact such as a business-facing report, dashboard design, semantic layer refinement, or query handoff
+- Whether presentation layer recommendation was blocked or skipped, with reason
 - Recommended next actions
 
 Keep the final response readable for a new dbt user. Do not bury blockers, failed validation, unsupported Agents Schema destinations, or sensitive-data risks inside long prose.

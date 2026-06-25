@@ -84,6 +84,7 @@ Every phase report must include:
 - Validation results: pass, warn, fail, skipped
 - Data verification results after bronze/staging, silver/intermediate, and gold/marts builds
 - Agent recommendation followed, changed, or deferred
+- Project knowledge used and whether it was applied, deferred, or conflicted
 - What looks correct
 - What looks wrong or risky
 - Confidence: what is proven vs what still needs confirmation
@@ -151,6 +152,11 @@ Overall: <PASS | WARN | FAIL | SKIPPED | BLOCKED>
 |---|---|---|---|---|---|---|---|---|---|
 | <name> | <meaning> | <model> | <grain> | <numerator> | <denominator or not applicable> | <filters> | <date field> | <validation/caveat> | <approved/deferred/blocked> |
 
+## Advanced Data Engineering Review
+| Area | Status | Evidence | Action Needed |
+|---|---|---|---|
+| <area> | <PASS/WARN/FAIL/BLOCKED/SKIPPED> | <evidence> | <next action or none> |
+
 ## Mermaid Diagrams
 | Diagram | Mermaid type | Verification | Notes |
 |---|---|---|---|
@@ -160,6 +166,11 @@ Overall: <PASS | WARN | FAIL | SKIPPED | BLOCKED>
 | Recommendation | Outcome | Evidence / Reason |
 |---|---|---|
 | <recommended action> | <followed/changed/deferred> | <why> |
+
+## Project Knowledge Used
+| Source | Rule / Knowledge | Applied How | Conflict? |
+|---|---|---|---|
+| <file or prompt> | <rule> | <implementation or report impact> | <none / resolved / needs approval> |
 
 ## What Looks Correct
 - <confirmed-good point>

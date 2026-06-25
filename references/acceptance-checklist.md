@@ -50,8 +50,11 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] `reports/agent/PIPELINE_STATUS.md` updated after each phase
 - [ ] `reports/agent/CONTEXT_TREE.md` updated with user inputs, decisions, phase outputs, report links, and open items
 - [ ] Final delivery included a presentation layer recommendation and asked whether the user wants a presentation artifact
+- [ ] Presentation layer recommendation was not skipped silently; if blocked or skipped, the reason was written to final report, pipeline status, context tree, and final response
 - [ ] Any diagram created or changed uses Mermaid and has visibility/parse verification recorded
 - [ ] User-facing output uses full wording and avoids shorthand except for official tool names, commands, filenames, environment variables, package names, or code identifiers
+- [ ] Project knowledge files and `project_rules` were read when present and summarized in phase plans/reports
+- [ ] New reusable dbt knowledge from chat was persisted only after user approval and without secrets
 
 ## dbt Agent Skills & packages
 
@@ -183,6 +186,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Final handoff notes or README include domain, profile name, schemas, final models, metrics, run commands, and known limitations
 - [ ] Final response starts with a short summary, then includes results, validation, data notes, git/automation status, and open decisions
 - [ ] Final response references `AGENT_PLAN.md`, `reports/agent/PIPELINE_STATUS.md`, `reports/agent/CONTEXT_TREE.md`, and relevant phase reports
+- [ ] Final response includes the advanced data-engineering review status
 - [ ] Phase commits created or intentionally skipped
 - [ ] Final response summarizes build status, documentation status, evaluator status, Agents Schema status, git status, limitations, and open decisions
 - [ ] Final response includes possible key performance indicators, semantic metrics, and presentation pages when enough final mart evidence exists

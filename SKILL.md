@@ -68,6 +68,7 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 | **Discovery** | First for new/full pipeline runs | [discovery-requirements.md](references/discovery-requirements.md), [source-profiling.md](references/source-profiling.md) |
 | **Project setup and connection validation** | Automatic setup-only phase after discovery requirements are accepted | [bootstrap.md](references/bootstrap.md) |
 | **0 Inputs** | Always first | [skill-inputs.md](references/skill-inputs.md), [profile-listing.md](references/profile-listing.md), [project-naming.md](references/project-naming.md), [env-configuration.md](references/env-configuration.md), [source-confirmation.md](references/source-confirmation.md), [warehouse-adapter-routing.md](references/warehouse-adapter-routing.md), [security-and-credentials.md](references/security-and-credentials.md), [schema-isolation.md](references/schema-isolation.md), [code-agent-setup.md](references/code-agent-setup.md) |
+| **0a Project knowledge** | User dbt standards and domain rules | [project-knowledge.md](references/project-knowledge.md) |
 | **0b Subagents** | Optional speed-up | [subagent-workflow.md](references/subagent-workflow.md) |
 | **0c Best practices** | Design guardrails | [data-engineering-best-practices.md](references/data-engineering-best-practices.md), [privacy-and-unknown-fields.md](references/privacy-and-unknown-fields.md) |
 | **0c Writing style** | Full wording in user-facing output | [writing-style.md](references/writing-style.md) |
@@ -77,6 +78,7 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 | **0g Diagrams** | Mermaid-only diagrams with visibility checks | [mermaid-diagrams.md](references/mermaid-diagrams.md) |
 | **0h Layer data validation** | Warehouse query checks after every built layer | [layer-data-validation.md](references/layer-data-validation.md) |
 | **0i Key performance indicators** | Business metric definitions and approval evidence | [kpi-definitions.md](references/kpi-definitions.md) |
+| **0j Advanced review** | Senior data-engineering completion gate | [advanced-data-engineering-review.md](references/advanced-data-engineering-review.md) |
 | **1 Init** | New project | [project-initialization.md](references/project-initialization.md) |
 | **2 Schemas** | After init | [warehouse-schema-setup.md](references/warehouse-schema-setup.md), [schema-isolation.md](references/schema-isolation.md) |
 | **3 Sources** | Packages + source YAML | [packages-and-sources.md](references/packages-and-sources.md) |
@@ -101,9 +103,11 @@ Context prompt template: [agent-context-prompt.md](references/agent-context-prom
 
 ## Step 0 - Load configuration
 
-Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), [profile-listing.md](references/profile-listing.md), [project-naming.md](references/project-naming.md), [schema-isolation.md](references/schema-isolation.md), [env-configuration.md](references/env-configuration.md), [source-confirmation.md](references/source-confirmation.md), [warehouse-adapter-routing.md](references/warehouse-adapter-routing.md), [discovery-requirements.md](references/discovery-requirements.md), [phased-discovery.md](references/phased-discovery.md), [recommendation-and-review.md](references/recommendation-and-review.md), [writing-style.md](references/writing-style.md), [mermaid-diagrams.md](references/mermaid-diagrams.md), [layer-data-validation.md](references/layer-data-validation.md), [kpi-definitions.md](references/kpi-definitions.md), [phase-plan-approval.md](references/phase-plan-approval.md), [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md), [phase-completion-report.md](references/phase-completion-report.md), and [context-tree.md](references/context-tree.md).
+Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), [profile-listing.md](references/profile-listing.md), [project-naming.md](references/project-naming.md), [schema-isolation.md](references/schema-isolation.md), [env-configuration.md](references/env-configuration.md), [source-confirmation.md](references/source-confirmation.md), [warehouse-adapter-routing.md](references/warehouse-adapter-routing.md), [project-knowledge.md](references/project-knowledge.md), [discovery-requirements.md](references/discovery-requirements.md), [phased-discovery.md](references/phased-discovery.md), [recommendation-and-review.md](references/recommendation-and-review.md), [writing-style.md](references/writing-style.md), [mermaid-diagrams.md](references/mermaid-diagrams.md), [layer-data-validation.md](references/layer-data-validation.md), [kpi-definitions.md](references/kpi-definitions.md), [advanced-data-engineering-review.md](references/advanced-data-engineering-review.md), [phase-plan-approval.md](references/phase-plan-approval.md), [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md), [phase-completion-report.md](references/phase-completion-report.md), and [context-tree.md](references/context-tree.md).
 
 Resolve paths relative to workspace root. dbt project root = `{project.root}`.
+
+Read [project-knowledge.md](references/project-knowledge.md) after loading configuration and before discovery summaries or phase plans. Use project knowledge files such as `AGENT_KNOWLEDGE.md`, `docs/dbt_knowledge.md`, `docs/business_rules.md`, `.agents/project_knowledge.md`, and `reports/agent/CONTEXT_TREE.md` when they exist. Apply prompt `project_rules` first when there is a conflict. Ask before persisting new knowledge from chat.
 
 **User prompt overrides `.env` and configuration** for schema, domain, layers, materialization, commit mode. Use `.env` for non-secret reusable inputs before asking the user. If `.env` is missing in a fresh clone, follow [env-configuration.md](references/env-configuration.md): create a safe local `.env` from `.env.example` with placeholder values only, list available dbt profiles with [profile-listing.md](references/profile-listing.md), stop before discovery or dbt commands, and ask the user for `DBT_DOMAIN`, `DBT_PROFILE_NAME`, and `DBT_SOURCE_SCHEMA`. Do not fill `.env` from profiles, profile target schemas, warehouse schemas, old runs, terminal output, examples, nearby workspaces, or guesses. Do not search the repository, inspect terminal output, infer, suggest, or summarize values from other workspaces or previous runs.
 
@@ -150,6 +154,8 @@ Read [mermaid-diagrams.md](references/mermaid-diagrams.md) before creating or ch
 Read [layer-data-validation.md](references/layer-data-validation.md) before building bronze/staging, silver/intermediate, or gold/marts. After each layer build, run warehouse validation queries for row presence, expected emptiness, grain, keys, relationships, row-count movement, date coverage, status/category distributions, measures, mapping coverage, and privacy exposure. Add a `Data Verification Results` section to the layer report, share the important results with the user, and stop before the next layer when a model that should contain data is empty or any validation issue is unexplained.
 
 Read [kpi-definitions.md](references/kpi-definitions.md) before gold/marts, semantic layer, presentation layer, and final delivery. The agent must propose supported key performance indicators with business meaning, source model, grain, numerator, denominator, filters, time field, caveats, validation evidence, and approval status. Do not create semantic metrics or presentation calculations from ambiguous key performance indicators.
+
+Read [advanced-data-engineering-review.md](references/advanced-data-engineering-review.md) before final delivery. The pipeline is not complete until advanced review areas are reported, including source lock, schema hygiene, layer validation, grain, tests, data quality, privacy, key performance indicators, semantic layer, evaluator, documentation, presentation-layer recommendation, and operations.
 
 ## Step 0.5 - Resolve layer names
 
@@ -235,10 +241,10 @@ Read [separate-layer-builds.md](references/separate-layer-builds.md).
 6. Semantic layer - metrics on marts facts
 7. Project evaluator - `dbt build --select package:dbt_project_evaluator` after confirming it is routed to `<layer_schema_prefix>_evaluator`
 8. Documentation - `dbt docs generate`; use `dbt docs serve` for local viewing when requested or appropriate for an interactive local run
-9. Presentation layer recommendation - ask whether the user wants documentation only, a business-facing report, dashboard design, semantic refinement, or query handoff
+9. Presentation layer recommendation - required final recommendation after validation; ask whether the user wants documentation only, a business-facing report, dashboard design, semantic refinement, or query handoff
 10. Agents Schema - publish dbt metadata to `AGENTS.*` after `target/manifest.json` exists when enabled and supported
 11. Automation - continuous integration workflow
-12. **Acceptance + final summary** - [acceptance-checklist.md](references/acceptance-checklist.md), [final-delivery.md](references/final-delivery.md)
+12. **Advanced review, acceptance + final summary** - [advanced-data-engineering-review.md](references/advanced-data-engineering-review.md), [acceptance-checklist.md](references/acceptance-checklist.md), [final-delivery.md](references/final-delivery.md)
 
 After project setup and connection validation, each stage: **phase-specific discovery -> agent recommendation -> data engineer decision check -> write Markdown plan -> ask approval -> implement -> parse/build -> warehouse data validation queries -> write phase report with validation results -> update context tree -> summarize validation results -> ask commit**. Ask for push only when a non-local GitHub repository is configured or the user requested push.
 
@@ -280,6 +286,8 @@ Read [documentation.md](references/documentation.md). Run `dbt docs generate`. U
 
 Read [presentation-layer.md](references/presentation-layer.md) and [kpi-definitions.md](references/kpi-definitions.md). After final validation, recommend the best presentation-layer option with possible key performance indicators, semantic metrics, dashboard or report pages, source models, caveats, and privacy notes. Ask whether the user wants to create a presentation layer artifact. Do not build dashboards, reports, slides, notebooks, or business intelligence artifacts without approval.
 
+The presentation-layer recommendation is mandatory for full pipeline final delivery. If it cannot be produced, mark it `BLOCKED` or `SKIPPED` with evidence in the final report, pipeline status, context tree, and final response.
+
 ## Step 6b - Human review
 
 Read [human-review.md](references/human-review.md). Summarize business assumptions, data quality notes, and open decisions after each layer. Ask for approval when business meaning, grain, mappings, metrics, or sensitive fields are unclear.
@@ -299,7 +307,7 @@ Use Agents Schema after documentation generation or any step that produces `targ
 
 ## Step 9 - Final delivery summary
 
-Read [phase-completion-report.md](references/phase-completion-report.md), [context-tree.md](references/context-tree.md), and [final-delivery.md](references/final-delivery.md) before marking any full pipeline or requested phase complete.
+Read [advanced-data-engineering-review.md](references/advanced-data-engineering-review.md), [phase-completion-report.md](references/phase-completion-report.md), [context-tree.md](references/context-tree.md), and [final-delivery.md](references/final-delivery.md) before marking any full pipeline or requested phase complete.
 
 Always finish with a user-facing summary that starts short, then gives the useful details:
 
@@ -309,7 +317,9 @@ Always finish with a user-facing summary that starts short, then gives the usefu
 4. Validation: dbt debug, parse, build, documentation, and evaluator results.
 5. Data quality notes and assumptions.
 6. Git, continuous integration, and Agents Schema status.
-7. Open decisions and recommended next actions.
+7. Presentation-layer recommendation status.
+8. Advanced data-engineering review status.
+9. Open decisions and recommended next actions.
 
 Keep the first section concise enough for a new user to understand in under one minute.
 
@@ -387,6 +397,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 | [phase-plan-approval.md](references/phase-plan-approval.md) | Markdown plan and approval gate before every phase |
 | [phase-completion-report.md](references/phase-completion-report.md) | Per-phase report files showing done/correct/wrong/open items |
 | [context-tree.md](references/context-tree.md) | Curated project memory: inputs, outputs, decisions, reports, and open items |
+| [project-knowledge.md](references/project-knowledge.md) | User-provided dbt standards, domain knowledge, and business rules |
 | [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md) | Senior data-engineering decisions that must be explicit before build |
 | [phased-discovery.md](references/phased-discovery.md) | Layer-by-layer discovery that keeps the data engineer in control |
 | [recommendation-and-review.md](references/recommendation-and-review.md) | Agent recommendations, risks, and approval boundaries |
@@ -394,6 +405,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 | [mermaid-diagrams.md](references/mermaid-diagrams.md) | Mermaid-only diagrams and visibility verification |
 | [layer-data-validation.md](references/layer-data-validation.md) | Warehouse query checks after every bronze, silver, and gold layer build |
 | [kpi-definitions.md](references/kpi-definitions.md) | Key performance indicator definitions, caveats, and approval status |
+| [advanced-data-engineering-review.md](references/advanced-data-engineering-review.md) | Required senior data-engineering review before final delivery |
 | [project-naming.md](references/project-naming.md) | Derive project and folder names without using dbt profile |
 | [env-configuration.md](references/env-configuration.md) | Optional `.env` settings and precedence |
 | [source-confirmation.md](references/source-confirmation.md) | Ask-before-switching contract and approved source lock |
