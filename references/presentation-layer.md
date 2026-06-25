@@ -137,6 +137,8 @@ Use this section when the user explicitly asks for a Power BI project, PBIP, TMD
 
 Power BI as code completion means the generated project is intended to open from a `.pbip` file in Power BI Desktop. A folder containing only `import_guide.md`, `relationships.md`, `kpi_measures.dax`, and `dashboard_pages.md` is a useful dashboard design handoff, but it is not Power BI as code and must not be marked complete as such.
 
+When the user provides a detailed Power BI contract, copy the contract into the presentation phase plan and validate against every item. Do not generalize away user-provided table names, relationship rules, measure labels, report page names, output paths, schema versions, or known technical fixes.
+
 Before creating files:
 
 - Confirm the final dbt gold/mart tables exist and have passed the relevant dbt build.
@@ -144,20 +146,27 @@ Before creating files:
 - Confirm output location, model name, connection source, presentation pages, measures, and privacy rules.
 - In the plan, state that Power BI PBIP/TMDL is the default because no other presentation technology was specified. Ask for changes only if the user wants a different technology or a Markdown-only guide.
 - If a known-good PBIP project exists in the workspace and the user allows it as a reference, inspect its folder structure and metadata patterns before writing new files.
+- When the user names required source schemas or gold tables, verify those tables exist before wiring import queries or partitions.
 
 When creating PBIP:
 
 - Create a complete PBIP project, not only loose TMDL text.
 - Include the `.pbip` file, a Report artifact folder, and a SemanticModel artifact folder.
 - Ensure the `.pbip` file points to a Report artifact when a report is requested, not only to a semantic model.
+- Ensure the Report artifact has a definition file that links to the SemanticModel artifact using the correct relative path.
 - Keep TMDL under the SemanticModel definition folder using the expected artifact layout for the chosen Power BI project format.
 - Create report definition files for the approved pages and visuals when the user asked for clickable/openable Power BI pages. Do not replace report pages with `dashboard_pages.md`.
 - Use parameters for host, database, schema, warehouse, or equivalent connection values instead of hardcoding environment-specific values where practical.
 - Define relationships from the approved star schema and avoid ambiguous relationship paths. Prefer one active route from each dimension to each fact area. Avoid convenience relationships from a dimension directly to a lower-grain fact when that lower-grain fact is already reachable through its parent fact.
+- For parent-child fact designs, connect lower-grain satellite facts to the parent fact only when that is the approved canonical route, and do not also add direct active dimension shortcuts that create ambiguous paths.
+- Use inactive relationships only for approved role-playing dates or alternate analysis paths, and document the measure pattern needed to activate them.
 - Include approved bridge tables and their relationship directions when the gold layer contains bridge models or the approved presentation scope requires many-to-many analysis.
 - Put reusable business calculations in a measures table or equivalent semantic model construct.
 - Use simple user-facing measure labels and keep technical column names inside model definitions.
+- When the user supplies exact measure labels, use those labels exactly unless the expression cannot be supported by the validated marts.
+- Use supported PBIP/TMDL metadata versions for the target Power BI Desktop release. Known requirements from prior failures include `definition.pbism` using the semantic model definition-properties schema path, `database.tmdl` using `compatibilityLevel: 1605` when requested, `model.tmdl` table references at the root level when the chosen structure requires it, and `report.json` values such as `themeCollection.baseTheme.reportVersionAtImport` typed exactly as Power BI expects.
 - Add a local `powerbi/README.md` or equivalent handoff with open, refresh, and reload-from-disk guidance.
+- Do not tell the user to overwrite the generated project by saving from Power BI Desktop as the default fix. For reload-from-disk edits, instruct the user to close without saving when that is the safe workflow.
 
 Validation before handoff:
 
@@ -166,6 +175,7 @@ Validation before handoff:
 - Check TMDL indentation and root-level object placement against the selected PBIP structure.
 - Verify the `.pbip` points to the report artifact and the report points to the semantic model artifact.
 - Verify approved report pages exist as Power BI report definition artifacts, not only Markdown page descriptions.
+- Verify user-provided technical requirements exactly, including output path, artifact folder names, schema strings, compatibility level, parameter names, import partition source, relationship direction/activity, measure labels, report page names, and expected visuals.
 - For Power BI PBIP/TMDL artifacts, run a relationship ambiguity audit before handoff. Build a simple graph of active relationships and confirm there is no pair of dimensions or presentation entities connected by more than one active path through facts, bridge tables, or snowflaked dimensions. Record the checked paths and result in `reports/agent/presentation_report.md`.
 - Compare key metadata paths and schema fields against a known-good local reference when one is available.
 - Re-run a file-tree check after edits and include the result in the phase report.

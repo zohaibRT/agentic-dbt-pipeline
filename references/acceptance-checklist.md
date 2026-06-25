@@ -157,10 +157,14 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Presentation options were recommended after documentation: documentation only, business-facing report, dashboard design, semantic layer refinement, or query handoff
 - [ ] Power BI PBIP/TMDL was created when the user approved a presentation layer and did not specify another technology
 - [ ] If Power BI PBIP/TMDL was created, PBIP includes the project file, Report artifact, SemanticModel artifact, TMDL/definition files, relationships, measures, parameters, and handoff README
+- [ ] If Power BI PBIP/TMDL was created from a user-provided contract, every required output path, artifact folder, schema string, compatibility level, parameter, source partition, relationship, measure label, report page, and visual was checked against that contract
+- [ ] If Power BI PBIP/TMDL was created, the `.pbip` points to the Report artifact, and the Report artifact definition links to the SemanticModel artifact with the correct relative path
+- [ ] If Power BI PBIP/TMDL was created, import partitions use approved parameters for host, database, schema, warehouse, or equivalent connection values
 - [ ] If Power BI PBIP/TMDL was created, approved report pages exist as Power BI report definition artifacts, not only Markdown page descriptions
 - [ ] If Power BI PBIP/TMDL was created, Markdown import guides, DAX snippets, relationship notes, or dashboard page descriptions were not marked as the completed Power BI artifact
-- [ ] If Power BI PBIP/TMDL was created, JSON parse checks, TMDL structure checks, and file-tree checks were run and recorded
+- [ ] If Power BI PBIP/TMDL was created, JSON parse checks, TMDL structure checks, file-tree checks, and known metadata-version checks were run and recorded
 - [ ] If Power BI PBIP/TMDL was created, active relationships were audited for ambiguous filter paths, including multiple active paths between dimensions through facts or bridge tables
+- [ ] If Power BI PBIP/TMDL was created, lower-grain facts, parent facts, bridge tables, and role-playing date relationships were reviewed so only the approved active paths are active
 - [ ] If Power BI PBIP/TMDL was created and Power BI Desktop was available, the generated `.pbip` was opened or launched for load validation, and any Desktop load error was fixed before marking the presentation phase complete
 - [ ] If Power BI PBIP/TMDL was created and Power BI Desktop validation was not run, the presentation report clearly says it was not run and why; it does not claim the project was opened successfully
 
