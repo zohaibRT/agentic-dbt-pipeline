@@ -248,7 +248,7 @@ Read [separate-layer-builds.md](references/separate-layer-builds.md).
 6. Semantic layer - metrics on marts facts
 7. Project evaluator - `dbt build --select package:dbt_project_evaluator` after confirming it is routed to `<layer_schema_prefix>_evaluator`
 8. Documentation - `dbt docs generate`; use `dbt docs serve` for local viewing when requested or appropriate for an interactive local run
-9. Presentation layer recommendation - required final recommendation after validation; ask whether the user wants documentation only, a business-facing report, dashboard design, semantic refinement, or query handoff
+9. Presentation layer gate - required after documentation and before final delivery; recommend the best option and ask whether the user wants a presentation artifact. If the user approves, run a separate `presentation_layer` phase and create the approved artifact.
 10. Agents Schema - publish dbt metadata to `AGENTS.*` after `target/manifest.json` exists when enabled and supported
 11. Automation - continuous integration workflow
 12. **Advanced review, acceptance + final summary** - [advanced-data-engineering-review.md](references/advanced-data-engineering-review.md), [acceptance-checklist.md](references/acceptance-checklist.md), [final-delivery.md](references/final-delivery.md)
@@ -287,13 +287,13 @@ Read [project-evaluator.md](references/project-evaluator.md). Before running eva
 
 ## Step 6 - Documentation
 
-Read [documentation.md](references/documentation.md). Run `dbt docs generate`. Use `dbt docs serve` only as a non-blocking local viewing step and report the URL when started.
+Read [documentation.md](references/documentation.md). Run `dbt docs generate`. Use `dbt docs serve` only as a non-blocking local viewing step and report the URL when started. In a full pipeline, do not mark delivery complete after documentation. Move to the presentation-layer gate and ask the user whether to create a presentation artifact.
 
 ## Step 6a - Presentation layer recommendation
 
-Read [presentation-layer.md](references/presentation-layer.md) and [kpi-definitions.md](references/kpi-definitions.md). After final validation, recommend the best presentation-layer option with possible key performance indicators, semantic metrics, dashboard or report pages, source models, caveats, and privacy notes. Ask whether the user wants to create a presentation layer artifact. Do not build dashboards, reports, slides, notebooks, or business intelligence artifacts without approval.
+Read [presentation-layer.md](references/presentation-layer.md) and [kpi-definitions.md](references/kpi-definitions.md). After documentation and final validation, recommend the best presentation-layer option with possible key performance indicators, semantic metrics, dashboard or report pages, source models, caveats, and privacy notes. Ask whether the user wants to create a presentation layer artifact before final delivery is closed. If the user approves an artifact, create the `presentation_layer` phase plan, build only the approved artifact, validate it, and write the presentation report. Do not build dashboards, reports, slides, notebooks, or business intelligence artifacts without approval.
 
-The presentation-layer recommendation is mandatory for full pipeline final delivery. If it cannot be produced, mark it `BLOCKED` or `SKIPPED` with evidence in the final report, pipeline status, context tree, and final response.
+The presentation-layer recommendation and user decision gate are mandatory for full pipeline final delivery. If the user has not answered the presentation question, set status to `Documentation complete - presentation decision pending`, not `Delivery complete`. If the recommendation cannot be produced, mark it `BLOCKED` or `SKIPPED` with evidence in the final report, pipeline status, context tree, and final response.
 
 ## Step 6b - Human review
 

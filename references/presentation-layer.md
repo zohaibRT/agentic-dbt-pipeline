@@ -8,12 +8,35 @@ Help the data engineer decide whether the completed dbt project should expose a 
 
 The presentation artifact is optional, but the recommendation is required for full pipeline final delivery. Do not create dashboards, reports, slides, notebooks, or business intelligence artifacts unless the user approves.
 
+## Presentation decision gate
+
+After documentation generation in a full pipeline, the agent must stop at this gate and ask the user whether to create a presentation layer artifact. The agent must not mark the full delivery as complete while the presentation decision is still unanswered.
+
+Use these statuses:
+
+| User decision | Required status |
+|---|---|
+| Not asked yet | `Documentation complete - presentation decision pending` |
+| User declines artifact | `Presentation recommendation complete - artifact declined` |
+| User approves artifact | `Presentation artifact approved - presentation phase in progress` |
+| Artifact completed | `Presentation artifact complete` |
+| Artifact blocked | `Presentation artifact blocked` |
+
+If the user approves a presentation artifact, treat it as a separate `presentation_layer` phase:
+
+1. Write or update `AGENT_PLAN.md` with the exact artifact scope.
+2. Confirm the output format, source models, metrics, privacy rules, and validation method.
+3. Build only the approved artifact.
+4. Validate the artifact.
+5. Write or update `reports/agent/presentation_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md`.
+6. Only then continue to final delivery.
+
 ## Phase contract
 
 | Area | Contract |
 |---|---|
 | Inputs required | Completed marts, semantic/evaluator/documentation status, final model list, key performance indicator definitions, data quality notes, and privacy decisions |
-| Allowed changes | Presentation recommendation report; presentation artifacts only after explicit user approval and a separate plan |
+| Allowed changes | Presentation recommendation report; presentation artifacts only after explicit user approval and a separate `presentation_layer` phase plan |
 | Not allowed | Dashboards, reports, slides, notebooks, Power BI projects, guessed measures, or sensitive-field exposure without approval |
 | Commands to run | Read-only model/metadata checks and artifact-specific validation only after the user approves artifact creation |
 | Completion criteria | Best presentation option is recommended with evidence, possible key performance indicators are listed, caveats are clear, and the user is asked whether to create an artifact |
@@ -62,7 +85,7 @@ Decision needed:
 Ask clearly after final validation:
 
 ```text
-The dbt pipeline is complete. Do you want a presentation layer next?
+Documentation and dbt validation are complete. Before I close delivery, do you want me to create a presentation layer artifact?
 
 I can prepare one of these:
 
@@ -75,6 +98,8 @@ I can prepare one of these:
 ```
 
 Do not force the user to choose all options. Recommend the best next option based on the project evidence.
+
+If the user says yes, asks for a report/dashboard/Power BI/query handoff, or chooses one of the options, create the presentation-layer phase plan and wait for approval when required by [phase-plan-approval.md](phase-plan-approval.md). Do not answer only with advice when the user approved artifact creation.
 
 If the recommendation cannot be produced, mark it `BLOCKED` or `SKIPPED` with the exact reason in the final report, pipeline status, context tree, and final response. Do not silently omit the presentation-layer section.
 

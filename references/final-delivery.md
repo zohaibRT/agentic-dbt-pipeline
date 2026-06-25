@@ -2,6 +2,17 @@
 
 Use this before calling a dbt pipeline complete.
 
+## Presentation gate before completion
+
+Do not call a full pipeline complete immediately after documentation. Full delivery can be marked complete only after the presentation-layer gate in [presentation-layer.md](presentation-layer.md) has one of these outcomes:
+
+- Presentation recommendation was produced and the user declined artifact creation.
+- Presentation recommendation was produced, the user approved an artifact, and the presentation artifact phase completed.
+- Presentation recommendation was produced, the user approved an artifact, and the artifact is explicitly blocked with evidence.
+- The user explicitly asked to stop after documentation.
+
+If the presentation decision has not been asked or answered, set status to `Documentation complete - presentation decision pending` and ask the presentation-layer question. Do not write `Delivery complete`, `final completed state`, or equivalent close-out language yet.
+
 ## Deliverables
 
 - Source YAML generated from real source schema

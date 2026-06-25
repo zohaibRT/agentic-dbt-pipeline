@@ -17,6 +17,18 @@ Before docs-only work, write/update `AGENT_PLAN.md` with the docs plan and get a
 | Completion criteria | Model/source documentation is useful, generated documentation artifacts exist, and any missing docs are reported |
 | Report required | `reports/agent/docs_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
 
+## Handoff to presentation layer
+
+Documentation completion does not close a full pipeline. After `dbt docs generate` passes in a full pipeline, the agent must read [presentation-layer.md](presentation-layer.md), create the presentation-layer recommendation, update status files, and ask the user whether to create a presentation artifact.
+
+Set delivery status to `Documentation complete - presentation decision pending`, not `Delivery complete`, until one of these happens:
+
+- The user declines a presentation artifact.
+- The user approves a presentation artifact and that presentation phase is completed or explicitly blocked.
+- The user explicitly asks to stop after documentation.
+
+Do not replace the presentation-layer question with generic follow-up language such as `If you want, next I can...`.
+
 ## Per-model YAML
 
 For each model in staging, intermediate, and marts:
