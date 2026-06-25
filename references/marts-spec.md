@@ -6,6 +6,7 @@ Create or update **only** the marts star-schema layer from staging + intermediat
 
 Read [human-review.md](human-review.md) before marking marts complete if metrics, grain, mappings, or sensitive fields require business approval.
 Read [privacy-and-unknown-fields.md](privacy-and-unknown-fields.md) before exposing direct identifiers, sensitive fields, protected health information, personally identifiable information, or unclear coded fields in marts.
+Read [layer-data-validation.md](layer-data-validation.md) before marking marts complete.
 Before creating or changing marts files, follow [phase-plan-approval.md](phase-plan-approval.md).
 
 ## Folder and naming
@@ -91,6 +92,8 @@ dbt build --select +path:models/{layer_3_name}/{domain}
 ```
 
 `+path` builds marts models, their tests, and required upstream (staging + intermediate) dependencies.
+
+After the build, run [layer-data-validation.md](layer-data-validation.md). For marts, the report must show row counts for every fact, dimension, and reporting mart; expected-empty evidence for zero-row models; fact and dimension grain checks; fact-to-dimension or fact-to-parent-fact relationship checks; key performance indicator measure sanity checks; date coverage; and privacy exposure checks. If supporting upstream data exists but a gold model is empty, mark the phase `FAIL` or `BLOCKED`, share the evidence with the user, and do not continue to semantic layer, documentation, presentation layer, or final delivery until the issue is fixed or explicitly accepted.
 
 ## Do not create
 

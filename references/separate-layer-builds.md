@@ -35,7 +35,7 @@ Staging comes **before** intermediate. Marts (star schema) come **last**.
 
 Set `workflow_phase:` in the prompt to run **only** that phase.
 
-After project setup and connection validation, for every non-bootstrap phase: **phase-specific discovery -> agent recommendation -> data engineer decision check -> write `AGENT_PLAN.md` -> ask approval -> implement -> parse/build -> write `reports/agent/<phase>_report.md` -> update context tree -> summarize -> ask commit**.
+After project setup and connection validation, for every non-bootstrap phase: **phase-specific discovery -> agent recommendation -> data engineer decision check -> write `AGENT_PLAN.md` -> ask approval -> implement -> parse/build -> run layer data validation queries -> write `reports/agent/<phase>_report.md` with results -> update context tree -> summarize validation results -> ask commit**.
 
 ### Sources only
 
@@ -80,7 +80,8 @@ dbt build --select +path:models/{layer_1_name}/{domain}
 
 Warehouse models land in: **`<layer_schema_prefix>_<layer_1_name>`** (default materialization: `view`)
 
-Run bronze discovery first: table grains, column pass/drop decisions, casts, naming, source tests, and sensitive-column handling. Recommend the staging path with evidence, then explain planned staging models, source tables, casts, tests, approval needs, and schema target before creating files.
+Run bronze discovery first: table grains, column pass/drop decisions, casts, naming, source tests, and sensitive-column handling. Recommend the staging path with evidence, then explain planned staging models, source tables, casts, tests, approval needs, schema target, and post-build data validation checks before creating files.
+After `dbt build`, run [layer-data-validation.md](layer-data-validation.md). Verify source-to-staging row counts, staging row presence, grain/key checks, relationship tests, status/category distributions, and expected-empty sources. Share the validation results with the user.
 Write `reports/agent/{layer_1_name}_report.md`, update `reports/agent/PIPELINE_STATUS.md` and `reports/agent/CONTEXT_TREE.md`, then ask commit -> push `models/{layer_1_name}/{domain}/` and `reports/agent/`.
 
 ---
@@ -106,7 +107,8 @@ dbt build --select +path:models/{layer_2_name}/{domain}
 
 Warehouse models land in: **`<layer_schema_prefix>_<layer_2_name>`** (default materialization: `view`)
 
-Run silver discovery first: join cardinality, grain preservation, mapping/reference needs, reusable business logic, flags, and tests. Recommend the intermediate path with evidence, then explain planned intermediate models, joins, grains, mappings, flags, approval needs, and tests before creating files.
+Run silver discovery first: join cardinality, grain preservation, mapping/reference needs, reusable business logic, flags, and tests. Recommend the intermediate path with evidence, then explain planned intermediate models, joins, grains, mappings, flags, approval needs, tests, and post-build data validation checks before creating files.
+After `dbt build`, run [layer-data-validation.md](layer-data-validation.md). Verify row presence, expected-empty evidence, grain/key checks, row loss, row multiplication, relationship checks, mapping coverage, and derived measure/flag sanity. Share the validation results with the user.
 Write `reports/agent/{layer_2_name}_report.md`, update `reports/agent/PIPELINE_STATUS.md` and `reports/agent/CONTEXT_TREE.md`, then ask commit -> push `models/{layer_2_name}/{domain}/` and `reports/agent/`.
 
 ---
@@ -132,7 +134,8 @@ dbt build --select +path:models/{layer_3_name}/{domain}
 
 Warehouse models land in: **`<layer_schema_prefix>_<layer_3_name>`** (prod defaults: `dim_*`/`mart_*` = `table`, `fct_*` = `incremental`)
 
-Run gold discovery first: approved facts, dimensions, metric grains, privacy exposure, reporting marts, and materializations. Recommend the mart path with evidence, then explain planned facts, dimensions, reporting marts, metrics, privacy handling, grains, approval needs, and materializations before creating files.
+Run gold discovery first: approved facts, dimensions, metric grains, privacy exposure, reporting marts, and materializations. Recommend the mart path with evidence, then explain planned facts, dimensions, reporting marts, metrics, privacy handling, grains, approval needs, materializations, and post-build data validation checks before creating files.
+After `dbt build`, run [layer-data-validation.md](layer-data-validation.md). Verify every fact, dimension, and reporting mart has data when upstream data exists; validate grain/key checks, relationships, date coverage, key performance indicator measures, and privacy exposure. Unexpected empty gold models are blockers until fixed or explicitly accepted. Share the validation results with the user.
 Write `reports/agent/{layer_3_name}_report.md`, update `reports/agent/PIPELINE_STATUS.md` and `reports/agent/CONTEXT_TREE.md`, then ask commit -> push `models/{layer_3_name}/{domain}/`, `reports/agent/`, and `dbt_project.yml` if changed.
 
 ---
@@ -146,9 +149,9 @@ Run the default prompt without `workflow_phase`.
 Run in order after automatic project setup and connection validation, **stop for phase plan approval before each non-bootstrap build and ask commit after each**:
 
 1. Sources (if needed) -> source discovery -> plan approval -> source files -> phase report -> ask commit
-2. Staging -> bronze discovery -> plan approval -> build `+path:models/{layer_1_name}/{domain}` -> phase report -> ask commit
-3. Intermediate -> silver discovery -> plan approval -> build `+path:models/{layer_2_name}/{domain}` -> phase report -> ask commit
-4. Marts -> gold discovery -> plan approval -> build `+path:models/{layer_3_name}/{domain}` -> phase report -> ask commit
+2. Staging -> bronze discovery -> plan approval -> build `+path:models/{layer_1_name}/{domain}` -> layer data validation -> phase report -> share results -> ask commit
+3. Intermediate -> silver discovery -> plan approval -> build `+path:models/{layer_2_name}/{domain}` -> layer data validation -> phase report -> share results -> ask commit
+4. Marts -> gold discovery -> plan approval -> build `+path:models/{layer_3_name}/{domain}` -> layer data validation -> phase report -> share results -> ask commit
 
 Each layer is a separate build and optional separate git push.
 

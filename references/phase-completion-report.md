@@ -82,6 +82,7 @@ Every phase report must include:
 - Source YAML location for the Sources phase; generated or curated source YAML must be under `models/sources/`
 - Commands run
 - Validation results: pass, warn, fail, skipped
+- Data verification results after bronze/staging, silver/intermediate, and gold/marts builds
 - Agent recommendation followed, changed, or deferred
 - What looks correct
 - What looks wrong or risky
@@ -132,6 +133,11 @@ Overall: <PASS | WARN | FAIL | SKIPPED | BLOCKED>
 | Check | Result | Notes |
 |---|---|---|
 | <command/check> | <PASS/WARN/FAIL/SKIPPED> | <important output> |
+
+## Data Verification Results
+| Layer | Model | Row Count | Expected Evidence | Grain Check | Relationship Check | Measure Check | Result | Notes |
+|---|---:|---:|---|---|---|---|---|---|
+| <layer> | <model> | <row_count> | <source/upstream comparison> | <PASS/WARN/FAIL/SKIPPED> | <PASS/WARN/FAIL/SKIPPED> | <PASS/WARN/FAIL/SKIPPED> | <PASS/WARN/FAIL/BLOCKED> | <important finding> |
 
 ## Mermaid Diagrams
 | Diagram | Mermaid type | Verification | Notes |

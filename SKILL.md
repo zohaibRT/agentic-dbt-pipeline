@@ -75,6 +75,7 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 | **0e Phased discovery** | Discover just enough per phase | [phased-discovery.md](references/phased-discovery.md) |
 | **0f Recommendations** | Agent recommends; data engineer approves | [recommendation-and-review.md](references/recommendation-and-review.md) |
 | **0g Diagrams** | Mermaid-only diagrams with visibility checks | [mermaid-diagrams.md](references/mermaid-diagrams.md) |
+| **0h Layer data validation** | Warehouse query checks after every built layer | [layer-data-validation.md](references/layer-data-validation.md) |
 | **1 Init** | New project | [project-initialization.md](references/project-initialization.md) |
 | **2 Schemas** | After init | [warehouse-schema-setup.md](references/warehouse-schema-setup.md), [schema-isolation.md](references/schema-isolation.md) |
 | **3 Sources** | Packages + source YAML | [packages-and-sources.md](references/packages-and-sources.md) |
@@ -99,7 +100,7 @@ Context prompt template: [agent-context-prompt.md](references/agent-context-prom
 
 ## Step 0 - Load configuration
 
-Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), [profile-listing.md](references/profile-listing.md), [project-naming.md](references/project-naming.md), [schema-isolation.md](references/schema-isolation.md), [env-configuration.md](references/env-configuration.md), [source-confirmation.md](references/source-confirmation.md), [warehouse-adapter-routing.md](references/warehouse-adapter-routing.md), [discovery-requirements.md](references/discovery-requirements.md), [phased-discovery.md](references/phased-discovery.md), [recommendation-and-review.md](references/recommendation-and-review.md), [writing-style.md](references/writing-style.md), [mermaid-diagrams.md](references/mermaid-diagrams.md), [phase-plan-approval.md](references/phase-plan-approval.md), [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md), [phase-completion-report.md](references/phase-completion-report.md), and [context-tree.md](references/context-tree.md).
+Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), [profile-listing.md](references/profile-listing.md), [project-naming.md](references/project-naming.md), [schema-isolation.md](references/schema-isolation.md), [env-configuration.md](references/env-configuration.md), [source-confirmation.md](references/source-confirmation.md), [warehouse-adapter-routing.md](references/warehouse-adapter-routing.md), [discovery-requirements.md](references/discovery-requirements.md), [phased-discovery.md](references/phased-discovery.md), [recommendation-and-review.md](references/recommendation-and-review.md), [writing-style.md](references/writing-style.md), [mermaid-diagrams.md](references/mermaid-diagrams.md), [layer-data-validation.md](references/layer-data-validation.md), [phase-plan-approval.md](references/phase-plan-approval.md), [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md), [phase-completion-report.md](references/phase-completion-report.md), and [context-tree.md](references/context-tree.md).
 
 Resolve paths relative to workspace root. dbt project root = `{project.root}`.
 
@@ -144,6 +145,8 @@ Read [phased-discovery.md](references/phased-discovery.md) before each phase. Di
 Read [recommendation-and-review.md](references/recommendation-and-review.md) before writing discovery summaries, phase plans, phase reports, and final handoffs. The agent must recommend the best path with evidence, show what looks right and what is not ready, state confidence about proven vs uncertain items, and ask the data engineer only for business-impacting approvals. Do not make the user design everything from scratch.
 
 Read [mermaid-diagrams.md](references/mermaid-diagrams.md) before creating or changing any diagram. All diagrams must be Mermaid blocks, entity relationships must use Mermaid `erDiagram`, and every added or changed Mermaid diagram must be verified as visible/parseable before the phase is marked complete.
+
+Read [layer-data-validation.md](references/layer-data-validation.md) before building bronze/staging, silver/intermediate, or gold/marts. After each layer build, run warehouse validation queries for row presence, expected emptiness, grain, keys, relationships, row-count movement, date coverage, status/category distributions, measures, mapping coverage, and privacy exposure. Add a `Data Verification Results` section to the layer report, share the important results with the user, and stop before the next layer when a model that should contain data is empty or any validation issue is unexplained.
 
 ## Step 0.5 - Resolve layer names
 
@@ -213,6 +216,8 @@ $dbt = "dbt"          # prefer active venv/path; see validation-commands.md for 
 & $dbt build --select +path:<layer_folder>
 ```
 
+After each bronze/staging, silver/intermediate, or gold/marts build, run [layer-data-validation.md](references/layer-data-validation.md). `dbt build` passing does not by itself prove the layer is usable.
+
 ## Step 1 - Full pipeline order
 
 Read [separate-layer-builds.md](references/separate-layer-builds.md).
@@ -232,7 +237,7 @@ Read [separate-layer-builds.md](references/separate-layer-builds.md).
 11. Automation - continuous integration workflow
 12. **Acceptance + final summary** - [acceptance-checklist.md](references/acceptance-checklist.md), [final-delivery.md](references/final-delivery.md)
 
-After project setup and connection validation, each stage: **phase-specific discovery -> agent recommendation -> data engineer decision check -> write Markdown plan -> ask approval -> implement -> parse/build -> write phase report -> update context tree -> summarize -> ask commit**. Ask for push only when a non-local GitHub repository is configured or the user requested push.
+After project setup and connection validation, each stage: **phase-specific discovery -> agent recommendation -> data engineer decision check -> write Markdown plan -> ask approval -> implement -> parse/build -> warehouse data validation queries -> write phase report with validation results -> update context tree -> summarize validation results -> ask commit**. Ask for push only when a non-local GitHub repository is configured or the user requested push.
 
 ## Step 2 - Sources
 
@@ -242,15 +247,15 @@ All four packages in `packages.yml`. Codegen for sources. Derive `source.name` f
 
 ## Step 3 - Layer 1 (staging)
 
-Read [staging-spec.md](references/staging-spec.md). `source()` only. No business KPIs.
+Read [staging-spec.md](references/staging-spec.md) and [layer-data-validation.md](references/layer-data-validation.md). `source()` only. No business KPIs. After build, verify staging row counts against source tables and share the results.
 
 ## Step 4 - Layer 2 (intermediate)
 
-Read [intermediate-spec.md](references/intermediate-spec.md) and [mapping-seeds.md](references/mapping-seeds.md). `ref()` only. Use mapping seeds or reference tables when `project_rules` include manual mappings or code translations.
+Read [intermediate-spec.md](references/intermediate-spec.md), [mapping-seeds.md](references/mapping-seeds.md), and [layer-data-validation.md](references/layer-data-validation.md). `ref()` only. Use mapping seeds or reference tables when `project_rules` include manual mappings or code translations. After build, verify row presence, grain, joins, row loss, and row multiplication.
 
 ## Step 5 - Layer 3 (marts / star schema)
 
-Read [marts-spec.md](references/marts-spec.md). `ref()` only. Build domain-appropriate facts, dimensions, and reporting marts based on profiled source grain and user requirements.
+Read [marts-spec.md](references/marts-spec.md) and [layer-data-validation.md](references/layer-data-validation.md). `ref()` only. Build domain-appropriate facts, dimensions, and reporting marts based on profiled source grain and user requirements. After build, verify every fact, dimension, and reporting mart has data when upstream data exists; treat unexpected empty gold models as blockers.
 
 ## Step 5b - Semantic layer
 
@@ -384,6 +389,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 | [recommendation-and-review.md](references/recommendation-and-review.md) | Agent recommendations, risks, and approval boundaries |
 | [writing-style.md](references/writing-style.md) | Full wording for user-facing output |
 | [mermaid-diagrams.md](references/mermaid-diagrams.md) | Mermaid-only diagrams and visibility verification |
+| [layer-data-validation.md](references/layer-data-validation.md) | Warehouse query checks after every bronze, silver, and gold layer build |
 | [project-naming.md](references/project-naming.md) | Derive project and folder names without using dbt profile |
 | [env-configuration.md](references/env-configuration.md) | Optional `.env` settings and precedence |
 | [source-confirmation.md](references/source-confirmation.md) | Ask-before-switching contract and approved source lock |

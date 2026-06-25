@@ -5,6 +5,7 @@
 Create or update **only** the intermediate layer from completed staging models.
 
 If `project_rules` include manual mappings or code translations, read [mapping-seeds.md](mapping-seeds.md) before modeling.
+Read [layer-data-validation.md](layer-data-validation.md) before marking intermediate complete.
 Before creating or changing intermediate files, follow [phase-plan-approval.md](phase-plan-approval.md).
 
 ## Folder and naming
@@ -88,6 +89,8 @@ dbt build --select +path:models/{layer_2_name}/{domain}
 ```
 
 `+path` builds intermediate models, their tests, and required upstream (staging) dependencies.
+
+After the build, run [layer-data-validation.md](layer-data-validation.md). For intermediate models, the report must show row counts, expected-empty evidence, grain duplicate checks, join relationship checks, row-loss or row-multiplication checks against staging/upstream models, derived flag/value distributions, mapping coverage when mappings are used, and important measure sanity checks. Share the intermediate validation results with the user before asking for commit or moving to marts.
 
 ## Do not create
 

@@ -42,6 +42,24 @@ if ($IsWindows -and -not (Get-Command "dbt" -ErrorAction SilentlyContinue)) {
 & $dbt build --select +path:models/{layer_3_name}/{domain}
 ```
 
+## Layer data validation *(required after every layer build)*
+
+After each bronze/staging, silver/intermediate, and gold/marts build, read [layer-data-validation.md](layer-data-validation.md) and run warehouse aggregate queries for the models in that layer.
+
+Required validation evidence:
+
+- Row count for every built model
+- Expected-empty check for any zero-row model
+- Grain or primary-key duplicate check
+- Relationship or orphan check where keys connect models
+- Row-count comparison to source or upstream models where the grain makes comparison meaningful
+- Date coverage for important date fields
+- Status/category distribution for important fields
+- Measure sanity checks for important numeric fields
+- Privacy check before any gold/marts handoff
+
+Write the results into `reports/agent/<layer>_report.md` under `Data Verification Results`, share the important findings in chat, and stop before the next layer if a model expected to contain data is empty or any validation issue is unexplained.
+
 ## Project evaluator *(after marts)*
 
 Before running, confirm `dbt_project.yml`:
@@ -105,6 +123,7 @@ Before every layer commit:
 
 1. `dbt parse --no-partial-parse`
 2. `dbt build --select +path:<layer_folder>`
+3. Warehouse layer data validation from [layer-data-validation.md](layer-data-validation.md)
 
 If validation fails, fix before commit unless user explicitly documents a failing checkpoint.
 

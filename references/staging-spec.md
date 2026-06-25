@@ -6,6 +6,7 @@ Create or update **only** the staging layer from the current source YAML.
 
 Read [source-profiling.md](source-profiling.md) before creating or changing staging models.
 Read [privacy-and-unknown-fields.md](privacy-and-unknown-fields.md) when source columns look sensitive or unclear.
+Read [layer-data-validation.md](layer-data-validation.md) before marking staging complete.
 Before creating or changing staging files, follow [phase-plan-approval.md](phase-plan-approval.md).
 
 ## Folder and naming
@@ -65,6 +66,8 @@ dbt build --select +path:models/{layer_1_name}/{domain}
 ```
 
 `+path` builds staging models, their tests, and required upstream dependencies.
+
+After the build, run [layer-data-validation.md](layer-data-validation.md). For staging, the report must show row counts for every staging model, source-to-staging row-count comparison for one-to-one models, primary-key uniqueness and not-null checks where keys exist, important status/category distributions, and any expected-empty source evidence. Share the staging validation results with the user before asking for commit or moving to intermediate.
 
 ## Do not create
 

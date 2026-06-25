@@ -96,6 +96,14 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Marts: domain-appropriate facts, dimensions, and reporting marts build successfully
 - [ ] Semantic layer: metrics on marts ([semantic-layer-spec.md](semantic-layer-spec.md))
 - [ ] Each layer: `dbt parse` + `dbt build --select +path:...` PASS
+- [ ] Each bronze/staging, silver/intermediate, and gold/marts layer ran warehouse data validation queries after `dbt build`
+- [ ] Each layer report includes `Data Verification Results` with row counts, expected-empty evidence, grain checks, relationship checks, measure checks, result, and notes
+- [ ] The user-facing summary after each layer shared the important data validation results, not only the dbt command result
+- [ ] Bronze/staging row counts were compared to source tables where one-to-one staging was expected
+- [ ] Silver/intermediate models were checked for row presence, grain preservation, row loss, row multiplication, relationship integrity, and mapping coverage when mappings were used
+- [ ] Gold/marts facts, dimensions, and reporting marts were checked for data presence when upstream data existed
+- [ ] Unexpected empty gold/marts models stopped the pipeline before semantic layer, documentation, presentation layer, or final delivery unless the user explicitly accepted the issue
+- [ ] Empty models with empty upstream sources were documented as expected-empty warnings instead of silently passing
 
 ## Mappings and business rules
 
