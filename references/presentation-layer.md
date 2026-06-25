@@ -6,11 +6,13 @@ Use this after marts, semantic layer, project evaluator, and documentation have 
 
 Help the data engineer decide whether the completed dbt project should expose a user-facing presentation layer beyond dbt models and documentation.
 
-The presentation artifact is optional, but the recommendation is required for full pipeline final delivery. Do not create dashboards, reports, slides, notebooks, or business intelligence artifacts unless the user approves.
+The presentation artifact is optional, but the recommendation is required for full pipeline final delivery. Ask the user in simple terms whether they want a presentation layer. Do not ask them to choose "Power BI as code" unless they already used that wording.
+
+Default artifact: if the user approves a presentation layer and does not specify another tool or artifact type, create a Power BI PBIP/TMDL project by default. Do not create dashboards, reports, slides, notebooks, or other business intelligence artifacts unless the user approves the presentation layer.
 
 ## Presentation decision gate
 
-After documentation generation in a full pipeline, the agent must stop at this gate and ask the user whether to create a presentation layer artifact. The agent must not mark the full delivery as complete while the presentation decision is still unanswered.
+After documentation generation in a full pipeline, the agent must stop at this gate and ask the user whether to create a presentation layer. The agent must not mark the full delivery as complete while the presentation decision is still unanswered.
 
 Use these statuses:
 
@@ -22,10 +24,10 @@ Use these statuses:
 | Artifact completed | `Presentation artifact complete` |
 | Artifact blocked | `Presentation artifact blocked` |
 
-If the user approves a presentation artifact, treat it as a separate `presentation_layer` phase:
+If the user approves a presentation layer, treat it as a separate `presentation_layer` phase. Use Power BI PBIP/TMDL as the default artifact unless the user specifies another technology or asks for a Markdown-only guide/report:
 
 1. Write or update `AGENT_PLAN.md` with the exact artifact scope.
-2. Confirm the output format, source models, metrics, privacy rules, and validation method.
+2. Confirm the inferred output format in the plan, source models, metrics, privacy rules, and validation method.
 3. Build only the approved artifact.
 4. Validate the artifact.
 5. Write or update `reports/agent/presentation_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md`.
@@ -51,7 +53,7 @@ Review the final gold/marts models, semantic metrics, source data limitations, d
 | dbt documentation only | The user only needs technical lineage and model docs | `dbt docs generate`, optional `dbt docs serve`, final model list |
 | Presentation layer report | The user wants a concise business-facing summary | Key performance indicators, metrics, model grains, suggested analysis pages, limitations |
 | Dashboard design | The user wants interactive consumption in a business intelligence tool | Suggested pages, filters, metrics, facts/dimensions, privacy notes |
-| Power BI as code | The user explicitly requests a Power BI project artifact | Complete PBIP project, semantic model, report artifact, relationships, measures, parameters, and open/refresh notes |
+| Power BI PBIP/TMDL project | Default when the user says yes to presentation layer and does not specify another technology | Complete PBIP project, semantic model, report artifact, relationships, measures, parameters, report pages, and open/refresh notes |
 | Semantic layer first | Metrics need governed definitions before dashboards | MetricFlow metrics, entities, dimensions, time dimensions, safe denominators |
 | Export/query handoff | The user wants to query marts manually | Final schemas, sample SQL, model grains, recommended joins |
 
@@ -63,12 +65,13 @@ These are different deliverables:
 
 | User asks for | Required deliverable |
 |---|---|
-| Power BI as code, PBIP, TMDL, or a Power BI Desktop file/project | A complete PBIP project that Power BI Desktop can open, with report and semantic model artifacts |
+| Presentation layer, with no technology specified | A complete Power BI PBIP/TMDL project by default |
+| Power BI, PBIP, TMDL, or a Power BI Desktop file/project | A complete PBIP project that Power BI Desktop can open, with report and semantic model artifacts |
 | Dashboard design | Markdown design/specification only, unless the user later approves PBIP creation |
 | Presentation layer report | Markdown report only |
 | Query handoff | SQL examples and model-grain guide only |
 
-If the user approves Power BI as code, the agent must create files, not only explain what to do manually.
+If the user approves the default presentation layer, the agent must create PBIP/TMDL files, not only explain what to do manually.
 
 ## Required recommendation section
 
@@ -77,7 +80,7 @@ Add this section to the final handoff and final report:
 ```markdown
 ## Presentation Layer Recommendation
 
-Recommended option: <dbt documentation only / presentation layer report / dashboard design / semantic layer first / export or query handoff>
+Recommended option: <Power BI PBIP/TMDL project / dbt documentation only / presentation layer report / dashboard design / semantic layer first / export or query handoff>
 
 Why:
 - <evidence from final marts, metrics, data quality, and user goals>
@@ -92,7 +95,7 @@ Not ready yet:
 - <missing metric definition, empty source table, privacy approval, or data quality concern>
 
 Decision needed:
-- Do you want me to create a presentation layer artifact now?
+- Do you want me to create the presentation layer now?
 ```
 
 ## Ask the user
@@ -102,19 +105,14 @@ Ask clearly after final validation:
 ```text
 Documentation and dbt validation are complete. Before I close delivery, do you want me to create a presentation layer artifact?
 
-I can prepare one of these:
+Recommended default: Power BI Desktop presentation layer as code, using a PBIP/TMDL project with report pages and a semantic model.
 
-1. dbt documentation only: serve the generated docs locally.
-2. Presentation layer report: a concise business-facing Markdown report with final models, metrics, and suggested analysis pages.
-3. Dashboard design: recommended dashboard pages, filters, and metric definitions for a business intelligence tool.
-4. Power BI as code: a complete PBIP project only after you approve the exact Power BI scope.
-5. Semantic layer refinement: review and improve MetricFlow metrics before any dashboard work.
-6. Query handoff: sample SQL and model-grain guide for analysts.
+Reply "yes" to use the default Power BI project, "no" to stop at dbt documentation, or name another option such as Markdown report, dashboard design only, semantic layer refinement, or query handoff.
 ```
 
 Do not force the user to choose all options. Recommend the best next option based on the project evidence.
 
-If the user says yes, asks for a report/dashboard/Power BI/query handoff, or chooses one of the options, create the presentation-layer phase plan and wait for approval when required by [phase-plan-approval.md](phase-plan-approval.md). Do not answer only with advice when the user approved artifact creation.
+If the user says yes without specifying a technology, infer Power BI PBIP/TMDL as the approved default, create the presentation-layer phase plan, and wait for approval when required by [phase-plan-approval.md](phase-plan-approval.md). Do not ask the user to say "Power BI as code" explicitly. Do not answer only with advice when the user approved artifact creation.
 
 If the recommendation cannot be produced, mark it `BLOCKED` or `SKIPPED` with the exact reason in the final report, pipeline status, context tree, and final response. Do not silently omit the presentation-layer section.
 
@@ -134,7 +132,7 @@ If the recommendation cannot be produced, mark it `BLOCKED` or `SKIPPED` with th
 
 ## Power BI as code guardrails
 
-Use this section only when the user explicitly asks for a Power BI project, PBIP, TMDL, or Power BI presentation layer as code.
+Use this section when the user explicitly asks for a Power BI project, PBIP, TMDL, or Power BI presentation layer as code, or when the user says yes to the default presentation layer without specifying another technology.
 
 Power BI as code completion means the generated project is intended to open from a `.pbip` file in Power BI Desktop. A folder containing only `import_guide.md`, `relationships.md`, `kpi_measures.dax`, and `dashboard_pages.md` is a useful dashboard design handoff, but it is not Power BI as code and must not be marked complete as such.
 
@@ -143,7 +141,7 @@ Before creating files:
 - Confirm the final dbt gold/mart tables exist and have passed the relevant dbt build.
 - Write or update `AGENT_PLAN.md` with the Power BI artifact plan and wait for approval.
 - Confirm output location, model name, connection source, presentation pages, measures, and privacy rules.
-- Confirm whether the user wants a real PBIP/TMDL project or only a dashboard design guide.
+- In the plan, state that Power BI PBIP/TMDL is the default because no other presentation technology was specified. Ask for changes only if the user wants a different technology or a Markdown-only guide.
 - If a known-good PBIP project exists in the workspace and the user allows it as a reference, inspect its folder structure and metadata patterns before writing new files.
 
 When creating PBIP:

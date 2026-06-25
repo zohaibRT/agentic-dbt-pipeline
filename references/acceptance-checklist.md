@@ -49,7 +49,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] `reports/agent/<phase>_report.md` created or updated for each implemented phase
 - [ ] `reports/agent/PIPELINE_STATUS.md` updated after each phase
 - [ ] `reports/agent/CONTEXT_TREE.md` updated with user inputs, decisions, phase outputs, report links, and open items
-- [ ] Final delivery included a presentation layer recommendation and asked whether the user wants a presentation artifact
+- [ ] Final delivery included a presentation layer recommendation and asked whether the user wants a presentation layer
 - [ ] Presentation layer recommendation was not skipped silently; if blocked or skipped, the reason was written to final report, pipeline status, context tree, and final response
 - [ ] Any diagram created or changed uses Mermaid and has visibility/parse verification recorded
 - [ ] User-facing output uses full wording and avoids shorthand except for official tool names, commands, filenames, environment variables, package names, or code identifiers
@@ -155,11 +155,11 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] `dbt docs generate` -> manifest + catalog exist
 - [ ] Documentation serve command or local documentation URL provided when user wants to view documentation
 - [ ] Presentation options were recommended after documentation: documentation only, business-facing report, dashboard design, semantic layer refinement, or query handoff
-- [ ] Power BI as code was created only when explicitly requested and approved
-- [ ] If Power BI as code was created, PBIP includes the project file, Report artifact, SemanticModel artifact, TMDL/definition files, relationships, measures, parameters, and handoff README
-- [ ] If Power BI as code was created, approved report pages exist as Power BI report definition artifacts, not only Markdown page descriptions
-- [ ] If Power BI as code was created, Markdown import guides, DAX snippets, relationship notes, or dashboard page descriptions were not marked as the completed Power BI artifact
-- [ ] If Power BI as code was created, JSON parse checks, TMDL structure checks, and file-tree checks were run and recorded
+- [ ] Power BI PBIP/TMDL was created when the user approved a presentation layer and did not specify another technology
+- [ ] If Power BI PBIP/TMDL was created, PBIP includes the project file, Report artifact, SemanticModel artifact, TMDL/definition files, relationships, measures, parameters, and handoff README
+- [ ] If Power BI PBIP/TMDL was created, approved report pages exist as Power BI report definition artifacts, not only Markdown page descriptions
+- [ ] If Power BI PBIP/TMDL was created, Markdown import guides, DAX snippets, relationship notes, or dashboard page descriptions were not marked as the completed Power BI artifact
+- [ ] If Power BI PBIP/TMDL was created, JSON parse checks, TMDL structure checks, and file-tree checks were run and recorded
 
 ## Human review
 

@@ -45,7 +45,7 @@ Update or create project handoff notes with:
 - Key performance indicator definitions with numerator, denominator, filters, time field, source model, caveats, validation evidence, and approval status
 - Presentation layer recommendation, including possible key performance indicators, semantic metrics, suggested report or dashboard pages, and query handoff options
 - Project knowledge used, including `project_rules`, `AGENT_KNOWLEDGE.md`, `docs/dbt_knowledge.md`, `docs/business_rules.md`, `.agents/project_knowledge.md`, or context tree decisions when present
-- Power BI as code status when requested, including PBIP structure validation and open/refresh notes
+- Power BI PBIP/TMDL status when used as the default or requested presentation technology, including PBIP structure validation and open/refresh notes
 - Known empty tables or data quality limitations
 - Confidence notes: what was validated vs what still needs confirmation
 - Mermaid diagrams created or updated, with visibility verification status
@@ -116,7 +116,7 @@ Use a compact table when helpful:
 - Important models created by layer
 - Semantic models and metrics added
 - Presentation layer recommendation and whether the user approved any follow-up artifact
-- Power BI artifact type when requested: PBIP/TMDL project, dashboard design guide, presentation report, or query handoff
+- Presentation artifact type: Power BI PBIP/TMDL project, dashboard design guide, presentation report, or query handoff
 - Advanced data-engineering review result
 - Continuous integration or Agents Schema workflow changes
 - Mermaid diagrams created or updated
