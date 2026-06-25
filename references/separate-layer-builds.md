@@ -17,7 +17,7 @@ Default names: `bronze`, `silver`, `gold`.
 
 For a new full pipeline, run lightweight project Discovery & Requirements, then automatic project setup and configuration, before this build order. Then run phase-specific discovery before each layer.
 
-A full-pipeline request defines the intended roadmap, not blanket approval to execute every layer. After discovery, "continue" or "defaults are fine" allows automatic project setup and configuration only. Then stop for the sources phase plan. After each approved phase, write the phase report and stop again unless the user explicitly approved the next named phase.
+A full-pipeline request defines the intended roadmap, not blanket approval to execute every layer. The active workflow checkpoint controls what may happen next: discovery approval moves only to automatic project setup and configuration; setup completion moves only to the sources phase plan; each approved layer moves only through its own build, validation, report, and next checkpoint. After each approved phase, write the phase report and stop again unless the user explicitly approved the next named phase.
 
 **Do not** build intermediate before staging exists.
 **Do not** build marts before intermediate exists.

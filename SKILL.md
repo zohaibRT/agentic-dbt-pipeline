@@ -29,7 +29,7 @@ Do not assume the business domain. During discovery, understand source tables, t
 
 If any of those areas cannot be properly understood or proven, do not assume. Ask the user for missing business meaning or approval, and defer dependent models, tests, metrics, semantic definitions, or presentation outputs until the uncertainty is resolved.
 
-After discovery, summarize what the agent concluded from the source data and ask whether the user wants to add requirements such as mappings, metrics, privacy rules, naming rules, included/excluded tables, or priority facts/dimensions. A reply such as "continue", "defaults are fine", or similar approves only the resolved source and automatic project setup and configuration. It does not approve sources, bronze/staging, silver/intermediate, gold/marts, semantic layer, evaluator, documentation, presentation layer, continuous integration, Agents Schema, commits, pushes, or future schema switching.
+After discovery, summarize what the agent concluded from the source data and ask whether the user wants to add requirements such as mappings, metrics, privacy rules, naming rules, included/excluded tables, or priority facts/dimensions. User responses are interpreted by the active workflow checkpoint, not by broad intent. At the discovery checkpoint, the next allowed action is only source confirmation and automatic project setup and configuration. Do not treat discovery acceptance as approval for sources, bronze/staging, silver/intermediate, gold/marts, semantic layer, evaluator, documentation, presentation layer, continuous integration, Agents Schema, commits, pushes, or future schema switching.
 
 ## Project setup and configuration (automatic setup-only phase after discovery)
 
@@ -130,7 +130,7 @@ Before each phase that changes models, semantic files, documentation files, work
 
 Project setup and configuration is the exception: after the user accepts discovery requirements, write/update `{project.root}/AGENT_PLAN.md` with the phase marked as automatic setup-only, run setup, then write `reports/agent/setup_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md`. If any setup safety gate from [bootstrap.md](references/bootstrap.md) is triggered, stop and ask before continuing.
 
-Approval is phase-scoped. Never treat one approval, one "continue", or one "defaults are fine" response as permission to run multiple build phases. After automatic project setup and configuration finishes, stop at the next phase plan and ask for approval before generating source YAML or building bronze/staging.
+Approval is controlled by workflow checkpoint. Never treat a user response at one checkpoint as permission to run multiple build phases. After automatic project setup and configuration finishes, stop at the next phase plan and ask for approval before generating source YAML or building bronze/staging.
 
 ## Step 0b - Optional subagents
 

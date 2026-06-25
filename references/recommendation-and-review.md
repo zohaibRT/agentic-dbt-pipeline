@@ -6,7 +6,7 @@ Use this in every discovery summary, phase plan, phase report, and final handoff
 
 The agent investigates and recommends. The data engineer approves, changes, or adds requirements. The agent then builds only the approved scope.
 
-Approvals are narrow by default. A discovery response such as "continue" approves only source confirmation and automatic project setup and configuration. A phase approval such as "approve bronze" approves only that phase. Do not convert one approval into permission to create all layers or close final delivery.
+Approvals are narrow by default and controlled by the active workflow checkpoint. A discovery checkpoint response approves only source confirmation and automatic project setup and configuration. A phase checkpoint response approves only that phase. Do not convert one approval into permission to create all layers or close final delivery.
 
 Do not push every modeling decision back to the user. Do the professional analysis first, state the recommended path with evidence, and ask only for decisions that affect business meaning, privacy, correctness, cost, or downstream usability.
 

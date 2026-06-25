@@ -4,7 +4,7 @@ Use this before every non-setup phase that creates models, seeds, snapshots, sem
 
 Project setup and configuration is handled by [bootstrap.md](bootstrap.md). It auto-runs as setup-only after the discovery requirements checkpoint is accepted, unless a setup safety gate requires user approval.
 
-Discovery continuation is not build approval. If the user replies "continue", "defaults are fine", "go ahead", or similar after discovery, treat that as approval only for the resolved discovery requirements and automatic project setup and configuration. After setup, stop at the next phase plan and ask for approval before generating source YAML, building bronze/staging, or moving into any later phase.
+Discovery acceptance is not build approval. Interpret user responses by the active workflow checkpoint. At the discovery checkpoint, approval moves only to resolved source confirmation and automatic project setup and configuration. After setup, stop at the next phase plan and ask for approval before generating source YAML, building bronze/staging, or moving into any later phase.
 
 ## Core rule
 
@@ -20,7 +20,7 @@ The same Markdown should also be summarized in chat so the user can approve with
 
 Do not create or modify models, seeds, snapshots, workflows, semantic files, documentation files, or warehouse schemas for a phase until the user approves that phase plan.
 
-One approval authorizes only the current phase. It never authorizes the whole remaining pipeline unless the user explicitly approves each named phase in the same response, for example `approve sources, bronze, and silver`. Even then, complete each phase report and validation before starting the next approved phase.
+One approval authorizes only the current checkpoint or named phase. It never authorizes the whole remaining pipeline unless the user explicitly approves each named phase in the same response, for example `approve sources, bronze, and silver`. Even then, complete each phase report and validation before starting the next approved phase.
 
 ## Applies to these phases
 
@@ -83,7 +83,7 @@ approve evaluator
 approve docs
 ```
 
-If the user approves with plain language such as "yes", "go ahead", or "looks good", treat it as approval for the current phase only.
+The exact wording is not the control mechanism. The active checkpoint is the control mechanism: discovery, setup, sources, bronze/staging, silver/intermediate, gold/marts, semantic layer, evaluator, documentation, presentation layer, continuous integration, Agents Schema, commit, and push are separate checkpoints. Any approval that does not explicitly name additional future phases applies only to the active checkpoint.
 
 ## Markdown template
 
