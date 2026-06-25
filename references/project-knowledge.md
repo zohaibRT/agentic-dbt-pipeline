@@ -6,6 +6,10 @@ Use this at the start of every run, before discovery summaries, phase plans, mod
 
 The data engineer may have dbt standards, domain definitions, modeling preferences, metric rules, privacy policy, naming conventions, or lessons from previous projects. The agent must treat that knowledge as project context, not as casual chat memory.
 
+This file covers project-specific knowledge. Built-in reusable analytics engineering knowledge lives in [skill-knowledge.md](skill-knowledge.md), [data-engineering-best-practices.md](data-engineering-best-practices.md), and [principal-data-engineering-standards.md](principal-data-engineering-standards.md).
+
+Use project knowledge to override or extend the skill's reusable defaults for the current domain, source system, team, warehouse, and presentation needs. Do not copy large external documentation into a project knowledge file.
+
 ## Where the user can share knowledge
 
 Read these files when they exist:
@@ -43,6 +47,7 @@ Do not store secrets, passwords, tokens, private keys, or sensitive row-level da
 
 ## Required behavior
 
+- Read [skill-knowledge.md](skill-knowledge.md) for the built-in knowledge layer, then read project knowledge for local overrides.
 - Read project knowledge before making phase recommendations.
 - Summarize which knowledge files were found and used in the phase plan.
 - If a rule conflicts with discovered data, stop and ask before overriding it.
