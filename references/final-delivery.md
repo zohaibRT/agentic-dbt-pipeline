@@ -41,6 +41,7 @@ Update or create project handoff notes with:
 - Important source tables
 - Source discovery conclusions and requirements captured before build
 - Final facts, dimensions, marts, and metrics
+- Bridge table decisions: built, not needed, deferred, or blocked
 - Key performance indicator definitions with numerator, denominator, filters, time field, source model, caveats, validation evidence, and approval status
 - Presentation layer recommendation, including possible key performance indicators, semantic metrics, suggested report or dashboard pages, and query handoff options
 - Project knowledge used, including `project_rules`, `AGENT_KNOWLEDGE.md`, `docs/dbt_knowledge.md`, `docs/business_rules.md`, `.agents/project_knowledge.md`, or context tree decisions when present
@@ -115,6 +116,7 @@ Use a compact table when helpful:
 - Important models created by layer
 - Semantic models and metrics added
 - Presentation layer recommendation and whether the user approved any follow-up artifact
+- Power BI artifact type when requested: PBIP/TMDL project, dashboard design guide, presentation report, or query handoff
 - Advanced data-engineering review result
 - Continuous integration or Agents Schema workflow changes
 - Mermaid diagrams created or updated
@@ -127,6 +129,7 @@ Use a compact table when helpful:
 - Schema isolation check result
 - Profile target schema hygiene result
 - Key performance indicator definition status
+- Bridge table review status
 - Key pass/warn/fail counts when available
 - Phase plan approval status
 - Phase report status and path

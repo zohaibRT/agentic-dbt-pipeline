@@ -19,6 +19,7 @@ For every model created or changed in the current layer:
 | Grain | Duplicate check on the model grain or primary key |
 | Required keys | Null checks for primary business keys and relationship keys |
 | Relationships | Orphan checks against referenced upstream models or dimensions |
+| Bridge tables | Composite key uniqueness and relationships to both dimensions when bridge tables exist |
 | Row-count movement | Compare source to bronze, bronze to silver, or silver to gold where the grain makes comparison meaningful |
 | Date coverage | Minimum date, maximum date, and populated date count for important date fields |
 | Status and category values | Distribution of important status, type, or code fields after transformation |
@@ -50,6 +51,7 @@ Use lightweight aggregate queries. Avoid full samples and never include sensitiv
 - Verify every fact, dimension, and reporting mart has rows when supporting upstream data has rows.
 - Treat an unexpectedly empty gold model as `FAIL` or `BLOCKED`; do not continue to semantic layer, documentation, presentation layer, or final delivery until fixed or explicitly accepted.
 - Verify dimensions have unique keys and facts have valid relationships to dimensions or parent facts.
+- Verify bridge tables have unique composite keys and valid relationships to both sides when bridge tables exist.
 - Verify key performance indicator measures have non-null, reasonable aggregate values when source data exists.
 - Confirm direct identifiers, sensitive fields, protected health information, and personally identifiable information are excluded, masked, hashed, or explicitly approved.
 

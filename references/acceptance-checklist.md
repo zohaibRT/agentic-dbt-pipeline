@@ -102,6 +102,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Staging: all source tables, tests pass
 - [ ] Intermediate: domain-appropriate reusable business logic models build successfully
 - [ ] Marts: domain-appropriate facts, dimensions, and reporting marts build successfully
+- [ ] Many-to-many relationships were reviewed during marts planning; required bridge tables were built and tested, or deferrals were documented with evidence
 - [ ] Semantic layer: metrics on marts ([semantic-layer-spec.md](semantic-layer-spec.md))
 - [ ] Gold/marts report includes key performance indicator definitions or explicitly deferred metrics with missing evidence
 - [ ] Semantic metrics trace to approved or clearly supported key performance indicator definitions
@@ -156,6 +157,8 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Presentation options were recommended after documentation: documentation only, business-facing report, dashboard design, semantic layer refinement, or query handoff
 - [ ] Power BI as code was created only when explicitly requested and approved
 - [ ] If Power BI as code was created, PBIP includes the project file, Report artifact, SemanticModel artifact, TMDL/definition files, relationships, measures, parameters, and handoff README
+- [ ] If Power BI as code was created, approved report pages exist as Power BI report definition artifacts, not only Markdown page descriptions
+- [ ] If Power BI as code was created, Markdown import guides, DAX snippets, relationship notes, or dashboard page descriptions were not marked as the completed Power BI artifact
 - [ ] If Power BI as code was created, JSON parse checks, TMDL structure checks, and file-tree checks were run and recorded
 
 ## Human review

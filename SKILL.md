@@ -148,7 +148,7 @@ Read [privacy-and-unknown-fields.md](references/privacy-and-unknown-fields.md) w
 
 Read [writing-style.md](references/writing-style.md) before writing user-facing prompts, plans, reports, summaries, diagram notes, or final handoffs. Use full wording instead of shorthand, except for official tool names, commands, filenames, environment variables, and code identifiers.
 
-Read [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md) before writing each phase plan. The phase plan must show the agent's data-engineering decisions, evidence, and approval needs; do not hide grain, key, join, mapping, privacy, metric, materialization, or validation choices inside code.
+Read [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md) before writing each phase plan. The phase plan must show the agent's data-engineering decisions, evidence, and approval needs; do not hide grain, key, join, bridge table, mapping, privacy, metric, materialization, or validation choices inside code.
 
 If the agent cannot understand the source tables, relationships, business processes, required metrics, data quality rules, required output models, or reporting needs for the current scope, stop the dependent scope and ask instead of guessing.
 

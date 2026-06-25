@@ -155,6 +155,7 @@ If the user approves with plain language such as "yes", "go ahead", or "looks go
 | Grain | <one row per ...> | <source/profile evidence> | <yes/no> |
 | Keys | <key columns/tests> | <uniqueness/null checks> | <yes/no> |
 | Joins | <join/cardinality plan> | <relationship/profile evidence> | <yes/no> |
+| Bridge tables | <needed / not needed / deferred> | <many-to-many profiling and BI relationship evidence> | <yes/no> |
 | Privacy | <include/exclude/mask fields> | <column names/rules> | <yes/no> |
 | Materialization | <view/table/incremental> | <volume/use case> | <yes/no> |
 

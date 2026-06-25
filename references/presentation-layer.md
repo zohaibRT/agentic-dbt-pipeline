@@ -55,6 +55,21 @@ Review the final gold/marts models, semantic metrics, source data limitations, d
 | Semantic layer first | Metrics need governed definitions before dashboards | MetricFlow metrics, entities, dimensions, time dimensions, safe denominators |
 | Export/query handoff | The user wants to query marts manually | Final schemas, sample SQL, model grains, recommended joins |
 
+## Artifact type distinction
+
+Do not treat Markdown instructions, DAX snippets, relationship notes, or dashboard page descriptions as **Power BI as code**.
+
+These are different deliverables:
+
+| User asks for | Required deliverable |
+|---|---|
+| Power BI as code, PBIP, TMDL, or a Power BI Desktop file/project | A complete PBIP project that Power BI Desktop can open, with report and semantic model artifacts |
+| Dashboard design | Markdown design/specification only, unless the user later approves PBIP creation |
+| Presentation layer report | Markdown report only |
+| Query handoff | SQL examples and model-grain guide only |
+
+If the user approves Power BI as code, the agent must create files, not only explain what to do manually.
+
 ## Required recommendation section
 
 Add this section to the final handoff and final report:
@@ -108,6 +123,7 @@ If the recommendation cannot be produced, mark it `BLOCKED` or `SKIPPED` with th
 - Do not invent key performance indicators that are not supported by final marts or approved semantic metrics.
 - Do not recommend advanced key performance indicators unless numerator, denominator, filters, time field, source model, and caveats are known or clearly marked as deferred.
 - Prefer Kimball-style star schemas for Power BI and downstream presentation. Strongly discourage flat/wide-only presentation models and snowflake schemas inside Power BI when dbt can expose a simpler star schema.
+- Check whether approved dbt bridge tables are needed in the Power BI semantic model. Use bridge tables for true many-to-many filtering or allocation; avoid Power BI many-to-many relationships and bidirectional filters unless there is a documented reason.
 - Recommend Import mode for smaller curated marts where refresh latency is acceptable; recommend DirectQuery or Composite models only when data volume, freshness, governance, or warehouse compute requirements justify them.
 - Recommend dbt aggregate tables for high-level dashboards and Power BI aggregation behavior when detailed facts are too large or expensive for repeated dashboard scans.
 - Do not expose sensitive fields, personally identifiable information, or protected health information in presentation outputs unless approved.
@@ -120,11 +136,14 @@ If the recommendation cannot be produced, mark it `BLOCKED` or `SKIPPED` with th
 
 Use this section only when the user explicitly asks for a Power BI project, PBIP, TMDL, or Power BI presentation layer as code.
 
+Power BI as code completion means the generated project is intended to open from a `.pbip` file in Power BI Desktop. A folder containing only `import_guide.md`, `relationships.md`, `kpi_measures.dax`, and `dashboard_pages.md` is a useful dashboard design handoff, but it is not Power BI as code and must not be marked complete as such.
+
 Before creating files:
 
 - Confirm the final dbt gold/mart tables exist and have passed the relevant dbt build.
 - Write or update `AGENT_PLAN.md` with the Power BI artifact plan and wait for approval.
 - Confirm output location, model name, connection source, presentation pages, measures, and privacy rules.
+- Confirm whether the user wants a real PBIP/TMDL project or only a dashboard design guide.
 - If a known-good PBIP project exists in the workspace and the user allows it as a reference, inspect its folder structure and metadata patterns before writing new files.
 
 When creating PBIP:
@@ -133,8 +152,10 @@ When creating PBIP:
 - Include the `.pbip` file, a Report artifact folder, and a SemanticModel artifact folder.
 - Ensure the `.pbip` file points to a Report artifact when a report is requested, not only to a semantic model.
 - Keep TMDL under the SemanticModel definition folder using the expected artifact layout for the chosen Power BI project format.
+- Create report definition files for the approved pages and visuals when the user asked for clickable/openable Power BI pages. Do not replace report pages with `dashboard_pages.md`.
 - Use parameters for host, database, schema, warehouse, or equivalent connection values instead of hardcoding environment-specific values where practical.
 - Define relationships from the approved star schema and avoid ambiguous relationship paths.
+- Include approved bridge tables and their relationship directions when the gold layer contains bridge models or the approved presentation scope requires many-to-many analysis.
 - Put reusable business calculations in a measures table or equivalent semantic model construct.
 - Use simple user-facing measure labels and keep technical column names inside model definitions.
 - Add a local `powerbi/README.md` or equivalent handoff with open, refresh, and reload-from-disk guidance.
@@ -144,6 +165,8 @@ Validation before handoff:
 - Verify every required PBIP, report, semantic model, definition, relationship, table, partition, and measure file exists.
 - Parse JSON files with a real parser.
 - Check TMDL indentation and root-level object placement against the selected PBIP structure.
+- Verify the `.pbip` points to the report artifact and the report points to the semantic model artifact.
+- Verify approved report pages exist as Power BI report definition artifacts, not only Markdown page descriptions.
 - Compare key metadata paths and schema fields against a known-good local reference when one is available.
 - Re-run a file-tree check after edits and include the result in the phase report.
 - If Power BI Desktop is available and the user wants local validation, ask before opening the project; do not require Power BI Desktop for text validation.
@@ -151,6 +174,7 @@ Validation before handoff:
 Do not:
 
 - Create a dataset-only PBIP when the user asked for a report.
+- Mark Markdown, DAX text, relationship notes, or an import guide as a completed Power BI as code artifact.
 - Create direct relationships that introduce ambiguous filter paths when a safer snowflake path exists.
 - Hardcode one domain's table names, measures, or report pages into the skill.
 - Tell the user to save over the generated files from Power BI Desktop as the default reload strategy.

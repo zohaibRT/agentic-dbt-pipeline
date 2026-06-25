@@ -36,10 +36,53 @@ Choose:
 
 - Facts for measurable business events or transactions
 - Dimensions for descriptive business entities
+- Bridge tables for real many-to-many relationships that must be analyzed in downstream BI
 - Date dimensions or time spines when date analysis is required
 - Reporting marts only when they directly support a known dashboard, KPI, or stakeholder question
 
 Each final model must have a documented grain.
+
+## Bridge tables
+
+Do not ignore many-to-many relationships. During gold/marts planning, explicitly review whether bridge tables are needed for relationships such as:
+
+- Customers to accounts
+- Contacts to companies
+- Products to categories
+- Users to teams or roles
+- Patients to providers
+- Tickets to tags
+- Orders to promotions
+
+Create a bridge table when all are true:
+
+- The relationship is genuinely many-to-many.
+- Downstream analysis needs filtering or grouping across both sides.
+- A direct relationship would create ambiguous paths, duplicate facts, or incorrect measures.
+- The bridge grain and keys are supported by source/intermediate data.
+
+Bridge table naming:
+
+```text
+bridge_<left_entity>_<right_entity>
+```
+
+Bridge table requirements:
+
+- One row per approved relationship grain.
+- Include both foreign keys.
+- Include effective dates, weights, allocation percentages, or active flags when needed and supported.
+- Test the composite key for uniqueness and not-nullness.
+- Test relationships from each bridge key to its dimension.
+- Document whether the bridge is for filtering only or metric allocation.
+
+If a possible bridge is not created, document why in the marts plan and report:
+
+- Not needed for current reporting.
+- Source relationship is one-to-many after profiling.
+- Business allocation rule is missing.
+- Source data does not support a reliable bridge.
+- User deferred the bridge.
 
 ## Key performance indicators
 
@@ -92,12 +135,15 @@ Create reporting marts only when the required metrics and grain are clear. Do no
 - Default to excluding, masking, or hashing direct identifiers in marts; clear-text exposure is not the default even for local development
 - Exclude ambiguous, placeholder, abbreviated, generic, or poorly named fields from marts by default unless definitions are provided or the user approves raw audit exposure
 - Keep one clear grain per fact or dimension; do not mix event, entity, and summary grains in the same model
+- Use explicit bridge tables for many-to-many relationships needed by BI; do not hide many-to-many logic inside facts or rely on ambiguous downstream relationships
 - Add surrogate keys only when natural keys are missing, composite, unstable, or too wide for downstream use
 
 ## Tests
 
 - `not_null` + `unique` on dimension and fact primary keys
+- `not_null` and uniqueness on bridge composite keys when bridge tables exist
 - `relationships`: facts -> dimensions (and `fct_order_items` -> `fct_orders`)
+- `relationships`: bridge keys -> dimensions when bridge tables exist
 - `accepted_values` on boolean flags
 - Use modern generic test `arguments:` nesting when supported by the installed dbt version
 - Add tests for mapping coverage and metric denominators where applicable

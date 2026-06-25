@@ -22,7 +22,7 @@ Act as a Principal Data Engineer. Design dbt assets like software: modular, idem
 | Area | Standard |
 |---|---|
 | Modeling | Prefer clean Kimball-style star schemas for BI. Strongly discourage flat/wide reporting tables as the only presentation model unless the user has a specific export requirement. |
-| Power BI relationships | Prefer facts connected to dimensions. Avoid ambiguous paths. Avoid snowflake schemas inside Power BI when a clean star schema can be exposed from dbt. If a snowflake relationship is unavoidable, document why and recommend a simpler import model where possible. |
+| Power BI relationships | Prefer facts connected to dimensions. Avoid ambiguous paths. Avoid snowflake schemas inside Power BI when a clean star schema can be exposed from dbt. If a many-to-many relationship is real, model it with an explicit bridge table in dbt or document why it is deferred; do not hide it or rely on ambiguous bidirectional relationships by default. If a snowflake relationship is unavoidable, document why and recommend a simpler import model where possible. |
 | Storage mode | Recommend Import mode for smaller or moderately sized curated marts where refresh latency is acceptable. Recommend DirectQuery or Composite models only when data volume, freshness, governance, or warehouse compute requirements justify them. |
 | Aggregations | Recommend dbt-built aggregate tables for high-level dashboards and Power BI aggregation tables when detailed facts are large or expensive to query. |
 | Semantic sync | Prefer governed semantic definitions from dbt Semantic Layer, MetricFlow, or approved semantic model definitions. Avoid duplicating metric logic in dashboard-only calculations. |
