@@ -30,7 +30,7 @@ sources:
 
 ## Source freshness *(optional)*
 
-Add when the source has a reliable loaded-at column:
+Add when the source has a reliable loaded-at column such as `_etl_loaded_at`, `updated_at`, or an approved equivalent:
 
 ```yaml
     freshness:
@@ -39,7 +39,12 @@ Add when the source has a reliable loaded-at column:
     loaded_at_field: updated_at
 ```
 
-Only add if `updated_at` (or equivalent) exists in source YAML - **do not assume**.
+Only add if the loaded-at field exists in source YAML and reflects source load recency - **do not assume**.
+
+Default source freshness:
+
+- `warn_after: {count: 24, period: hour}`
+- `error_after: {count: 48, period: hour}`
 
 ## Generate docs
 

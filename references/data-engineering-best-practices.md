@@ -34,6 +34,16 @@ Read [principal-data-engineering-standards.md](principal-data-engineering-standa
 - Compare row counts and important aggregates between source, staging, intermediate, and marts.
 - Use `audit_helper` for refactors, migrations, or old-vs-new validation.
 
+## General dbt testing standards
+
+- Every primary key should have `unique` and `not_null` tests when a stable key exists.
+- Every foreign key should have a `relationships` test when the relationship is confirmed and safe.
+- Every important status column should have `accepted_values` based on profiled source values or approved business rules.
+- Important date columns should have `not_null` where required and valid date range checks when needed.
+- Amount columns should have `not_null` where required and non-negative checks where negative values are not valid.
+- Important source tables should have freshness checks when a reliable loaded-at column such as `_etl_loaded_at` or `updated_at` exists.
+- Default source freshness is `warn_after: 24 hours` and `error_after: 48 hours`, unless the source load schedule proves a different threshold is better.
+
 ## Contracts and documentation
 
 - Document model purpose, grain, assumptions, limitations, and important columns.

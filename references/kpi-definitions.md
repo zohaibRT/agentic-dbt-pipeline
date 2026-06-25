@@ -47,6 +47,21 @@ For healthcare, finance, people, or other sensitive domains:
 - Avoid direct identifier dimensions unless approved.
 - Prefer aggregate key performance indicators over record-level personal reporting.
 
+## Universal key performance indicator types
+
+These categories apply across domains. Use them as candidates only when the source data supports them; do not force every category into every project.
+
+| Category | Candidate metrics |
+|---|---|
+| Volume metrics | Total records, total transactions, total users, total customers, total patients, total employees, total appointments, total orders, total bookings |
+| Revenue metrics | Gross revenue, net revenue, paid amount, pending amount, refunded amount, outstanding amount |
+| Operational metrics | Completed count, cancelled count, pending count, success rate, failure rate, average processing time, average waiting time |
+| Performance metrics | Department performance, employee performance, provider performance, agent performance, product performance, service performance, location-wise performance |
+| Time metrics | Daily trend, weekly trend, monthly trend, year-over-year comparison |
+| Quality metrics | Missing values, duplicate records, invalid statuses, failed relationships, stale source data |
+
+For each candidate, state whether it is supported by current marts, requires more source data, or needs a user-approved business definition.
+
 ## Required report section
 
 Gold, semantic, presentation, and final reports must include:

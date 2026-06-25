@@ -25,6 +25,8 @@ Read and execute [references/discovery-requirements.md](references/discovery-req
 
 Discovery is read-only and project-oriented. It may inspect schemas, tables, columns, row counts, keys, relationships, dates, measures, and statuses. Its input/report/output must focus on the source data and analytics project, not environment setup. It must write `reports/agent/discovery_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` before the chat summary, even when the dbt project has not been initialized yet. It must create Mermaid discovery diagrams when the source evidence supports them, including an entity relationship diagram when credible relationships exist, plus other necessary source inventory, business process, or medallion direction diagrams. It must not install packages, run codegen, create warehouse schemas, or change profiles.
 
+Do not assume the business domain. During discovery, understand source tables, table relationships, business processes, metrics required, data quality rules, required output models, and reporting needs before proposing dbt models.
+
 After discovery, summarize what the agent concluded from the source data and ask whether the user wants to add requirements such as mappings, metrics, privacy rules, naming rules, included/excluded tables, or priority facts/dimensions. Continue to project setup and connection validation only after the user replies with requirements or says to continue.
 
 ## Project setup and connection validation (automatic setup-only phase after discovery)
@@ -138,7 +140,7 @@ Never hardcode secrets. Ask before production changes.
 
 ## Step 0.2 - Data engineering guardrails
 
-Read [data-engineering-best-practices.md](references/data-engineering-best-practices.md) and [principal-data-engineering-standards.md](references/principal-data-engineering-standards.md) before model design and again before final delivery. Apply grain, test, incremental, snapshot, documentation, privacy, performance, state-based continuous integration, contracts/versioning, SQL style, warehouse optimization, modern table format, and downstream presentation guardrails.
+Read [data-engineering-best-practices.md](references/data-engineering-best-practices.md) and [principal-data-engineering-standards.md](references/principal-data-engineering-standards.md) before model design and again before final delivery. Apply grain, test, incremental, snapshot, documentation, lineage, directed acyclic graph, freshness, macros, packages, build process, privacy, performance, state-based continuous integration, contracts/versioning, SQL style, warehouse optimization, modern table format, and downstream presentation guardrails.
 
 Read [privacy-and-unknown-fields.md](references/privacy-and-unknown-fields.md) when discovery finds direct identifiers, sensitive fields, protected health information, personally identifiable information, or ambiguous, placeholder, abbreviated, or poorly named fields. The agent must recommend a safe default, document the recommendation, and ask only for approval or business definitions instead of leaving the whole decision to the user.
 

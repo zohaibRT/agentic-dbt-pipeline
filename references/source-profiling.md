@@ -6,6 +6,16 @@ Run lightweight project discovery before any build planning with [discovery-requ
 
 Understand the real source data before modeling. Do not infer business meaning from table names alone.
 
+Before proposing models, summarize:
+
+- Source tables and row counts
+- Table relationships and cardinality
+- Business processes supported by the data
+- Metrics that appear supported and metrics that need user definitions
+- Data quality rules needed
+- Required output models, if the user provided them
+- Reporting needs, if the user provided them
+
 ## Inspect
 
 For each source table, capture:

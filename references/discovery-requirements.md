@@ -8,6 +8,18 @@ Analyze the available source schemas enough to orient the project and the data e
 
 This phase is read-only. Do not create dbt projects, install packages, run codegen, write model files, create warehouse schemas, or change profiles during discovery.
 
+Do not assume the business domain. Even when the user provides a domain label, first understand the source evidence:
+
+1. Source tables
+2. Table relationships
+3. Business processes
+4. Metrics required
+5. Data quality rules
+6. Required output models
+7. Reporting needs
+
+Treat the domain label as context, not proof. If the source tables suggest a different business process than the label, report the mismatch and ask before modeling.
+
 Do not start discovery until the active `domain`, `dbt_profile_name`, and `source_schema` are confirmed from the current user prompt or a valid `.env`. If `.env` is missing or still contains placeholder values, follow [env-configuration.md](env-configuration.md) and stop for user input first. Do not inspect the repository, terminal output, other workspaces, prior workspaces, profile target schemas, warehouse schemas, or old runs to suggest or choose a source schema.
 
 Before any source discovery, follow [warehouse-adapter-routing.md](warehouse-adapter-routing.md). Resolve the selected dbt profile adapter from `~/.dbt/profiles.yml`, announce the selected profile and adapter, and use only that adapter's metadata queries. Before this route is locked, do not call AWS, Redshift, PostgreSQL, Snowflake, BigQuery, Databricks, cloud identity checks, warehouse connectors, metadata queries, or Model Context Protocol discovery servers. If `.env` selects a PostgreSQL profile, use PostgreSQL discovery only. Do not call AWS, Redshift, or any other warehouse-specific connector unless the selected profile adapter is that warehouse type or the user explicitly changes profiles.
@@ -43,6 +55,8 @@ After discovery, explain in Markdown:
 - Other necessary Mermaid diagrams, such as source inventory, business process flow, or high-level medallion direction, when they help the data engineer review the source
 - Candidate business processes, such as appointments, encounters, claims, orders, tickets, or events
 - Candidate facts, dimensions, and metrics implied by the source
+- Required output models and reporting needs that are supported, unsupported, or still unclear
+- Data quality rules discovered or recommended for the next phase
 - Empty tables, suspicious columns, missing keys, date ranges, and data quality notes
 - Privacy/sensitive-field observations
 - Unknown coded fields, recommended default handling, and needed business definitions
