@@ -7,6 +7,7 @@ Create or update **only** the marts star-schema layer from staging + intermediat
 Read [human-review.md](human-review.md) before marking marts complete if metrics, grain, mappings, or sensitive fields require business approval.
 Read [privacy-and-unknown-fields.md](privacy-and-unknown-fields.md) before exposing direct identifiers, sensitive fields, protected health information, personally identifiable information, or unclear coded fields in marts.
 Read [layer-data-validation.md](layer-data-validation.md) before marking marts complete.
+Read [kpi-definitions.md](kpi-definitions.md) before adding reporting marts or metric-ready fields.
 Before creating or changing marts files, follow [phase-plan-approval.md](phase-plan-approval.md).
 
 ## Folder and naming
@@ -26,6 +27,12 @@ Choose:
 - Reporting marts only when they directly support a known dashboard, KPI, or stakeholder question
 
 Each final model must have a documented grain.
+
+## Key performance indicators
+
+For every reporting mart or metric-ready fact, define supported key performance indicators using [kpi-definitions.md](kpi-definitions.md). The gold phase plan and report must include business meaning, source model, grain, numerator, denominator, filters, time field, dimensions, caveats, validation evidence, and approval status.
+
+If a key performance indicator is plausible but not ready, list it as deferred with the missing definition or data evidence. Do not create final reporting marts only to support ambiguous metrics.
 
 ## Example dimensions only
 
@@ -93,7 +100,7 @@ dbt build --select +path:models/{layer_3_name}/{domain}
 
 `+path` builds marts models, their tests, and required upstream (staging + intermediate) dependencies.
 
-After the build, run [layer-data-validation.md](layer-data-validation.md). For marts, the report must show row counts for every fact, dimension, and reporting mart; expected-empty evidence for zero-row models; fact and dimension grain checks; fact-to-dimension or fact-to-parent-fact relationship checks; key performance indicator measure sanity checks; date coverage; and privacy exposure checks. If supporting upstream data exists but a gold model is empty, mark the phase `FAIL` or `BLOCKED`, share the evidence with the user, and do not continue to semantic layer, documentation, presentation layer, or final delivery until the issue is fixed or explicitly accepted.
+After the build, run [layer-data-validation.md](layer-data-validation.md). For marts, the report must show row counts for every fact, dimension, and reporting mart; expected-empty evidence for zero-row models; fact and dimension grain checks; fact-to-dimension or fact-to-parent-fact relationship checks; key performance indicator measure sanity checks; date coverage; and privacy exposure checks. Also include the `Key Performance Indicator Definitions` section from [kpi-definitions.md](kpi-definitions.md). If supporting upstream data exists but a gold model is empty, mark the phase `FAIL` or `BLOCKED`, share the evidence with the user, and do not continue to semantic layer, documentation, presentation layer, or final delivery until the issue is fixed or explicitly accepted.
 
 ## Do not create
 

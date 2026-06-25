@@ -26,7 +26,11 @@ Use full wording in all user-facing plans, reports, summaries, diagram notes, an
 
 After I answer, run project setup and connection validation automatically when `auto_bootstrap` is true: write/update `AGENT_PLAN.md` with the setup phase marked as automatic setup-only, create the local dbt scaffold if needed, install missing dependencies, run `dbt debug`, run `dbt deps`, run `dbt parse`, and write the setup report. Stop and ask first if required settings are missing, the selected profile is unsafe or failing, existing project files would be overwritten, warehouse objects would be created or replaced, credentials are needed, or I explicitly disabled automatic setup.
 
+During setup, perform profile target schema hygiene and write the result into `reports/agent/bootstrap_report.md` and `reports/agent/PIPELINE_STATUS.md`: active profile, adapter, database, target schema, source schema, whether the target schema is safe, and any required mitigation. Treat unsafe target schema routing as a setup blocker, not an optional follow-up.
+
 After every bronze/staging, silver/intermediate, and gold/marts build, run warehouse data validation queries before moving to the next layer. Verify row counts, expected-empty evidence, grain, keys, relationships, row-count movement, date coverage, status/category distributions, important measures, mapping coverage, and privacy exposure. Write `Data Verification Results` into the layer report, share the important results with me, and stop when a model expected to contain data is empty or any validation issue is unexplained.
+
+For gold/marts, semantic layer, presentation layer, and final delivery, define key performance indicators with business meaning, source model, grain, numerator, denominator, filters, time field, dimensions, caveats, validation evidence, and approval status. Defer or ask for approval when definitions are ambiguous; do not silently implement advanced metrics.
 
 After marts, semantic layer, evaluator, and documentation are complete, ask whether I want a presentation layer. Recommend the best option with evidence and list possible key performance indicators, semantic metrics, report or dashboard pages, source models, caveats, and privacy notes. Do not create dashboards, reports, slides, notebooks, or business intelligence artifacts unless I approve that follow-up work.
 

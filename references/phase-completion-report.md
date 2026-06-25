@@ -91,6 +91,8 @@ Every phase report must include:
 - Mermaid diagrams added/changed and visibility verification status
 - Data quality notes
 - Privacy/sensitive-field notes
+- Profile target schema hygiene for project setup and connection validation
+- Key performance indicator definitions for gold/marts, semantic layer, presentation layer, and final delivery
 - Assumptions used
 - Open questions or user decisions
 - Commit status
@@ -138,6 +140,16 @@ Overall: <PASS | WARN | FAIL | SKIPPED | BLOCKED>
 | Layer | Model | Row Count | Expected Evidence | Grain Check | Relationship Check | Measure Check | Result | Notes |
 |---|---:|---:|---|---|---|---|---|---|
 | <layer> | <model> | <row_count> | <source/upstream comparison> | <PASS/WARN/FAIL/SKIPPED> | <PASS/WARN/FAIL/SKIPPED> | <PASS/WARN/FAIL/SKIPPED> | <PASS/WARN/FAIL/BLOCKED> | <important finding> |
+
+## Profile Target Schema Hygiene
+| Profile | Adapter | Database | Target Schema | Source Schema | Safe? | Evidence / Action |
+|---|---|---|---|---|---|---|
+| <profile> | <adapter> | <database> | <target_schema> | <source_schema> | <PASS/WARN/BLOCKED/SKIPPED> | <routing or required change> |
+
+## Key Performance Indicator Definitions
+| Key Performance Indicator | Business Meaning | Source Model | Grain | Numerator | Denominator | Filters | Time Field | Result / Caveat | Approval |
+|---|---|---|---|---|---|---|---|---|---|
+| <name> | <meaning> | <model> | <grain> | <numerator> | <denominator or not applicable> | <filters> | <date field> | <validation/caveat> | <approved/deferred/blocked> |
 
 ## Mermaid Diagrams
 | Diagram | Mermaid type | Verification | Notes |

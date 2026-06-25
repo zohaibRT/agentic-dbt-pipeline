@@ -1,6 +1,6 @@
 # Semantic Layer Spec
 
-Before creating or changing semantic layer files, follow [phase-plan-approval.md](phase-plan-approval.md).
+Before creating or changing semantic layer files, follow [phase-plan-approval.md](phase-plan-approval.md) and [kpi-definitions.md](kpi-definitions.md).
 
 **When:** after marts layer builds successfully.
 **Skill:** compose with `building-dbt-semantic-layer`.
@@ -22,6 +22,10 @@ Minimum expectations:
 - Measures have clear aggregation and business meaning
 - Ratio metrics use safe denominators
 - Metric names are business-friendly and documented
+
+Every semantic metric must trace to a key performance indicator definition. Include the key performance indicator's business meaning, grain, numerator, denominator, filters, time field, source model, caveats, and approval status in the semantic phase report.
+
+If the key performance indicator is not approved or has ambiguous numerator, denominator, filters, or time field, do not implement it as a semantic metric. Mark it deferred and ask for the missing business definition.
 
 ## Example semantic models only
 

@@ -10,7 +10,7 @@ The presentation layer is optional. Do not create dashboards, reports, slides, n
 
 ## What to recommend
 
-Review the final gold/marts models, semantic metrics, source data limitations, and documented business rules. Then recommend presentation options with evidence:
+Review the final gold/marts models, semantic metrics, source data limitations, documented business rules, and [kpi-definitions.md](kpi-definitions.md). Then recommend presentation options with evidence:
 
 | Option | When to recommend | What to include |
 |---|---|---|
@@ -34,7 +34,7 @@ Why:
 - <evidence from final marts, metrics, data quality, and user goals>
 
 Possible key performance indicators and metrics:
-- <metric name>: <business meaning, source model, grain, and caveat>
+- <metric name>: <business meaning, source model, grain, numerator, denominator, filters, time field, and caveat>
 
 Suggested presentation pages:
 - <page name>: <purpose, primary metrics, filters, and source models>
@@ -68,6 +68,7 @@ Do not force the user to choose all options. Recommend the best next option base
 ## Guardrails
 
 - Do not invent key performance indicators that are not supported by final marts or approved semantic metrics.
+- Do not recommend advanced key performance indicators unless numerator, denominator, filters, time field, source model, and caveats are known or clearly marked as deferred.
 - Do not expose sensitive fields, personally identifiable information, or protected health information in presentation outputs unless approved.
 - Do not build dashboards from empty or unvalidated facts without clearly marking them as placeholders.
 - Prefer semantic metrics over duplicated dashboard-only calculations.

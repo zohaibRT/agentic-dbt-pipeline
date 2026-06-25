@@ -29,6 +29,7 @@ Update or create project handoff notes with:
 - Important source tables
 - Source discovery conclusions and requirements captured before build
 - Final facts, dimensions, marts, and metrics
+- Key performance indicator definitions with numerator, denominator, filters, time field, source model, caveats, validation evidence, and approval status
 - Presentation layer recommendation, including possible key performance indicators, semantic metrics, suggested report or dashboard pages, and query handoff options
 - Power BI as code status when requested, including PBIP structure validation and open/refresh notes
 - Known empty tables or data quality limitations
@@ -110,6 +111,8 @@ Use a compact table when helpful:
 - Build and documentation results
 - Project evaluator result
 - Schema isolation check result
+- Profile target schema hygiene result
+- Key performance indicator definition status
 - Key pass/warn/fail counts when available
 - Phase plan approval status
 - Phase report status and path
@@ -132,6 +135,7 @@ Use a compact table when helpful:
 ### Open decisions
 
 - Open user decisions
+- Any deferred or blocked key performance indicator definitions
 - Whether to create a presentation layer artifact such as a business-facing report, dashboard design, semantic layer refinement, or query handoff
 - Recommended next actions
 

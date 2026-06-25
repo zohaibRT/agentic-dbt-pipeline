@@ -20,6 +20,9 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Initial discovery stayed lightweight; detailed discovery happened phase-by-phase before sources/bronze/silver/gold/etc.
 - [ ] Python venv and dbt adapter installed
 - [ ] `dbt debug` passes
+- [ ] Profile target schema hygiene was checked and written to setup report and pipeline status
+- [ ] Profile target schema does not equal source schema, or every output is explicitly routed and the mitigation is documented
+- [ ] Generic or risky profile target schemas were documented with explicit routing evidence before builds
 - [ ] `.gitignore` excludes credentials and generated files
 - [ ] `.env` loaded for non-secret inputs when present; `.env.example` contains no secrets when committed
 - [ ] Active dbt profile adapter was resolved before discovery
@@ -97,6 +100,8 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Intermediate: domain-appropriate reusable business logic models build successfully
 - [ ] Marts: domain-appropriate facts, dimensions, and reporting marts build successfully
 - [ ] Semantic layer: metrics on marts ([semantic-layer-spec.md](semantic-layer-spec.md))
+- [ ] Gold/marts report includes key performance indicator definitions or explicitly deferred metrics with missing evidence
+- [ ] Semantic metrics trace to approved or clearly supported key performance indicator definitions
 - [ ] Each layer: `dbt parse` + `dbt build --select +path:...` PASS
 - [ ] Each bronze/staging, silver/intermediate, and gold/marts layer ran warehouse data validation queries after `dbt build`
 - [ ] Each layer report includes `Data Verification Results` with row counts, expected-empty evidence, grain checks, relationship checks, measure checks, result, and notes
@@ -113,6 +118,8 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Manual mappings implemented as seeds or reference-table joins where appropriate
 - [ ] Mapping coverage checked; unmapped values summarized or approved
 - [ ] Business grain and key assumptions documented in model YAML or handoff notes
+- [ ] Key performance indicators include business meaning, source model, grain, numerator, denominator, filters, time field, caveats, validation evidence, and approval status
+- [ ] Ambiguous key performance indicators were deferred or sent for user approval instead of silently implemented
 
 ## Data engineering guardrails
 
@@ -179,3 +186,4 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Phase commits created or intentionally skipped
 - [ ] Final response summarizes build status, documentation status, evaluator status, Agents Schema status, git status, limitations, and open decisions
 - [ ] Final response includes possible key performance indicators, semantic metrics, and presentation pages when enough final mart evidence exists
+- [ ] Final response lists deferred or blocked key performance indicator definitions when definitions or data are missing

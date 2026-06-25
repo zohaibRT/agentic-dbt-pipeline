@@ -16,6 +16,7 @@ Before running it, write or update `AGENT_PLAN.md` with:
 - Exact setup actions to run
 - Validation commands
 - Safety gates checked
+- Profile target schema hygiene check from [schema-isolation.md](schema-isolation.md)
 
 Then run only the setup actions allowed in this file and write:
 
@@ -50,6 +51,7 @@ Project setup and connection validation must not:
 - Required `.env` values are missing
 - The selected dbt profile is missing, ambiguous, or failing
 - The selected profile target schema equals the source schema and needs a safer work schema
+- The selected profile target schema is generic or risky and explicit routing is incomplete
 - Existing project files would be overwritten or moved
 - Setup would need to create or replace warehouse objects beyond setup validation
 - Credentials, secrets, GitHub remote creation, or GitHub Secrets are needed
@@ -100,6 +102,8 @@ dbt debug
 
 If profile missing -> guide user to `~/.dbt/profiles.yml` (never commit passwords).
 
+After `dbt debug`, perform the profile target schema hygiene check from [schema-isolation.md](schema-isolation.md). The setup report must include the active profile, adapter, database or database-equivalent, target schema, source schema, safe status, and evidence/action. Do not treat this as an optional follow-up.
+
 ## 5. Sources readiness
 
 Prepare the project so the Sources phase can run next, but do not generate source YAML during automatic Bootstrap.
@@ -138,6 +142,7 @@ Confirm `.agents/skills/agentic-dbt-pipeline/SKILL.md` and `project.config.yml` 
 | dbt Agent Skills installed | PASS |
 | All 4 dbt packages in `packages.yml` + `dbt deps` | PASS |
 | `dbt debug` passes | PASS |
+| Profile target schema hygiene documented and safe, or blocked for user action | PASS |
 | Git mode resolved: local-only or GitHub remote prepared when requested | PASS |
 | `dbt parse --no-partial-parse` passes or skipped with documented reason | PASS |
 | Workflow files not created unless automation was explicitly approved | PASS |

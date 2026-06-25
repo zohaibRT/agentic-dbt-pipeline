@@ -22,6 +22,7 @@ Every build-phase plan must include these checks when relevant:
 | Layer responsibility | What belongs in staging vs intermediate vs marts |
 | Mapping | Whether codes/statuses need mapping seeds, reference joins, or user-provided definitions |
 | Metrics | Metric definition, grain, filters, numerator/denominator, and semantic-layer target |
+| Key performance indicators | Business meaning, source model, grain, numerator, denominator, filters, time field, dimensions, caveats, validation evidence, and approval status |
 | Privacy | Direct identifiers, personally identifiable information, protected health information, sensitive fields, and whether they may reach marts |
 | History | Whether snapshots or slowly changing dimensions are needed |
 | Incremental strategy | Unique key, update timestamp/filter, late-arriving-data assumption, and full-refresh risk |
@@ -37,6 +38,7 @@ Every build-phase plan must include these checks when relevant:
 Stop and ask when:
 
 - A metric can be defined more than one reasonable way.
+- A key performance indicator lacks a clear numerator, denominator, filter, time field, source model, or caveat.
 - A join can change the row count or double-count facts.
 - A source column looks sensitive or unclear.
 - A code/status mapping is incomplete or business-specific.
@@ -88,6 +90,7 @@ Add this section to every phase plan:
 | Joins | <join/cardinality plan> | <relationship/profile evidence> | <yes/no> |
 | Privacy | <include/exclude/mask fields> | <column names/rules> | <yes/no> |
 | Materialization | <view/table/incremental> | <volume/use case> | <yes/no> |
+| Key performance indicators | <metric definitions or deferred> | <gold/semantic evidence> | <yes/no> |
 ```
 
 If there is nothing relevant for a decision, write `not applicable` rather than omitting the decision silently.

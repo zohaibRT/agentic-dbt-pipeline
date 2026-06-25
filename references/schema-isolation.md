@@ -60,12 +60,26 @@ When multiple medallion prefix sets exist, such as `dh_bronze/dh_silver/dh_gold`
 
 The dbt profile target schema is only a fallback/work schema. It must not be the source schema.
 
+Profile target schema hygiene is a required setup check, not an optional hardening task. The setup report must show the active profile name, adapter, database or database-equivalent, target schema, source schema, whether they match, and the chosen mitigation.
+
 If the active dbt target schema equals `source_schema`, stop before running builds and either:
 
 1. Ask the user to change the profile target schema to a safe work schema such as `<layer_schema_prefix>_work`, or
 2. Confirm that every project model, package, seed, snapshot, and evaluator output is explicitly routed to a non-source schema.
 
 Prefer option 1 for new projects.
+
+If the profile target schema is generic, such as `public`, `default`, `raw`, `source`, or `analytics`, it is not automatically unsafe, but the agent must document why explicit model, package, seed, snapshot, and evaluator routing prevents accidental writes. If that routing is incomplete, stop before builds.
+
+Add this to `reports/agent/bootstrap_report.md` and `reports/agent/PIPELINE_STATUS.md`:
+
+```markdown
+## Profile Target Schema Hygiene
+
+| Profile | Adapter | Database | Target Schema | Source Schema | Safe? | Evidence / Action |
+|---|---|---|---|---|---|---|
+| <profile> | <adapter> | <database> | <target_schema> | <source_schema> | <PASS/WARN/BLOCKED> | <routing or required change> |
+```
 
 ## Required `dbt_project.yml` routing
 

@@ -76,6 +76,7 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 | **0f Recommendations** | Agent recommends; data engineer approves | [recommendation-and-review.md](references/recommendation-and-review.md) |
 | **0g Diagrams** | Mermaid-only diagrams with visibility checks | [mermaid-diagrams.md](references/mermaid-diagrams.md) |
 | **0h Layer data validation** | Warehouse query checks after every built layer | [layer-data-validation.md](references/layer-data-validation.md) |
+| **0i Key performance indicators** | Business metric definitions and approval evidence | [kpi-definitions.md](references/kpi-definitions.md) |
 | **1 Init** | New project | [project-initialization.md](references/project-initialization.md) |
 | **2 Schemas** | After init | [warehouse-schema-setup.md](references/warehouse-schema-setup.md), [schema-isolation.md](references/schema-isolation.md) |
 | **3 Sources** | Packages + source YAML | [packages-and-sources.md](references/packages-and-sources.md) |
@@ -100,7 +101,7 @@ Context prompt template: [agent-context-prompt.md](references/agent-context-prom
 
 ## Step 0 - Load configuration
 
-Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), [profile-listing.md](references/profile-listing.md), [project-naming.md](references/project-naming.md), [schema-isolation.md](references/schema-isolation.md), [env-configuration.md](references/env-configuration.md), [source-confirmation.md](references/source-confirmation.md), [warehouse-adapter-routing.md](references/warehouse-adapter-routing.md), [discovery-requirements.md](references/discovery-requirements.md), [phased-discovery.md](references/phased-discovery.md), [recommendation-and-review.md](references/recommendation-and-review.md), [writing-style.md](references/writing-style.md), [mermaid-diagrams.md](references/mermaid-diagrams.md), [layer-data-validation.md](references/layer-data-validation.md), [phase-plan-approval.md](references/phase-plan-approval.md), [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md), [phase-completion-report.md](references/phase-completion-report.md), and [context-tree.md](references/context-tree.md).
+Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), [profile-listing.md](references/profile-listing.md), [project-naming.md](references/project-naming.md), [schema-isolation.md](references/schema-isolation.md), [env-configuration.md](references/env-configuration.md), [source-confirmation.md](references/source-confirmation.md), [warehouse-adapter-routing.md](references/warehouse-adapter-routing.md), [discovery-requirements.md](references/discovery-requirements.md), [phased-discovery.md](references/phased-discovery.md), [recommendation-and-review.md](references/recommendation-and-review.md), [writing-style.md](references/writing-style.md), [mermaid-diagrams.md](references/mermaid-diagrams.md), [layer-data-validation.md](references/layer-data-validation.md), [kpi-definitions.md](references/kpi-definitions.md), [phase-plan-approval.md](references/phase-plan-approval.md), [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md), [phase-completion-report.md](references/phase-completion-report.md), and [context-tree.md](references/context-tree.md).
 
 Resolve paths relative to workspace root. dbt project root = `{project.root}`.
 
@@ -147,6 +148,8 @@ Read [recommendation-and-review.md](references/recommendation-and-review.md) bef
 Read [mermaid-diagrams.md](references/mermaid-diagrams.md) before creating or changing any diagram. All diagrams must be Mermaid blocks, entity relationships must use Mermaid `erDiagram`, and every added or changed Mermaid diagram must be verified as visible/parseable before the phase is marked complete.
 
 Read [layer-data-validation.md](references/layer-data-validation.md) before building bronze/staging, silver/intermediate, or gold/marts. After each layer build, run warehouse validation queries for row presence, expected emptiness, grain, keys, relationships, row-count movement, date coverage, status/category distributions, measures, mapping coverage, and privacy exposure. Add a `Data Verification Results` section to the layer report, share the important results with the user, and stop before the next layer when a model that should contain data is empty or any validation issue is unexplained.
+
+Read [kpi-definitions.md](references/kpi-definitions.md) before gold/marts, semantic layer, presentation layer, and final delivery. The agent must propose supported key performance indicators with business meaning, source model, grain, numerator, denominator, filters, time field, caveats, validation evidence, and approval status. Do not create semantic metrics or presentation calculations from ambiguous key performance indicators.
 
 ## Step 0.5 - Resolve layer names
 
@@ -255,11 +258,11 @@ Read [intermediate-spec.md](references/intermediate-spec.md), [mapping-seeds.md]
 
 ## Step 5 - Layer 3 (marts / star schema)
 
-Read [marts-spec.md](references/marts-spec.md) and [layer-data-validation.md](references/layer-data-validation.md). `ref()` only. Build domain-appropriate facts, dimensions, and reporting marts based on profiled source grain and user requirements. After build, verify every fact, dimension, and reporting mart has data when upstream data exists; treat unexpected empty gold models as blockers.
+Read [marts-spec.md](references/marts-spec.md), [layer-data-validation.md](references/layer-data-validation.md), and [kpi-definitions.md](references/kpi-definitions.md). `ref()` only. Build domain-appropriate facts, dimensions, and reporting marts based on profiled source grain and user requirements. After build, verify every fact, dimension, and reporting mart has data when upstream data exists; treat unexpected empty gold models as blockers. Define key performance indicators explicitly before promoting them to gold marts or semantic metrics.
 
 ## Step 5b - Semantic layer
 
-Read [semantic-layer-spec.md](references/semantic-layer-spec.md). Compose with `building-dbt-semantic-layer`. Legacy spec on dbt 1.10.x.
+Read [semantic-layer-spec.md](references/semantic-layer-spec.md) and [kpi-definitions.md](references/kpi-definitions.md). Compose with `building-dbt-semantic-layer`. Legacy spec on dbt 1.10.x. Only create semantic metrics from approved or clearly supported key performance indicator definitions.
 
 ## Step 5c - Project evaluator
 
@@ -275,7 +278,7 @@ Read [documentation.md](references/documentation.md). Run `dbt docs generate`. U
 
 ## Step 6a - Presentation layer recommendation
 
-Read [presentation-layer.md](references/presentation-layer.md). After final validation, recommend the best presentation-layer option with possible key performance indicators, semantic metrics, dashboard or report pages, source models, caveats, and privacy notes. Ask whether the user wants to create a presentation layer artifact. Do not build dashboards, reports, slides, notebooks, or business intelligence artifacts without approval.
+Read [presentation-layer.md](references/presentation-layer.md) and [kpi-definitions.md](references/kpi-definitions.md). After final validation, recommend the best presentation-layer option with possible key performance indicators, semantic metrics, dashboard or report pages, source models, caveats, and privacy notes. Ask whether the user wants to create a presentation layer artifact. Do not build dashboards, reports, slides, notebooks, or business intelligence artifacts without approval.
 
 ## Step 6b - Human review
 
@@ -390,6 +393,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 | [writing-style.md](references/writing-style.md) | Full wording for user-facing output |
 | [mermaid-diagrams.md](references/mermaid-diagrams.md) | Mermaid-only diagrams and visibility verification |
 | [layer-data-validation.md](references/layer-data-validation.md) | Warehouse query checks after every bronze, silver, and gold layer build |
+| [kpi-definitions.md](references/kpi-definitions.md) | Key performance indicator definitions, caveats, and approval status |
 | [project-naming.md](references/project-naming.md) | Derive project and folder names without using dbt profile |
 | [env-configuration.md](references/env-configuration.md) | Optional `.env` settings and precedence |
 | [source-confirmation.md](references/source-confirmation.md) | Ask-before-switching contract and approved source lock |
