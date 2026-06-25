@@ -2,6 +2,8 @@
 
 Use this as the final design guardrail for every dbt project.
 
+Read [principal-data-engineering-standards.md](principal-data-engineering-standards.md) for the full principal-level standard covering state-based continuous integration, contracts/versioning, Power BI integration, modern table formats, warehouse optimization, and SQL style.
+
 ## Grain and keys
 
 - Define one clear grain for every staging, intermediate, fact, dimension, and mart model.
@@ -53,3 +55,6 @@ Use this as the final design guardrail for every dbt project.
 - Keep development builds light with views where possible.
 - Run project evaluator after marts with vars aligned to the active layer names; fix warnings or document accepted exceptions.
 - Keep CI focused on parse, deps, targeted builds, docs, and package checks.
+- Prefer state-based CI with `state:modified+`, `--defer`, and prior artifacts when those artifacts are available.
+- Consider modern table format maintenance, partitioning, clustering, compaction, and vacuuming when the selected platform supports Iceberg, Delta Lake, Hudi, or object-store-backed tables.
+- Enforce readable SQL style: Common Table Expressions, uppercase SQL keywords, trailing commas where project style allows, explicit table aliases for joined columns, and no ambiguous references.

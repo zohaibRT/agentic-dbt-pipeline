@@ -60,3 +60,15 @@ Ask user before commit.
 1. `dbt deps`
 2. `dbt parse`
 3. `dbt build` *(scoped selector - not full project unless approved)*
+
+## State-based continuous integration
+
+When prior production artifacts are available, prefer state-based selectors for pull request checks:
+
+```powershell
+dbt build --select state:modified+ --defer --state path/to/artifacts
+```
+
+Use this pattern to reduce cost and validate only changed models plus downstream dependencies. Fall back to path-based scoped builds when state artifacts are not available.
+
+For GitHub Actions, persist or download the latest `manifest.json` and related artifacts from the main branch before running state-based validation. If artifact retrieval is not configured, document that state-based continuous integration is not ready yet and keep the workflow on `dbt parse` plus scoped build.

@@ -23,6 +23,7 @@ The agent must do a senior data-engineering review, not only a dbt command check
 | Documentation | `dbt docs generate` ran; docs include model purpose, grain, assumptions, and important columns |
 | Presentation layer | A presentation-layer recommendation was produced after final validation, or the report explains why it is blocked or skipped |
 | Operations | Commit status, continuous integration status, Agents Schema status, and run commands are documented |
+| Principal standards | State-based continuous integration readiness, contracts/versioning, package and macro usage, Power BI storage mode, aggregate tables, modern table formats, warehouse optimization, and SQL style are applied, deferred, or marked not applicable |
 
 ## Required report section
 

@@ -71,6 +71,7 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 | **0a Project knowledge** | User dbt standards and domain rules | [project-knowledge.md](references/project-knowledge.md) |
 | **0b Subagents** | Optional speed-up | [subagent-workflow.md](references/subagent-workflow.md) |
 | **0c Best practices** | Design guardrails | [data-engineering-best-practices.md](references/data-engineering-best-practices.md), [privacy-and-unknown-fields.md](references/privacy-and-unknown-fields.md) |
+| **0c Principal standards** | Advanced software-grade data engineering standards | [principal-data-engineering-standards.md](references/principal-data-engineering-standards.md) |
 | **0c Writing style** | Full wording in user-facing output | [writing-style.md](references/writing-style.md) |
 | **0d Engineer gate** | Explicit modeling decisions | [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md) |
 | **0e Phased discovery** | Discover just enough per phase | [phased-discovery.md](references/phased-discovery.md) |
@@ -103,7 +104,7 @@ Context prompt template: [agent-context-prompt.md](references/agent-context-prom
 
 ## Step 0 - Load configuration
 
-Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), [profile-listing.md](references/profile-listing.md), [project-naming.md](references/project-naming.md), [schema-isolation.md](references/schema-isolation.md), [env-configuration.md](references/env-configuration.md), [source-confirmation.md](references/source-confirmation.md), [warehouse-adapter-routing.md](references/warehouse-adapter-routing.md), [project-knowledge.md](references/project-knowledge.md), [discovery-requirements.md](references/discovery-requirements.md), [phased-discovery.md](references/phased-discovery.md), [recommendation-and-review.md](references/recommendation-and-review.md), [writing-style.md](references/writing-style.md), [mermaid-diagrams.md](references/mermaid-diagrams.md), [layer-data-validation.md](references/layer-data-validation.md), [kpi-definitions.md](references/kpi-definitions.md), [advanced-data-engineering-review.md](references/advanced-data-engineering-review.md), [phase-plan-approval.md](references/phase-plan-approval.md), [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md), [phase-completion-report.md](references/phase-completion-report.md), and [context-tree.md](references/context-tree.md).
+Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), [profile-listing.md](references/profile-listing.md), [project-naming.md](references/project-naming.md), [schema-isolation.md](references/schema-isolation.md), [env-configuration.md](references/env-configuration.md), [source-confirmation.md](references/source-confirmation.md), [warehouse-adapter-routing.md](references/warehouse-adapter-routing.md), [project-knowledge.md](references/project-knowledge.md), [discovery-requirements.md](references/discovery-requirements.md), [phased-discovery.md](references/phased-discovery.md), [recommendation-and-review.md](references/recommendation-and-review.md), [writing-style.md](references/writing-style.md), [mermaid-diagrams.md](references/mermaid-diagrams.md), [principal-data-engineering-standards.md](references/principal-data-engineering-standards.md), [layer-data-validation.md](references/layer-data-validation.md), [kpi-definitions.md](references/kpi-definitions.md), [advanced-data-engineering-review.md](references/advanced-data-engineering-review.md), [phase-plan-approval.md](references/phase-plan-approval.md), [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md), [phase-completion-report.md](references/phase-completion-report.md), and [context-tree.md](references/context-tree.md).
 
 Resolve paths relative to workspace root. dbt project root = `{project.root}`.
 
@@ -137,7 +138,7 @@ Never hardcode secrets. Ask before production changes.
 
 ## Step 0.2 - Data engineering guardrails
 
-Read [data-engineering-best-practices.md](references/data-engineering-best-practices.md) before model design and again before final delivery. Apply grain, test, incremental, snapshot, documentation, privacy, and performance guardrails.
+Read [data-engineering-best-practices.md](references/data-engineering-best-practices.md) and [principal-data-engineering-standards.md](references/principal-data-engineering-standards.md) before model design and again before final delivery. Apply grain, test, incremental, snapshot, documentation, privacy, performance, state-based continuous integration, contracts/versioning, SQL style, warehouse optimization, modern table format, and downstream presentation guardrails.
 
 Read [privacy-and-unknown-fields.md](references/privacy-and-unknown-fields.md) when discovery finds direct identifiers, sensitive fields, protected health information, personally identifiable information, or ambiguous, placeholder, abbreviated, or poorly named fields. The agent must recommend a safe default, document the recommendation, and ask only for approval or business definitions instead of leaving the whole decision to the user.
 
@@ -413,6 +414,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 | [schema-isolation.md](references/schema-isolation.md) | Keep source, medallion, evaluator, seeds, snapshots, and agent metadata schemas separate |
 | [subagent-workflow.md](references/subagent-workflow.md) | Optional parallel analysis and review |
 | [data-engineering-best-practices.md](references/data-engineering-best-practices.md) | Grain, tests, history, contracts, privacy, operations |
+| [principal-data-engineering-standards.md](references/principal-data-engineering-standards.md) | Principal-level dbt, Power BI, storage, warehouse, and SQL standards |
 | [privacy-and-unknown-fields.md](references/privacy-and-unknown-fields.md) | Safe defaults for sensitive fields and unclear coded fields |
 | [security-and-credentials.md](references/security-and-credentials.md) | Secrets & gitignore |
 | [project-initialization.md](references/project-initialization.md) | venv, dbt init, debug |

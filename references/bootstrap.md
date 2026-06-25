@@ -74,7 +74,7 @@ Do not ask the user to install dbt skills manually when `auto_install_dbt_skills
 
 **dbt packages (auto)** - see [dbt-packages-and-skills.md](dbt-packages-and-skills.md):
 
-1. Write full `packages.yml` (codegen, dbt_utils, dbt_project_evaluator, audit_helper)
+1. Write full `packages.yml` (codegen, dbt_utils, dbt_expectations, dbt_project_evaluator, audit_helper)
 2. Add `dispatch`, `<layer_schema_prefix>_evaluator` schema routing, and medallion folder vars to `dbt_project.yml` for evaluator
 3. Run `dbt deps`
 
@@ -140,7 +140,7 @@ Confirm `.agents/skills/agentic-dbt-pipeline/SKILL.md` and `project.config.yml` 
 | Check | Status |
 |---|---|
 | dbt Agent Skills installed | PASS |
-| All 4 dbt packages in `packages.yml` + `dbt deps` | PASS |
+| All 5 dbt packages in `packages.yml` + `dbt deps` | PASS |
 | `dbt debug` passes | PASS |
 | Profile target schema hygiene documented and safe, or blocked for user action | PASS |
 | Git mode resolved: local-only or GitHub remote prepared when requested | PASS |

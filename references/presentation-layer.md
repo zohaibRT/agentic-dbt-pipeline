@@ -71,6 +71,9 @@ If the recommendation cannot be produced, mark it `BLOCKED` or `SKIPPED` with th
 
 - Do not invent key performance indicators that are not supported by final marts or approved semantic metrics.
 - Do not recommend advanced key performance indicators unless numerator, denominator, filters, time field, source model, and caveats are known or clearly marked as deferred.
+- Prefer Kimball-style star schemas for Power BI and downstream presentation. Strongly discourage flat/wide-only presentation models and snowflake schemas inside Power BI when dbt can expose a simpler star schema.
+- Recommend Import mode for smaller curated marts where refresh latency is acceptable; recommend DirectQuery or Composite models only when data volume, freshness, governance, or warehouse compute requirements justify them.
+- Recommend dbt aggregate tables for high-level dashboards and Power BI aggregation behavior when detailed facts are too large or expensive for repeated dashboard scans.
 - Do not expose sensitive fields, personally identifiable information, or protected health information in presentation outputs unless approved.
 - Do not build dashboards from empty or unvalidated facts without clearly marking them as placeholders.
 - Prefer semantic metrics over duplicated dashboard-only calculations.

@@ -13,6 +13,7 @@ Controlled by `materialization_profile` in `project.config.yml` (default: `prod`
 | `dim_*` | inherits table | `{{ config(materialized='table') }}` optional |
 | `fct_*` | inherits table | `{{ config(materialized='incremental', unique_key='<pk>') }}` |
 | `mart_*` reporting | inherits table | `{{ config(materialized='table') }}` |
+| Internal single-use logic | not configured globally | `{{ config(materialized='ephemeral') }}` only when independent testing/lineage is not needed |
 
 ### Incremental facts
 
@@ -20,6 +21,14 @@ Controlled by `materialization_profile` in `project.config.yml` (default: `prod`
 `fct_order_items` -> `unique_key='order_item_id'`
 
 Use `is_incremental()` filter on date or id when adding incremental logic.
+
+For large-scale incremental models, include a stable `unique_key` and an adapter-appropriate incremental predicate, merge predicate, or partition overwrite strategy when supported. Document late-arriving data assumptions.
+
+## Contracts and public model versioning
+
+For public marts consumed by dashboards, semantic models, or downstream applications, consider dbt model contracts and model versioning. Use them when the adapter and project maturity support them safely.
+
+Ask before enabling contracts or versioning on an existing project because they can intentionally fail builds when downstream-facing schemas change.
 
 ## Development (`materialization_profile: dev`)
 

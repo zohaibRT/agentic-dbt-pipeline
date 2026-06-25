@@ -59,7 +59,7 @@ Verify before marking the dbt pipeline workflow complete.
 ## dbt Agent Skills & packages
 
 - [ ] dbt Agent Skills installed ([install-dbt-agent-skills.md](install-dbt-agent-skills.md))
-- [ ] `packages.yml`: codegen, dbt_utils, dbt_project_evaluator, audit_helper
+- [ ] `packages.yml`: codegen, dbt_utils, dbt_expectations, dbt_project_evaluator, audit_helper
 - [ ] `dbt deps` succeeds
 - [ ] `dispatch` block for dbt_project_evaluator in `dbt_project.yml`
 - [ ] Evaluator vars align package checks with active layer names (`bronze/silver/gold` by default)

@@ -13,6 +13,8 @@ Create `.env` from `.env.example` and fill the project settings there. Then use 
 ```text
 Use the dbt Pipeline skill (`agentic-dbt-pipeline`).
 
+Act as a Principal Data Engineer. Design the dbt project to be modular, idempotent, scalable, testable, cost-efficient, and safe for downstream consumers. Treat data asset development like software engineering.
+
 Build the dbt project using the settings from `.env`.
 Run the full pipeline from source discovery through final delivery.
 
