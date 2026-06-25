@@ -160,6 +160,9 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] If Power BI PBIP/TMDL was created, approved report pages exist as Power BI report definition artifacts, not only Markdown page descriptions
 - [ ] If Power BI PBIP/TMDL was created, Markdown import guides, DAX snippets, relationship notes, or dashboard page descriptions were not marked as the completed Power BI artifact
 - [ ] If Power BI PBIP/TMDL was created, JSON parse checks, TMDL structure checks, and file-tree checks were run and recorded
+- [ ] If Power BI PBIP/TMDL was created, active relationships were audited for ambiguous filter paths, including multiple active paths between dimensions through facts or bridge tables
+- [ ] If Power BI Desktop was available, the generated `.pbip` was opened or launched for load validation, and any Desktop load error was fixed before marking the presentation phase complete
+- [ ] If Power BI Desktop validation was not run, the presentation report clearly says it was not run and why; it does not claim the project was opened successfully
 
 ## Human review
 

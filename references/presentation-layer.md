@@ -122,6 +122,7 @@ If the recommendation cannot be produced, mark it `BLOCKED` or `SKIPPED` with th
 - Do not recommend advanced key performance indicators unless numerator, denominator, filters, time field, source model, and caveats are known or clearly marked as deferred.
 - Prefer Kimball-style star schemas for Power BI and downstream presentation. Strongly discourage flat/wide-only presentation models and snowflake schemas inside Power BI when dbt can expose a simpler star schema.
 - Check whether approved dbt bridge tables are needed in the Power BI semantic model. Use bridge tables for true many-to-many filtering or allocation; avoid Power BI many-to-many relationships and bidirectional filters unless there is a documented reason.
+- Validate relationship paths before handoff. A Power BI semantic model must not contain multiple active filter paths between the same two presentation entities. For example, do not allow both `customers -> orders -> order_items -> products` and `customers -> order_items -> products` to be active. Choose one canonical path, remove the shortcut relationship, make the shortcut inactive only when there is a documented measure need, or create a proper bridge/aggregate model.
 - Recommend Import mode for smaller curated marts where refresh latency is acceptable; recommend DirectQuery or Composite models only when data volume, freshness, governance, or warehouse compute requirements justify them.
 - Recommend dbt aggregate tables for high-level dashboards and Power BI aggregation behavior when detailed facts are too large or expensive for repeated dashboard scans.
 - Do not expose sensitive fields, personally identifiable information, or protected health information in presentation outputs unless approved.
@@ -152,7 +153,7 @@ When creating PBIP:
 - Keep TMDL under the SemanticModel definition folder using the expected artifact layout for the chosen Power BI project format.
 - Create report definition files for the approved pages and visuals when the user asked for clickable/openable Power BI pages. Do not replace report pages with `dashboard_pages.md`.
 - Use parameters for host, database, schema, warehouse, or equivalent connection values instead of hardcoding environment-specific values where practical.
-- Define relationships from the approved star schema and avoid ambiguous relationship paths.
+- Define relationships from the approved star schema and avoid ambiguous relationship paths. Prefer one active route from each dimension to each fact area. Avoid convenience relationships from a dimension directly to a lower-grain fact when that lower-grain fact is already reachable through its parent fact.
 - Include approved bridge tables and their relationship directions when the gold layer contains bridge models or the approved presentation scope requires many-to-many analysis.
 - Put reusable business calculations in a measures table or equivalent semantic model construct.
 - Use simple user-facing measure labels and keep technical column names inside model definitions.
@@ -165,15 +166,17 @@ Validation before handoff:
 - Check TMDL indentation and root-level object placement against the selected PBIP structure.
 - Verify the `.pbip` points to the report artifact and the report points to the semantic model artifact.
 - Verify approved report pages exist as Power BI report definition artifacts, not only Markdown page descriptions.
+- Run a relationship ambiguity audit before handoff. Build a simple graph of active relationships and confirm there is no pair of dimensions or presentation entities connected by more than one active path through facts, bridge tables, or snowflaked dimensions. Record the checked paths and result in `reports/agent/presentation_report.md`.
 - Compare key metadata paths and schema fields against a known-good local reference when one is available.
 - Re-run a file-tree check after edits and include the result in the phase report.
-- If Power BI Desktop is available and the user wants local validation, ask before opening the project; do not require Power BI Desktop for text validation.
+- If Power BI Desktop is available on the machine and the deliverable is meant to be opened in Power BI Desktop, launch the `.pbip` as a validation step after text validation. Treat a Desktop load error, including ambiguous relationship path errors, as a failed presentation phase. Fix and re-test before marking the artifact complete. If Desktop is unavailable or cannot be launched in the current environment, mark the artifact as `Presentation artifact created - Desktop open validation not run`, explain why, and do not imply it was opened successfully.
 
 Do not:
 
 - Create a dataset-only PBIP when the user asked for a report.
 - Mark Markdown, DAX text, relationship notes, or an import guide as a completed Power BI as code artifact.
 - Create direct relationships that introduce ambiguous filter paths when a safer snowflake path exists.
+- Mark a Power BI artifact complete when Power BI Desktop reports ambiguous relationship paths or any project definition load error.
 - Hardcode one domain's table names, measures, or report pages into the skill.
 - Tell the user to save over the generated files from Power BI Desktop as the default reload strategy.
 - Mark the Power BI artifact complete if the structure is incomplete or validation was not run.
