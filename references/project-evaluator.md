@@ -10,6 +10,8 @@ Keep the skill's medallion structure: `bronze`, `silver`, `gold`.
 
 Do not rename folders to `staging`, `intermediate`, and `marts` only to satisfy `dbt_project_evaluator`. Instead, configure the package to understand the project conventions.
 
+Do not move generated or curated source YAML from `models/sources/` into the bronze/staging folder only to clear `fct_source_directories` warnings. Source YAML belongs in `models/sources/` for this skill. Fix evaluator alignment through package vars, reviewed exceptions, or documentation; do not change the architecture silently.
+
 ## Required `dbt_project.yml` config
 
 Add evaluator routing and medallion naming vars before running the evaluator:
@@ -58,6 +60,22 @@ models/<layer_3_name>/<domain>/
 & $dbt build --select package:dbt_project_evaluator
 ```
 
+## Inspect evaluator findings safely
+
+Evaluator table columns can differ by package version. Before querying a specific column such as `issue`, inspect the table shape:
+
+```powershell
+& $dbt show --inline "select column_name from information_schema.columns where table_schema = '<layer_schema_prefix>_evaluator' and table_name = 'fct_source_directories' order by ordinal_position" --limit 100
+```
+
+Then query only columns that exist:
+
+```powershell
+& $dbt show --inline "select * from <layer_schema_prefix>_evaluator.fct_source_directories" --limit 20
+```
+
+If a diagnostic query fails because a column does not exist, do not apply structural fixes. Inspect the evaluator table columns first, then summarize the actual findings.
+
 If an exceptions seed exists, run it with the package:
 
 ```powershell
@@ -82,6 +100,8 @@ fct_name,column_name,id_to_exclude,comment
 fct_source_directories,current_file_path,%sources%,Accepted centralized generated source YAML path.
 fct_model_directories,current_file_path,%bronze%<domain>%,Accepted existing domain-based staging folder.
 ```
+
+Only add these exceptions after reviewing the evaluator table columns and the actual finding identifiers used by the installed package version.
 
 When adding a custom exceptions seed, disable the package's blank seed:
 

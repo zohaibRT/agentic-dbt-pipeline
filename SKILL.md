@@ -243,7 +243,7 @@ After project setup and connection validation, each stage: **phase-specific disc
 
 Read [packages-and-sources.md](references/packages-and-sources.md), [source-profiling.md](references/source-profiling.md), [schema-isolation.md](references/schema-isolation.md), and [dbt-packages-and-skills.md](references/dbt-packages-and-skills.md).
 
-All four packages in `packages.yml`. Codegen for sources. Derive `source.name` from `source.schema` / `domain` unless explicitly provided. Write source YAML only under `models/sources/`, never under bronze, silver, or gold layer folders. Add the configured `source.schema` to source YAML after generate. Profile row counts, candidate keys, relationships, important dates, measures, and status/code fields before staging.
+All four packages in `packages.yml`. Codegen for sources. Derive `source.name` from `source.schema` / `domain` unless explicitly provided. Write source YAML only under `models/sources/`, never under bronze, silver, or gold layer folders. Do not move source YAML into bronze/staging to satisfy evaluator source-directory warnings; document accepted exceptions or ask before changing structure. Add the configured `source.schema` to source YAML after generate. Profile row counts, candidate keys, relationships, important dates, measures, and status/code fields before staging.
 
 ## Step 3 - Layer 1 (staging)
 
@@ -263,7 +263,7 @@ Read [semantic-layer-spec.md](references/semantic-layer-spec.md). Compose with `
 
 ## Step 5c - Project evaluator
 
-Read [project-evaluator.md](references/project-evaluator.md). Before running evaluator, confirm `dbt_project.yml` routes `models: dbt_project_evaluator: +schema` to `<layer_schema_prefix>_evaluator` and sets evaluator vars for the active medallion folder names. Do not let evaluator package tables build in `source_schema`.
+Read [project-evaluator.md](references/project-evaluator.md). Before running evaluator, confirm `dbt_project.yml` routes `models: dbt_project_evaluator: +schema` to `<layer_schema_prefix>_evaluator` and sets evaluator vars for the active medallion folder names. Do not let evaluator package tables build in `source_schema`. When querying evaluator result tables, inspect available columns before selecting version-specific fields.
 
 ```powershell
 & $dbt build --select package:dbt_project_evaluator

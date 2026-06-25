@@ -59,6 +59,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Evaluator vars align package checks with active layer names (`bronze/silver/gold` by default)
 - [ ] `mart_` reporting models are accepted through `marts_prefixes`
 - [ ] `dbt build --select package:dbt_project_evaluator` run (review results)
+- [ ] Evaluator result queries inspected available columns before selecting version-specific fields
 - [ ] Evaluator warnings fixed or documented as accepted exceptions
 
 ## Warehouse
@@ -81,6 +82,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Project name/root were derived from source/domain or explicitly provided; not accidentally copied from `dbt_profile_name`
 - [ ] Source YAML UTF-8 with `schema:` set
 - [ ] Source YAML is stored under `models/sources/`, not under bronze/silver/gold layer folders
+- [ ] Source YAML was not moved into bronze/staging only to satisfy evaluator source-directory warnings
 - [ ] `dbt_project.yml` layer blocks match user layer names
 - [ ] Materialization matches `materialization_profile`
 

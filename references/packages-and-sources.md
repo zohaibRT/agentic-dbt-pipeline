@@ -67,6 +67,8 @@ models/<layer_1_name>/<domain>/_stg_<source.name>.yml
 
 If codegen output is accidentally written to a layer folder, move it to `models/sources/`, update references if needed, and run `dbt parse --no-partial-parse` before continuing.
 
+Do not move source YAML from `models/sources/` into `models/<layer_1_name>/` to satisfy `dbt_project_evaluator` source-directory warnings. That mixes source metadata with model layers and makes the project harder for data engineers to review. Treat centralized source YAML under `models/sources/` as the skill default. If the evaluator warns about source directories, configure/document an accepted evaluator exception or ask the user before changing the project structure.
+
 ## Resolve dbt source name
 
 The user does not need to provide a source name. Derive `source.name` before writing source YAML:

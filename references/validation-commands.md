@@ -72,6 +72,15 @@ Before running, confirm `dbt_project.yml`:
 & $dbt build --select package:dbt_project_evaluator
 ```
 
+Before querying evaluator result tables, inspect available columns because package versions can differ:
+
+```powershell
+& $dbt show --inline "select column_name from information_schema.columns where table_schema = '<layer_schema_prefix>_evaluator' and table_name = '<evaluator_table_name>' order by ordinal_position" --limit 100
+& $dbt show --inline "select * from <layer_schema_prefix>_evaluator.<evaluator_table_name>" --limit 20
+```
+
+Do not assume columns such as `issue` exist. If the diagnostic query fails because a column is missing, inspect the table shape first and do not apply structural fixes until the actual evaluator finding is understood.
+
 If using an exceptions seed:
 
 ```powershell

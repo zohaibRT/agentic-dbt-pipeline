@@ -62,6 +62,7 @@ See [dbt-packages-and-skills.md](dbt-packages-and-skills.md): codegen, dbt_utils
 ## dbt rules
 
 - sources: models/sources/ only; never place source YAML under bronze, silver, or gold layer folders
+- Do not move source YAML into bronze/staging only to satisfy dbt_project_evaluator source-directory warnings; document accepted exceptions or ask before changing structure
 - layer 1: models/{layer_1_name}/{domain}/ - stg_{source}__* (default layer name: bronze)
 - layer 2: models/{layer_2_name}/{domain}/ - int_{source}__* (default layer name: silver)
 - layer 3: models/{layer_3_name}/{domain}/ - dim_*, fct_*, mart_* (default layer name: gold)
@@ -69,6 +70,7 @@ See [dbt-packages-and-skills.md](dbt-packages-and-skills.md): codegen, dbt_utils
 - ref() only in intermediate/marts; source() only in staging
 - Never materialize dbt models, package models, evaluator tables, seeds, snapshots, or audit outputs in source schema
 - Run dbt debug (init), dbt parse, dbt build after changes
+- When querying dbt_project_evaluator output tables, inspect available columns before selecting version-specific fields such as issue
 - After every bronze/staging, silver/intermediate, and gold/marts build, run warehouse data validation queries, write Data Verification Results in the phase report, and share those results with the user before continuing
 - Stop before the next layer when a model expected to contain data is empty, grain is duplicated, relationships are broken, important measures look wrong, or privacy exposure is unapproved
 - Do not probe unrelated warehouses or cloud connectors before or during discovery
