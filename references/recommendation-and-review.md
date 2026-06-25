@@ -6,6 +6,8 @@ Use this in every discovery summary, phase plan, phase report, and final handoff
 
 The agent investigates and recommends. The data engineer approves, changes, or adds requirements. The agent then builds only the approved scope.
 
+Approvals are narrow by default. A discovery response such as "continue" approves only source confirmation and automatic project setup and configuration. A phase approval such as "approve bronze" approves only that phase. Do not convert one approval into permission to create all layers or close final delivery.
+
 Do not push every modeling decision back to the user. Do the professional analysis first, state the recommended path with evidence, and ask only for decisions that affect business meaning, privacy, correctness, cost, or downstream usability.
 
 ## Required sections
@@ -43,6 +45,7 @@ If a section has no items, write `None found for this phase` instead of omitting
 - State confidence separately from the recommendation. Confidence should distinguish proven technical facts from business assumptions.
 - Separate technical confidence from business approval. A query can validate a join, but the business owner still owns metric meaning.
 - Ask for approval only on the current phase, not the whole pipeline.
+- Stop after each phase report unless the next phase was explicitly approved by name.
 - Mark low-risk technical defaults as agent-owned, such as derived project name, source name, layer folder names, test selection, and package routing.
 - Mark high-impact choices as user-approved before build, such as fact grain, final metrics, PII/PHI exposure, mappings, table exclusions, schema behavior changes, full refresh, and accepted evaluator warnings.
 

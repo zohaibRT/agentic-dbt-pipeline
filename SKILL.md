@@ -29,7 +29,7 @@ Do not assume the business domain. During discovery, understand source tables, t
 
 If any of those areas cannot be properly understood or proven, do not assume. Ask the user for missing business meaning or approval, and defer dependent models, tests, metrics, semantic definitions, or presentation outputs until the uncertainty is resolved.
 
-After discovery, summarize what the agent concluded from the source data and ask whether the user wants to add requirements such as mappings, metrics, privacy rules, naming rules, included/excluded tables, or priority facts/dimensions. Continue to project setup and configuration only after the user replies with requirements or says to continue.
+After discovery, summarize what the agent concluded from the source data and ask whether the user wants to add requirements such as mappings, metrics, privacy rules, naming rules, included/excluded tables, or priority facts/dimensions. A reply such as "continue", "defaults are fine", or similar approves only the resolved source and automatic project setup and configuration. It does not approve sources, bronze/staging, silver/intermediate, gold/marts, semantic layer, evaluator, documentation, presentation layer, continuous integration, Agents Schema, commits, pushes, or future schema switching.
 
 ## Project setup and configuration (automatic setup-only phase after discovery)
 
@@ -130,6 +130,8 @@ Before each phase that changes models, semantic files, documentation files, work
 
 Project setup and configuration is the exception: after the user accepts discovery requirements, write/update `{project.root}/AGENT_PLAN.md` with the phase marked as automatic setup-only, run setup, then write `reports/agent/setup_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md`. If any setup safety gate from [bootstrap.md](references/bootstrap.md) is triggered, stop and ask before continuing.
 
+Approval is phase-scoped. Never treat one approval, one "continue", or one "defaults are fine" response as permission to run multiple build phases. After automatic project setup and configuration finishes, stop at the next phase plan and ask for approval before generating source YAML or building bronze/staging.
+
 ## Step 0b - Optional subagents
 
 Read [subagent-workflow.md](references/subagent-workflow.md) when source profiling, mapping review, model planning, documentation, or evaluator review can safely run in parallel. The main agent decides when to delegate and keeps dbt commands, shared file edits, commits, pushes, and final decisions.
@@ -168,7 +170,7 @@ Read [advanced-data-engineering-review.md](references/advanced-data-engineering-
 
 Read [references/dbt-project-layers.md](references/dbt-project-layers.md).
 
-**Always build all model layers** unless `workflow_phase` limits scope.
+For a full pipeline, plan to deliver all model layers, but build them one approved phase at a time. If `workflow_phase` limits scope, plan and build only that requested phase.
 
 Layer role names and physical folder names must not be mixed. With default layer names, staging models go in `models/bronze/`, intermediate models go in `models/silver/`, and facts/dimensions/reporting marts go in `models/gold/`. Do not also create `models/staging/`, `models/intermediate/`, or `models/marts/` unless the user explicitly configured those as the physical layer names.
 

@@ -4,6 +4,8 @@ Use this before every non-setup phase that creates models, seeds, snapshots, sem
 
 Project setup and configuration is handled by [bootstrap.md](bootstrap.md). It auto-runs as setup-only after the discovery requirements checkpoint is accepted, unless a setup safety gate requires user approval.
 
+Discovery continuation is not build approval. If the user replies "continue", "defaults are fine", "go ahead", or similar after discovery, treat that as approval only for the resolved discovery requirements and automatic project setup and configuration. After setup, stop at the next phase plan and ask for approval before generating source YAML, building bronze/staging, or moving into any later phase.
+
 ## Core rule
 
 Before implementation, run phase-specific discovery from [phased-discovery.md](phased-discovery.md), add the agent recommendation from [recommendation-and-review.md](recommendation-and-review.md), explain the phase plan in Markdown, and wait for user approval. Include the data-engineering decision check from [data-engineer-decision-gate.md](data-engineer-decision-gate.md) so the design is reviewed before build.
@@ -17,6 +19,8 @@ Default plan file:
 The same Markdown should also be summarized in chat so the user can approve without opening files.
 
 Do not create or modify models, seeds, snapshots, workflows, semantic files, documentation files, or warehouse schemas for a phase until the user approves that phase plan.
+
+One approval authorizes only the current phase. It never authorizes the whole remaining pipeline unless the user explicitly approves each named phase in the same response, for example `approve sources, bronze, and silver`. Even then, complete each phase report and validation before starting the next approved phase.
 
 ## Applies to these phases
 
@@ -191,6 +195,8 @@ After the user approves:
 6. Summarize actual files/models built, test results, assumptions used, open decisions, report path, and context tree update.
 7. Ask for commit approval according to [git-workflow.md](git-workflow.md).
 8. Move to the next phase and repeat the plan/approval process.
+
+If the user has not approved the next named phase, stop after reporting the completed phase. Do not infer approval from a prior discovery, setup, or layer approval.
 
 ## Do not
 
