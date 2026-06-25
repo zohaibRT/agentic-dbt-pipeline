@@ -27,6 +27,8 @@ Discovery is read-only and project-oriented. It may inspect schemas, tables, col
 
 Do not assume the business domain. During discovery, understand source tables, table relationships, business processes, metrics required, data quality rules, required output models, and reporting needs before proposing dbt models.
 
+If any of those areas cannot be properly understood or proven, do not assume. Ask the user for missing business meaning or approval, and defer dependent models, tests, metrics, semantic definitions, or presentation outputs until the uncertainty is resolved.
+
 After discovery, summarize what the agent concluded from the source data and ask whether the user wants to add requirements such as mappings, metrics, privacy rules, naming rules, included/excluded tables, or priority facts/dimensions. Continue to project setup and connection validation only after the user replies with requirements or says to continue.
 
 ## Project setup and connection validation (automatic setup-only phase after discovery)
@@ -147,6 +149,8 @@ Read [privacy-and-unknown-fields.md](references/privacy-and-unknown-fields.md) w
 Read [writing-style.md](references/writing-style.md) before writing user-facing prompts, plans, reports, summaries, diagram notes, or final handoffs. Use full wording instead of shorthand, except for official tool names, commands, filenames, environment variables, and code identifiers.
 
 Read [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md) before writing each phase plan. The phase plan must show the agent's data-engineering decisions, evidence, and approval needs; do not hide grain, key, join, mapping, privacy, metric, materialization, or validation choices inside code.
+
+If the agent cannot understand the source tables, relationships, business processes, required metrics, data quality rules, required output models, or reporting needs for the current scope, stop the dependent scope and ask instead of guessing.
 
 Read [phased-discovery.md](references/phased-discovery.md) before each phase. Discover only what is needed for the next layer or workflow step; do not fully design silver/gold/semantic outputs during initial discovery or bronze work.
 

@@ -20,6 +20,12 @@ Do not assume the business domain. Even when the user provides a domain label, f
 
 Treat the domain label as context, not proof. If the source tables suggest a different business process than the label, report the mismatch and ask before modeling.
 
+## Understanding gate
+
+If the agent cannot properly understand or prove any of the seven required areas above, do not assume. Mark the item as unknown, explain why it matters, recommend the safest professional default when one exists, and ask the user for the missing business meaning or approval before designing dependent models, metrics, tests, semantic definitions, or presentation outputs.
+
+The agent may continue only with independent safe work that does not depend on the unknown item. Any blocked or deferred scope must be listed in the discovery report, phase plan, phase report, pipeline status, and context tree.
+
 Do not start discovery until the active `domain`, `dbt_profile_name`, and `source_schema` are confirmed from the current user prompt or a valid `.env`. If `.env` is missing or still contains placeholder values, follow [env-configuration.md](env-configuration.md) and stop for user input first. Do not inspect the repository, terminal output, other workspaces, prior workspaces, profile target schemas, warehouse schemas, or old runs to suggest or choose a source schema.
 
 Before any source discovery, follow [warehouse-adapter-routing.md](warehouse-adapter-routing.md). Resolve the selected dbt profile adapter from `~/.dbt/profiles.yml`, announce the selected profile and adapter, and use only that adapter's metadata queries. Before this route is locked, do not call AWS, Redshift, PostgreSQL, Snowflake, BigQuery, Databricks, cloud identity checks, warehouse connectors, metadata queries, or Model Context Protocol discovery servers. If `.env` selects a PostgreSQL profile, use PostgreSQL discovery only. Do not call AWS, Redshift, or any other warehouse-specific connector unless the selected profile adapter is that warehouse type or the user explicitly changes profiles.

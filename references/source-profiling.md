@@ -16,6 +16,8 @@ Before proposing models, summarize:
 - Required output models, if the user provided them
 - Reporting needs, if the user provided them
 
+If any of these areas cannot be understood from profiling, project knowledge, or user requirements, do not guess. Mark the area as unknown, explain the modeling impact, recommend a safe default or deferral when possible, and ask the user before building anything that depends on that unclear business meaning.
+
 ## Inspect
 
 For each source table, capture:
@@ -54,6 +56,7 @@ When relationship findings are diagrammed, use Mermaid `erDiagram` per [mermaid-
 
 Ask the user before modeling if:
 
+- Source tables, relationships, business processes, required metrics, data quality rules, required output models, or reporting needs are unclear and affect the planned design
 - No stable primary key can be found for an important table
 - A required table is empty
 - The configured source is empty or the real source appears to be in another database, dataset, catalog, schema, table scope, tenant, client, domain, or environment

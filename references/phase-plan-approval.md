@@ -50,6 +50,7 @@ For each phase, include:
 - Sensitive fields and unclear coded fields, with the agent's recommended safe default
 - Agent recommendation: recommended path, evidence, what looks right, what is not ready yet, confidence, and what requires data engineer approval
 - Data-engineering decisions, evidence, and which choices need user approval
+- Unknown or unproven source tables, relationships, business processes, required metrics, data quality rules, required output models, or reporting needs, plus what work is blocked or deferred because of them
 - Tests and documentation to add
 - Mermaid diagrams to add or update, plus verification method when relevant
 - dbt packages/macros involved
@@ -125,6 +126,11 @@ If the user approves with plain language such as "yes", "go ahead", or "looks go
 ### Needs Data Engineer Approval
 - <business-impacting choice that must be approved before build>
 
+### Unknowns That Cannot Be Assumed
+| Area | What is unclear | Impact | Recommendation | Action before build |
+|---|---|---|---|---|
+| <source tables / relationships / business process / metrics / data quality / output models / reporting> | <unknown item> | <models, tests, metrics, or presentation affected> | <safe default or defer> | <ask / block / proceed only for independent scope> |
+
 ### Not Deciding Alone
 - <privacy, metric, mapping, grain, schema, cost, or production behavior I will not choose silently>
 
@@ -185,4 +191,5 @@ After the user approves:
 - Treat approval for one phase as approval for all future phases.
 - Hide important business logic in code without explaining it first.
 - Build gold marts or semantic metrics before the user understands the planned facts, dimensions, metrics, and privacy handling.
+- Guess source tables, relationships, business processes, required metrics, data quality rules, required output models, or reporting needs when they are unclear.
 - Continue after the plan changes materially; update the plan and ask again.

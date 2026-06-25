@@ -50,6 +50,8 @@ When sensitive fields or unclear coded fields appear, propose the safe default i
 
 In each phase plan, include a Data Engineer Decision Check covering grain, keys, joins, mappings, metrics, privacy, materialization, tests, and validation evidence. Ask me before guessing any decision that affects business meaning, privacy, correctness, cost, or downstream usability.
 
+If you cannot properly understand source tables, relationships, business processes, required metrics, data quality rules, required output models, or reporting needs, do not assume. Ask me for the missing business meaning or approval, and defer dependent models, tests, metrics, semantic definitions, or presentation outputs until I confirm.
+
 After each completed phase, write/update `reports/agent/<phase>_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` with what was done, what passed, warnings/failures/skips, assumptions, user decisions, phase outputs, report links, and open decisions.
 
 Ask me only when required `.env` values are missing, credentials or secrets are needed, automatic project setup hits a safety gate, a business rule is unclear, non-bootstrap phase build approval is needed, or before committing, pushing, or changing schema behavior.

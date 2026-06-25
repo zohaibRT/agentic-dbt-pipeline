@@ -8,6 +8,8 @@ Key performance indicators are business definitions, not just SQL expressions. T
 
 When a key performance indicator can be defined more than one reasonable way, recommend the safest option with evidence and ask for approval before building semantic metrics, reporting marts, dashboards, or presentation artifacts.
 
+If required metrics or reporting needs are not understood, mark the affected key performance indicators as deferred or blocked. Do not implement semantic metrics, presentation calculations, or dashboard measures that depend on guessed business definitions.
+
 ## Required definition fields
 
 Every proposed or implemented key performance indicator must include:

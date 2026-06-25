@@ -37,6 +37,7 @@ Every build-phase plan must include these checks when relevant:
 
 Stop and ask when:
 
+- Source tables, relationships, business processes, required metrics, data quality rules, required output models, or reporting needs are unclear and the uncertainty affects source design, model design, tests, metrics, semantic definitions, documentation, or presentation outputs.
 - A metric can be defined more than one reasonable way.
 - A key performance indicator lacks a clear numerator, denominator, filter, time field, source model, or caveat.
 - A join can change the row count or double-count facts.
