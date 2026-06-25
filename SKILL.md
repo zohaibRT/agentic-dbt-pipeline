@@ -8,7 +8,7 @@ description: >-
   Use when setting up or extending a dbt analytics project with agentic automation.
 ---
 
-# dbt Pipeline
+# dbt Analytics Engineer
 
 Full lifecycle orchestrator for the dbt project.
 **On every new/full-pipeline prompt:** agent runs read-only [discovery-requirements.md](references/discovery-requirements.md) first, explains what it concluded from the source data, and asks for requirements before any build plan.

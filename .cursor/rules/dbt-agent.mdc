@@ -1,0 +1,18 @@
+---
+description: dbt agent workflow rules
+alwaysApply: true
+---
+
+Use `SKILL.md` as the main dbt workflow guide.
+
+Before editing dbt project files:
+
+1. Read `project.config.yml`.
+2. Identify the current workflow phase.
+3. Read the relevant file in `references/`.
+4. Explain the phase plan when approval is required.
+5. Make only the required changes for the current phase.
+
+Do not edit `target/`, `dbt_packages/`, `logs/`, `.venv/`, `.env`, or `profiles.yml`.
+
+Do not hardcode credentials or create/change business metrics without clear definitions and approval.

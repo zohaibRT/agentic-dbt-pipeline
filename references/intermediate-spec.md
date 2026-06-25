@@ -8,6 +8,17 @@ If `project_rules` include manual mappings or code translations, read [mapping-s
 Read [layer-data-validation.md](layer-data-validation.md) before marking intermediate complete.
 Before creating or changing intermediate files, follow [phase-plan-approval.md](phase-plan-approval.md).
 
+## Phase contract
+
+| Area | Contract |
+|---|---|
+| Inputs required | Approved intermediate phase plan, validated staging models, relationship/cardinality evidence, mapping requirements, and business process understanding |
+| Allowed changes | Intermediate SQL models, intermediate YAML, intermediate tests, mapping seeds when approved, and intermediate documentation |
+| Not allowed | Marts, semantic metrics, dashboards, direct source reads, joins with unproven cardinality, or final reporting calculations |
+| Commands to run | `dbt parse --no-partial-parse`, `dbt build --select +path:models/{layer_2_name}/{domain}`, and intermediate data validation queries |
+| Completion criteria | Reusable business logic has clear grain, joins do not unexpectedly lose or multiply rows, mappings are covered, and validation results are documented |
+| Report required | `reports/agent/intermediate_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
+
 ## Folder and naming
 
 - Folder: `models/{layer_2_name}/{domain}/` (default: `models/silver/{domain}/`)

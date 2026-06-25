@@ -4,6 +4,17 @@ For a new project or full pipeline, run [discovery-requirements.md](discovery-re
 
 Run this setup phase before layer work. Do not skip unless user sets `auto_bootstrap: false`.
 
+## Phase contract
+
+| Area | Contract |
+|---|---|
+| Inputs required | Accepted discovery checkpoint, valid `.env` or prompt values, selected dbt profile, source schema, and project root decision |
+| Allowed changes | Local dbt scaffold, baseline config files, packages file, dependency lock file, safe schema macro, setup reports |
+| Not allowed | Source YAML generation, model layer creation, warehouse model builds, continuous integration workflows, Agents Schema workflows, profile edits without approval, commits, or pushes |
+| Commands to run | `dbt --version`, `dbt debug`, `dbt deps`, `dbt parse --no-partial-parse`, plus skill/config validation when available |
+| Completion criteria | dbt connection works, packages install, parse succeeds or skip is documented, profile target schema hygiene is safe or blocked, and next phase is ready |
+| Report required | `reports/agent/bootstrap_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
+
 ## Automatic setup rule
 
 Project setup and connection validation is foundational, so it auto-runs by default when `auto_bootstrap: true`. Do not ask for a separate `approve bootstrap` response after the discovery requirements checkpoint is accepted.

@@ -1,4 +1,4 @@
-# dbt Pipeline Prompt
+# dbt Analytics Engineer Prompt
 
 Install once:
 
@@ -11,7 +11,7 @@ Create `.env` from `.env.example` and fill the project settings there. Then use 
 ## Recommended Prompt
 
 ```text
-Use the dbt Pipeline skill (`agentic-dbt-pipeline`).
+Use the dbt Analytics Engineer skill (`agentic-dbt-pipeline`).
 
 Act as a Principal Data Engineer. Design the dbt project to be modular, idempotent, scalable, testable, cost-efficient, and safe for downstream consumers. Treat data asset development like software engineering.
 
@@ -86,7 +86,7 @@ If a rule is unclear, the agent should ask before modeling it.
 Use this only when you want one part of the workflow:
 
 ```text
-Use the dbt Pipeline skill (`agentic-dbt-pipeline`).
+Use the dbt Analytics Engineer skill (`agentic-dbt-pipeline`).
 
 Use settings from `.env`.
 workflow_phase: <init | sources | staging | intermediate | marts | semantic_layer | project_evaluator | docs | presentation_layer | ci | agents_schema>

@@ -8,6 +8,17 @@ Analyze the available source schemas enough to orient the project and the data e
 
 This phase is read-only. Do not create dbt projects, install packages, run codegen, write model files, create warehouse schemas, or change profiles during discovery.
 
+## Phase contract
+
+| Area | Contract |
+|---|---|
+| Inputs required | Confirmed domain, dbt profile name, source schema, and selected adapter |
+| Allowed changes | Discovery report, pipeline status, and context tree only after required inputs are valid |
+| Not allowed | dbt project creation, package installation, codegen, model files, warehouse schema changes, profile changes, or alternate source profiling without approval |
+| Commands to run | Lightweight metadata and profiling queries through the selected dbt profile adapter only |
+| Completion criteria | Source inventory, relationships, business processes, data quality signals, recommended medallion direction, confidence, unknowns, and user decisions are documented |
+| Report required | `reports/agent/discovery_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
+
 Do not assume the business domain. Even when the user provides a domain label, first understand the source evidence:
 
 1. Source tables

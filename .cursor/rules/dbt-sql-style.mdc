@@ -1,0 +1,17 @@
+---
+description: dbt SQL model style
+globs:
+  - "models/**/*.sql"
+---
+
+Use dbt SQL best practices.
+
+- Use `source()` only in staging/source-shaped models.
+- Use `ref()` for dbt model dependencies in intermediate and marts models.
+- Avoid `SELECT *` in marts.
+- Use clear column aliases.
+- Keep staging logic simple and source-shaped.
+- Keep reusable business logic in intermediate models.
+- Keep final reporting logic in marts.
+- Do not duplicate metric formulas across many models.
+- Add comments only when they explain business logic or non-obvious technical choices.

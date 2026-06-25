@@ -4,6 +4,17 @@ See full stack: [dbt-packages-and-skills.md](dbt-packages-and-skills.md) and sch
 
 Before writing `packages.yml`, running codegen, or creating source YAML, follow [phase-plan-approval.md](phase-plan-approval.md).
 
+## Phase contract
+
+| Area | Contract |
+|---|---|
+| Inputs required | Approved source phase plan, confirmed source schema, selected adapter, package stack, and source naming decision |
+| Allowed changes | `packages.yml`, `package-lock.yml`, `models/sources/**`, source descriptions, source tests, and source freshness only when supported |
+| Not allowed | Staging/intermediate/marts models, source YAML inside layer folders, source schema writes, alternate source profiling without approval, or invented columns |
+| Commands to run | `dbt deps`, `dbt run-operation generate_source`, `dbt parse --no-partial-parse`, and source profiling queries |
+| Completion criteria | Source YAML exists under `models/sources/`, schema is explicit, columns match the warehouse, parse passes, and source profiling findings are documented |
+| Report required | `reports/agent/sources_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
+
 ## `packages.yml` - standard packages
 
 ```yaml

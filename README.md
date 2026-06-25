@@ -1,6 +1,6 @@
-# dbt Pipeline
+# dbt Analytics Engineer
 
-`dbt Pipeline` is an agent skill for setting up and maintaining dbt projects with a structured, agent-assisted workflow.
+`dbt Analytics Engineer` is an agent skill for setting up and maintaining dbt projects with a structured, agent-assisted workflow.
 
 It helps an agent initialize a dbt project, configure sources, build bronze/silver/gold medallion layers, add semantic layer assets, run quality checks, generate documentation, create continuous integration workflows, publish dbt metadata to Agents Schema, write per-phase status reports, commit each stage separately, and finish with a clear user-facing run summary. It also requires explicit data-engineering decisions before each non-bootstrap build phase, so the agent does not silently guess grain, joins, metrics, privacy, or materialization.
 
@@ -31,7 +31,7 @@ Do not commit real warehouse credentials, `.env`, or `profiles.yml`. Use `.env.e
 In your agent chat, use:
 
 ```text
-Use the dbt Pipeline skill (`agentic-dbt-pipeline`).
+Use the dbt Analytics Engineer skill (`agentic-dbt-pipeline`).
 
 Build the dbt project using the settings from `.env`.
 Run the full pipeline from source discovery through final delivery.

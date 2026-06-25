@@ -1,7 +1,7 @@
 interface:
-  display_name: "dbt Pipeline"
-  short_description: "Build dbt projects with agents"
-  default_prompt: "Use $agentic-dbt-pipeline to set up this dbt project with staged commits, validation, docs, CI, and Agents Schema."
+  display_name: "dbt Analytics Engineer"
+  short_description: "Build, validate, and document dbt analytics projects with an AI agent."
+  default_prompt: "Use $agentic-dbt-pipeline to build this dbt analytics project with discovery, staged approvals, validation, documentation, and final review."
 
 policy:
   allow_implicit_invocation: true

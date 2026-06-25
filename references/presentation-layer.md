@@ -8,6 +8,17 @@ Help the data engineer decide whether the completed dbt project should expose a 
 
 The presentation artifact is optional, but the recommendation is required for full pipeline final delivery. Do not create dashboards, reports, slides, notebooks, or business intelligence artifacts unless the user approves.
 
+## Phase contract
+
+| Area | Contract |
+|---|---|
+| Inputs required | Completed marts, semantic/evaluator/documentation status, final model list, key performance indicator definitions, data quality notes, and privacy decisions |
+| Allowed changes | Presentation recommendation report; presentation artifacts only after explicit user approval and a separate plan |
+| Not allowed | Dashboards, reports, slides, notebooks, Power BI projects, guessed measures, or sensitive-field exposure without approval |
+| Commands to run | Read-only model/metadata checks and artifact-specific validation only after the user approves artifact creation |
+| Completion criteria | Best presentation option is recommended with evidence, possible key performance indicators are listed, caveats are clear, and the user is asked whether to create an artifact |
+| Report required | Final report or `reports/agent/presentation_report.md`, plus `reports/agent/PIPELINE_STATUS.md` and `reports/agent/CONTEXT_TREE.md` |
+
 ## What to recommend
 
 Review the final gold/marts models, semantic metrics, source data limitations, documented business rules, and [kpi-definitions.md](kpi-definitions.md). Then recommend presentation options with evidence:

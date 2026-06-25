@@ -6,6 +6,17 @@ Before creating or changing semantic layer files, follow [phase-plan-approval.md
 **Skill:** compose with `building-dbt-semantic-layer`.
 **dbt Core 1.10.x:** use **legacy spec** (top-level `semantic_models:` and `metrics:`).
 
+## Phase contract
+
+| Area | Contract |
+|---|---|
+| Inputs required | Approved semantic phase plan, validated marts, approved or clearly supported key performance indicator definitions, time fields, entities, and dimensions |
+| Allowed changes | Semantic model YAML, metric YAML, semantic documentation, and semantic phase report |
+| Not allowed | New marts, dashboards, guessed metrics, metrics from empty facts, or unapproved sensitive dimensions |
+| Commands to run | `dbt parse --no-partial-parse` and any available semantic validation command supported by the installed dbt version |
+| Completion criteria | Every semantic metric traces to a documented key performance indicator and parse succeeds |
+| Report required | `reports/agent/semantic_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
+
 ## Folder
 
 - `models/semantic/{domain}/` or co-locate YAML next to mart models

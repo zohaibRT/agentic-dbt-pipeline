@@ -4,6 +4,17 @@ Use this after marts are built and before final docs/summary.
 
 Before changing evaluator config, seeds, or exceptions, follow [phase-plan-approval.md](phase-plan-approval.md).
 
+## Phase contract
+
+| Area | Contract |
+|---|---|
+| Inputs required | Approved evaluator phase plan, built marts, evaluator package installed, evaluator schema routing, and medallion folder vars |
+| Allowed changes | Evaluator configuration, reviewed exceptions seed, evaluator report, and pipeline status updates |
+| Not allowed | Moving source YAML into layer folders to satisfy warnings, hiding failed tests, building evaluator objects in source schema, or structural fixes based on failed diagnostic queries |
+| Commands to run | `dbt build --select package:dbt_project_evaluator`, evaluator table shape inspection, and targeted evaluator findings queries |
+| Completion criteria | Errors are fixed or blocked, warnings are fixed or documented as accepted, and evaluator outputs are isolated outside source schema |
+| Report required | `reports/agent/evaluator_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
+
 ## Recommended path
 
 Keep the skill's medallion structure: `bronze`, `silver`, `gold`.

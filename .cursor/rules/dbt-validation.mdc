@@ -1,0 +1,16 @@
+---
+description: dbt validation rules
+globs:
+  - "models/**/*.sql"
+  - "models/**/*.yml"
+  - "models/**/*.yaml"
+---
+
+After dbt model or YAML changes:
+
+- Run `dbt parse --no-partial-parse` when syntax or configuration changed.
+- Run scoped `dbt build --select <changed_model>+` when model logic changed.
+- Run layer validation queries for staging, intermediate, and marts work.
+- Add tests for primary keys, foreign keys, accepted values, important dates, and important measures where applicable.
+- Explain failed validation before fixing it.
+- Do not mark work complete until validation passes or the blocker is documented.
