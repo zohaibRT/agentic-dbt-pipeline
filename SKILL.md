@@ -76,7 +76,7 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 | **0b Subagents** | Optional speed-up | [subagent-workflow.md](references/subagent-workflow.md) |
 | **0c Best practices** | Design guardrails | [data-engineering-best-practices.md](references/data-engineering-best-practices.md), [privacy-and-unknown-fields.md](references/privacy-and-unknown-fields.md) |
 | **0c Principal standards** | Advanced software-grade data engineering standards | [principal-data-engineering-standards.md](references/principal-data-engineering-standards.md) |
-| **0c Writing style** | Full wording in user-facing output | [writing-style.md](references/writing-style.md) |
+| **0c Writing style** | Full wording and five-pillar reports | [writing-style.md](references/writing-style.md), [reporting-standards.md](references/reporting-standards.md) |
 | **0d Engineer gate** | Explicit modeling decisions | [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md) |
 | **0e Phased discovery** | Discover just enough per phase | [phased-discovery.md](references/phased-discovery.md) |
 | **0f Recommendations** | Agent recommends; data engineer approves | [recommendation-and-review.md](references/recommendation-and-review.md) |
@@ -108,7 +108,7 @@ Context prompt template: [agent-context-prompt.md](references/agent-context-prom
 
 ## Step 0 - Load configuration
 
-Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), [profile-listing.md](references/profile-listing.md), [project-naming.md](references/project-naming.md), [schema-isolation.md](references/schema-isolation.md), [env-configuration.md](references/env-configuration.md), [source-confirmation.md](references/source-confirmation.md), [warehouse-adapter-routing.md](references/warehouse-adapter-routing.md), [skill-knowledge.md](references/skill-knowledge.md), [project-knowledge.md](references/project-knowledge.md), [discovery-requirements.md](references/discovery-requirements.md), [phased-discovery.md](references/phased-discovery.md), [recommendation-and-review.md](references/recommendation-and-review.md), [writing-style.md](references/writing-style.md), [mermaid-diagrams.md](references/mermaid-diagrams.md), [principal-data-engineering-standards.md](references/principal-data-engineering-standards.md), [layer-data-validation.md](references/layer-data-validation.md), [kpi-definitions.md](references/kpi-definitions.md), [advanced-data-engineering-review.md](references/advanced-data-engineering-review.md), [phase-plan-approval.md](references/phase-plan-approval.md), [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md), [phase-completion-report.md](references/phase-completion-report.md), and [context-tree.md](references/context-tree.md).
+Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), [profile-listing.md](references/profile-listing.md), [project-naming.md](references/project-naming.md), [schema-isolation.md](references/schema-isolation.md), [env-configuration.md](references/env-configuration.md), [source-confirmation.md](references/source-confirmation.md), [warehouse-adapter-routing.md](references/warehouse-adapter-routing.md), [skill-knowledge.md](references/skill-knowledge.md), [project-knowledge.md](references/project-knowledge.md), [discovery-requirements.md](references/discovery-requirements.md), [phased-discovery.md](references/phased-discovery.md), [recommendation-and-review.md](references/recommendation-and-review.md), [writing-style.md](references/writing-style.md), [reporting-standards.md](references/reporting-standards.md), [mermaid-diagrams.md](references/mermaid-diagrams.md), [principal-data-engineering-standards.md](references/principal-data-engineering-standards.md), [layer-data-validation.md](references/layer-data-validation.md), [kpi-definitions.md](references/kpi-definitions.md), [advanced-data-engineering-review.md](references/advanced-data-engineering-review.md), [phase-plan-approval.md](references/phase-plan-approval.md), [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md), [phase-completion-report.md](references/phase-completion-report.md), and [context-tree.md](references/context-tree.md).
 
 Resolve paths relative to workspace root. dbt project root = `{project.root}`.
 
@@ -148,7 +148,7 @@ Read [data-engineering-best-practices.md](references/data-engineering-best-pract
 
 Read [privacy-and-unknown-fields.md](references/privacy-and-unknown-fields.md) when discovery finds direct identifiers, sensitive fields, protected health information, personally identifiable information, or ambiguous, placeholder, abbreviated, or poorly named fields. The agent must recommend a safe default, document the recommendation, and ask only for approval or business definitions instead of leaving the whole decision to the user.
 
-Read [writing-style.md](references/writing-style.md) before writing user-facing prompts, plans, reports, summaries, diagram notes, or final handoffs. Use full wording instead of shorthand, except for official tool names, commands, filenames, environment variables, and code identifiers.
+Read [writing-style.md](references/writing-style.md) and [reporting-standards.md](references/reporting-standards.md) before writing user-facing prompts, plans, reports, summaries, diagram notes, presentation artifacts, or final handoffs. Use full wording instead of shorthand, except for official tool names, commands, filenames, environment variables, and code identifiers. Every report must include the five reporting pillars when relevant: context and strategy, key performance indicators, trend analysis and variance, insights and attribution, and recommendations and next steps. If a pillar is not supported yet, mark it deferred with the reason instead of guessing.
 
 Read [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md) before writing each phase plan. The phase plan must show the agent's data-engineering decisions, evidence, and approval needs; do not hide grain, key, join, bridge table, mapping, privacy, metric, materialization, or validation choices inside code.
 
@@ -318,7 +318,7 @@ Use Agents Schema after documentation generation or any step that produces `targ
 
 ## Step 9 - Final delivery summary
 
-Read [advanced-data-engineering-review.md](references/advanced-data-engineering-review.md), [phase-completion-report.md](references/phase-completion-report.md), [context-tree.md](references/context-tree.md), and [final-delivery.md](references/final-delivery.md) before marking any full pipeline or requested phase complete.
+Read [advanced-data-engineering-review.md](references/advanced-data-engineering-review.md), [phase-completion-report.md](references/phase-completion-report.md), [reporting-standards.md](references/reporting-standards.md), [context-tree.md](references/context-tree.md), and [final-delivery.md](references/final-delivery.md) before marking any full pipeline or requested phase complete.
 
 Always finish with a user-facing summary that starts short, then gives the useful details:
 
@@ -414,6 +414,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 | [phased-discovery.md](references/phased-discovery.md) | Layer-by-layer discovery that keeps the data engineer in control |
 | [recommendation-and-review.md](references/recommendation-and-review.md) | Agent recommendations, risks, and approval boundaries |
 | [writing-style.md](references/writing-style.md) | Full wording for user-facing output |
+| [reporting-standards.md](references/reporting-standards.md) | Five-pillar actionable report standard |
 | [mermaid-diagrams.md](references/mermaid-diagrams.md) | Mermaid-only diagrams and visibility verification |
 | [layer-data-validation.md](references/layer-data-validation.md) | Warehouse query checks after every bronze, silver, and gold layer build |
 | [kpi-definitions.md](references/kpi-definitions.md) | Key performance indicator definitions, caveats, and approval status |

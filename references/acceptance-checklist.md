@@ -166,6 +166,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] If Power BI PBIP/TMDL was created, import partitions use approved parameters for host, database, schema, warehouse, or equivalent connection values
 - [ ] If Power BI PBIP/TMDL was created, approved report pages exist as Power BI report definition artifacts, not only Markdown page descriptions
 - [ ] If a presentation artifact was created, the agent produced a consultant-grade page plan from validated facts, dimensions, semantic metrics, source profiling, and data quality evidence instead of asking the user to design every visual
+- [ ] If a presentation artifact or business-facing report was created, it includes the five report pillars: context and strategy, key performance indicators, trend analysis and variance, insights and attribution, and recommendations and next steps; unsupported pillars are visibly deferred with reasons
 - [ ] Presentation pages were included, deferred, or blocked based on current project evidence, not hardcoded from another domain
 - [ ] Presentation design maximizes validated business insight with executive overview, trends, financial or value, operations or activity, entity performance, segmentation, exceptions, and detail or drillthrough pages when supported
 - [ ] Presentation design does not expose every available column as a substitute for insight; technical fields are hidden and sensitive fields are excluded, masked, aggregated, or explicitly approved

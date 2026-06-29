@@ -74,17 +74,31 @@ The agent owns the first professional report design. Do not wait for the user to
 
 Maximum information means maximum validated, decision-useful information, not every available column. Prefer visuals and pages that answer business questions, expose trends, explain drivers, and show exceptions. Do not invent unsupported metrics or business meanings just to make the report look fuller.
 
+Every professional report must cover five business pillars when the data supports them:
+
+| Pillar | Report responsibility |
+|---|---|
+| Context and strategy | State the objective, audience, business process, target, benchmark, baseline, or why the report matters |
+| Key performance indicators | Show leading and lagging measures with business definitions, filters, grain, and caveats |
+| Trend analysis and variance | Show direction over time plus variance from target, benchmark, baseline, or prior period when available |
+| Insights and attribution | Explain drivers, segments, anomalies, outliers, and root-cause hypotheses supported by the data |
+| Recommendations and next steps | State actions, risks, decisions needed, and blocked items |
+
+If targets, benchmarks, attribution evidence, or next-step owners are missing, keep the section visible and mark it `Needs business input` or `Deferred` with the reason. Do not silently omit the pillar.
+
 Default report page set, included only when the validated data supports it:
 
 | Page | Include when | Typical content |
 |---|---|---|
-| Executive Overview | At least one approved fact or metric exists | Key performance indicator cards, main trend, top drivers, status summary, important caveats |
-| Trends | Fact date or timestamp columns exist | Standard time showcase, period comparisons, by-year and by-month visuals |
+| Context and Strategy | Any business-facing report is created | Objective, audience, scope, targets, benchmarks, assumptions, and open business inputs |
+| Executive Overview | At least one approved fact or metric exists | Key performance indicator cards, leading and lagging measures, main trend, top drivers, status summary, important caveats |
+| Trends and Variance | Fact date or timestamp columns exist | Standard time showcase, period comparisons, by-year and by-month visuals, variance from target or baseline when available |
 | Financial or Value | Amount, revenue, payment, claim, order value, cost, or balance facts exist | Gross, net, paid, pending, refunded, outstanding, margin, or value trend views |
 | Operations or Activity | Event, workflow, status, or lifecycle facts exist | Volumes, completed/cancelled/pending counts, success/failure rate, funnel or process movement |
-| Entity Performance | Useful dimensions exist | Top and bottom customers, patients, providers, products, departments, locations, teams, agents, or services |
-| Segmentation | Categorical dimensions have meaningful distributions | Breakdown by status, channel, category, geography, type, plan, specialty, or other validated dimensions |
+| Insights and Attribution | Useful dimensions or segment fields exist | Top and bottom entities, driver breakdowns, segment changes, anomaly explanations, root-cause hypotheses with confidence |
+| Entity Performance and Segmentation | Useful dimensions exist | Breakdown by customer, patient, provider, product, department, location, team, agent, service, status, channel, category, geography, type, or plan |
 | Exceptions and Data Quality | Important warnings, empty facts, unknown mappings, stale sources, or privacy constraints exist | Data coverage, missing values, invalid statuses, failed relationships, open decisions, blocked visuals |
+| Recommendations and Next Steps | Any business-facing report is created | Actions, decisions needed, risks, resource needs, and next approval checkpoint |
 | Detail or Drillthrough | Row-level investigation is safe and useful | Approved non-sensitive detail tables, drillthrough filters, investigation fields, and supporting context |
 
 Enterprise design rules:

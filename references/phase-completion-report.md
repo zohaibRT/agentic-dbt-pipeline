@@ -4,7 +4,7 @@ Use this after every phase that performs discovery, changes files, runs dbt comm
 
 ## Core rule
 
-After each phase, create or update a Markdown report that tells the user what happened, what is correct, what is warning or wrong, and what needs review.
+After each phase, create or update a Markdown report that tells the user what happened, what is correct, what is warning or wrong, and what needs review. Also apply [reporting-standards.md](reporting-standards.md): every report must include context and strategy, key performance indicators, trend analysis and variance, insights and attribution, and recommendations and next steps when relevant. If a pillar is not supported yet, mark it `Not applicable`, `Not available yet`, or `Deferred` with the reason.
 
 Default folder:
 
@@ -129,6 +129,7 @@ For phase plans awaiting approval, use the same shape but write `What will be bu
 Every phase report must include:
 
 - Phase name and date/time
+- Context and strategy: objective, scope, audience, target, benchmark, or why the phase matters
 - Approval status and approved plan reference
 - Files created or changed
 - Warehouse schemas/tables/views created or changed
@@ -148,6 +149,9 @@ Every phase report must include:
 - Privacy/sensitive-field notes
 - Profile target schema hygiene for project setup and configuration
 - Key performance indicator definitions for gold/marts, semantic layer, presentation layer, and final delivery
+- Trend analysis and variance when supported, such as row-count movement, period movement, target variance, baseline variance, or validation deltas
+- Insights and attribution: what the evidence suggests, likely drivers, anomalies, outliers, blockers, and confidence
+- Recommendations and next steps: actionable next phase, data engineer decision, risk, resource need, or approval checkpoint
 - Assumptions used
 - Open questions or user decisions
 - Commit status
@@ -172,6 +176,11 @@ Use these labels consistently:
 
 ## Status
 Overall: <PASS | WARN | FAIL | SKIPPED | BLOCKED>
+
+## Context and Strategy
+- Objective: <why this phase or report matters>
+- Scope: <what was reviewed or changed>
+- Target or benchmark: <target/baseline if known, or Not available yet with reason>
 
 ## What Was Done
 - <action>
@@ -205,6 +214,21 @@ Overall: <PASS | WARN | FAIL | SKIPPED | BLOCKED>
 | Key Performance Indicator | Business Meaning | Source Model | Grain | Numerator | Denominator | Filters | Time Field | Result / Caveat | Approval |
 |---|---|---|---|---|---|---|---|---|---|
 | <name> | <meaning> | <model> | <grain> | <numerator> | <denominator or not applicable> | <filters> | <date field> | <validation/caveat> | <approved/deferred/blocked> |
+
+## Trend Analysis and Variance
+| Item | Current Result | Comparison / Target | Variance | Evidence | Status |
+|---|---|---|---|---|---|
+| <metric, row count, validation result, or trend> | <current> | <prior/baseline/target or Not available yet> | <difference or Not applicable> | <query/report/check> | <PASS/WARN/FAIL/SKIPPED> |
+
+## Insights and Attribution
+- Insight: <what the evidence suggests>
+- Attribution or driver: <likely cause, dimension, source behavior, data quality issue, or Not available yet>
+- Confidence: <high/medium/low plus why>
+
+## Recommendations and Next Steps
+- Recommendation: <what should happen next>
+- Action needed: <approval, business input, fix, follow-up build, or None>
+- Risk/resource note: <risk, dependency, or None>
 
 ## Advanced Data Engineering Review
 | Area | Status | Evidence | Action Needed |
