@@ -68,6 +68,37 @@ Every approved presentation artifact must separate these two visual layers inste
 
 The presentation layer is incomplete if it includes only domain key performance indicator cards and omits the standard time showcase, unless the user explicitly declines trend reporting.
 
+## Consultant-grade report design
+
+The agent owns the first professional report design. Do not wait for the user to list every page, visual, slicer, or measure. Use validated gold facts, dimensions, semantic metrics, source profiling, data quality findings, and approved requirements to propose the richest useful presentation layer the data can support.
+
+Maximum information means maximum validated, decision-useful information, not every available column. Prefer visuals and pages that answer business questions, expose trends, explain drivers, and show exceptions. Do not invent unsupported metrics or business meanings just to make the report look fuller.
+
+Default report page set, included only when the validated data supports it:
+
+| Page | Include when | Typical content |
+|---|---|---|
+| Executive Overview | At least one approved fact or metric exists | Key performance indicator cards, main trend, top drivers, status summary, important caveats |
+| Trends | Fact date or timestamp columns exist | Standard time showcase, period comparisons, by-year and by-month visuals |
+| Financial or Value | Amount, revenue, payment, claim, order value, cost, or balance facts exist | Gross, net, paid, pending, refunded, outstanding, margin, or value trend views |
+| Operations or Activity | Event, workflow, status, or lifecycle facts exist | Volumes, completed/cancelled/pending counts, success/failure rate, funnel or process movement |
+| Entity Performance | Useful dimensions exist | Top and bottom customers, patients, providers, products, departments, locations, teams, agents, or services |
+| Segmentation | Categorical dimensions have meaningful distributions | Breakdown by status, channel, category, geography, type, plan, specialty, or other validated dimensions |
+| Exceptions and Data Quality | Important warnings, empty facts, unknown mappings, stale sources, or privacy constraints exist | Data coverage, missing values, invalid statuses, failed relationships, open decisions, blocked visuals |
+| Detail or Drillthrough | Row-level investigation is safe and useful | Approved non-sensitive detail tables, drillthrough filters, investigation fields, and supporting context |
+
+Enterprise design rules:
+
+- Build from the governed semantic model or star schema, not ad hoc flat tables.
+- Use clear user-facing labels, consistent page titles, visual hierarchy, slicers, tooltips, and report navigation.
+- Include slicers for date, status, major dimensions, and reportable flags when those fields are validated and useful.
+- Hide technical keys, hashes, audit columns, and implementation fields from report view unless they are needed for safe drillthrough.
+- Exclude, mask, or aggregate sensitive fields by default unless the user has approved exposure.
+- Choose Import, DirectQuery, or Composite mode based on data volume, refresh need, and warehouse cost; default to Import for moderate curated marts.
+- Keep pages information-dense but scannable. Avoid decorative, marketing-style, or column-dump layouts.
+- Record the page rationale, source models, measures, filters, sensitive-field handling, and blocked visuals in `AGENT_PLAN.md` and `reports/agent/presentation_report.md`.
+- Ask the user only for decisions that affect business meaning, privacy, cost, refresh behavior, or downstream usability.
+
 ## Standard time showcase
 
 For Power BI PBIP/TMDL projects and dashboard/report artifacts, always include a `Trends` report page when validated facts contain usable date or timestamp columns.
@@ -170,6 +201,8 @@ If the recommendation cannot be produced, mark it `BLOCKED` or `SKIPPED` with th
 
 - Do not invent key performance indicators that are not supported by final marts or approved semantic metrics.
 - Do not recommend advanced key performance indicators unless numerator, denominator, filters, time field, source model, and caveats are known or clearly marked as deferred.
+- Do not ask the user to design every page. Recommend a consultant-grade default design from validated data and ask only for decisions that affect business meaning, privacy, cost, refresh behavior, or downstream usability.
+- Do not maximize information by exposing every field. Maximize validated business insight.
 - Do not skip the standard time showcase when validated facts have usable date columns. If no fact date columns exist, document that trend visuals are blocked.
 - Prefer Kimball-style star schemas for Power BI and downstream presentation. Strongly discourage flat/wide-only presentation models and snowflake schemas inside Power BI when dbt can expose a simpler star schema.
 - Check whether approved dbt bridge tables are needed in the Power BI semantic model. Use bridge tables for true many-to-many filtering or allocation; avoid Power BI many-to-many relationships and bidirectional filters unless there is a documented reason.
@@ -233,7 +266,7 @@ Before creating files:
 
 - Confirm the final dbt gold/mart tables exist and have passed the relevant dbt build.
 - Write or update `AGENT_PLAN.md` with the Power BI artifact plan and wait for approval.
-- Confirm output location, model name, connection source, presentation pages, measures, and privacy rules.
+- Confirm output location, model name, connection source, consultant-grade page plan, measures, verification queries, blocked visuals, and privacy rules.
 - Discover fact date columns and planned time showcase visuals before writing report pages.
 - In the plan, state that Power BI PBIP/TMDL is the default because no other presentation technology was specified. Ask for changes only if the user wants a different technology or a Markdown-only guide.
 - If a known-good PBIP project exists in the workspace and the user allows it as a reference, inspect its folder structure and metadata patterns before writing new files.
@@ -243,6 +276,7 @@ When creating PBIP:
 
 - Create a complete PBIP project, not only loose TMDL text.
 - Include the `.pbip` file, a Report artifact folder, and a SemanticModel artifact folder.
+- Build the approved enterprise page set from validated facts and dimensions, including useful slicers, user-facing labels, hidden technical fields, tooltips, drillthrough/detail pages where safe, and data-quality/limitation notes where needed.
 - Ensure the `.pbip` file points to a Report artifact when a report is requested, not only to a semantic model.
 - For the root `.pbip` shortcut file, do not use a `dataset` property for the artifact entry. A report PBIP must use the schema-allowed report artifact reference so Power BI does not fail with `Property 'dataset' has not been defined` or `Required properties are missing from object: report`.
 - Ensure the Report artifact has a definition file that links to the SemanticModel artifact using the correct relative path.
@@ -258,6 +292,7 @@ When creating PBIP:
 - Add the standard `Trends` page when fact date columns are available. Include last calendar year, year-to-date, last 12 months, by-year, and by-month visuals for each primary fact where the measure/date pairing is validated.
 - In the Power BI semantic model, each table may have at most one column with `IsKey` set to `True`. If a dbt table has a composite business key, keep only one technical key column marked as the Power BI key or leave key metadata unset and document the composite grain in descriptions and relationships.
 - Use simple user-facing measure labels and keep technical column names inside model definitions.
+- Validate that every report page and visual is supported by approved source models, measures, fields, and privacy rules. Remove or mark blocked any visual whose business meaning, grain, or source evidence is not clear.
 - When the user supplies exact measure labels, use those labels exactly unless the expression cannot be supported by the validated marts.
 - Use supported PBIP/TMDL metadata versions for the target Power BI Desktop release. Known requirements from prior failures include `definition.pbism` using the semantic model definition-properties schema path, `database.tmdl` using `compatibilityLevel: 1605` when requested, `model.tmdl` table references at the root level when the chosen structure requires it, and `report.json` values such as `themeCollection.baseTheme.reportVersionAtImport` typed exactly as Power BI expects.
 - For `.platform` files inside Report or SemanticModel artifact folders, verify `$schema` exists and matches the Power BI Desktop supported Fabric git integration platform properties schema pattern, such as `https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.x.y/schema.json`. Treat `UnrecognizedSchemaVersion: Path: .platform` as a failed presentation phase.

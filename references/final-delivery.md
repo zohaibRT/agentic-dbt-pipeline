@@ -53,6 +53,7 @@ Update or create project handoff notes with:
 - Bridge table decisions: built, not needed, deferred, or blocked
 - Key performance indicator definitions with numerator, denominator, filters, time field, source model, caveats, validation evidence, and approval status
 - Presentation layer recommendation, including possible key performance indicators, semantic metrics, suggested report or dashboard pages, and query handoff options
+- Consultant-grade presentation design summary when a presentation artifact was approved: pages created, pages deferred or blocked, source models, measures, slicers, filters, privacy handling, and why the selected visuals are useful for business review
 - Standard time showcase status for presentation artifacts: fact date columns discovered, time visuals included or blocked, and SQL verification evidence
 - Project knowledge used, including `project_rules`, `AGENT_KNOWLEDGE.md`, `docs/dbt_knowledge.md`, `docs/business_rules.md`, `.agents/project_knowledge.md`, or context tree decisions when present
 - Power BI PBIP/TMDL status when used as the default or requested presentation technology, including PBIP structure validation and open/refresh notes

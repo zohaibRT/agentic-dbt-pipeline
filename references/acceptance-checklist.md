@@ -165,6 +165,11 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] If Power BI PBIP/TMDL was created as a report deliverable, the root `.pbip` shortcut artifact entry uses the required `report` property and does not use unsupported properties such as `dataset`
 - [ ] If Power BI PBIP/TMDL was created, import partitions use approved parameters for host, database, schema, warehouse, or equivalent connection values
 - [ ] If Power BI PBIP/TMDL was created, approved report pages exist as Power BI report definition artifacts, not only Markdown page descriptions
+- [ ] If a presentation artifact was created, the agent produced a consultant-grade page plan from validated facts, dimensions, semantic metrics, source profiling, and data quality evidence instead of asking the user to design every visual
+- [ ] Presentation pages were included, deferred, or blocked based on current project evidence, not hardcoded from another domain
+- [ ] Presentation design maximizes validated business insight with executive overview, trends, financial or value, operations or activity, entity performance, segmentation, exceptions, and detail or drillthrough pages when supported
+- [ ] Presentation design does not expose every available column as a substitute for insight; technical fields are hidden and sensitive fields are excluded, masked, aggregated, or explicitly approved
+- [ ] Presentation plan and report record page rationale, source models, measures, filters, slicers, privacy handling, blocked visuals, and verification queries
 - [ ] If Power BI PBIP/TMDL or another presentation artifact was created and validated facts have usable date columns, a `Trends` page or equivalent standard time showcase was included
 - [ ] Standard time showcase visuals include last calendar year, year to date, last 12 months, by-year, and by-month views for each primary fact where a measure and time field were validated
 - [ ] Fact time fields were discovered from gold facts, model YAML, semantic models, or mart SQL; field names were not hardcoded from one domain unless present in the current project
