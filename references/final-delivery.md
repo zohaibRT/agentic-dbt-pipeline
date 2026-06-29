@@ -53,6 +53,7 @@ Update or create project handoff notes with:
 - Bridge table decisions: built, not needed, deferred, or blocked
 - Key performance indicator definitions with numerator, denominator, filters, time field, source model, caveats, validation evidence, and approval status
 - Presentation layer recommendation, including possible key performance indicators, semantic metrics, suggested report or dashboard pages, and query handoff options
+- Standard time showcase status for presentation artifacts: fact date columns discovered, time visuals included or blocked, and SQL verification evidence
 - Project knowledge used, including `project_rules`, `AGENT_KNOWLEDGE.md`, `docs/dbt_knowledge.md`, `docs/business_rules.md`, `.agents/project_knowledge.md`, or context tree decisions when present
 - Power BI PBIP/TMDL status when used as the default or requested presentation technology, including PBIP structure validation and open/refresh notes
 - Known empty tables or data quality limitations
@@ -126,6 +127,7 @@ Use a compact table when helpful:
 - Semantic models and metrics added
 - Presentation layer recommendation and whether the user approved any follow-up artifact
 - Presentation artifact type: Power BI PBIP/TMDL project, dashboard design guide, presentation report, or query handoff
+- Standard time showcase pages or visuals created, including last calendar year, year to date, last 12 months, by-year, and by-month coverage where supported
 - Advanced data-engineering review result
 - Continuous integration or Agents Schema workflow changes
 - Mermaid diagrams created or updated
@@ -143,6 +145,7 @@ Use a compact table when helpful:
 - Phase plan approval status
 - Phase report status and path
 - Power BI PBIP/TMDL validation status when used: file validation, relationship ambiguity audit, Power BI Modeling Model Context Protocol model load, DAX smoke test, Desktop open test, and unresolved load errors
+- Presentation time showcase validation status: discovered fact date fields, governed measures used, SQL verification queries, and any blocked trend visuals
 - Presentation delivery gate result: `PASS`, `BLOCKED`, `SKIPPED`, or `PENDING`; never omit this when a presentation artifact was approved
 - Mermaid diagram visibility/parse status when diagrams were created or changed
 - Advanced data-engineering review status

@@ -57,6 +57,55 @@ Review the final gold/marts models, semantic metrics, source data limitations, d
 | Semantic layer first | Metrics need governed definitions before dashboards | MetricFlow metrics, entities, dimensions, time dimensions, safe denominators |
 | Export/query handoff | The user wants to query marts manually | Final schemas, sample SQL, model grains, recommended joins |
 
+## Two visual content layers
+
+Every approved presentation artifact must separate these two visual layers instead of treating them as the same thing:
+
+| Visual layer | What it is | Examples |
+|---|---|---|
+| Domain key performance indicators | Business-defined measures that use approved flags, filters, and semantic definitions | Active subscriptions, payment success rate, reportable orders |
+| Standard time showcase | Reusable trend and period visuals driven by fact date columns | Orders by year, payments by month, last calendar year total, year-to-date total, last 12 months total |
+
+The presentation layer is incomplete if it includes only domain key performance indicator cards and omits the standard time showcase, unless the user explicitly declines trend reporting.
+
+## Standard time showcase
+
+For Power BI PBIP/TMDL projects and dashboard/report artifacts, always include a `Trends` report page when validated facts contain usable date or timestamp columns.
+
+Do not hardcode domain-specific field names in the skill. Discover primary time fields from final gold facts and marts by inspecting column names, model YAML, semantic models, and mart SQL. Prefer, in order:
+
+1. Approved semantic time dimensions.
+2. Date columns named for the fact event, such as `order_created_at`, `payment_created_at`, `transaction_created_at`, `service_start_date`, `appointment_date`, or `encounter_date`.
+3. Generic but credible columns such as `created_at`, `updated_at`, `event_date`, `transaction_date`, or `<fact_name>_date`.
+4. Ask or defer when multiple plausible dates would change the business meaning.
+
+For each primary fact with a credible time field and an approved or supportable measure, add these visuals:
+
+| Visual | Required behavior |
+|---|---|
+| Total last calendar year card | Filter the primary time field to the previous full calendar year |
+| Total year to date card | Filter from the start of the current calendar year through the latest available date |
+| Total last 12 months card | Filter to the trailing 12 months using the primary time field |
+| By-year column chart | Show up to the last 10 calendar years and include empty years when the date table supports them |
+| By-month line or column chart | Show the last 24 months or the full available history when less than 24 months exists |
+
+Use governed measures and reportable filters first. If a measure such as `is_reportable_order`, `is_reportable_payment`, `is_successful_payment`, or an approved semantic metric exists, use it instead of raw row counts. If no governed measure exists, create a clearly named basic measure and mark it as a default recommendation with caveats.
+
+Relate fact date columns to the governed date table or `time_spine_daily` for time intelligence whenever that relationship is safe and does not create ambiguous active paths. Disable Power BI automatic local date tables for generated models. Use inactive role-playing date relationships only when the measure pattern is documented. If a safe date-table relationship cannot be created, the report may use fact-date grouping, but the limitation must be documented.
+
+Before delivery, validate every time showcase visual number with SQL against the final gold/mart schema. `reports/agent/presentation_report.md` must include the exact verification query, expected result, Power BI measure or visual checked, and pass/fail result for every card or chart aggregate. Do not trust a Power BI visual until its source aggregate has been checked.
+
+When data history is shorter than the visual window, keep the reusable visual pattern but explain the data reality. For example, if facts only span 14 months, a 10-year by-year chart may show empty years; monthly and last-12-month views should be emphasized.
+
+Example mapping, to be used only when these fields exist in the current project's validated gold layer:
+
+| Fact | Candidate time field | Candidate measure |
+|---|---|---|
+| Orders fact | `order_created_at` | Reportable order count |
+| Payments fact | `payment_created_at` | Payment amount collected |
+| Subscriptions fact | `service_start_date` or `subscription_created_at` | Active subscriptions |
+| Payment transactions fact | `transaction_created_at` | Transaction count or collected amount |
+
 ## Artifact type distinction
 
 Do not treat Markdown instructions, DAX snippets, relationship notes, or dashboard page descriptions as **Power BI as code**.
@@ -90,6 +139,7 @@ Possible key performance indicators and metrics:
 
 Suggested presentation pages:
 - <page name>: <purpose, primary metrics, filters, and source models>
+- Trends: <fact time fields, last calendar year, year to date, last 12 months, by-year, by-month visuals, and SQL verification status>
 
 Not ready yet:
 - <missing metric definition, empty source table, privacy approval, or data quality concern>
@@ -120,6 +170,7 @@ If the recommendation cannot be produced, mark it `BLOCKED` or `SKIPPED` with th
 
 - Do not invent key performance indicators that are not supported by final marts or approved semantic metrics.
 - Do not recommend advanced key performance indicators unless numerator, denominator, filters, time field, source model, and caveats are known or clearly marked as deferred.
+- Do not skip the standard time showcase when validated facts have usable date columns. If no fact date columns exist, document that trend visuals are blocked.
 - Prefer Kimball-style star schemas for Power BI and downstream presentation. Strongly discourage flat/wide-only presentation models and snowflake schemas inside Power BI when dbt can expose a simpler star schema.
 - Check whether approved dbt bridge tables are needed in the Power BI semantic model. Use bridge tables for true many-to-many filtering or allocation; avoid Power BI many-to-many relationships and bidirectional filters unless there is a documented reason.
 - For Power BI PBIP/TMDL artifacts only, validate relationship paths before handoff. A Power BI semantic model must not contain multiple active filter paths between the same two presentation entities. For example, do not allow both `customers -> orders -> order_items -> products` and `customers -> order_items -> products` to be active. Choose one canonical path, remove the shortcut relationship, make the shortcut inactive only when there is a documented measure need, or create a proper bridge/aggregate model.
@@ -183,6 +234,7 @@ Before creating files:
 - Confirm the final dbt gold/mart tables exist and have passed the relevant dbt build.
 - Write or update `AGENT_PLAN.md` with the Power BI artifact plan and wait for approval.
 - Confirm output location, model name, connection source, presentation pages, measures, and privacy rules.
+- Discover fact date columns and planned time showcase visuals before writing report pages.
 - In the plan, state that Power BI PBIP/TMDL is the default because no other presentation technology was specified. Ask for changes only if the user wants a different technology or a Markdown-only guide.
 - If a known-good PBIP project exists in the workspace and the user allows it as a reference, inspect its folder structure and metadata patterns before writing new files.
 - When the user names required source schemas or gold tables, verify those tables exist before wiring import queries or partitions.
@@ -203,6 +255,7 @@ When creating PBIP:
 - Use inactive relationships only for approved role-playing dates or alternate analysis paths, and document the measure pattern needed to activate them.
 - Include approved bridge tables and their relationship directions when the gold layer contains bridge models or the approved presentation scope requires many-to-many analysis.
 - Put reusable business calculations in a measures table or equivalent semantic model construct.
+- Add the standard `Trends` page when fact date columns are available. Include last calendar year, year-to-date, last 12 months, by-year, and by-month visuals for each primary fact where the measure/date pairing is validated.
 - In the Power BI semantic model, each table may have at most one column with `IsKey` set to `True`. If a dbt table has a composite business key, keep only one technical key column marked as the Power BI key or leave key metadata unset and document the composite grain in descriptions and relationships.
 - Use simple user-facing measure labels and keep technical column names inside model definitions.
 - When the user supplies exact measure labels, use those labels exactly unless the expression cannot be supported by the validated marts.
@@ -226,6 +279,7 @@ Validation before handoff:
 - Verify the `.pbip` points to the report artifact and the report points to the semantic model artifact.
 - Verify approved report pages exist as Power BI report definition artifacts, not only Markdown page descriptions.
 - Verify user-provided technical requirements exactly, including output path, artifact folder names, schema strings, compatibility level, parameter names, import partition source, relationship direction/activity, measure labels, report page names, and expected visuals.
+- Verify every standard time showcase visual with SQL against the final gold/mart schema. Record exact verification queries and results in `reports/agent/presentation_report.md`.
 - For Power BI PBIP/TMDL artifacts, run a relationship ambiguity audit before handoff. Build a simple graph of active relationships and confirm there is no pair of tables connected by more than one active path through facts, bridge tables, or snowflaked dimensions. Record the checked paths and result in `reports/agent/presentation_report.md`. Treat `PFE_XL_USERELATIONSHIP_AMBIGUOUS_PATH` and Desktop errors that say "There are ambiguous paths between" as failed validation.
 - For Power BI PBIP/TMDL artifacts, run Power BI Modeling Model Context Protocol self-tests when tools are available: `ConnectFolder`, connection inspection, table inspection, relationship inspection, and a simple DAX smoke query. Treat `ConnectFolder` failure as a failed presentation phase and fix the artifact before handoff.
 - Compare key metadata paths and schema fields against a known-good local reference when one is available.
@@ -264,6 +318,8 @@ Do not:
 
 - Create a dataset-only PBIP when the user asked for a report.
 - Mark Markdown, DAX text, relationship notes, or an import guide as a completed Power BI as code artifact.
+- Mark a presentation artifact complete when validated facts have usable date columns but the report lacks a `Trends` page or equivalent standard time showcase.
+- Mark a presentation artifact complete when time showcase visual numbers were not verified with SQL and recorded in the presentation report.
 - Mark a Power BI artifact complete when the root `.pbip` shortcut file contains an unsupported `dataset` artifact property or is missing the required `report` artifact property for a report deliverable.
 - Mark a Power BI artifact complete when any `.platform` file has a missing or unsupported `$schema` value that Power BI Desktop reports as `UnrecognizedSchemaVersion`.
 - Mark a Power BI artifact complete when any table has more than one column with `IsKey` set to `True`.

@@ -165,6 +165,11 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] If Power BI PBIP/TMDL was created as a report deliverable, the root `.pbip` shortcut artifact entry uses the required `report` property and does not use unsupported properties such as `dataset`
 - [ ] If Power BI PBIP/TMDL was created, import partitions use approved parameters for host, database, schema, warehouse, or equivalent connection values
 - [ ] If Power BI PBIP/TMDL was created, approved report pages exist as Power BI report definition artifacts, not only Markdown page descriptions
+- [ ] If Power BI PBIP/TMDL or another presentation artifact was created and validated facts have usable date columns, a `Trends` page or equivalent standard time showcase was included
+- [ ] Standard time showcase visuals include last calendar year, year to date, last 12 months, by-year, and by-month views for each primary fact where a measure and time field were validated
+- [ ] Fact time fields were discovered from gold facts, model YAML, semantic models, or mart SQL; field names were not hardcoded from one domain unless present in the current project
+- [ ] Time showcase visuals use governed measures or reportable filters where they exist
+- [ ] Time showcase visual numbers were validated with SQL, and `reports/agent/presentation_report.md` includes the exact query and result for each visual
 - [ ] If Power BI PBIP/TMDL was created, Markdown import guides, DAX snippets, relationship notes, or dashboard page descriptions were not marked as the completed Power BI artifact
 - [ ] If Power BI PBIP/TMDL was created, JSON parse checks, TMDL structure checks, file-tree checks, and known metadata-version checks were run and recorded
 - [ ] If Power BI PBIP/TMDL was created and `scripts/validate_powerbi_pbip.py` was available, the script passed and its result was recorded in `reports/agent/presentation_report.md`
