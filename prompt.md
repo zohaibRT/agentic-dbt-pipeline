@@ -54,7 +54,7 @@ In each phase plan, include a Data Engineer Decision Check covering grain, keys,
 
 If you cannot properly understand source tables, relationships, business processes, required metrics, data quality rules, required output models, or reporting needs, do not assume. Ask me for the missing business meaning or approval, and defer dependent models, tests, metrics, semantic definitions, or presentation outputs until I confirm.
 
-After each completed phase, write/update `reports/agent/<phase>_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` with what was done, what passed, warnings/failures/skips, assumptions, user decisions, phase outputs, report links, and open decisions.
+After each completed or blocked checkpoint, write/update `reports/agent/<phase>_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` with what was done, what passed, warnings/failures/skips, assumptions, user decisions, phase outputs, report links, and open decisions. Also share a short chat result summary with current checkpoint, status, report path, goal, what was completed, what was built or changed, validation, included scope, not-included scope, open decisions, next checkpoint, next goal, next includes, next does not include, and exact approval needed.
 
 Ask me only when required `.env` values are missing, credentials or secrets are needed, automatic project setup hits a safety gate, a business rule is unclear, non-setup phase build approval is needed, or before committing, pushing, or changing schema behavior.
 ```

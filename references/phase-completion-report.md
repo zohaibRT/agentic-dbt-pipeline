@@ -70,6 +70,57 @@ Do not lead discovery reports with setup details such as `.env` creation, profil
 
 Discovery reports are mandatory even before dbt project initialization. Write the file first, then summarize it in chat with the file path.
 
+## Chat result summary
+
+After every completed or blocked checkpoint, send a short chat summary in addition to writing the report files. This summary is the user's quick control panel; it must show what changed, whether validation passed, and exactly what the next approval would allow.
+
+Use this format for discovery, project setup and configuration, sources, bronze/staging, silver/intermediate, gold/marts, semantic layer, evaluator, documentation, presentation layer, continuous integration, Agents Schema, commits, and blocked checkpoints. Omit a section only when it is truly not applicable, and write `None` for empty open decisions.
+
+```markdown
+<Phase friendly name> <complete / blocked / awaiting approval>
+
+Current checkpoint: <checkpoint name>
+Status: <PASS / WARN / FAIL / BLOCKED / awaiting approval>
+Report: `<reports/agent/<phase>_report.md>`
+
+Goal:
+<one sentence describing the phase goal>
+
+What was completed:
+- <completed action or result>
+
+What was built or changed:
+| Item | Detail |
+|---|---|
+| <project/model/schema/file/package/workflow> | <short detail> |
+
+Validation:
+| Check | Result |
+|---|---|
+| <command or validation query> | <PASS/WARN/FAIL/SKIPPED plus short evidence> |
+
+Included:
+- <tables/models/files/scope included>
+
+Not included:
+- <explicitly excluded or deferred scope>
+
+Open decisions:
+- <decision, warning, or risk requiring review; or None>
+
+Next checkpoint: <phase name>
+Next goal: <one sentence>
+Next includes: <short scope>
+Next does not include: <short non-scope>
+Approval needed: <exact current-checkpoint approval instruction, or "None">
+```
+
+For project setup and configuration, the summary must make clear that setup was automatic/setup-only and did not approve source YAML or model builds.
+
+For layer phases, add the important data verification results directly in chat, not only in the report. Include row counts, unexpected empty models, grain/key result, relationship result, and any blocker before asking for the next approval.
+
+For phase plans awaiting approval, use the same shape but write `What will be built or changed` and `Planned validation` instead of completed/built/validation results.
+
 ## What to include
 
 Every phase report must include:

@@ -257,7 +257,7 @@ Read [separate-layer-builds.md](references/separate-layer-builds.md).
 11. Automation - continuous integration workflow
 12. **Advanced review, acceptance + final summary** - [advanced-data-engineering-review.md](references/advanced-data-engineering-review.md), [acceptance-checklist.md](references/acceptance-checklist.md), [final-delivery.md](references/final-delivery.md)
 
-After project setup and configuration, each stage: **phase-specific discovery -> agent recommendation -> data engineer decision check -> write Markdown plan -> ask approval -> implement -> parse/build -> warehouse data validation queries -> write phase report with validation results -> update context tree -> summarize validation results -> ask commit**. Ask for push only when a non-local GitHub repository is configured or the user requested push.
+After project setup and configuration, each stage: **phase-specific discovery -> agent recommendation -> data engineer decision check -> write Markdown plan -> ask approval -> implement -> parse/build -> warehouse data validation queries -> write phase report with validation results -> update context tree -> summarize validation results in the standard chat result format -> ask commit**. Ask for push only when a non-local GitHub repository is configured or the user requested push.
 
 ## Step 2 - Sources
 
