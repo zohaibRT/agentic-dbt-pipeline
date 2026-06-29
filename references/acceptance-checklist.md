@@ -163,6 +163,8 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] If Power BI PBIP/TMDL was created, approved report pages exist as Power BI report definition artifacts, not only Markdown page descriptions
 - [ ] If Power BI PBIP/TMDL was created, Markdown import guides, DAX snippets, relationship notes, or dashboard page descriptions were not marked as the completed Power BI artifact
 - [ ] If Power BI PBIP/TMDL was created, JSON parse checks, TMDL structure checks, file-tree checks, and known metadata-version checks were run and recorded
+- [ ] If Power BI PBIP/TMDL was created, `report.json` includes `themeCollection.baseTheme.reportVersionAtImport` with the correct JSON type and target-version value
+- [ ] If Power BI PBIP/TMDL was created, TMDL table files were checked for invalid loose Power Query keywords such as standalone `let` or `in` lines outside a valid partition/source expression block
 - [ ] If Power BI PBIP/TMDL was created, active relationships were audited for ambiguous filter paths, including multiple active paths between dimensions through facts or bridge tables
 - [ ] If Power BI PBIP/TMDL was created, lower-grain facts, parent facts, bridge tables, and role-playing date relationships were reviewed so only the approved active paths are active
 - [ ] If Power BI PBIP/TMDL was created and Power BI Modeling Model Context Protocol tools were available, `ConnectFolder` to the SemanticModel definition folder succeeded

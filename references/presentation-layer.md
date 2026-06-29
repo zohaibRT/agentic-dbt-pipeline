@@ -203,6 +203,8 @@ When creating PBIP:
 - Use simple user-facing measure labels and keep technical column names inside model definitions.
 - When the user supplies exact measure labels, use those labels exactly unless the expression cannot be supported by the validated marts.
 - Use supported PBIP/TMDL metadata versions for the target Power BI Desktop release. Known requirements from prior failures include `definition.pbism` using the semantic model definition-properties schema path, `database.tmdl` using `compatibilityLevel: 1605` when requested, `model.tmdl` table references at the root level when the chosen structure requires it, and `report.json` values such as `themeCollection.baseTheme.reportVersionAtImport` typed exactly as Power BI expects.
+- For `report.json`, always verify `themeCollection.baseTheme.reportVersionAtImport` exists and is the expected JSON type for the target Power BI Desktop schema. For the April 2026 Power BI Desktop PBIP format seen in prior failures, use the string value `"5.55"` when no better validated project reference overrides it. Do not emit it as a number, null, or omit it.
+- For TMDL table files, do not write raw Power Query M `let ... in ...` blocks as loose TMDL lines. Place M expressions only in the correct partition/source expression property syntax for the chosen TMDL format. A line such as `in` under a table document outside a valid expression block is a hard validation failure.
 - Add a local `powerbi/README.md` or equivalent handoff with open, refresh, and reload-from-disk guidance.
 - Do not tell the user to overwrite the generated project by saving from Power BI Desktop as the default fix. For reload-from-disk edits, instruct the user to close without saving when that is the safe workflow.
 
@@ -210,7 +212,9 @@ Validation before handoff:
 
 - Verify every required PBIP, report, semantic model, definition, relationship, table, partition, and measure file exists.
 - Parse JSON files with a real parser.
+- For `report.json`, explicitly assert `themeCollection.baseTheme.reportVersionAtImport` exists and has the correct type and value for the target Power BI Desktop schema. Treat missing or incorrectly typed `reportVersionAtImport` as a failed presentation phase.
 - Check TMDL indentation and root-level object placement against the selected PBIP structure.
+- Scan TMDL table files for invalid loose Power Query keywords such as standalone `let` or `in` lines outside the approved partition/source expression block. Treat `UnknownKeyword` parser risks as failed static validation.
 - Verify the `.pbip` points to the report artifact and the report points to the semantic model artifact.
 - Verify approved report pages exist as Power BI report definition artifacts, not only Markdown page descriptions.
 - Verify user-provided technical requirements exactly, including output path, artifact folder names, schema strings, compatibility level, parameter names, import partition source, relationship direction/activity, measure labels, report page names, and expected visuals.
@@ -254,6 +258,8 @@ Do not:
 - Mark Markdown, DAX text, relationship notes, or an import guide as a completed Power BI as code artifact.
 - Create direct relationships that introduce ambiguous filter paths when a safer snowflake path exists.
 - Mark a Power BI artifact complete when the Power BI Modeling Model Context Protocol `ConnectFolder` test fails.
+- Mark a Power BI artifact complete when `report.json` is missing `themeCollection.baseTheme.reportVersionAtImport` or has it as the wrong JSON type.
+- Mark a Power BI artifact complete when any TMDL table file contains invalid loose Power Query keywords such as a standalone `in` line outside a valid expression block.
 - Mark a Power BI artifact complete when Power BI Desktop reports ambiguous relationship paths or any project definition load error.
 - Hardcode one domain's table names, measures, or report pages into the skill.
 - Tell the user to save over the generated files from Power BI Desktop as the default reload strategy.
