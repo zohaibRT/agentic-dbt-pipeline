@@ -4,12 +4,32 @@ Use this before writing `dbt_project.yml`, running `dbt build`, seeds, snapshots
 
 ## Core rule
 
-The source schema is read-only input. Do not materialize dbt models, seeds, snapshots, package models, evaluator tables, docs artifacts, audit outputs, or temporary project tables into `source_schema`.
+The source schema is read-only and immutable input. Do not materialize dbt models, seeds, snapshots, package models, evaluator tables, docs artifacts, audit outputs, or temporary project tables into `source_schema`.
+
+Never run warehouse data manipulation or source-object mutation against the configured source schema or source tables:
+
+- No `UPDATE`
+- No `INSERT`
+- No `DELETE`
+- No `TRUNCATE`
+- No `MERGE`
+- No `CREATE TABLE AS`
+- No `CREATE`, `DROP`, or `ALTER` against source objects
+- No "repair", "backfill", "mark complete", "fix status", or similar action that changes source rows
+
+If the user asks for a data change such as "mark completed where status is X", translate that into dbt framework work only:
+
+- A staging, intermediate, or mart model that derives a corrected status or business flag
+- A seed or mapping file in a non-source schema when the user approves mapping rules
+- A dbt test, audit query, or exception report that identifies rows needing source-system remediation
+- A snapshot in a non-source snapshot schema when history tracking is approved
+
+The user-facing response must say the source data was not changed and identify the dbt artifact where the derived logic lives.
 
 One-line rule:
 
 ```text
-Source schema = read-only. Profile schema = neutral dbt work/default. Medallion layers = explicit +schema with generate_schema_name override. Packages = own schemas, never source.
+Source schema = read-only and immutable. Profile schema = neutral dbt work/default. Medallion layers = explicit +schema with generate_schema_name override. Packages = own schemas, never source.
 ```
 
 The warehouse should stay separated like this:
@@ -140,6 +160,8 @@ Ask before adding this macro to an existing project because it changes schema na
 ## Validation
 
 After each build, confirm no dbt-created objects landed in `source_schema`.
+
+Also confirm no source mutation command was run. If a requested task sounded like a source data update, document how it was implemented as dbt model logic or an audit instead.
 
 Use warehouse inspection when possible:
 

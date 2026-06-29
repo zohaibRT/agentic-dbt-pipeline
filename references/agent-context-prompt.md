@@ -77,6 +77,7 @@ See [dbt-packages-and-skills.md](dbt-packages-and-skills.md): codegen, dbt_utils
 - materialization_profile: prod (layer 1/2=view; layer 3=table; fct_*=incremental)
 - Apply principal data engineering standards: strict layers, state-based continuous integration when artifacts exist, public model contracts/versioning when safe, explicit SQL style, compute optimization, Power BI star-schema readiness, aggregate table recommendation, and modern table format considerations when relevant
 - ref() only in intermediate/marts; source() only in staging
+- Never update, insert, delete, truncate, merge into, create, drop, alter, backfill, repair, or mark rows in the configured source schema or source tables; implement requested data changes only as dbt transformations, non-source seeds/mappings, tests, audits, or snapshots
 - Never materialize dbt models, package models, evaluator tables, seeds, snapshots, or audit outputs in source schema
 - Run dbt debug (init), dbt parse, dbt build after changes
 - Profile target schema hygiene is required during setup and must be reported, not offered as optional hardening

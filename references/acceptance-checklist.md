@@ -22,6 +22,8 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] `dbt debug` passes
 - [ ] Profile target schema hygiene was checked and written to setup report and pipeline status
 - [ ] Profile target schema does not equal source schema, or every output is explicitly routed and the mitigation is documented
+- [ ] No `UPDATE`, `INSERT`, `DELETE`, `TRUNCATE`, `MERGE`, `CREATE`, `DROP`, `ALTER`, backfill, repair, or status-changing action was run against the configured source schema or source tables
+- [ ] Any user request that sounded like changing source rows was implemented only as dbt model logic, a non-source seed/mapping, a dbt test, an audit, or a non-source snapshot, and the source remained unchanged
 - [ ] Generic or risky profile target schemas were documented with explicit routing evidence before builds
 - [ ] `.gitignore` excludes credentials and generated files
 - [ ] `.env` loaded for non-secret inputs when present; `.env.example` contains no secrets when committed
