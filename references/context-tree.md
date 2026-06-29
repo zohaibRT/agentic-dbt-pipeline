@@ -111,6 +111,7 @@ Use this structure:
   - Input: <what was used>
   - Output: <main conclusion>
   - Report: reports/agent/discovery_report.md
+  - Requirements: reports/agent/requirements.md
   - Status: <status>
 - Project setup and configuration
   - Plan: <approved/not approved>

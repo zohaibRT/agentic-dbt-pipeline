@@ -13,11 +13,11 @@ This phase is read-only. Do not create dbt projects, install packages, run codeg
 | Area | Contract |
 |---|---|
 | Inputs required | Confirmed domain, dbt profile name, source schema, and selected adapter |
-| Allowed changes | Discovery report, pipeline status, and context tree only after required inputs are valid |
+| Allowed changes | Discovery report, requirements file, pipeline status, and context tree only after required inputs are valid |
 | Not allowed | dbt project creation, package installation, codegen, model files, warehouse schema changes, profile changes, or alternate source profiling without approval |
 | Commands to run | Lightweight metadata and profiling queries through the selected dbt profile adapter only |
-| Completion criteria | Source inventory, relationships, business processes, data quality signals, recommended medallion direction, confidence, unknowns, and user decisions are documented |
-| Report required | `reports/agent/discovery_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
+| Completion criteria | Source inventory, relationships, business processes, data quality signals, inferred requirements, recommended medallion direction, confidence, unknowns, and user decisions are documented |
+| Report required | `reports/agent/discovery_report.md`, `reports/agent/requirements.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
 
 Do not assume the business domain. Even when the user provides a domain label, first understand the source evidence:
 
@@ -102,7 +102,7 @@ Do not lead the discovery report with profile details, `.env` handling, package 
 
 Discovery must be written to files, not only posted in chat, but only after required inputs are confirmed.
 
-If `.env` is missing, invalid, or contains placeholders, do not create or update discovery files. Do not create `reports/agent/discovery_report.md`, `reports/agent/PIPELINE_STATUS.md`, or `reports/agent/CONTEXT_TREE.md` for discovery until the user provides valid `DBT_DOMAIN`, `DBT_PROFILE_NAME`, and `DBT_SOURCE_SCHEMA`.
+If `.env` is missing, invalid, or contains placeholders, do not create or update discovery files. Do not create `reports/agent/discovery_report.md`, `reports/agent/requirements.md`, `reports/agent/PIPELINE_STATUS.md`, or `reports/agent/CONTEXT_TREE.md` for discovery until the user provides valid `DBT_DOMAIN`, `DBT_PROFILE_NAME`, and `DBT_SOURCE_SCHEMA`.
 
 If the configured source is empty or the agent recommends a different database, dataset, catalog, schema, table, tenant, client, domain, environment, or assumption, do not create or update discovery files for the candidate source until the user approves that replacement.
 
@@ -110,6 +110,7 @@ Before sending the discovery summary in chat, create or update these files:
 
 ```text
 reports/agent/discovery_report.md
+reports/agent/requirements.md
 reports/agent/PIPELINE_STATUS.md
 reports/agent/CONTEXT_TREE.md
 ```
@@ -117,6 +118,53 @@ reports/agent/CONTEXT_TREE.md
 If the dbt project root does not exist yet, create `reports/agent/` in the current workspace/run root. Move or preserve these files in the dbt project root later only if the project root is created elsewhere and the user approves that layout.
 
 The chat response should be a concise summary plus links/paths to these files. Do not use chat as the only discovery record.
+
+## Requirements file
+
+Create `reports/agent/requirements.md` during discovery. This file is the project-facing requirements checkpoint extracted from the source schema, source data, domain label, and any user-provided rules. It must be easy for a data engineer to review before build planning.
+
+Use this structure:
+
+```markdown
+# Project Requirements From Discovery
+
+## Inputs Used
+
+- Domain: <domain>
+- dbt profile name: <profile name without secrets>
+- Adapter: <adapter>
+- Source schema: <source schema>
+- Source tables inspected: <tables>
+
+## Source-Derived Requirements
+
+| Area | Requirement inferred | Evidence | Confidence | Build impact |
+|---|---|---|---|---|
+| Source inclusion | <include/exclude direction> | <tables, row counts, relationships> | <high/medium/low> | <source YAML, staging, tests> |
+| Business process | <process supported by data> | <entity flow evidence> | <high/medium/low> | <facts/intermediate direction> |
+| Data quality | <tests or checks needed> | <keys, statuses, dates, nulls> | <high/medium/low> | <dbt tests and validation queries> |
+| Privacy | <safe default> | <sensitive fields found> | <high/medium/low> | <gold/marts exposure rules> |
+| Metrics | <candidate metric area> | <amount/status/date columns> | <high/medium/low> | <semantic layer/gold marts> |
+| Reporting | <likely reporting need> | <final consumers implied by source> | <high/medium/low> | <presentation layer options> |
+
+## Recommended Defaults
+
+- <safe professional default derived from evidence>
+
+## Open Questions For The Data Engineer
+
+- <question that affects business meaning, privacy, metrics, grain, mappings, joins, or reporting>
+
+## Deferred Or Blocked Scope
+
+- <scope that should not be built until requirements are confirmed>
+
+## User Requirements Captured
+
+- <requirements already provided by the user, or "None yet">
+```
+
+Do not put environment setup instructions, package installation, git details, or agent configuration into `requirements.md`. Keep it focused on business and data requirements. Requirements may be inferred, but each inferred requirement must include evidence and confidence. If confidence is low or business meaning is not proven, phrase it as a recommended default or open question, not as an approved requirement.
 
 ## Required discovery diagrams
 
@@ -213,10 +261,10 @@ If the user provides requirements, add them to the plan as `project_rules` and u
 ## Do not
 
 - Treat discovery as approval to build.
-- Ask for commit approval during discovery because no files should change.
+- Ask for commit approval during discovery unless the user explicitly wants to commit report artifacts; discovery may write report files but must not change source models, warehouse objects, profiles, packages, or project setup.
 - Skip the requirements checkpoint on a new full pipeline.
 - Hide inferred business logic. Explain what was inferred and what still needs confirmation.
 - Switch to a different database, dataset, catalog, schema, table, tenant, client, domain, environment, or assumption because it "looks likely" without user approval.
 - Profile candidate tables or write discovery reports for a guessed replacement source before approval.
 
-After discovery is summarized, confirm that `reports/agent/discovery_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` were created or updated. Do not defer discovery files to project setup and initialization.
+After discovery is summarized, confirm that `reports/agent/discovery_report.md`, `reports/agent/requirements.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` were created or updated. Do not defer discovery files to project setup and initialization.

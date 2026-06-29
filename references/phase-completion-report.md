@@ -30,6 +30,7 @@ Examples:
 
 ```text
 reports/agent/discovery_report.md
+reports/agent/requirements.md
 reports/agent/sources_discovery.md
 reports/agent/bronze_discovery.md
 reports/agent/silver_discovery.md
@@ -69,6 +70,8 @@ reports/agent/agents_schema_report.md
 Do not lead discovery reports with setup details such as `.env` creation, profile search, virtual environment, package installation, git, continuous integration, or project setup tasks. Mention configuration only as brief input context at the end.
 
 Discovery reports are mandatory even before dbt project initialization. Write the file first, then summarize it in chat with the file path.
+
+`reports/agent/requirements.md` is also mandatory for initial discovery. It must capture source-derived requirements, evidence, confidence, recommended defaults, open questions, user-provided requirements, and deferred or blocked scope. Do not hide requirements only in chat.
 
 ## Chat result summary
 
@@ -263,7 +266,7 @@ Update `reports/agent/PIPELINE_STATUS.md` after every phase:
 
 | Phase | Status | Report | Commit |
 |---|---|---|---|
-| Discovery | PASS | reports/agent/discovery_report.md | n/a |
+| Discovery | PASS | reports/agent/discovery_report.md; reports/agent/requirements.md | n/a |
 | Project setup and configuration | PASS | reports/agent/setup_report.md | <hash or pending> |
 ```
 

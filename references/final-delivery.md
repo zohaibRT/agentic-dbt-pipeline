@@ -24,7 +24,7 @@ If the presentation decision has not been asked or answered, set status to `Docu
 ## Deliverables
 
 - Source YAML generated from real source schema
-- Discovery report file produced before build planning
+- Discovery report and requirements file produced before build planning
 - Staging, intermediate, and mart models built successfully
 - Tests added for primary keys, relationships, accepted values, and mapping coverage where applicable
 - Semantic layer or metrics added on final mart models when requested
@@ -48,6 +48,7 @@ Update or create project handoff notes with:
 - Schema isolation status, including evaluator/seeds/snapshots schemas and whether source schema stayed clean
 - Important source tables
 - Source discovery conclusions and requirements captured before build
+- Link to `reports/agent/requirements.md` with source-derived requirements, evidence, confidence, recommended defaults, open questions, and deferred or blocked scope
 - Final facts, dimensions, marts, and metrics
 - Bridge table decisions: built, not needed, deferred, or blocked
 - Key performance indicator definitions with numerator, denominator, filters, time field, source model, caveats, validation evidence, and approval status

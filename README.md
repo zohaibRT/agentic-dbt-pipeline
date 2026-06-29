@@ -74,7 +74,7 @@ Keep passwords, tokens, and private keys in local profiles or GitHub Secrets.
 
 | Phase | What the skill does |
 |---|---|
-| Discovery | Project-oriented and phased source/schema analysis written to `reports/agent/discovery_report.md`; includes necessary Mermaid discovery diagrams and recommended medallion direction for sources, bronze/staging, silver/intermediate, and gold/marts; each layer gets focused discovery before build planning |
+| Discovery | Project-oriented and phased source/schema analysis written to `reports/agent/discovery_report.md` and source-derived requirements written to `reports/agent/requirements.md`; includes necessary Mermaid discovery diagrams and recommended medallion direction for sources, bronze/staging, silver/intermediate, and gold/marts; each layer gets focused discovery before build planning |
 | Project setup and configuration | Runs automatically after discovery requirements are accepted; setup-only scaffold, dependency install, connection validation, parse validation, and setup reports |
 | Validation | Runs `dbt debug`, `dbt deps`, `dbt parse`, and scoped `dbt build` commands |
 | Environment configuration | Loads non-secret `.env` values before asking for missing inputs |
