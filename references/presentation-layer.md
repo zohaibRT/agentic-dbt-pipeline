@@ -201,6 +201,7 @@ When creating PBIP:
 - Use inactive relationships only for approved role-playing dates or alternate analysis paths, and document the measure pattern needed to activate them.
 - Include approved bridge tables and their relationship directions when the gold layer contains bridge models or the approved presentation scope requires many-to-many analysis.
 - Put reusable business calculations in a measures table or equivalent semantic model construct.
+- In the Power BI semantic model, each table may have at most one column with `IsKey` set to `True`. If a dbt table has a composite business key, keep only one technical key column marked as the Power BI key or leave key metadata unset and document the composite grain in descriptions and relationships.
 - Use simple user-facing measure labels and keep technical column names inside model definitions.
 - When the user supplies exact measure labels, use those labels exactly unless the expression cannot be supported by the validated marts.
 - Use supported PBIP/TMDL metadata versions for the target Power BI Desktop release. Known requirements from prior failures include `definition.pbism` using the semantic model definition-properties schema path, `database.tmdl` using `compatibilityLevel: 1605` when requested, `model.tmdl` table references at the root level when the chosen structure requires it, and `report.json` values such as `themeCollection.baseTheme.reportVersionAtImport` typed exactly as Power BI expects.
@@ -219,6 +220,7 @@ Validation before handoff:
 - For `report.json`, explicitly assert `themeCollection.baseTheme.reportVersionAtImport` exists and has the correct type and value for the target Power BI Desktop schema. Treat missing or incorrectly typed `reportVersionAtImport` as a failed presentation phase.
 - Check TMDL indentation and root-level object placement against the selected PBIP structure.
 - Scan TMDL table files for invalid loose Power Query keywords such as standalone `let` or `in` lines outside the approved partition/source expression block. Treat `UnknownKeyword` parser risks as failed static validation.
+- Audit TMDL column metadata so no table has more than one column with `IsKey` set to `True`. Treat Power BI errors such as `PFE_TM_TABLE_TWO_KEY_COLUMNS` or "has two columns with the IsKey property set to True" as failed validation.
 - Verify the `.pbip` points to the report artifact and the report points to the semantic model artifact.
 - Verify approved report pages exist as Power BI report definition artifacts, not only Markdown page descriptions.
 - Verify user-provided technical requirements exactly, including output path, artifact folder names, schema strings, compatibility level, parameter names, import partition source, relationship direction/activity, measure labels, report page names, and expected visuals.
@@ -262,6 +264,7 @@ Do not:
 - Mark Markdown, DAX text, relationship notes, or an import guide as a completed Power BI as code artifact.
 - Mark a Power BI artifact complete when the root `.pbip` shortcut file contains an unsupported `dataset` artifact property or is missing the required `report` artifact property for a report deliverable.
 - Mark a Power BI artifact complete when any `.platform` file has a missing or unsupported `$schema` value that Power BI Desktop reports as `UnrecognizedSchemaVersion`.
+- Mark a Power BI artifact complete when any table has more than one column with `IsKey` set to `True`.
 - Create direct relationships that introduce ambiguous filter paths when a safer snowflake path exists.
 - Mark a Power BI artifact complete when the Power BI Modeling Model Context Protocol `ConnectFolder` test fails.
 - Mark a Power BI artifact complete when `report.json` is missing `themeCollection.baseTheme.reportVersionAtImport` or has it as the wrong JSON type.

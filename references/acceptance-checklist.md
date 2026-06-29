@@ -167,6 +167,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] If Power BI PBIP/TMDL was created, every `.platform` file has a `$schema` value matching the supported Fabric git integration platform properties schema pattern for the target Power BI Desktop version
 - [ ] If Power BI PBIP/TMDL was created, `report.json` includes `themeCollection.baseTheme.reportVersionAtImport` with the correct JSON type and target-version value
 - [ ] If Power BI PBIP/TMDL was created, TMDL table files were checked for invalid loose Power Query keywords such as standalone `let` or `in` lines outside a valid partition/source expression block
+- [ ] If Power BI PBIP/TMDL was created, TMDL column metadata was checked so no table has more than one column with `IsKey` set to `True`
 - [ ] If Power BI PBIP/TMDL was created, active relationships were audited for ambiguous filter paths, including multiple active paths between dimensions through facts or bridge tables
 - [ ] If Power BI PBIP/TMDL was created, lower-grain facts, parent facts, bridge tables, and role-playing date relationships were reviewed so only the approved active paths are active
 - [ ] If Power BI PBIP/TMDL was created and Power BI Modeling Model Context Protocol tools were available, `ConnectFolder` to the SemanticModel definition folder succeeded
@@ -202,6 +203,7 @@ Verify before marking the dbt pipeline workflow complete.
 
 ## Final delivery
 
+- [ ] If a presentation artifact was approved, presentation validation was completed before final delivery, or the presentation phase was marked `BLOCKED` with exact evidence; final delivery was not marked complete while validation was pending
 - [ ] Final handoff notes or README include domain, profile name, schemas, final models, metrics, run commands, and known limitations
 - [ ] Final response starts with a short summary, then includes results, validation, data notes, git/automation status, and open decisions
 - [ ] Final response references `AGENT_PLAN.md`, `reports/agent/PIPELINE_STATUS.md`, `reports/agent/CONTEXT_TREE.md`, and relevant phase reports

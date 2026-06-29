@@ -11,6 +11,14 @@ Do not call a full pipeline complete immediately after documentation. Full deliv
 - Presentation recommendation was produced, the user approved an artifact, and the artifact is explicitly blocked with evidence.
 - The user explicitly asked to stop after documentation.
 
+When a presentation artifact is approved, final delivery is not allowed until that presentation phase reaches one of these recorded states in `reports/agent/presentation_report.md` and `reports/agent/PIPELINE_STATUS.md`:
+
+- `PASS`: all required artifact validation completed and evidence is recorded.
+- `BLOCKED`: validation failed or could not run, the exact blocker is recorded, and the user is told delivery is blocked.
+- `SKIPPED`: the user explicitly cancelled or declined the presentation artifact.
+
+Do not use `Delivery complete` while Power BI PBIP/TMDL static checks, Model Context Protocol load checks, DAX smoke tests, or Desktop open validation are still pending.
+
 If the presentation decision has not been asked or answered, set status to `Documentation complete - presentation decision pending` and ask the presentation-layer question. Do not write `Delivery complete`, `final completed state`, or equivalent close-out language yet.
 
 ## Deliverables
@@ -134,6 +142,7 @@ Use a compact table when helpful:
 - Phase plan approval status
 - Phase report status and path
 - Power BI PBIP/TMDL validation status when used: file validation, relationship ambiguity audit, Power BI Modeling Model Context Protocol model load, DAX smoke test, Desktop open test, and unresolved load errors
+- Presentation delivery gate result: `PASS`, `BLOCKED`, `SKIPPED`, or `PENDING`; never omit this when a presentation artifact was approved
 - Mermaid diagram visibility/parse status when diagrams were created or changed
 - Advanced data-engineering review status
 
