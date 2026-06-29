@@ -146,7 +146,7 @@ For Power BI PBIP/TMDL artifacts, never accept "files created" as done. The pres
 Required loop:
 
 1. Build the PBIP/TMDL artifact.
-2. Run static file validation: file tree, JSON parsing, TMDL structure, path links, relationship ambiguity audit, and partition/source checks.
+2. Run static file validation: file tree, JSON parsing, TMDL structure, path links, relationship ambiguity audit, and partition/source checks. Run `python scripts/validate_powerbi_pbip.py <pbip_project_folder>` when this repository script is available, and fix every failure before continuing.
 3. Self-test the semantic model using the Power BI Modeling Model Context Protocol tools when available:
    - `ConnectFolder` against the SemanticModel definition folder.
    - `ListConnections` or `GetConnection` to confirm the model connection loaded.
@@ -167,6 +167,7 @@ Before handoff, paste the validation results into the chat result summary and `r
 | Check | What to verify |
 |---|---|
 | File tree | `.pbip`, Report folder, SemanticModel folder, `definition.pbism`, `database.tmdl`, `model.tmdl`, and `report.json` exist where expected |
+| Static validator | `python scripts/validate_powerbi_pbip.py <pbip_project_folder>` passes when available |
 | JSON parse | All `.json` files parse cleanly |
 | Path links | `.pbip` links to the Report artifact, and the Report artifact links to the SemanticModel artifact using correct relative paths |
 | Relationships | No ambiguous active paths; approved active/inactive relationship rules are followed |
@@ -197,6 +198,7 @@ When creating PBIP:
 - Create report definition files for the approved pages and visuals when the user asked for clickable/openable Power BI pages. Do not replace report pages with `dashboard_pages.md`.
 - Use parameters for host, database, schema, warehouse, or equivalent connection values instead of hardcoding environment-specific values where practical.
 - Define relationships from the approved star schema and avoid ambiguous relationship paths. Prefer one active route from each dimension to each fact area. Avoid convenience relationships from a dimension directly to a lower-grain fact when that lower-grain fact is already reachable through its parent fact.
+- Do not add a direct active relationship when an active indirect relationship path already exists between the same entities. For example, if `subscriptions -> orders -> customers` is active, do not also keep `subscriptions -> customers` active unless the shortcut is made inactive and a documented measure pattern needs it.
 - For parent-child fact designs, connect lower-grain satellite facts to the parent fact only when that is the approved canonical route, and do not also add direct active dimension shortcuts that create ambiguous paths.
 - Use inactive relationships only for approved role-playing dates or alternate analysis paths, and document the measure pattern needed to activate them.
 - Include approved bridge tables and their relationship directions when the gold layer contains bridge models or the approved presentation scope requires many-to-many analysis.
@@ -220,11 +222,11 @@ Validation before handoff:
 - For `report.json`, explicitly assert `themeCollection.baseTheme.reportVersionAtImport` exists and has the correct type and value for the target Power BI Desktop schema. Treat missing or incorrectly typed `reportVersionAtImport` as a failed presentation phase.
 - Check TMDL indentation and root-level object placement against the selected PBIP structure.
 - Scan TMDL table files for invalid loose Power Query keywords such as standalone `let` or `in` lines outside the approved partition/source expression block. Treat `UnknownKeyword` parser risks as failed static validation.
-- Audit TMDL column metadata so no table has more than one column with `IsKey` set to `True`. Treat Power BI errors such as `PFE_TM_TABLE_TWO_KEY_COLUMNS` or "has two columns with the IsKey property set to True" as failed validation.
+- Audit TMDL column metadata so no table has more than one column with `IsKey` set to `True`. Do not mark every `*_id` column as a Power BI key. Mark only the table's single primary/technical key when one exists; leave foreign keys unmarked. Treat Power BI errors such as `PFE_TM_TABLE_TWO_KEY_COLUMNS` or "has two columns with the IsKey property set to True" as failed validation.
 - Verify the `.pbip` points to the report artifact and the report points to the semantic model artifact.
 - Verify approved report pages exist as Power BI report definition artifacts, not only Markdown page descriptions.
 - Verify user-provided technical requirements exactly, including output path, artifact folder names, schema strings, compatibility level, parameter names, import partition source, relationship direction/activity, measure labels, report page names, and expected visuals.
-- For Power BI PBIP/TMDL artifacts, run a relationship ambiguity audit before handoff. Build a simple graph of active relationships and confirm there is no pair of dimensions or presentation entities connected by more than one active path through facts, bridge tables, or snowflaked dimensions. Record the checked paths and result in `reports/agent/presentation_report.md`.
+- For Power BI PBIP/TMDL artifacts, run a relationship ambiguity audit before handoff. Build a simple graph of active relationships and confirm there is no pair of tables connected by more than one active path through facts, bridge tables, or snowflaked dimensions. Record the checked paths and result in `reports/agent/presentation_report.md`. Treat `PFE_XL_USERELATIONSHIP_AMBIGUOUS_PATH` and Desktop errors that say "There are ambiguous paths between" as failed validation.
 - For Power BI PBIP/TMDL artifacts, run Power BI Modeling Model Context Protocol self-tests when tools are available: `ConnectFolder`, connection inspection, table inspection, relationship inspection, and a simple DAX smoke query. Treat `ConnectFolder` failure as a failed presentation phase and fix the artifact before handoff.
 - Compare key metadata paths and schema fields against a known-good local reference when one is available.
 - Re-run a file-tree check after edits and include the result in the phase report.
