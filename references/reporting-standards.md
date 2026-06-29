@@ -56,7 +56,7 @@ Every Power BI report must feel like an interactive dashboard canvas, not a stat
 | Layer | Required content | Purpose |
 |---|---|---|
 | Header and navigation | Report title, page title, company or project branding when available, last refreshed timestamp, reset filters button, and page navigation buttons | Keep the user oriented and make the report feel consistent |
-| Key performance indicator summary | Three to five primary cards near the top, with conditional formatting or trend context when targets or prior periods exist | Show current state quickly |
+| Key performance indicator summary | The most important executive key performance indicators near the top, usually three to five for readability; all other validated key performance indicators belong in a dedicated key performance indicator details area, scorecard page, or Report Information page | Show current state quickly without hiding useful metrics |
 | Interactive slicers | Date range plus important dimensions such as region, department, category, product, provider, customer, status, or channel when available | Let users filter without cluttering the page |
 | Trends and comparisons | Line or area charts for time series, bar or column charts for category comparisons, and drill-down when a date hierarchy or hierarchy dimension exists | Show direction, variance, and drivers |
 | Detail layer | Matrix or detail table at the bottom of the page or on a separate details page, with conditional formatting for outliers when useful | Support operational investigation |
@@ -70,9 +70,40 @@ Default top-to-bottom canvas order:
 4. Secondary driver, attribution, or segmentation visuals.
 5. Matrix/detail table or drill-through entry point.
 
+## Key performance indicator coverage
+
+The agent must analyze the maximum useful key performance indicators the validated model can support. Do not limit analysis to only three to five metrics.
+
+Use this split:
+
+- Executive key performance indicator row: show the highest-priority three to five measures that a business user should see first.
+- Supporting key performance indicators: include additional useful measures in a scorecard page, details section, tooltip, drill-through, or Report Information page when they are supported and not overwhelming.
+- Deferred key performance indicators: list metrics that are useful but blocked by missing definitions, missing targets, empty facts, ambiguous grain, or privacy concerns.
+
+For every proposed or implemented key performance indicator, keep the definition visible somewhere in the report experience or companion report: business meaning, source model, grain, numerator, denominator, filters, time field, caveat, and validation status.
+
+## Report Information page
+
+Every generated Power BI report must include a Report Information, Report Settings, or About This Report page unless the user explicitly asks to omit it.
+
+The Report Information page should include:
+
+- Report purpose, audience, and business process.
+- Data source and dbt gold/mart schema used, without secrets.
+- Refresh timestamp and refresh notes.
+- Page list and what each page is for.
+- Key performance indicator definitions and formulas in user-friendly wording.
+- Slicer/filter definitions and default filter behavior.
+- Metric caveats, data quality notes, expected-empty facts, and known limitations.
+- Privacy handling and hidden technical fields.
+- Relationship/grain summary for the semantic model.
+- Validation summary and link/path to `reports/agent/presentation_report.md`.
+- Open decisions, missing targets or benchmarks, and recommended next steps.
+
 Power BI page rules:
 
 - Use native page navigation buttons for multi-page reports.
+- Include a Report Information or Report Settings page in navigation.
 - Include a reset filters button on main report pages when supported by the chosen PBIP/report format.
 - Include a last refreshed timestamp measure or equivalent metadata visual when the model can support it.
 - Keep primary slicers visible and put secondary filters in the filter pane or a dedicated filter area.

@@ -105,7 +105,7 @@ Enterprise design rules:
 
 - Build from the governed semantic model or star schema, not ad hoc flat tables.
 - Use clear user-facing labels, consistent page titles, visual hierarchy, slicers, tooltips, and report navigation.
-- Follow the fixed Power BI canvas standard from [reporting-standards.md](reporting-standards.md): header/navigation, key performance indicator summary cards, interactive slicers, trends/comparison visuals, detail layer, and smart tooltips or drill-throughs.
+- Follow the fixed Power BI canvas standard from [reporting-standards.md](reporting-standards.md): header/navigation, prioritized key performance indicator summary cards, supporting key performance indicator coverage, interactive slicers, trends/comparison visuals, detail layer, smart tooltips or drill-throughs, and a Report Information or Report Settings page.
 - Include slicers for date, status, major dimensions, and reportable flags when those fields are validated and useful.
 - Hide technical keys, hashes, audit columns, and implementation fields from report view unless they are needed for safe drillthrough.
 - Exclude, mask, or aggregate sensitive fields by default unless the user has approved exposure.
@@ -292,7 +292,9 @@ When creating PBIP:
 - Create a complete PBIP project, not only loose TMDL text.
 - Include the `.pbip` file, a Report artifact folder, and a SemanticModel artifact folder.
 - Build the approved enterprise page set from validated facts and dimensions, including useful slicers, user-facing labels, hidden technical fields, tooltips, drillthrough/detail pages where safe, and data-quality/limitation notes where needed.
-- Each main report page must use the standard Power BI canvas layout where supported: header/navigation bar, key performance indicator card row, visible primary slicers, trend and comparison visuals, secondary driver visuals, and matrix/detail or drill-through entry point.
+- Each main report page must use the standard Power BI canvas layout where supported: header/navigation bar, prioritized key performance indicator card row, visible primary slicers, trend and comparison visuals, secondary driver visuals, and matrix/detail or drill-through entry point.
+- Analyze the maximum useful supported key performance indicators from the validated model. Put the highest-priority three to five on the executive canvas row for readability, and place additional supported key performance indicators on a scorecard/details page, tooltip, drill-through, or Report Information page. List blocked or deferred key performance indicators with reasons.
+- Create a Report Information, Report Settings, or About This Report page with report purpose, audience, data source, refresh details, page guide, key performance indicator definitions, slicer/filter definitions, metric caveats, data quality notes, privacy handling, grain/relationship summary, validation summary, and open decisions.
 - Include report title, page title, last refreshed timestamp, reset filters button, and native page navigation when the chosen PBIP/report format supports them. If any element cannot be generated safely, document the reason in `reports/agent/presentation_report.md`.
 - Use line or area charts for time series; use bar or column charts for category comparisons; use matrix visuals with conditional formatting for operational details where useful.
 - Add report page tooltips and drill-through pages for important entities when safe, supported by the model, and useful for investigation.

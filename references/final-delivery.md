@@ -55,7 +55,8 @@ Update or create project handoff notes with:
 - Presentation layer recommendation, including possible key performance indicators, semantic metrics, suggested report or dashboard pages, and query handoff options
 - Consultant-grade presentation design summary when a presentation artifact was approved: pages created, pages deferred or blocked, source models, measures, slicers, filters, privacy handling, and why the selected visuals are useful for business review
 - Five report pillars status for business-facing reports and presentation artifacts: context and strategy, key performance indicators, trend analysis and variance, insights and attribution, and recommendations and next steps
-- Power BI canvas standard status when Power BI is created: header/navigation, last refreshed timestamp, reset filters, key performance indicator cards, slicers, trends/comparisons, detail layer, tooltips, drill-throughs, and any unsupported elements with reasons
+- Power BI canvas standard status when Power BI is created: header/navigation, last refreshed timestamp, reset filters, prioritized executive key performance indicator cards, supporting key performance indicator coverage, slicers, trends/comparisons, detail layer, tooltips, drill-throughs, Report Information page, and any unsupported elements with reasons
+- Report Information page summary when Power BI is created: purpose, audience, data source, refresh details, page guide, key performance indicator definitions, filter definitions, caveats, privacy handling, validation summary, and open decisions
 - Standard time showcase status for presentation artifacts: fact date columns discovered, time visuals included or blocked, and SQL verification evidence
 - Project knowledge used, including `project_rules`, `AGENT_KNOWLEDGE.md`, `docs/dbt_knowledge.md`, `docs/business_rules.md`, `.agents/project_knowledge.md`, or context tree decisions when present
 - Power BI PBIP/TMDL status when used as the default or requested presentation technology, including PBIP structure validation and open/refresh notes
@@ -131,7 +132,7 @@ Use a compact table when helpful:
 - Presentation layer recommendation and whether the user approved any follow-up artifact
 - Presentation artifact type: Power BI PBIP/TMDL project, dashboard design guide, presentation report, or query handoff
 - Five report pillars covered or deferred: context and strategy, key performance indicators, trend analysis and variance, insights and attribution, and recommendations and next steps
-- Power BI canvas standard coverage when Power BI is created: navigation/header, refresh timestamp, reset filters, key performance indicator cards, slicers, trend/comparison visuals, matrix/detail layer, tooltips, and drill-through pages
+- Power BI canvas standard coverage when Power BI is created: navigation/header, refresh timestamp, reset filters, prioritized executive key performance indicator cards, supporting key performance indicator coverage, slicers, trend/comparison visuals, matrix/detail layer, tooltips, drill-through pages, and Report Information page
 - Standard time showcase pages or visuals created, including last calendar year, year to date, last 12 months, by-year, and by-month coverage where supported
 - Advanced data-engineering review result
 - Continuous integration or Agents Schema workflow changes
