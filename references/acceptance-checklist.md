@@ -167,6 +167,8 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] If Power BI PBIP/TMDL was created, approved report pages exist as Power BI report definition artifacts, not only Markdown page descriptions
 - [ ] If a presentation artifact was created, the agent produced a consultant-grade page plan from validated facts, dimensions, semantic metrics, source profiling, and data quality evidence instead of asking the user to design every visual
 - [ ] If a presentation artifact or business-facing report was created, it includes the five report pillars: context and strategy, key performance indicators, trend analysis and variance, insights and attribution, and recommendations and next steps; unsupported pillars are visibly deferred with reasons
+- [ ] If a Power BI report was created, each main page follows the fixed canvas standard when supported: header/navigation, last refreshed timestamp, reset filters, key performance indicator cards, primary slicers, trend/comparison visuals, detail layer, and tooltip or drill-through behavior
+- [ ] If a Power BI report could not include a canvas-standard element, `reports/agent/presentation_report.md` documents the missing element and reason
 - [ ] Presentation pages were included, deferred, or blocked based on current project evidence, not hardcoded from another domain
 - [ ] Presentation design maximizes validated business insight with executive overview, trends, financial or value, operations or activity, entity performance, segmentation, exceptions, and detail or drillthrough pages when supported
 - [ ] Presentation design does not expose every available column as a substitute for insight; technical fields are hidden and sensitive fields are excluded, masked, aggregated, or explicitly approved

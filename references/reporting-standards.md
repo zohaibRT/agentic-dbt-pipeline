@@ -47,6 +47,43 @@ For business-facing presentation layers, the report design must show more than k
 
 If targets, benchmarks, attribution dimensions, or next-step owners are missing, include a visible `Needs business input` note instead of leaving the pillar out silently.
 
+## Power BI canvas standard
+
+Use this fixed layout standard for every generated Power BI report unless the user provides a stronger company template.
+
+Every Power BI report must feel like an interactive dashboard canvas, not a static table dump. Each main report page should include these elements when supported:
+
+| Layer | Required content | Purpose |
+|---|---|---|
+| Header and navigation | Report title, page title, company or project branding when available, last refreshed timestamp, reset filters button, and page navigation buttons | Keep the user oriented and make the report feel consistent |
+| Key performance indicator summary | Three to five primary cards near the top, with conditional formatting or trend context when targets or prior periods exist | Show current state quickly |
+| Interactive slicers | Date range plus important dimensions such as region, department, category, product, provider, customer, status, or channel when available | Let users filter without cluttering the page |
+| Trends and comparisons | Line or area charts for time series, bar or column charts for category comparisons, and drill-down when a date hierarchy or hierarchy dimension exists | Show direction, variance, and drivers |
+| Detail layer | Matrix or detail table at the bottom of the page or on a separate details page, with conditional formatting for outliers when useful | Support operational investigation |
+| Tooltips and drill-throughs | Report page tooltips and drill-through pages for important entities or data points when the model supports safe row-level investigation | Keep pages clean while preserving depth |
+
+Default top-to-bottom canvas order:
+
+1. Header/navigation bar.
+2. Key performance indicator card row.
+3. Primary trends and comparison visuals.
+4. Secondary driver, attribution, or segmentation visuals.
+5. Matrix/detail table or drill-through entry point.
+
+Power BI page rules:
+
+- Use native page navigation buttons for multi-page reports.
+- Include a reset filters button on main report pages when supported by the chosen PBIP/report format.
+- Include a last refreshed timestamp measure or equivalent metadata visual when the model can support it.
+- Keep primary slicers visible and put secondary filters in the filter pane or a dedicated filter area.
+- Use line or area charts for time series, not pie-heavy trend pages.
+- Use bar or column charts for ranked comparison across categories.
+- Use matrix visuals for operational detail and apply conditional formatting when it helps users spot exceptions.
+- Add report page tooltips for important charts when the PBIP/report format supports them.
+- Add drill-through pages for important entities such as customer, patient, provider, product, location, department, account, or order when safe and useful.
+- Hide technical fields from the report canvas and report view unless they are needed for investigation.
+- Document any missing layout element in `reports/agent/presentation_report.md` with the reason, such as unsupported by current PBIP generation, missing dimension, or privacy risk.
+
 ## Required report sections
 
 Use these headings, or equivalent full wording, in reports and handoffs:

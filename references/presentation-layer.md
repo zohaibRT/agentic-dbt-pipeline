@@ -105,6 +105,7 @@ Enterprise design rules:
 
 - Build from the governed semantic model or star schema, not ad hoc flat tables.
 - Use clear user-facing labels, consistent page titles, visual hierarchy, slicers, tooltips, and report navigation.
+- Follow the fixed Power BI canvas standard from [reporting-standards.md](reporting-standards.md): header/navigation, key performance indicator summary cards, interactive slicers, trends/comparison visuals, detail layer, and smart tooltips or drill-throughs.
 - Include slicers for date, status, major dimensions, and reportable flags when those fields are validated and useful.
 - Hide technical keys, hashes, audit columns, and implementation fields from report view unless they are needed for safe drillthrough.
 - Exclude, mask, or aggregate sensitive fields by default unless the user has approved exposure.
@@ -291,6 +292,10 @@ When creating PBIP:
 - Create a complete PBIP project, not only loose TMDL text.
 - Include the `.pbip` file, a Report artifact folder, and a SemanticModel artifact folder.
 - Build the approved enterprise page set from validated facts and dimensions, including useful slicers, user-facing labels, hidden technical fields, tooltips, drillthrough/detail pages where safe, and data-quality/limitation notes where needed.
+- Each main report page must use the standard Power BI canvas layout where supported: header/navigation bar, key performance indicator card row, visible primary slicers, trend and comparison visuals, secondary driver visuals, and matrix/detail or drill-through entry point.
+- Include report title, page title, last refreshed timestamp, reset filters button, and native page navigation when the chosen PBIP/report format supports them. If any element cannot be generated safely, document the reason in `reports/agent/presentation_report.md`.
+- Use line or area charts for time series; use bar or column charts for category comparisons; use matrix visuals with conditional formatting for operational details where useful.
+- Add report page tooltips and drill-through pages for important entities when safe, supported by the model, and useful for investigation.
 - Ensure the `.pbip` file points to a Report artifact when a report is requested, not only to a semantic model.
 - For the root `.pbip` shortcut file, do not use a `dataset` property for the artifact entry. A report PBIP must use the schema-allowed report artifact reference so Power BI does not fail with `Property 'dataset' has not been defined` or `Required properties are missing from object: report`.
 - Ensure the Report artifact has a definition file that links to the SemanticModel artifact using the correct relative path.
