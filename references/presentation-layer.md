@@ -204,6 +204,7 @@ When creating PBIP:
 - Use simple user-facing measure labels and keep technical column names inside model definitions.
 - When the user supplies exact measure labels, use those labels exactly unless the expression cannot be supported by the validated marts.
 - Use supported PBIP/TMDL metadata versions for the target Power BI Desktop release. Known requirements from prior failures include `definition.pbism` using the semantic model definition-properties schema path, `database.tmdl` using `compatibilityLevel: 1605` when requested, `model.tmdl` table references at the root level when the chosen structure requires it, and `report.json` values such as `themeCollection.baseTheme.reportVersionAtImport` typed exactly as Power BI expects.
+- For `.platform` files inside Report or SemanticModel artifact folders, verify `$schema` exists and matches the Power BI Desktop supported Fabric git integration platform properties schema pattern, such as `https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.x.y/schema.json`. Treat `UnrecognizedSchemaVersion: Path: .platform` as a failed presentation phase.
 - For `report.json`, always verify `themeCollection.baseTheme.reportVersionAtImport` exists and is the expected JSON type for the target Power BI Desktop schema. For the April 2026 Power BI Desktop PBIP format seen in prior failures, use the string value `"5.55"` when no better validated project reference overrides it. Do not emit it as a number, null, or omit it.
 - For TMDL table files, do not write raw Power Query M `let ... in ...` blocks as loose TMDL lines. Place M expressions only in the correct partition/source expression property syntax for the chosen TMDL format. A line such as `in` under a table document outside a valid expression block is a hard validation failure.
 - Add a local `powerbi/README.md` or equivalent handoff with open, refresh, and reload-from-disk guidance.
@@ -214,6 +215,7 @@ Validation before handoff:
 - Verify every required PBIP, report, semantic model, definition, relationship, table, partition, and measure file exists.
 - Parse JSON files with a real parser.
 - Validate the root `.pbip` shortcut schema: artifact entries for report deliverables must contain the required `report` property and must not contain unsupported properties such as `dataset`. Treat `artifacts[0].dataset` or a missing `artifacts[0].report` as a failed presentation phase.
+- Validate every `.platform` file with JSON parsing and a schema-pattern check. The `$schema` value must match the supported Fabric git integration platform properties pattern for the target Desktop version; do not allow stale, guessed, missing, or unsupported `.platform` schema URLs.
 - For `report.json`, explicitly assert `themeCollection.baseTheme.reportVersionAtImport` exists and has the correct type and value for the target Power BI Desktop schema. Treat missing or incorrectly typed `reportVersionAtImport` as a failed presentation phase.
 - Check TMDL indentation and root-level object placement against the selected PBIP structure.
 - Scan TMDL table files for invalid loose Power Query keywords such as standalone `let` or `in` lines outside the approved partition/source expression block. Treat `UnknownKeyword` parser risks as failed static validation.
@@ -259,6 +261,7 @@ Do not:
 - Create a dataset-only PBIP when the user asked for a report.
 - Mark Markdown, DAX text, relationship notes, or an import guide as a completed Power BI as code artifact.
 - Mark a Power BI artifact complete when the root `.pbip` shortcut file contains an unsupported `dataset` artifact property or is missing the required `report` artifact property for a report deliverable.
+- Mark a Power BI artifact complete when any `.platform` file has a missing or unsupported `$schema` value that Power BI Desktop reports as `UnrecognizedSchemaVersion`.
 - Create direct relationships that introduce ambiguous filter paths when a safer snowflake path exists.
 - Mark a Power BI artifact complete when the Power BI Modeling Model Context Protocol `ConnectFolder` test fails.
 - Mark a Power BI artifact complete when `report.json` is missing `themeCollection.baseTheme.reportVersionAtImport` or has it as the wrong JSON type.
