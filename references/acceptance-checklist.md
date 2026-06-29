@@ -108,7 +108,9 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Many-to-many relationships were reviewed during marts planning; required bridge tables were built and tested, or deferrals were documented with evidence
 - [ ] Semantic layer: metrics on marts ([semantic-layer-spec.md](semantic-layer-spec.md))
 - [ ] Gold/marts report includes key performance indicator definitions or explicitly deferred metrics with missing evidence
+- [ ] Gold/marts report includes metric verification results for implemented key performance indicators, including expected versus actual numerator, denominator, filter logic, and final result
 - [ ] Semantic metrics trace to approved or clearly supported key performance indicator definitions
+- [ ] Semantic metrics trace to reconciled key performance indicators and match gold SQL verification
 - [ ] Each layer: `dbt parse` + `dbt build --select +path:...` PASS
 - [ ] Each bronze/staging, silver/intermediate, and gold/marts layer ran warehouse data validation queries after `dbt build`
 - [ ] Each layer report includes `Data Verification Results` with row counts, expected-empty evidence, grain checks, relationship checks, measure checks, result, and notes
@@ -126,6 +128,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Mapping coverage checked; unmapped values summarized or approved
 - [ ] Business grain and key assumptions documented in model YAML or handoff notes
 - [ ] Key performance indicators include business meaning, source model, grain, numerator, denominator, filters, time field, caveats, validation evidence, and approval status
+- [ ] Key performance indicators include expected versus actual reconciliation from upstream logic to gold, semantic, and presentation layers where implemented
 - [ ] Ambiguous key performance indicators were deferred or sent for user approval instead of silently implemented
 
 ## Data engineering guardrails
@@ -166,6 +169,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] If Power BI PBIP/TMDL was created, import partitions use approved parameters for host, database, schema, warehouse, or equivalent connection values
 - [ ] If Power BI PBIP/TMDL was created, approved report pages exist as Power BI report definition artifacts, not only Markdown page descriptions
 - [ ] If a presentation artifact was created, the agent produced a consultant-grade page plan from validated facts, dimensions, semantic metrics, source profiling, and data quality evidence instead of asking the user to design every visual
+- [ ] If a presentation artifact was created, every key performance indicator visual or measure was reconciled to gold or semantic SQL, including numerator, denominator, filters, and final result
 - [ ] If a presentation artifact or business-facing report was created, it includes the five report pillars: context and strategy, key performance indicators, trend analysis and variance, insights and attribution, and recommendations and next steps; unsupported pillars are visibly deferred with reasons
 - [ ] If a Power BI report was created, each main page follows the fixed canvas standard when supported: header/navigation, last refreshed timestamp, reset filters, prioritized key performance indicator cards, primary slicers, trend/comparison visuals, detail layer, and tooltip or drill-through behavior
 - [ ] If a Power BI report was created, the agent analyzed the maximum useful supported key performance indicators, prioritized the executive card row, placed supporting key performance indicators in a suitable detail/report information area, and listed deferred key performance indicators with reasons
@@ -232,3 +236,4 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Final response summarizes build status, documentation status, evaluator status, Agents Schema status, git status, limitations, and open decisions
 - [ ] Final response includes possible key performance indicators, semantic metrics, and presentation pages when enough final mart evidence exists
 - [ ] Final response lists deferred or blocked key performance indicator definitions when definitions or data are missing
+- [ ] Final response summarizes metric verification status and names any unreconciled key performance indicators

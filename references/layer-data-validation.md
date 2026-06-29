@@ -1,6 +1,6 @@
 # Layer Data Validation
 
-Use this after each layer build and before marking the layer phase complete.
+Use this after each layer build and before marking the layer phase complete. Also read [metric-verification.md](metric-verification.md) when the layer creates, changes, or feeds key performance indicator logic.
 
 ## Core rule
 
@@ -24,6 +24,7 @@ For every model created or changed in the current layer:
 | Date coverage | Minimum date, maximum date, and populated date count for important date fields |
 | Status and category values | Distribution of important status, type, or code fields after transformation |
 | Measures | Count, sum, minimum, maximum, and null counts for important numeric measures |
+| Metric components | Expected versus actual numerator, denominator, filter, flag, and rate/ratio checks for key performance indicators supported by the layer |
 | Mapping coverage | Unmapped value counts when mapping seeds or reference tables are used |
 | Privacy | Confirm sensitive or direct identifier fields did not reach gold unless approved |
 
@@ -45,6 +46,7 @@ Use lightweight aggregate queries. Avoid full samples and never include sensitiv
 - Check row loss and row multiplication against upstream models.
 - For joins, verify orphan or unmatched counts and explain intentional left joins.
 - Validate derived flags, mapped fields, and important measures with aggregate checks.
+- For flags or measures that feed key performance indicators, verify each component separately and check that denominator logic includes all required states.
 
 ### Gold / marts
 
@@ -53,6 +55,7 @@ Use lightweight aggregate queries. Avoid full samples and never include sensitiv
 - Verify dimensions have unique keys and facts have valid relationships to dimensions or parent facts.
 - Verify bridge tables have unique composite keys and valid relationships to both sides when bridge tables exist.
 - Verify key performance indicator measures have non-null, reasonable aggregate values when source data exists.
+- Run [metric-verification.md](metric-verification.md) checks for every implemented key performance indicator before semantic layer or presentation work. Expected numerator, expected denominator, actual numerator, actual denominator, and final result must reconcile.
 - Confirm direct identifiers, sensitive fields, protected health information, and personally identifiable information are excluded, masked, hashed, or explicitly approved.
 
 If upstream data is genuinely empty, the gold model may be structurally correct with zero rows. Mark it `WARN`, document the empty upstream source, and explain which metrics will be empty until data lands.
@@ -114,6 +117,8 @@ Each bronze, silver, and gold phase report must include a section named `Data Ve
 | <layer> | <model> | <row_count> | <source/upstream comparison> | <PASS/WARN/FAIL/SKIPPED> | <PASS/WARN/FAIL/SKIPPED> | <PASS/WARN/FAIL/SKIPPED> | <PASS/WARN/FAIL/BLOCKED> | <important finding> |
 ```
 
+When key performance indicators are present, also include the `Metric Verification Results` section from [metric-verification.md](metric-verification.md).
+
 After writing the report, share the important validation results in the chat summary before asking for commit or the next phase.
 
 ## Stop conditions
@@ -126,6 +131,7 @@ Stop before the next layer when any of these occur:
 - Primary keys or declared grain keys are duplicated.
 - Required relationship keys are orphaned.
 - Important measures are all null, negative when impossible, or clearly unreasonable.
+- Key performance indicator numerator, denominator, filter, flag, or result does not reconcile to upstream logic or approved definition.
 - Important date coverage is missing or outside the expected source range.
 - Sensitive fields reach gold without approval.
 

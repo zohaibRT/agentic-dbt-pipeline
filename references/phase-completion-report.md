@@ -149,6 +149,7 @@ Every phase report must include:
 - Privacy/sensitive-field notes
 - Profile target schema hygiene for project setup and configuration
 - Key performance indicator definitions for gold/marts, semantic layer, presentation layer, and final delivery
+- Metric verification results for any implemented key performance indicator, including expected versus actual numerator, denominator, and final result
 - Trend analysis and variance when supported, such as row-count movement, period movement, target variance, baseline variance, or validation deltas
 - Insights and attribution: what the evidence suggests, likely drivers, anomalies, outliers, blockers, and confidence
 - Recommendations and next steps: actionable next phase, data engineer decision, risk, resource need, or approval checkpoint
@@ -214,6 +215,11 @@ Overall: <PASS | WARN | FAIL | SKIPPED | BLOCKED>
 | Key Performance Indicator | Business Meaning | Source Model | Grain | Numerator | Denominator | Filters | Time Field | Result / Caveat | Approval |
 |---|---|---|---|---|---|---|---|---|---|
 | <name> | <meaning> | <model> | <grain> | <numerator> | <denominator or not applicable> | <filters> | <date field> | <validation/caveat> | <approved/deferred/blocked> |
+
+## Metric Verification Results
+| Key Performance Indicator | Layer Checked | Expected Numerator | Actual Numerator | Expected Denominator | Actual Denominator | Expected Result | Actual Result | Status | Evidence |
+|---|---|---:|---:|---:|---:|---:|---:|---|---|
+| <metric> | <gold/semantic/presentation> | <value> | <value> | <value or not applicable> | <value or not applicable> | <value> | <value> | <PASS/WARN/FAIL/BLOCKED> | <query, command, or report reference> |
 
 ## Trend Analysis and Variance
 | Item | Current Result | Comparison / Target | Variance | Evidence | Status |

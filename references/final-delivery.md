@@ -52,6 +52,7 @@ Update or create project handoff notes with:
 - Final facts, dimensions, marts, and metrics
 - Bridge table decisions: built, not needed, deferred, or blocked
 - Key performance indicator definitions with numerator, denominator, filters, time field, source model, caveats, validation evidence, and approval status
+- Metric verification results for every implemented key performance indicator: expected numerator, actual numerator, expected denominator, actual denominator, expected result, actual result, status, and evidence
 - Presentation layer recommendation, including possible key performance indicators, semantic metrics, suggested report or dashboard pages, and query handoff options
 - Consultant-grade presentation design summary when a presentation artifact was approved: pages created, pages deferred or blocked, source models, measures, slicers, filters, privacy handling, and why the selected visuals are useful for business review
 - Five report pillars status for business-facing reports and presentation artifacts: context and strategy, key performance indicators, trend analysis and variance, insights and attribution, and recommendations and next steps
@@ -146,6 +147,7 @@ Use a compact table when helpful:
 - Schema isolation check result
 - Profile target schema hygiene result
 - Key performance indicator definition status
+- Metric verification status: expected versus actual numerator, denominator, filter logic, semantic result, presentation result, and unreconciled metrics
 - Bridge table review status
 - Key pass/warn/fail counts when available
 - Phase plan approval status
@@ -175,6 +177,7 @@ Use a compact table when helpful:
 
 - Open user decisions
 - Any deferred or blocked key performance indicator definitions
+- Any unreconciled key performance indicators and the layer where the mismatch was found
 - Whether to create a presentation layer artifact such as a business-facing report, dashboard design, semantic layer refinement, or query handoff
 - Whether presentation layer recommendation was blocked or skipped, with reason
 - Recommended next actions

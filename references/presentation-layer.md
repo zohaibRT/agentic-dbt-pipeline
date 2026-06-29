@@ -216,6 +216,7 @@ If the recommendation cannot be produced, mark it `BLOCKED` or `SKIPPED` with th
 
 - Do not invent key performance indicators that are not supported by final marts or approved semantic metrics.
 - Do not recommend advanced key performance indicators unless numerator, denominator, filters, time field, source model, and caveats are known or clearly marked as deferred.
+- Do not put a key performance indicator into Power BI until [metric-verification.md](metric-verification.md) reconciles expected versus actual numerator, denominator, and result from gold or semantic logic.
 - Do not ask the user to design every page. Recommend a consultant-grade default design from validated data and ask only for decisions that affect business meaning, privacy, cost, refresh behavior, or downstream usability.
 - Do not maximize information by exposing every field. Maximize validated business insight.
 - Do not skip the standard time showcase when validated facts have usable date columns. If no fact date columns exist, document that trend visuals are blocked.
@@ -282,6 +283,7 @@ Before creating files:
 - Confirm the final dbt gold/mart tables exist and have passed the relevant dbt build.
 - Write or update `AGENT_PLAN.md` with the Power BI artifact plan and wait for approval.
 - Confirm output location, model name, connection source, consultant-grade page plan, measures, verification queries, blocked visuals, and privacy rules.
+- Confirm metric verification queries for every key performance indicator measure, including numerator, denominator, filter logic, and expected versus actual result.
 - Discover fact date columns and planned time showcase visuals before writing report pages.
 - In the plan, state that Power BI PBIP/TMDL is the default because no other presentation technology was specified. Ask for changes only if the user wants a different technology or a Markdown-only guide.
 - If a known-good PBIP project exists in the workspace and the user allows it as a reference, inspect its folder structure and metadata patterns before writing new files.
@@ -310,6 +312,7 @@ When creating PBIP:
 - Use inactive relationships only for approved role-playing dates or alternate analysis paths, and document the measure pattern needed to activate them.
 - Include approved bridge tables and their relationship directions when the gold layer contains bridge models or the approved presentation scope requires many-to-many analysis.
 - Put reusable business calculations in a measures table or equivalent semantic model construct.
+- For every Power BI/DAX measure, reconcile the result to the approved gold or semantic key performance indicator definition. Rates, ratios, percentages, and averages must show expected numerator, actual numerator, expected denominator, actual denominator, expected result, and actual result in `reports/agent/presentation_report.md`.
 - Add the standard `Trends` page when fact date columns are available. Include last calendar year, year-to-date, last 12 months, by-year, and by-month visuals for each primary fact where the measure/date pairing is validated.
 - In the Power BI semantic model, each table may have at most one column with `IsKey` set to `True`. If a dbt table has a composite business key, keep only one technical key column marked as the Power BI key or leave key metadata unset and document the composite grain in descriptions and relationships.
 - Use simple user-facing measure labels and keep technical column names inside model definitions.
@@ -336,6 +339,7 @@ Validation before handoff:
 - Verify approved report pages exist as Power BI report definition artifacts, not only Markdown page descriptions.
 - Verify user-provided technical requirements exactly, including output path, artifact folder names, schema strings, compatibility level, parameter names, import partition source, relationship direction/activity, measure labels, report page names, and expected visuals.
 - Verify every standard time showcase visual with SQL against the final gold/mart schema. Record exact verification queries and results in `reports/agent/presentation_report.md`.
+- Verify every key performance indicator visual and DAX measure with [metric-verification.md](metric-verification.md). Treat mismatched numerator, denominator, filter, or final result as a failed presentation phase.
 - For Power BI PBIP/TMDL artifacts, run a relationship ambiguity audit before handoff. Build a simple graph of active relationships and confirm there is no pair of tables connected by more than one active path through facts, bridge tables, or snowflaked dimensions. Record the checked paths and result in `reports/agent/presentation_report.md`. Treat `PFE_XL_USERELATIONSHIP_AMBIGUOUS_PATH` and Desktop errors that say "There are ambiguous paths between" as failed validation.
 - For Power BI PBIP/TMDL artifacts, run Power BI Modeling Model Context Protocol self-tests when tools are available: `ConnectFolder`, connection inspection, table inspection, relationship inspection, and a simple DAX smoke query. Treat `ConnectFolder` failure as a failed presentation phase and fix the artifact before handoff.
 - Compare key metadata paths and schema fields against a known-good local reference when one is available.

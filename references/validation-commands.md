@@ -44,7 +44,7 @@ if ($IsWindows -and -not (Get-Command "dbt" -ErrorAction SilentlyContinue)) {
 
 ## Layer data validation *(required after every layer build)*
 
-After each bronze/staging, silver/intermediate, and gold/marts build, read [layer-data-validation.md](layer-data-validation.md) and run warehouse aggregate queries for the models in that layer.
+After each bronze/staging, silver/intermediate, and gold/marts build, read [layer-data-validation.md](layer-data-validation.md) and run warehouse aggregate queries for the models in that layer. When the layer creates or feeds key performance indicator logic, also read [metric-verification.md](metric-verification.md) and reconcile expected versus actual numerator, denominator, filters, and final result.
 
 Required validation evidence:
 
@@ -133,6 +133,7 @@ Before every layer commit:
 1. `dbt parse --no-partial-parse`
 2. `dbt build --select +path:<layer_folder>`
 3. Warehouse layer data validation from [layer-data-validation.md](layer-data-validation.md)
+4. Metric verification from [metric-verification.md](metric-verification.md) for implemented key performance indicators
 
 If validation fails, fix before commit unless user explicitly documents a failing checkpoint.
 

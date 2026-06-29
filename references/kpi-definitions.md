@@ -1,6 +1,6 @@
 # Key Performance Indicator Definitions
 
-Use this before gold/marts, semantic layer, presentation layer, and final delivery.
+Use this before gold/marts, semantic layer, presentation layer, and final delivery. Also read [metric-verification.md](metric-verification.md) before implementing or handing off any key performance indicator.
 
 ## Core rule
 
@@ -27,6 +27,7 @@ Every proposed or implemented key performance indicator must include:
 | Dimensions | Safe breakdown fields, such as department, region, category, provider, or customer segment |
 | Caveats | Empty upstream data, approximations, privacy limits, or missing definitions |
 | Approval status | Agent-recommended, user-approved, deferred, or blocked |
+| Verification status | Expected versus actual numerator, denominator, and result reconciliation status |
 
 ## Advanced metric checks
 
@@ -37,6 +38,8 @@ For rates, ratios, percentages, and averages:
 - State whether cancelled, pending, denied, inactive, test, deleted, or draft records are included.
 - State the time field that controls the metric.
 - Validate the metric with aggregate SQL after the gold/marts build.
+- Reconcile numerator and denominator from upstream flags/measures to gold/marts and then to semantic or presentation measures.
+- Treat a denominator that accidentally equals the numerator as a failure when the business definition expects additional states.
 
 For financial or operational metrics:
 
@@ -66,7 +69,7 @@ For each candidate, state whether it is supported by current marts, requires mor
 
 ## Required report section
 
-Gold, semantic, presentation, and final reports must include:
+Gold, semantic, presentation, and final reports must include this definition section plus the `Metric Verification Results` section from [metric-verification.md](metric-verification.md):
 
 ```markdown
 ## Key Performance Indicator Definitions
@@ -87,3 +90,4 @@ Stop before semantic layer, presentation layer, or final metric handoff when:
 - The time field is ambiguous and changes the metric meaning.
 - The metric would expose sensitive or direct identifier data without approval.
 - The metric validation result contradicts the definition.
+- Expected versus actual numerator, denominator, or final result does not reconcile across gold, semantic, and presentation layers.
