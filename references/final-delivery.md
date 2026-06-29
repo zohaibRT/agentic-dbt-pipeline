@@ -133,6 +133,7 @@ Use a compact table when helpful:
 - Key pass/warn/fail counts when available
 - Phase plan approval status
 - Phase report status and path
+- Power BI PBIP/TMDL validation status when used: file validation, relationship ambiguity audit, Power BI Modeling Model Context Protocol model load, DAX smoke test, Desktop open test, and unresolved load errors
 - Mermaid diagram visibility/parse status when diagrams were created or changed
 - Advanced data-engineering review status
 

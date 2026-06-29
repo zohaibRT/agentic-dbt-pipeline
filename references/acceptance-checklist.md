@@ -165,8 +165,13 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] If Power BI PBIP/TMDL was created, JSON parse checks, TMDL structure checks, file-tree checks, and known metadata-version checks were run and recorded
 - [ ] If Power BI PBIP/TMDL was created, active relationships were audited for ambiguous filter paths, including multiple active paths between dimensions through facts or bridge tables
 - [ ] If Power BI PBIP/TMDL was created, lower-grain facts, parent facts, bridge tables, and role-playing date relationships were reviewed so only the approved active paths are active
+- [ ] If Power BI PBIP/TMDL was created and Power BI Modeling Model Context Protocol tools were available, `ConnectFolder` to the SemanticModel definition folder succeeded
+- [ ] If Power BI PBIP/TMDL was created and Power BI Modeling Model Context Protocol tools were available, connection inspection, table inspection, relationship inspection, and a simple DAX smoke query succeeded
+- [ ] If Power BI PBIP/TMDL was created and Power BI Modeling Model Context Protocol validation was not run, the presentation report clearly says it was not run and why; it does not claim the semantic model loaded successfully
 - [ ] If Power BI PBIP/TMDL was created and Power BI Desktop was available, the generated `.pbip` was opened or launched for load validation, and any Desktop load error was fixed before marking the presentation phase complete
 - [ ] If Power BI PBIP/TMDL was created and Power BI Desktop validation was not run, the presentation report clearly says it was not run and why; it does not claim the project was opened successfully
+- [ ] If Power BI PBIP/TMDL was created, `reports/agent/presentation_report.md` records file validation, relationship audit, Power BI Modeling Model Context Protocol validation, Desktop open validation, fixes applied, and final result
+- [ ] If Power BI PBIP/TMDL was created, `reports/agent/PIPELINE_STATUS.md` marks presentation `PASS` only after required validation passed, or `BLOCKED` when required validation could not run or failed
 
 ## Human review
 

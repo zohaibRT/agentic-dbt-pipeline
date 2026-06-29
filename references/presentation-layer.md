@@ -139,6 +139,44 @@ Power BI as code completion means the generated project is intended to open from
 
 When the user provides a detailed Power BI contract, copy the contract into the presentation phase plan and validate against every item. Do not generalize away user-provided table names, relationship rules, measure labels, report page names, output paths, schema versions, or known technical fixes.
 
+## Power BI validation workflow
+
+For Power BI PBIP/TMDL artifacts, never accept "files created" as done. The presentation phase can be marked complete only after the validation loop passes or a required external validation step is explicitly unavailable and documented as not run.
+
+Required loop:
+
+1. Build the PBIP/TMDL artifact.
+2. Run static file validation: file tree, JSON parsing, TMDL structure, path links, relationship ambiguity audit, and partition/source checks.
+3. Self-test the semantic model using the Power BI Modeling Model Context Protocol tools when available:
+   - `ConnectFolder` against the SemanticModel definition folder.
+   - `ListConnections` or `GetConnection` to confirm the model connection loaded.
+   - Table and relationship operations to confirm expected tables, columns, and relationships exist.
+   - DAX query operation with a smoke query such as `EVALUATE ROW("test", 1)`.
+4. If Power BI Desktop is available, open or launch the `.pbip` and confirm it loads without project definition or relationship-path errors.
+5. If any step fails, fix the PBIP/TMDL files and repeat the validation loop.
+6. Only after passing validation, update `reports/agent/presentation_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` with `PASS`.
+
+Do not mark the presentation phase complete if the user would see an error when opening the `.pbip`.
+
+If the Power BI Modeling Model Context Protocol tools are unavailable in the current environment, mark the Model Context Protocol load test as `NOT RUN` with the exact reason. Do not claim the semantic model loaded through Model Context Protocol. If Power BI Desktop is unavailable, mark Desktop open validation as `NOT RUN` with the exact reason. If either validation is required by the user's contract and cannot be run, mark the presentation phase `BLOCKED`, not `PASS`.
+
+## Power BI self-test checklist
+
+Before handoff, paste the validation results into the chat result summary and `reports/agent/presentation_report.md`:
+
+| Check | What to verify |
+|---|---|
+| File tree | `.pbip`, Report folder, SemanticModel folder, `definition.pbism`, `database.tmdl`, `model.tmdl`, and `report.json` exist where expected |
+| JSON parse | All `.json` files parse cleanly |
+| Path links | `.pbip` links to the Report artifact, and the Report artifact links to the SemanticModel artifact using correct relative paths |
+| Relationships | No ambiguous active paths; approved active/inactive relationship rules are followed |
+| Partitions | Import or source queries point to real approved gold/mart tables |
+| Power BI Modeling Model Context Protocol load | `ConnectFolder` to the SemanticModel definition folder succeeds |
+| Power BI Modeling Model Context Protocol inspection | Connections, tables, columns, relationships, and a simple DAX smoke query succeed |
+| Power BI Desktop open | `.pbip` opens without load errors when Desktop is available |
+
+If Power BI Desktop open fails after handoff, the agent must use the pasted error message as a blocker, fix the artifact, rerun static validation, rerun the relationship ambiguity audit, rerun the Power BI Modeling Model Context Protocol `ConnectFolder` test, rerun Desktop open validation when available, and update `reports/agent/presentation_report.md` with the fix and retest results.
+
 Before creating files:
 
 - Confirm the final dbt gold/mart tables exist and have passed the relevant dbt build.
@@ -177,15 +215,45 @@ Validation before handoff:
 - Verify approved report pages exist as Power BI report definition artifacts, not only Markdown page descriptions.
 - Verify user-provided technical requirements exactly, including output path, artifact folder names, schema strings, compatibility level, parameter names, import partition source, relationship direction/activity, measure labels, report page names, and expected visuals.
 - For Power BI PBIP/TMDL artifacts, run a relationship ambiguity audit before handoff. Build a simple graph of active relationships and confirm there is no pair of dimensions or presentation entities connected by more than one active path through facts, bridge tables, or snowflaked dimensions. Record the checked paths and result in `reports/agent/presentation_report.md`.
+- For Power BI PBIP/TMDL artifacts, run Power BI Modeling Model Context Protocol self-tests when tools are available: `ConnectFolder`, connection inspection, table inspection, relationship inspection, and a simple DAX smoke query. Treat `ConnectFolder` failure as a failed presentation phase and fix the artifact before handoff.
 - Compare key metadata paths and schema fields against a known-good local reference when one is available.
 - Re-run a file-tree check after edits and include the result in the phase report.
 - If Power BI Desktop is available on the machine and the deliverable is meant to be opened in Power BI Desktop, launch the `.pbip` as a validation step after text validation. Treat a Desktop load error, including ambiguous relationship path errors, as a failed presentation phase. Fix and re-test before marking the artifact complete. If Desktop is unavailable or cannot be launched in the current environment, mark the artifact as `Presentation artifact created - Desktop open validation not run`, explain why, and do not imply it was opened successfully.
+
+## Power BI done gate
+
+The final "work is done" update for a Power BI PBIP/TMDL artifact must use this shape:
+
+```text
+Presentation layer: COMPLETE
+
+PBIP path: <path>
+File validation: PASS
+Relationship audit: PASS (no ambiguous paths)
+Power BI Modeling Model Context Protocol model load: PASS
+Power BI Desktop open test: PASS
+Report: reports/agent/presentation_report.md
+Pipeline status: reports/agent/PIPELINE_STATUS.md
+```
+
+If Desktop validation was not run, do not say the project opens successfully. Say:
+
+```text
+Power BI Desktop open validation: NOT RUN (reason: <reason>). Please open and confirm, or rerun validation when Desktop is available.
+```
+
+If Model Context Protocol validation was not run, do not say the semantic model loaded successfully. Say:
+
+```text
+Power BI Modeling Model Context Protocol validation: NOT RUN (reason: <reason>).
+```
 
 Do not:
 
 - Create a dataset-only PBIP when the user asked for a report.
 - Mark Markdown, DAX text, relationship notes, or an import guide as a completed Power BI as code artifact.
 - Create direct relationships that introduce ambiguous filter paths when a safer snowflake path exists.
+- Mark a Power BI artifact complete when the Power BI Modeling Model Context Protocol `ConnectFolder` test fails.
 - Mark a Power BI artifact complete when Power BI Desktop reports ambiguous relationship paths or any project definition load error.
 - Hardcode one domain's table names, measures, or report pages into the skill.
 - Tell the user to save over the generated files from Power BI Desktop as the default reload strategy.
