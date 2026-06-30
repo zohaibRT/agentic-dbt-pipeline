@@ -22,7 +22,8 @@ The agent must do a senior data-engineering review, not only a dbt command check
 | Semantic layer | Semantic metrics trace to supported final marts and approved or clearly supported key performance indicators |
 | Project evaluator | Warnings are fixed, documented, or explicitly accepted; no architecture-breaking fixes were used |
 | Documentation | `dbt docs generate` ran; docs include model purpose, grain, assumptions, and important columns |
-| Presentation layer | A presentation-layer recommendation was produced after final validation, or the report explains why it is blocked or skipped |
+| Analytics insight reporting | Trusted reporting design files exist under `reports/agent/`; trusted vs deferred outputs are separated; presentation scope is documented before artifact build |
+| Presentation layer | A presentation-layer recommendation was produced after analytics insight reporting, or the report explains why it is blocked or skipped |
 | Operations | Commit status, continuous integration status, Agents Schema status, and run commands are documented |
 | Principal standards | State-based continuous integration readiness, contracts/versioning, package and macro usage, Power BI storage mode, bridge tables, aggregate tables, modern table formats, warehouse optimization, and SQL style are applied, deferred, or marked not applicable |
 

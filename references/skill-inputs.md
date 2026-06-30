@@ -99,8 +99,20 @@ push_to_github: <true|false>             # optional; omit for approval-based def
 layer_names: bronze, silver, gold        # optional; defaults shown
 commit: ask | auto_yes | skip_all
 materialization_profile: prod | dev
-workflow_phase: init | sources | staging | intermediate | marts | semantic_layer | project_evaluator | docs | presentation_layer | ci | agents_schema
+workflow_phase: init | sources | staging | intermediate | marts | semantic_layer | project_evaluator | docs | analytics_insight_reporting | presentation_layer | ci | agents_schema
 ```
+
+### `workflow_phase: analytics_insight_reporting`
+
+Use only after marts/gold, semantic layer, `dbt_project_evaluator`, and documentation are complete and validated.
+
+If the user requests this phase while upstream layers are incomplete, stop and report the blocker instead of inventing reporting scope.
+
+If analytics insight reporting files already exist, ask whether to refresh, append, or replace them before rewriting.
+
+If presentation artifacts already exist but analytics insight reporting files are missing or contradict them, stop and reconcile scope before continuing.
+
+Do not run `workflow_phase: presentation_layer` in a full pipeline until analytics insight reporting outputs exist, unless the user explicitly overrides the workflow and accepts the risk.
 
 ## Optional `.env`
 

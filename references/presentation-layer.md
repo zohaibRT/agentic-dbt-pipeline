@@ -1,6 +1,19 @@
 # Presentation Layer
 
-Use this after marts, semantic layer, project evaluator, and documentation have completed.
+Use this after marts, semantic layer, project evaluator, documentation, and **analytics insight reporting** have completed.
+
+Read [analytics-insight-reporting.md](analytics-insight-reporting.md) first. The presentation layer consumes analytics insight outputs:
+
+| Analytics insight output | Presentation use |
+|---|---|
+| `reports/agent/dashboard_spec.md` | Page plan |
+| `reports/agent/kpi_catalog.md` | Measure and key performance indicator source |
+| `reports/agent/reporting_catalog.md` | Report/page scope |
+| `reports/agent/insight_backlog.md` | Blocked or deferred visuals |
+| `reports/agent/reporting_readiness_scorecard.md` | Validation gate before artifact build |
+| `reports/agent/analytics_insight_report.md` | Business-facing rationale |
+
+The presentation layer must not invent pages, key performance indicators, visuals, or business scope that contradict or bypass analytics insight reporting outputs unless the user explicitly overrides them.
 
 ## Purpose
 
@@ -12,13 +25,14 @@ Default artifact: if the user approves a presentation layer and does not specify
 
 ## Presentation decision gate
 
-After documentation generation in a full pipeline, the agent must stop at this gate and ask the user whether to create a presentation layer. The agent must not mark the full delivery as complete while the presentation decision is still unanswered.
+After analytics insight reporting in a full pipeline, the agent must stop at this gate and ask the user whether to create a presentation layer. The agent must not mark the full delivery as complete while the presentation decision is still unanswered.
 
 Use these statuses:
 
 | User decision | Required status |
 |---|---|
-| Not asked yet | `Documentation complete - presentation decision pending` |
+| Not asked yet | `Analytics insight reporting complete - presentation decision pending` |
+| Analytics insight reporting not complete | `Documentation complete - analytics insight reporting pending` |
 | User declines artifact | `Presentation recommendation complete - artifact declined` |
 | User approves artifact | `Presentation artifact approved - presentation phase in progress` |
 | Artifact completed | `Presentation artifact complete` |
@@ -38,7 +52,7 @@ If the user approves a presentation layer, treat it as a separate `presentation_
 
 | Area | Contract |
 |---|---|
-| Inputs required | Completed marts, semantic/evaluator/documentation status, final model list, key performance indicator definitions, data quality notes, and privacy decisions |
+| Inputs required | Completed marts, semantic/evaluator/documentation status, analytics insight reporting outputs (`dashboard_spec.md`, `kpi_catalog.md`, `reporting_catalog.md`, `insight_backlog.md`, `reporting_readiness_scorecard.md`, `analytics_insight_report.md`), final model list, key performance indicator definitions, data quality notes, and privacy decisions |
 | Allowed changes | Presentation recommendation report; presentation artifacts only after explicit user approval and a separate `presentation_layer` phase plan |
 | Not allowed | Dashboards, reports, slides, notebooks, Power BI projects, guessed measures, or sensitive-field exposure without approval |
 | Commands to run | Read-only model/metadata checks and artifact-specific validation only after the user approves artifact creation |
@@ -47,7 +61,7 @@ If the user approves a presentation layer, treat it as a separate `presentation_
 
 ## What to recommend
 
-Review the final gold/marts models, semantic metrics, source data limitations, documented business rules, and [kpi-definitions.md](kpi-definitions.md). Then recommend presentation options with evidence:
+Review `reports/agent/analytics_insight_report.md`, `reports/agent/dashboard_spec.md`, `reports/agent/kpi_catalog.md`, `reports/agent/reporting_catalog.md`, final gold/marts models, semantic metrics, source data limitations, documented business rules, and [kpi-definitions.md](kpi-definitions.md). Then recommend presentation options with evidence:
 
 | Option | When to recommend | What to include |
 |---|---|---|

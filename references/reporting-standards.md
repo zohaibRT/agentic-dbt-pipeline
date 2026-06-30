@@ -1,6 +1,8 @@
 # Reporting Standards
 
-Use this before writing discovery reports, phase reports, presentation reports, final handoffs, dashboard designs, and Power BI report plans.
+Use this before writing discovery reports, phase reports, analytics insight reporting files, presentation reports, final handoffs, dashboard designs, and Power BI report plans.
+
+For analytics insight reporting design rules and deliverables, read [analytics-insight-reporting.md](analytics-insight-reporting.md). This file defines the five report pillars and Power BI canvas standards; analytics insight reporting decides what is useful to show, and the presentation layer implements the approved design.
 
 ## Core rule
 

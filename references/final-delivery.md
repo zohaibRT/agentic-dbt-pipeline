@@ -4,12 +4,14 @@ Use this before calling a dbt pipeline complete.
 
 ## Presentation gate before completion
 
-Do not call a full pipeline complete immediately after documentation. Full delivery can be marked complete only after the presentation-layer gate in [presentation-layer.md](presentation-layer.md) has one of these outcomes:
+Do not call a full pipeline complete immediately after documentation or analytics insight reporting. Full delivery can be marked complete only after analytics insight reporting outputs exist and the presentation-layer gate in [presentation-layer.md](presentation-layer.md) has one of these outcomes:
 
 - Presentation recommendation was produced and the user declined artifact creation.
 - Presentation recommendation was produced, the user approved an artifact, and the presentation artifact phase completed.
 - Presentation recommendation was produced, the user approved an artifact, and the artifact is explicitly blocked with evidence.
-- The user explicitly asked to stop after documentation.
+- The user explicitly asked to stop after documentation or after analytics insight reporting.
+
+If analytics insight reporting is not complete, set status to `Documentation complete - analytics insight reporting pending` and run [analytics-insight-reporting.md](analytics-insight-reporting.md) before the presentation question.
 
 When a presentation artifact is approved, final delivery is not allowed until that presentation phase reaches one of these recorded states in `reports/agent/presentation_report.md` and `reports/agent/PIPELINE_STATUS.md`:
 
@@ -19,7 +21,7 @@ When a presentation artifact is approved, final delivery is not allowed until th
 
 Do not use `Delivery complete` while Power BI PBIP/TMDL static checks, Model Context Protocol load checks, DAX smoke tests, or Desktop open validation are still pending.
 
-If the presentation decision has not been asked or answered, set status to `Documentation complete - presentation decision pending` and ask the presentation-layer question. Do not write `Delivery complete`, `final completed state`, or equivalent close-out language yet.
+If the presentation decision has not been asked or answered, set status to `Analytics insight reporting complete - presentation decision pending` and ask the presentation-layer question. Do not write `Delivery complete`, `final completed state`, or equivalent close-out language yet.
 
 ## Deliverables
 
@@ -29,6 +31,7 @@ If the presentation decision has not been asked or answered, set status to `Docu
 - Tests added for primary keys, relationships, accepted values, and mapping coverage where applicable
 - Semantic layer or metrics added on final mart models when requested
 - dbt documentation generated
+- Analytics insight reporting outputs created under `reports/agent/`: `analytics_insight_report.md`, `reporting_catalog.md`, `kpi_catalog.md`, `dashboard_spec.md`, `insight_backlog.md`, `reporting_readiness_scorecard.md`, and `analytics_insight_reporting_report.md`
 - Project evaluator run and warnings summarized
 - Presentation layer recommendation produced after final validation, with user-facing options and suggested metrics
 - Advanced data-engineering review completed before final delivery

@@ -54,6 +54,11 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] `reports/agent/<phase>_report.md` created or updated for each implemented phase
 - [ ] `reports/agent/PIPELINE_STATUS.md` updated after each phase
 - [ ] `reports/agent/CONTEXT_TREE.md` updated with user inputs, decisions, phase outputs, report links, and open items
+- [ ] Final delivery included analytics insight reporting outputs before the presentation-layer recommendation
+- [ ] `reports/agent/analytics_insight_report.md`, `reporting_catalog.md`, `kpi_catalog.md`, `dashboard_spec.md`, `insight_backlog.md`, and `reporting_readiness_scorecard.md` exist when analytics insight reporting ran
+- [ ] Analytics insight reporting separated trusted outputs from uncertain or deferred outputs
+- [ ] Every cataloged key performance indicator and report/page maps to validated marts or semantic metrics
+- [ ] Presentation layer used analytics insight outputs as scope and did not invent contradictory pages, key performance indicators, or visuals without explicit user override
 - [ ] Final delivery included a presentation layer recommendation and asked whether the user wants a presentation layer
 - [ ] Presentation layer recommendation was not skipped silently; if blocked or skipped, the reason was written to final report, pipeline status, context tree, and final response
 - [ ] Any diagram created or changed uses Mermaid and has visibility/parse verification recorded
@@ -166,7 +171,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Model/column descriptions in YAML
 - [ ] `dbt docs generate` -> manifest + catalog exist
 - [ ] Documentation serve command or local documentation URL provided when user wants to view documentation
-- [ ] Presentation options were recommended after documentation: documentation only, business-facing report, dashboard design, semantic layer refinement, or query handoff
+- [ ] Presentation options were recommended after analytics insight reporting: documentation only, business-facing report, dashboard design, semantic layer refinement, or query handoff
 - [ ] Power BI PBIP/TMDL was created when the user approved a presentation layer and did not specify another technology
 - [ ] If Power BI PBIP/TMDL was created, PBIP includes the project file, Report artifact, SemanticModel artifact, TMDL/definition files, relationships, measures, parameters, and handoff README
 - [ ] If Power BI or another presentation layer was approved, `reports/agent/powerbi_model_plan.md`, `reports/agent/dashboard_pages.md`, `reports/agent/dax_measures.md`, or equivalent technology-specific planning files were created when applicable

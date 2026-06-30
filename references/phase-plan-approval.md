@@ -31,6 +31,7 @@ One approval authorizes only the current checkpoint or named phase. It never aut
 - Semantic layer
 - Project evaluator
 - Docs
+- Analytics insight reporting
 - Presentation layer and Power BI or business intelligence handoff
 - CI
 - Agents Schema

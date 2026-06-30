@@ -161,6 +161,51 @@ Each layer is a separate build and optional separate git push.
 
 ---
 
+## Analytics insight reporting only
+
+```text
+workflow_phase: analytics_insight_reporting
+```
+
+Read [analytics-insight-reporting.md](analytics-insight-reporting.md). Requires completed and validated marts, semantic layer, evaluator, and documentation.
+
+Before implementation: phase plan in `AGENT_PLAN.md` and approval.
+
+After completion, write:
+
+- `reports/agent/analytics_insight_report.md`
+- `reports/agent/reporting_catalog.md`
+- `reports/agent/kpi_catalog.md`
+- `reports/agent/dashboard_spec.md`
+- `reports/agent/insight_backlog.md`
+- `reports/agent/reporting_readiness_scorecard.md`
+- `reports/agent/analytics_insight_reporting_report.md`
+
+Update `reports/agent/PIPELINE_STATUS.md` and `reports/agent/CONTEXT_TREE.md`, then stop at the presentation-layer gate unless presentation work was explicitly approved.
+
+Do not create Power BI, dashboard, slide, or notebook artifacts in this phase.
+
+---
+
+## Full pipeline order reminder
+
+After automatic project setup and configuration, the default non-setup order is:
+
+1. Sources
+2. Staging / bronze
+3. Intermediate / silver
+4. Marts / gold
+5. Semantic layer
+6. Project evaluator
+7. Documentation
+8. Analytics insight reporting
+9. Presentation layer recommendation
+10. Optional Power BI / BI handoff after user approval
+11. Continuous integration and Agents Schema when requested
+12. Final delivery
+
+---
+
 ## Optional: build a single model (advanced)
 
 After creating one model in a layer:

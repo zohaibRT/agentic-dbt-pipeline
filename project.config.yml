@@ -156,6 +156,7 @@ commit_messages:
   semantic_layer: 'Add semantic layer metrics for {source}'
   project_evaluator: 'Configure and run dbt project evaluator'
   docs: 'Add dbt tests and documentation'
+  analytics_insight_reporting: 'Add analytics insight reporting design'
   ci: 'Add dbt automation workflows'
   agents_schema: 'Add Agents Schema sync workflow'
 
@@ -169,6 +170,8 @@ workflow_phases:
   - semantic_layer
   - project_evaluator
   - docs
+  - analytics_insight_reporting
+  - presentation_layer
   - ci
   - agents_schema
 

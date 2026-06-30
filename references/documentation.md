@@ -17,17 +17,13 @@ Before docs-only work, write/update `AGENT_PLAN.md` with the docs plan and get a
 | Completion criteria | Model/source documentation is useful, generated documentation artifacts exist, and any missing docs are reported |
 | Report required | `reports/agent/docs_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
 
-## Handoff to presentation layer
+## Handoff to analytics insight reporting
 
-Documentation completion does not close a full pipeline. After `dbt docs generate` passes in a full pipeline, the agent must read [presentation-layer.md](presentation-layer.md), create the presentation-layer recommendation, update status files, and ask the user whether to create a presentation artifact.
+Documentation completion does not close a full pipeline. After `dbt docs generate` passes in a full pipeline, the agent must read [analytics-insight-reporting.md](analytics-insight-reporting.md), write/update `AGENT_PLAN.md`, get approval, and run the analytics insight reporting phase before presentation work.
 
-Set delivery status to `Documentation complete - presentation decision pending`, not `Delivery complete`, until one of these happens:
+Set delivery status to `Documentation complete - analytics insight reporting pending`, not `Delivery complete`, until analytics insight reporting completes and the presentation-layer gate is reached.
 
-- The user declines a presentation artifact.
-- The user approves a presentation artifact and that presentation phase is completed or explicitly blocked.
-- The user explicitly asks to stop after documentation.
-
-Do not replace the presentation-layer question with generic follow-up language such as `If you want, next I can...`.
+Do not skip directly to [presentation-layer.md](presentation-layer.md) from documentation unless the user explicitly runs `workflow_phase: presentation_layer` after analytics insight reporting outputs already exist and are validated.
 
 ## Per-model YAML
 

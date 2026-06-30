@@ -2,7 +2,7 @@
 
 `dbt Analytics Engineer` is a generic, domain-neutral agent skill for setting up and maintaining dbt analytics-engineering projects with a structured, agent-assisted workflow. It is not ecommerce-only; ecommerce, hospital, finance, customer relationship management, operations, and other examples are examples only.
 
-It helps an agent start with read-only source discovery, initialize a dbt project, configure sources, build bronze/silver/gold medallion layers, add semantic layer assets, run quality checks, generate documentation, recommend a presentation layer, optionally create a Power BI handoff after approval, create continuous integration workflows, publish dbt metadata to Agents Schema, write per-phase status reports, commit each stage separately, and finish with a clear user-facing run summary. It also requires explicit data-engineering decisions before each build phase, so the agent does not silently guess grain, joins, metrics, privacy, or materialization.
+It helps an agent start with read-only source discovery, initialize a dbt project, configure sources, build bronze/silver/gold medallion layers, add semantic layer assets, run quality checks, generate documentation, design analytics insight reporting outputs, recommend a presentation layer, optionally create a Power BI handoff after approval, create continuous integration workflows, publish dbt metadata to Agents Schema, write per-phase status reports, commit each stage separately, and finish with a clear user-facing run summary. It also requires explicit data-engineering decisions before each build phase, so the agent does not silently guess grain, joins, metrics, privacy, or materialization.
 
 ## Installation
 
@@ -97,7 +97,8 @@ Keep passwords, tokens, and private keys in local profiles or GitHub Secrets.
 | Semantic layer | Adds MetricFlow / dbt semantic layer YAML for approved and reconciled mart metrics |
 | Quality | Runs `dbt_project_evaluator` and uses `audit_helper` where useful |
 | Documentation | Runs `dbt docs generate`, verifies manifest/catalog output, and can serve documentation locally for viewing |
-| Presentation layer | After documentation, recommends business-facing presentation options with possible key performance indicators, semantic metrics, dashboard/report pages, source models, caveats, and privacy notes. If approved and no other technology is specified, defaults to a Power BI PBIP/TMDL handoff |
+| Analytics insight reporting | After documentation, discovers and documents trusted business outputs, key performance indicator catalogs, dashboard spec, readiness scorecard, and deferred insights before presentation work |
+| Presentation layer | After analytics insight reporting, recommends business-facing presentation options using the reporting design files as scope. If approved and no other technology is specified, defaults to a Power BI PBIP/TMDL handoff |
 | Power BI handoff | Optional after approval. Produces a Power BI-ready star schema plan, semantic model plan, DAX measure specifications, dashboard page plan, static validation results, Microsoft Power BI Modeling Model Context Protocol validation when available, and Desktop open validation when available |
 | Human review | Summarizes assumptions, data quality notes, mappings, metrics, and open decisions |
 | Git | Commits initialization, sources, each model layer, documentation, continuous integration, and Agents Schema separately |
@@ -118,8 +119,9 @@ The skill is designed to keep project history readable. It commits each stage se
 7. Add mart models
 8. Add semantic layer metrics
 9. Add tests and documentation
-10. Add continuous integration workflows
-11. Add Agents Schema workflow
+10. Add analytics insight reporting design
+11. Add continuous integration workflows
+12. Add Agents Schema workflow
 
 By default, the agent asks before each commit. It asks about push only when a GitHub remote is configured or requested.
 It asks for approval before each non-setup build phase after showing the Markdown plan. Project setup and configuration is automatic setup-only unless a safety gate is triggered.
@@ -133,6 +135,7 @@ The skill keeps a reviewable audit trail in `reports/agent/`:
 - `<phase>_report.md` for each completed or blocked phase
 - `PIPELINE_STATUS.md` for current phase status
 - `CONTEXT_TREE.md` for reusable project memory
+- `analytics_insight_report.md`, `reporting_catalog.md`, `kpi_catalog.md`, `dashboard_spec.md`, `insight_backlog.md`, and `reporting_readiness_scorecard.md` after analytics insight reporting
 - `presentation_report.md` or `presentation_layer_report.md` when the presentation layer is recommended or created
 - `powerbi_model_plan.md`, `dashboard_pages.md`, and `dax_measures.md` when Power BI is approved
 - `final_delivery.md` for the final handoff
@@ -210,3 +213,4 @@ The skill can add and install these dbt packages:
 | [references/dbt-packages-and-skills.md](references/dbt-packages-and-skills.md) | dbt packages and companion skills |
 | [references/project-evaluator.md](references/project-evaluator.md) | Project evaluator setup for bronze/silver/gold |
 | [references/data-engineering-best-practices.md](references/data-engineering-best-practices.md) | Data-engineering guardrails |
+| [references/analytics-insight-reporting.md](references/analytics-insight-reporting.md) | Business reporting design before presentation layer |

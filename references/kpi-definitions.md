@@ -1,6 +1,8 @@
 # Key Performance Indicator Definitions
 
-Use this before gold/marts, semantic layer, presentation layer, and final delivery. Also read [metric-verification.md](metric-verification.md) before implementing or handing off any key performance indicator.
+Use this before gold/marts, semantic layer, analytics insight reporting, presentation layer, and final delivery. Also read [metric-verification.md](metric-verification.md) before implementing or handing off any key performance indicator.
+
+Approved and implemented key performance indicators must also appear in `reports/agent/kpi_catalog.md` during analytics insight reporting. See [analytics-insight-reporting.md](analytics-insight-reporting.md).
 
 ## Core rule
 
@@ -83,7 +85,7 @@ If no key performance indicators are ready, write `No key performance indicators
 
 ## Stop conditions
 
-Stop before semantic layer, presentation layer, or final metric handoff when:
+Stop before semantic layer, analytics insight reporting, presentation layer, or final metric handoff when:
 
 - A key performance indicator depends on a missing or empty fact table.
 - The numerator or denominator is ambiguous.

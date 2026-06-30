@@ -32,7 +32,7 @@ Read these skill references as needed:
 | Big data, modern table formats, partitioning, clustering, compaction, and warehouse optimization | [principal-data-engineering-standards.md](principal-data-engineering-standards.md) |
 | Data quality and per-layer validation | [layer-data-validation.md](layer-data-validation.md), [data-engineering-best-practices.md](data-engineering-best-practices.md) |
 | Key performance indicators and semantic metrics | [kpi-definitions.md](kpi-definitions.md), [metric-verification.md](metric-verification.md), [semantic-layer-spec.md](semantic-layer-spec.md) |
-| Power BI and presentation layer design | [presentation-layer.md](presentation-layer.md), [principal-data-engineering-standards.md](principal-data-engineering-standards.md) |
+| Power BI and presentation layer design | [presentation-layer.md](presentation-layer.md), [analytics-insight-reporting.md](analytics-insight-reporting.md), [principal-data-engineering-standards.md](principal-data-engineering-standards.md) |
 | Privacy, sensitive fields, and unclear fields | [privacy-and-unknown-fields.md](privacy-and-unknown-fields.md) |
 | Source safety and warehouse routing | [source-confirmation.md](source-confirmation.md), [warehouse-adapter-routing.md](warehouse-adapter-routing.md), [schema-isolation.md](schema-isolation.md) |
 
@@ -65,7 +65,7 @@ Ask whether to persist knowledge when the user provides reusable local rules suc
 - Privacy and masking policy
 - Team naming conventions
 - Warehouse-specific performance patterns
-- Power BI report standards
+- Analytics insight reporting standards
 - Accepted evaluator exceptions
 
 Store project-specific knowledge in the project files listed in [project-knowledge.md](project-knowledge.md), not in this skill reference.

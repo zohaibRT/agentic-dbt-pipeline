@@ -12,8 +12,10 @@ This repository contains a dbt analytics engineering agent workflow. Use `SKILL.
 6. Marts
 7. Validation
 8. Documentation
+9. Analytics insight reporting
+10. Presentation layer (optional after approval)
 
-Semantic layer, project evaluator, presentation layer, continuous integration, Agents Schema, commits, and pushes require the approval rules in `SKILL.md`.
+Semantic layer, project evaluator, analytics insight reporting, presentation layer, continuous integration, Agents Schema, commits, and pushes require the approval rules in `SKILL.md`.
 
 ## Before Editing
 

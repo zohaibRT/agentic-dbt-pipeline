@@ -9,7 +9,7 @@ Do not try to fully design bronze, silver, gold, semantic metrics, evaluator exc
 Use:
 
 ```text
-Project discovery -> sources discovery -> bronze discovery -> silver discovery -> gold discovery -> semantic/evaluator/docs discovery
+Project discovery -> sources discovery -> bronze discovery -> silver discovery -> gold discovery -> semantic/evaluator/docs/analytics insight reporting discovery
 ```
 
 Each phase should discover only what is needed to make the next plan accurate, recommend the best next action with evidence, then ask for approval before implementation.
@@ -25,6 +25,7 @@ Each phase should discover only what is needed to make the next plan accurate, r
 | Gold / marts | Facts, dimensions, reporting marts, metric grains, privacy exposure, materialization | Do not create semantic metrics before marts are approved |
 | Semantic layer | Metric definitions on approved gold models, dimensions/entities, time spine | Do not invent metrics not supported by gold |
 | Evaluator/docs | Quality warnings, accepted exceptions, docs coverage, exposures | Do not hide unresolved model issues |
+| Analytics insight reporting | Trusted facts/dimensions/metrics, useful business questions, report/page candidates, deferred insights, privacy exposure for reporting | Do not create presentation artifacts or invent unsupported reporting scope |
 
 ## Required behavior
 

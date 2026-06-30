@@ -3,7 +3,7 @@ name: agentic-dbt-pipeline
 description: >-
   Automate end-to-end dbt with an AI agent: project setup and configuration, medallion layers
   (bronze/silver/gold by default), packages (codegen, utils, evaluator, audit_helper),
-  semantic layer, documentation, per-layer git commits, optional GitHub push via GitHub command line interface, and
+  semantic layer, documentation, analytics insight reporting, per-layer git commits, optional GitHub push via GitHub command line interface, and
   user-facing final run summaries with senior data-engineering decision gates.
   Use when setting up or extending a dbt analytics project with agentic automation.
 ---
@@ -12,7 +12,7 @@ description: >-
 
 Full lifecycle orchestrator for the dbt project.
 **On every new/full-pipeline prompt:** agent runs read-only [discovery-requirements.md](references/discovery-requirements.md) first, explains what it concluded from the source data, and asks for requirements before any build plan.
-**Default full pipeline:** discovery -> project setup and configuration -> sources -> bronze -> silver -> gold -> semantic layer -> project evaluator -> documentation -> presentation layer recommendation -> continuous integration, plus Agents Schema when enabled and supported.
+**Default full pipeline:** discovery -> project setup and configuration -> sources -> bronze -> silver -> gold -> semantic layer -> project evaluator -> documentation -> analytics insight reporting -> presentation layer recommendation -> continuous integration, plus Agents Schema when enabled and supported.
 
 Use `workflow_phase:` to run a single phase. Project setup and configuration runs automatically for new/full pipeline work unless the user explicitly disables automatic setup.
 
@@ -76,7 +76,7 @@ Do not assume the business domain. During discovery, understand source tables, t
 
 If any of those areas cannot be properly understood or proven, do not assume. Ask the user for missing business meaning or approval, and defer dependent models, tests, metrics, semantic definitions, or presentation outputs until the uncertainty is resolved.
 
-After discovery, summarize what the agent concluded from the source data and ask whether the user wants to add requirements such as mappings, metrics, privacy rules, naming rules, included/excluded tables, or priority facts/dimensions. User responses are interpreted by the active workflow checkpoint, not by broad intent. At the discovery checkpoint, the next allowed action is only source confirmation and automatic project setup and configuration. Do not treat discovery acceptance as approval for sources, bronze/staging, silver/intermediate, gold/marts, semantic layer, evaluator, documentation, presentation layer, continuous integration, Agents Schema, commits, pushes, or future schema switching.
+After discovery, summarize what the agent concluded from the source data and ask whether the user wants to add requirements such as mappings, metrics, privacy rules, naming rules, included/excluded tables, or priority facts/dimensions. User responses are interpreted by the active workflow checkpoint, not by broad intent. At the discovery checkpoint, the next allowed action is only source confirmation and automatic project setup and configuration. Do not treat discovery acceptance as approval for sources, bronze/staging, silver/intermediate, gold/marts, semantic layer, evaluator, documentation, analytics insight reporting, presentation layer, continuous integration, Agents Schema, commits, pushes, or future schema switching.
 
 ## Project setup and configuration (automatic setup-only phase after discovery)
 
@@ -142,7 +142,8 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 | **7b Semantic** | Metrics on marts | [semantic-layer-spec.md](references/semantic-layer-spec.md) |
 | **7c Evaluator** | Best-practice audit | [project-evaluator.md](references/project-evaluator.md), [dbt-packages-and-skills.md](references/dbt-packages-and-skills.md) |
 | **8 Docs** | After layers | [documentation.md](references/documentation.md) |
-| **8b Presentation layer** | Optional final user-facing layer | [presentation-layer.md](references/presentation-layer.md) |
+| **8a Analytics insight reporting** | Business reporting design before presentation | [analytics-insight-reporting.md](references/analytics-insight-reporting.md) |
+| **8b Presentation layer** | Optional final user-facing layer after analytics insight reporting | [presentation-layer.md](references/presentation-layer.md) |
 | **9 Git** | After each stage | [github-repo-resolution.md](references/github-repo-resolution.md), [git-workflow.md](references/git-workflow.md) |
 | **10 Agents Schema / continuous integration** | Metadata + automation | [agents-schema-setup.md](references/agents-schema-setup.md), [cicd-setup.md](references/cicd-setup.md) |
 | **Plan approval** | Before each non-setup build phase | [phase-plan-approval.md](references/phase-plan-approval.md) |
@@ -155,7 +156,7 @@ Context prompt template: [agent-context-prompt.md](references/agent-context-prom
 
 ## Step 0 - Load configuration
 
-Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), [profile-listing.md](references/profile-listing.md), [project-naming.md](references/project-naming.md), [schema-isolation.md](references/schema-isolation.md), [env-configuration.md](references/env-configuration.md), [source-confirmation.md](references/source-confirmation.md), [warehouse-adapter-routing.md](references/warehouse-adapter-routing.md), [skill-knowledge.md](references/skill-knowledge.md), [project-knowledge.md](references/project-knowledge.md), [discovery-requirements.md](references/discovery-requirements.md), [phased-discovery.md](references/phased-discovery.md), [recommendation-and-review.md](references/recommendation-and-review.md), [writing-style.md](references/writing-style.md), [reporting-standards.md](references/reporting-standards.md), [mermaid-diagrams.md](references/mermaid-diagrams.md), [principal-data-engineering-standards.md](references/principal-data-engineering-standards.md), [layer-data-validation.md](references/layer-data-validation.md), [kpi-definitions.md](references/kpi-definitions.md), [metric-verification.md](references/metric-verification.md), [advanced-data-engineering-review.md](references/advanced-data-engineering-review.md), [phase-plan-approval.md](references/phase-plan-approval.md), [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md), [phase-completion-report.md](references/phase-completion-report.md), and [context-tree.md](references/context-tree.md).
+Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), [profile-listing.md](references/profile-listing.md), [project-naming.md](references/project-naming.md), [schema-isolation.md](references/schema-isolation.md), [env-configuration.md](references/env-configuration.md), [source-confirmation.md](references/source-confirmation.md), [warehouse-adapter-routing.md](references/warehouse-adapter-routing.md), [skill-knowledge.md](references/skill-knowledge.md), [project-knowledge.md](references/project-knowledge.md), [discovery-requirements.md](references/discovery-requirements.md), [phased-discovery.md](references/phased-discovery.md), [recommendation-and-review.md](references/recommendation-and-review.md), [writing-style.md](references/writing-style.md), [reporting-standards.md](references/reporting-standards.md), [analytics-insight-reporting.md](references/analytics-insight-reporting.md), [mermaid-diagrams.md](references/mermaid-diagrams.md), [principal-data-engineering-standards.md](references/principal-data-engineering-standards.md), [layer-data-validation.md](references/layer-data-validation.md), [kpi-definitions.md](references/kpi-definitions.md), [metric-verification.md](references/metric-verification.md), [advanced-data-engineering-review.md](references/advanced-data-engineering-review.md), [phase-plan-approval.md](references/phase-plan-approval.md), [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md), [phase-completion-report.md](references/phase-completion-report.md), and [context-tree.md](references/context-tree.md).
 
 Resolve paths relative to workspace root. dbt project root = `{project.root}`.
 
@@ -211,7 +212,7 @@ Read [layer-data-validation.md](references/layer-data-validation.md) before buil
 
 Read [kpi-definitions.md](references/kpi-definitions.md) and [metric-verification.md](references/metric-verification.md) before gold/marts, semantic layer, presentation layer, and final delivery. The agent must propose supported key performance indicators with business meaning, source model, grain, numerator, denominator, filters, time field, caveats, validation evidence, approval status, and expected versus actual reconciliation. Do not create semantic metrics or presentation calculations from ambiguous or unreconciled key performance indicators.
 
-Read [advanced-data-engineering-review.md](references/advanced-data-engineering-review.md) before final delivery. The pipeline is not complete until advanced review areas are reported, including source lock, schema hygiene, layer validation, grain, tests, data quality, privacy, key performance indicators, semantic layer, evaluator, documentation, presentation-layer recommendation, and operations.
+Read [advanced-data-engineering-review.md](references/advanced-data-engineering-review.md) before final delivery. The pipeline is not complete until advanced review areas are reported, including source lock, schema hygiene, layer validation, grain, tests, data quality, privacy, key performance indicators, semantic layer, evaluator, documentation, analytics insight reporting, presentation-layer recommendation, and operations.
 
 ## Step 0.5 - Resolve layer names
 
@@ -299,10 +300,11 @@ Read [separate-layer-builds.md](references/separate-layer-builds.md).
 6. Semantic layer - metrics on marts facts
 7. Project evaluator - `dbt build --select package:dbt_project_evaluator` after confirming it is routed to `<layer_schema_prefix>_evaluator`
 8. Documentation - `dbt docs generate`; use `dbt docs serve` for local viewing when requested or appropriate for an interactive local run
-9. Presentation layer gate - required after documentation and before final delivery; ask whether the user wants a presentation layer. If the user approves and does not name another technology, default to a Power BI PBIP/TMDL project, run a separate `presentation_layer` phase, and create the approved artifact.
-10. Agents Schema - publish dbt metadata to `AGENTS.*` after `target/manifest.json` exists when enabled and supported
-11. Automation - continuous integration workflow
-12. **Advanced review, acceptance + final summary** - [advanced-data-engineering-review.md](references/advanced-data-engineering-review.md), [acceptance-checklist.md](references/acceptance-checklist.md), [final-delivery.md](references/final-delivery.md)
+9. Analytics insight reporting - discover and document trusted business outputs, key performance indicator catalogs, dashboard spec, and reporting readiness before presentation work - [analytics-insight-reporting.md](references/analytics-insight-reporting.md)
+10. Presentation layer gate - required after analytics insight reporting and before final delivery; ask whether the user wants a presentation layer. If the user approves and does not name another technology, default to a Power BI PBIP/TMDL project, run a separate `presentation_layer` phase, and create the approved artifact.
+11. Agents Schema - publish dbt metadata to `AGENTS.*` after `target/manifest.json` exists when enabled and supported
+12. Automation - continuous integration workflow
+13. **Advanced review, acceptance + final summary** - [advanced-data-engineering-review.md](references/advanced-data-engineering-review.md), [acceptance-checklist.md](references/acceptance-checklist.md), [final-delivery.md](references/final-delivery.md)
 
 After project setup and configuration, each stage: **phase-specific discovery -> agent recommendation -> data engineer decision check -> write Markdown plan -> ask approval -> implement -> parse/build -> warehouse data validation queries -> write phase report with validation results -> update context tree -> summarize validation results in the standard chat result format -> ask commit**. Ask for push only when a non-local GitHub repository is configured or the user requested push.
 
@@ -338,13 +340,32 @@ Read [project-evaluator.md](references/project-evaluator.md). Before running eva
 
 ## Step 6 - Documentation
 
-Read [documentation.md](references/documentation.md). Run `dbt docs generate`. Use `dbt docs serve` only as a non-blocking local viewing step and report the URL when started. In a full pipeline, do not mark delivery complete after documentation. Move to the presentation-layer gate and ask the user whether to create a presentation layer.
+Read [documentation.md](references/documentation.md). Run `dbt docs generate`. Use `dbt docs serve` only as a non-blocking local viewing step and report the URL when started. In a full pipeline, do not mark delivery complete after documentation. Move to analytics insight reporting.
 
-## Step 6a - Presentation layer recommendation
+## Step 6a - Analytics insight reporting
 
-Read [presentation-layer.md](references/presentation-layer.md), [kpi-definitions.md](references/kpi-definitions.md), and [metric-verification.md](references/metric-verification.md). After documentation and final validation, recommend the best presentation-layer option with possible key performance indicators, semantic metrics, dashboard or report pages, source models, caveats, and privacy notes. Ask simply whether the user wants a presentation layer before final delivery is closed. If the user approves and does not specify another technology, default to Power BI PBIP/TMDL, create the `presentation_layer` phase plan, build only the approved artifact, validate it, and write the presentation report. Approved presentation artifacts must include both domain key performance indicator visuals and a standard time showcase when validated facts have usable date columns. The presentation design must be consultant-grade: infer the richest useful enterprise report from validated facts, dimensions, metrics, source profiling, and data quality evidence, while asking the user only for business meaning, privacy, cost, refresh, or downstream usability decisions. Do not build dashboards, reports, slides, notebooks, or business intelligence artifacts without approval.
+Read [analytics-insight-reporting.md](references/analytics-insight-reporting.md), [reporting-standards.md](references/reporting-standards.md), [kpi-definitions.md](references/kpi-definitions.md), and [metric-verification.md](references/metric-verification.md). Before this phase, write/update `AGENT_PLAN.md` and wait for approval. Discover and document the most useful business-facing outputs from validated marts and semantic metrics. Produce `analytics_insight_report.md`, `reporting_catalog.md`, `kpi_catalog.md`, `dashboard_spec.md`, `insight_backlog.md`, and `reporting_readiness_scorecard.md` under `reports/agent/`. Do not create presentation artifacts in this phase.
 
-The presentation-layer recommendation and user decision gate are mandatory for full pipeline final delivery. If the user has not answered the presentation question, set status to `Documentation complete - presentation decision pending`, not `Delivery complete`. If the recommendation cannot be produced, mark it `BLOCKED` or `SKIPPED` with evidence in the final report, pipeline status, context tree, and final response.
+### Analytics insight reporting hard rules
+
+- Do not create fake insights.
+- Do not suggest charts just because data exists.
+- Every key performance indicator and report candidate must map to validated marts or semantic metrics.
+- Every visual must answer a real business question.
+- Do not expose sensitive fields without approval.
+- Clearly separate trusted outputs from uncertain or deferred outputs.
+- Prefer useful, simple, business-friendly reporting over too many technical tables.
+- Do not hardcode one domain's key performance indicators, page names, or sample values.
+- Do not invent targets, benchmarks, attribution, or recommendations without evidence.
+- Maximum means maximum useful business insight supported by validated data, not maximum number of dashboards.
+
+After this phase, update `reports/agent/analytics_insight_reporting_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md`, then stop at the presentation-layer gate unless the user already approved presentation work.
+
+## Step 6b - Presentation layer recommendation
+
+Read [presentation-layer.md](references/presentation-layer.md), [analytics-insight-reporting.md](references/analytics-insight-reporting.md), [kpi-definitions.md](references/kpi-definitions.md), and [metric-verification.md](references/metric-verification.md). After analytics insight reporting, recommend the best presentation-layer option using `dashboard_spec.md`, `kpi_catalog.md`, `reporting_catalog.md`, `insight_backlog.md`, `reporting_readiness_scorecard.md`, and `analytics_insight_report.md` as the scope contract. Ask simply whether the user wants a presentation layer before final delivery is closed. If the user approves and does not specify another technology, default to Power BI PBIP/TMDL, create the `presentation_layer` phase plan, build only the approved artifact, validate it, and write the presentation report. The presentation layer must not invent pages, key performance indicators, visuals, or business scope that contradict analytics insight outputs unless the user explicitly overrides them. Do not build dashboards, reports, slides, notebooks, or business intelligence artifacts without approval.
+
+The presentation-layer recommendation and user decision gate are mandatory for full pipeline final delivery. If the user has not answered the presentation question, set status to `Analytics insight reporting complete - presentation decision pending`, not `Delivery complete`. If the recommendation cannot be produced, mark it `BLOCKED` or `SKIPPED` with evidence in the final report, pipeline status, context tree, and final response.
 
 ## Step 6b - Human review
 
@@ -375,9 +396,10 @@ Always finish with a user-facing summary that starts short, then gives the usefu
 4. Validation: dbt debug, parse, build, documentation, and evaluator results.
 5. Data quality notes and assumptions.
 6. Git, continuous integration, and Agents Schema status.
-7. Presentation-layer recommendation status.
-8. Advanced data-engineering review status.
-9. Open decisions and recommended next actions.
+7. Analytics insight reporting status and links to reporting design files.
+8. Presentation-layer recommendation status.
+9. Advanced data-engineering review status.
+10. Open decisions and recommended next actions.
 
 Keep the first section concise enough for a new user to understand in under one minute.
 
@@ -412,7 +434,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 
 ## Ambiguity - prompt overrides
 
-- `workflow_phase:` init | sources | staging | intermediate | marts | semantic_layer | project_evaluator | docs | presentation_layer | ci | agents_schema
+- `workflow_phase:` init | sources | staging | intermediate | marts | semantic_layer | project_evaluator | docs | analytics_insight_reporting | presentation_layer | ci | agents_schema
 - `dbt_profile_name:` dbt profile key from `~/.dbt/profiles.yml`; ask if missing or ambiguous
 - `dbt_project_name:` optional explicit dbt project name; otherwise derive from source/domain
 - `dbt_project_root:` optional explicit folder name; otherwise use `dbt_project_name`
@@ -439,7 +461,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 
 ## Do not use this skill for
 
-- Do not directly build Power BI dashboards, reports, slides, notebooks, or business intelligence artifacts unless the user approves the separate `presentation_layer` or BI handoff phase. The skill may recommend presentation-layer artifacts and may prepare Power BI-ready semantic outputs, DAX measure drafts, PBIP/TMDL handoff files, dashboard requirements, or approved PBIP/TMDL artifacts after marts, semantic layer, evaluator, documentation, and validation are complete.
+- Do not directly build Power BI dashboards, reports, slides, notebooks, or business intelligence artifacts unless the user approves the separate `presentation_layer` or BI handoff phase. The skill may document analytics insight reporting outputs after marts, semantic layer, evaluator, documentation, and validation are complete, and may prepare Power BI-ready semantic outputs, DAX measure drafts, PBIP/TMDL handoff files, or approved PBIP/TMDL artifacts only after analytics insight reporting and user approval.
 - Ad-hoc business questions -> `answering-natural-language-questions-with-dbt` *(use that skill directly)*
 
 ## Reference files
@@ -490,7 +512,8 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 | [mapping-seeds.md](references/mapping-seeds.md) | Manual mapping seeds and coverage tests |
 | [marts-spec.md](references/marts-spec.md) | Star schema |
 | [documentation.md](references/documentation.md) | Docs generate |
-| [presentation-layer.md](references/presentation-layer.md) | Optional presentation-layer recommendation after final validation |
+| [analytics-insight-reporting.md](references/analytics-insight-reporting.md) | Business reporting design before presentation |
+| [presentation-layer.md](references/presentation-layer.md) | Optional presentation-layer recommendation after analytics insight reporting |
 | [human-review.md](references/human-review.md) | Engineer/domain review checkpoints |
 | [final-delivery.md](references/final-delivery.md) | Final handoff checklist |
 | [validation-commands.md](references/validation-commands.md) | debug, parse, build, documentation |

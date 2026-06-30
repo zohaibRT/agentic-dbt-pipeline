@@ -1,6 +1,6 @@
 # Metric Verification
 
-Use this before marking gold/marts, semantic layer, presentation layer, Power BI artifacts, or final delivery complete.
+Use this before gold/marts, semantic layer, analytics insight reporting, presentation layer, Power BI artifacts, or final delivery complete.
 
 ## Core rule
 
@@ -16,7 +16,7 @@ For each key performance indicator, verify:
 6. Presentation logic: Power BI/DAX/report measures match the semantic or gold definition.
 7. Reconciliation: SQL expected values equal semantic/presentation actual values, or differences are explained.
 
-Do not continue to presentation delivery when a metric denominator, numerator, filter, time field, or status inclusion is wrong, incomplete, or not reconciled.
+Do not continue to analytics insight reporting or presentation delivery when a metric denominator, numerator, filter, time field, or status inclusion is wrong, incomplete, or not reconciled.
 
 ## Required checks
 
@@ -72,7 +72,7 @@ Use equivalent sums for amount-based metrics.
 
 ## Required report section
 
-Gold, semantic, presentation, and final reports must include:
+Gold, semantic, analytics insight, presentation, and final reports must include:
 
 ```markdown
 ## Metric Verification Results
@@ -86,7 +86,7 @@ For metrics without denominators, use `Not applicable` for denominator columns a
 
 ## Stop conditions
 
-Stop before semantic layer, presentation layer, final delivery, or commit when:
+Stop before semantic layer, analytics insight reporting, presentation layer, final delivery, or commit when:
 
 - Expected and actual numerator differ without an approved reason.
 - Expected and actual denominator differ without an approved reason.
