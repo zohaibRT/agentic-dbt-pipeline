@@ -216,6 +216,9 @@ def validate_platform_files(root: Path, errors: list[str]) -> None:
         schema = data.get("$schema")
         if not isinstance(schema, str) or not PLATFORM_SCHEMA_RE.match(schema):
             fail(errors, path, "$schema does not match Fabric gitIntegration platformProperties 2.x.y pattern")
+        config = data.get("config")
+        if not isinstance(config, dict) or not config:
+            fail(errors, path, "config object is required and must not be empty")
 
 
 def validate_tmdl_keywords_and_keys(root: Path, errors: list[str]) -> None:
