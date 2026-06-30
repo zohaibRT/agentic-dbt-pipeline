@@ -392,7 +392,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 
 ## Do not use this skill for
 
-- Do not directly build Power BI dashboards or BI artifacts unless the user approves the separate `presentation_layer` or BI handoff phase. The skill may recommend presentation-layer artifacts and may prepare Power BI-ready semantic outputs, DAX measure drafts, PBIP/TMDL handoff files, dashboard requirements, or approved PBIP/TMDL artifacts after marts, semantic layer, evaluator, documentation, and validation are complete.
+- Do not directly build Power BI dashboards, reports, slides, notebooks, or business intelligence artifacts unless the user approves the separate `presentation_layer` or BI handoff phase. The skill may recommend presentation-layer artifacts and may prepare Power BI-ready semantic outputs, DAX measure drafts, PBIP/TMDL handoff files, dashboard requirements, or approved PBIP/TMDL artifacts after marts, semantic layer, evaluator, documentation, and validation are complete.
 - Ad-hoc business questions -> `answering-natural-language-questions-with-dbt` *(use that skill directly)*
 
 ## Reference files

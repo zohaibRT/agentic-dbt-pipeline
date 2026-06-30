@@ -179,11 +179,11 @@ def main() -> int:
                 errors.append(
                     f".env.example contains secret-like key on line {line_number}: {key}"
                 )
-            if key in PLACEHOLDER_ENV_EXAMPLE_KEYS and not (
+            if key in PLACEHOLDER_ENV_EXAMPLE_KEYS and value and not (
                 value.startswith("<") and value.endswith(">")
             ):
                 errors.append(
-                    f".env.example key {key} should use a placeholder value like <...>"
+                    f".env.example key {key} should be blank or use a placeholder value like <...>"
                 )
 
         missing_env_keys = sorted(REQUIRED_ENV_EXAMPLE_KEYS - env_keys)
