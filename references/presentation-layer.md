@@ -243,22 +243,45 @@ When the user provides a detailed Power BI contract, copy the contract into the 
 
 For Power BI PBIP/TMDL artifacts, never accept "files created" as done. The presentation phase can be marked complete only after the validation loop passes or a required external validation step is explicitly unavailable and documented as not run.
 
+## Power BI MCP availability rule
+
+Before validating a Power BI PBIP/TMDL artifact, the agent must actively check whether Power BI Modeling Model Context Protocol tools are available in the current environment. Do not assume they are unavailable because the tool list is not obvious, and do not rely on Cursor, Power BI Desktop, or static file checks alone when Model Context Protocol validation can be used.
+
+Required behavior:
+
+1. Search available tools/connectors for Power BI Modeling Model Context Protocol capabilities such as `ConnectFolder`, connection inspection, table operations, relationship operations, and DAX query operations.
+2. If the Power BI Modeling Model Context Protocol tools are installed or exposed, use them. Running only static validation while available Model Context Protocol tools are skipped is a failed presentation phase.
+3. If the tools are not exposed but a tool/plugin/connector installation mechanism is available, request or recommend installing the exact Power BI Modeling Model Context Protocol connector/plugin before final presentation validation.
+4. If installation is not possible in the current environment, mark Model Context Protocol validation as `NOT RUN` with the exact reason and mark the presentation phase `BLOCKED` when the user required open/load validation through Model Context Protocol.
+5. Record the availability check, tool names found or missing, install attempt or instruction, and validation result in `reports/agent/presentation_report.md`.
+
+The expected Model Context Protocol validation path is:
+
+- Connect to the SemanticModel definition folder with `ConnectFolder`.
+- Confirm the model connection loads.
+- Inspect tables, columns, measures, relationships, and partitions.
+- Run a simple DAX smoke query.
+- Run at least one DAX query for core key performance indicator measures when possible and reconcile it to the gold/semantic SQL checks.
+
 Required loop:
 
 1. Build the PBIP/TMDL artifact.
-2. Run static file validation: file tree, JSON parsing, TMDL structure, path links, relationship ambiguity audit, and partition/source checks. Run `python scripts/validate_powerbi_pbip.py <pbip_project_folder>` when this repository script is available, and fix every failure before continuing.
-3. Self-test the semantic model using the Power BI Modeling Model Context Protocol tools when available:
+2. Check Power BI Modeling Model Context Protocol availability using the rule above.
+3. Run static file validation: file tree, JSON parsing, TMDL structure, path links, relationship ambiguity audit, and partition/source checks. Run `python scripts/validate_powerbi_pbip.py <pbip_project_folder>` when this repository script is available, and fix every failure before continuing.
+4. Self-test the semantic model using the Power BI Modeling Model Context Protocol tools when available:
    - `ConnectFolder` against the SemanticModel definition folder.
    - `ListConnections` or `GetConnection` to confirm the model connection loaded.
    - Table and relationship operations to confirm expected tables, columns, and relationships exist.
    - DAX query operation with a smoke query such as `EVALUATE ROW("test", 1)`.
-4. If Power BI Desktop is available, open or launch the `.pbip` and confirm it loads without project definition or relationship-path errors.
-5. If any step fails, fix the PBIP/TMDL files and repeat the validation loop.
-6. Only after passing validation, update `reports/agent/presentation_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` with `PASS`.
+5. If Power BI Desktop is available, open or launch the `.pbip` and confirm it loads without project definition or relationship-path errors.
+6. If any step fails, fix the PBIP/TMDL files and repeat the validation loop.
+7. Only after passing validation, update `reports/agent/presentation_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` with `PASS`.
 
 Do not mark the presentation phase complete if the user would see an error when opening the `.pbip`.
 
 If the Power BI Modeling Model Context Protocol tools are unavailable in the current environment, mark the Model Context Protocol load test as `NOT RUN` with the exact reason. Do not claim the semantic model loaded through Model Context Protocol. If Power BI Desktop is unavailable, mark Desktop open validation as `NOT RUN` with the exact reason. If either validation is required by the user's contract and cannot be run, mark the presentation phase `BLOCKED`, not `PASS`.
+
+If Power BI Modeling Model Context Protocol tools are available but were not used, mark Model Context Protocol validation as `FAIL`, not `NOT RUN`.
 
 ## Power BI self-test checklist
 
@@ -274,6 +297,7 @@ Before handoff, paste the validation results into the chat result summary and `r
 | Partitions | Import or source queries point to real approved gold/mart tables |
 | Power BI Modeling Model Context Protocol load | `ConnectFolder` to the SemanticModel definition folder succeeds |
 | Power BI Modeling Model Context Protocol inspection | Connections, tables, columns, relationships, and a simple DAX smoke query succeed |
+| Power BI Modeling Model Context Protocol availability | Tool search/connector check is recorded; if available, Model Context Protocol validation was run |
 | Power BI Desktop open | `.pbip` opens without load errors when Desktop is available |
 
 If Power BI Desktop open fails after handoff, the agent must use the pasted error message as a blocker, fix the artifact, rerun static validation, rerun the relationship ambiguity audit, rerun the Power BI Modeling Model Context Protocol `ConnectFolder` test, rerun Desktop open validation when available, and update `reports/agent/presentation_report.md` with the fix and retest results.
