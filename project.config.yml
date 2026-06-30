@@ -68,7 +68,7 @@ dbt_agent_skills:
     - adding-dbt-unit-test
     - answering-natural-language-questions-with-dbt
 
-domain: analytics
+domain: auto
 
 layer_names:
   ask_user: false
@@ -84,9 +84,9 @@ layer_roles:
 
 paths:
   sources: models/sources
-  layer_1: models/bronze/analytics
-  layer_2: models/silver/analytics
-  layer_3: models/gold/analytics
+  layer_1: models/{layer_1_name}/{domain}
+  layer_2: models/{layer_2_name}/{domain}
+  layer_3: models/{layer_3_name}/{domain}
 
 naming:
   layer_1_prefix: stg_{source}__
@@ -108,9 +108,9 @@ dbt:
   adapter_version: '1.10.0'
   parse_flags: '--no-partial-parse'
   build_selectors:
-    layer_1: '+path:models/bronze/analytics'
-    layer_2: '+path:models/silver/analytics'
-    layer_3: '+path:models/gold/analytics'
+    layer_1: '+path:models/{layer_1_name}/{domain}'
+    layer_2: '+path:models/{layer_2_name}/{domain}'
+    layer_3: '+path:models/{layer_3_name}/{domain}'
 
 materialization_profile: prod
 materialization:
