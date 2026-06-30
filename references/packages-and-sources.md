@@ -17,6 +17,8 @@ Before writing `packages.yml`, running codegen, or creating source YAML, follow 
 
 ## `packages.yml` - standard packages
 
+Package versions must be pinned. Do not use unbounded latest installs, floating branch references, or missing `version:` values for standard packages. If a project needs a newer version, update the pinned version intentionally, run `dbt deps`, commit `package-lock.yml`, and record the reason in the phase report.
+
 ```yaml
 packages:
   - package: dbt-labs/codegen
@@ -38,6 +40,8 @@ git add package-lock.yml && git commit -m "Install dbt packages"
 ```
 
 `dbt_utils`, `dbt_project_evaluator`, and `audit_helper` install via `dbt deps`. Add `dispatch` and route evaluator outputs to `<layer_schema_prefix>_evaluator` - see [dbt-packages-and-skills.md](dbt-packages-and-skills.md).
+
+Before accepting `packages.yml`, verify every standard package has an exact or range-bounded `version:` value. Treat a missing version as a source phase validation failure.
 
 ## Generate source YAML
 

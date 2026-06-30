@@ -47,7 +47,7 @@ After project setup and configuration, for every non-setup phase: **phase-specif
 workflow_phase: sources
 ```
 
-Ensure `packages.yml` has **codegen only** - see [packages-and-sources.md](packages-and-sources.md).
+Ensure `packages.yml` has the standard pinned package stack; the sources phase uses `codegen` from that stack - see [packages-and-sources.md](packages-and-sources.md).
 
 ```powershell
 dbt deps

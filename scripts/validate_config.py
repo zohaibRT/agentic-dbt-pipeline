@@ -150,6 +150,25 @@ def main() -> int:
                 errors.append(
                     "schema_isolation.allow_dbt_outputs_in_source_schema must be false"
                 )
+
+            packages = config.get("packages")
+            if isinstance(packages, list):
+                for index, package in enumerate(packages, start=1):
+                    if not isinstance(package, dict):
+                        errors.append(f"packages[{index}] must be a mapping")
+                        continue
+                    name = package.get("package") or package.get("git") or f"#{index}"
+                    version = str(package.get("version") or "").strip()
+                    if not version:
+                        errors.append(
+                            f"Package {name} must pin an exact or range-bounded version"
+                        )
+                    if version.lower() in {"latest", "*"}:
+                        errors.append(
+                            f"Package {name} must not use floating version {version!r}"
+                        )
+            else:
+                errors.append("project.config.yml packages must be a list")
         elif config is not None:
             errors.append("project.config.yml must contain a YAML mapping at top level")
 

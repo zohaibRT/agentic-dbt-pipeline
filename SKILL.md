@@ -131,6 +131,7 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 | **0h Layer data validation** | Warehouse query checks after every built layer | [layer-data-validation.md](references/layer-data-validation.md) |
 | **0i Key performance indicators** | Business metric definitions, approval evidence, and reconciliation | [kpi-definitions.md](references/kpi-definitions.md), [metric-verification.md](references/metric-verification.md) |
 | **0j Advanced review** | Senior data-engineering completion gate | [advanced-data-engineering-review.md](references/advanced-data-engineering-review.md) |
+| **0k Rollback / redo** | Controlled rollback when a completed phase must be undone or rebuilt | [phase-rollback.md](references/phase-rollback.md) |
 | **1 Init** | New project | [project-initialization.md](references/project-initialization.md) |
 | **2 Schemas** | After init | [warehouse-schema-setup.md](references/warehouse-schema-setup.md), [schema-isolation.md](references/schema-isolation.md) |
 | **3 Sources** | Packages + source YAML | [packages-and-sources.md](references/packages-and-sources.md) |
@@ -157,6 +158,8 @@ Context prompt template: [agent-context-prompt.md](references/agent-context-prom
 ## Step 0 - Load configuration
 
 Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), [profile-listing.md](references/profile-listing.md), [project-naming.md](references/project-naming.md), [schema-isolation.md](references/schema-isolation.md), [env-configuration.md](references/env-configuration.md), [source-confirmation.md](references/source-confirmation.md), [warehouse-adapter-routing.md](references/warehouse-adapter-routing.md), [skill-knowledge.md](references/skill-knowledge.md), [project-knowledge.md](references/project-knowledge.md), [discovery-requirements.md](references/discovery-requirements.md), [phased-discovery.md](references/phased-discovery.md), [recommendation-and-review.md](references/recommendation-and-review.md), [writing-style.md](references/writing-style.md), [reporting-standards.md](references/reporting-standards.md), [analytics-insight-reporting.md](references/analytics-insight-reporting.md), [mermaid-diagrams.md](references/mermaid-diagrams.md), [principal-data-engineering-standards.md](references/principal-data-engineering-standards.md), [layer-data-validation.md](references/layer-data-validation.md), [kpi-definitions.md](references/kpi-definitions.md), [metric-verification.md](references/metric-verification.md), [advanced-data-engineering-review.md](references/advanced-data-engineering-review.md), [phase-plan-approval.md](references/phase-plan-approval.md), [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md), [phase-completion-report.md](references/phase-completion-report.md), and [context-tree.md](references/context-tree.md).
+
+For smaller context windows, read required references fully, extract the rules that apply to the active checkpoint into the phase plan or working notes, and avoid carrying unused details forward. Prefer loading phase-specific references only when entering that phase. Do not skip required safety references, but summarize-and-discard details that are not relevant to the active checkpoint.
 
 Resolve paths relative to workspace root. dbt project root = `{project.root}`.
 
@@ -413,6 +416,10 @@ Read [stuck-recovery.md](references/stuck-recovery.md) whenever a command hangs,
 4. Use `troubleshooting-dbt-job-errors` for unclear errors.
 5. If still blocked, stop and ask with the current phase, last command, error, changed files, `git status`, and concrete options.
 
+## Rollback and redo
+
+Read [phase-rollback.md](references/phase-rollback.md) when a completed phase must be undone, rebuilt differently, or marked stale because a grain, mapping, privacy, metric, naming, source, or presentation decision changed. Do not quietly delete files, drop warehouse objects, or leave `PIPELINE_STATUS.md` / `CONTEXT_TREE.md` claiming a rolled-back phase is complete. Write a rollback plan, ask for approval when warehouse objects or shared reports are affected, update status/context files, and then return to the normal phase plan workflow.
+
 ## Summary template (end of each phase)
 
 ```text
@@ -520,6 +527,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 | [final-delivery.md](references/final-delivery.md) | Final handoff checklist |
 | [validation-commands.md](references/validation-commands.md) | debug, parse, build, documentation |
 | [stuck-recovery.md](references/stuck-recovery.md) | Stuck command and blocker recovery |
+| [phase-rollback.md](references/phase-rollback.md) | Controlled rollback and redo workflow |
 | [github-setup.md](references/github-setup.md) | Initial git + commit order |
 | [git-workflow.md](references/git-workflow.md) | Per-layer commits |
 | [code-agent-setup.md](references/code-agent-setup.md) | Agent access & behavior |

@@ -46,7 +46,7 @@ npx skills add zohaibRT/agentic-dbt-pipeline
 
 ## 2-6. `packages.yml` (all dbt packages)
 
-Declare **all** standard packages in `{project.root}/packages.yml`:
+Declare **all** standard packages in `{project.root}/packages.yml` with pinned versions:
 
 ```yaml
 packages:
@@ -65,6 +65,8 @@ packages:
 ```powershell
 dbt deps
 ```
+
+Do not omit `version:` or use floating latest behavior. If package versions need to change, make that an explicit dependency-update decision, run `dbt deps`, review `package-lock.yml`, and document the change in the setup or sources report.
 
 ### codegen - source YAML generation
 

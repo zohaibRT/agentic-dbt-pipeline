@@ -70,6 +70,7 @@ Verify before marking the dbt pipeline workflow complete.
 
 - [ ] dbt Agent Skills installed ([install-dbt-agent-skills.md](install-dbt-agent-skills.md))
 - [ ] `packages.yml`: codegen, dbt_utils, dbt_expectations, dbt_project_evaluator, audit_helper
+- [ ] Every standard dbt package in `packages.yml` has a pinned exact or range-bounded `version:` and `package-lock.yml` was reviewed after `dbt deps`
 - [ ] `dbt deps` succeeds
 - [ ] `dispatch` block for dbt_project_evaluator in `dbt_project.yml`
 - [ ] Evaluator vars align package checks with active layer names (`bronze/silver/gold` by default)
@@ -246,6 +247,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Full stack documented in [dbt-packages-and-skills.md](dbt-packages-and-skills.md)
 - [ ] [agent-context-prompt.md](agent-context-prompt.md) available for sessions
 - [ ] Stuck or blocked runs followed [stuck-recovery.md](stuck-recovery.md)
+- [ ] Phase rollback or redo requests followed [phase-rollback.md](phase-rollback.md), including status/context updates and downstream stale markers
 
 ## Final delivery
 
