@@ -43,6 +43,11 @@ reports/agent/gold_report.md
 reports/agent/semantic_report.md
 reports/agent/evaluator_report.md
 reports/agent/docs_report.md
+reports/agent/presentation_layer_report.md
+reports/agent/powerbi_model_plan.md
+reports/agent/dashboard_pages.md
+reports/agent/dax_measures.md
+reports/agent/final_delivery.md
 reports/agent/ci_report.md
 reports/agent/agents_schema_report.md
 ```
@@ -149,6 +154,7 @@ Every phase report must include:
 - Privacy/sensitive-field notes
 - Profile target schema hygiene for project setup and configuration
 - Key performance indicator definitions for gold/marts, semantic layer, presentation layer, and final delivery
+- Presentation-layer artifacts when approved, such as `presentation_layer_report.md`, `powerbi_model_plan.md`, `dashboard_pages.md`, `dax_measures.md`, and `final_delivery.md`
 - Metric verification results for any implemented key performance indicator, including expected versus actual numerator, denominator, and final result
 - Trend analysis and variance when supported, such as row-count movement, period movement, target variance, baseline variance, or validation deltas
 - Insights and attribution: what the evidence suggests, likely drivers, anomalies, outliers, blockers, and confidence

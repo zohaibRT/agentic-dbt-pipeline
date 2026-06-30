@@ -1,8 +1,8 @@
 # dbt Analytics Engineer
 
-`dbt Analytics Engineer` is an agent skill for setting up and maintaining dbt projects with a structured, agent-assisted workflow.
+`dbt Analytics Engineer` is a generic, domain-neutral agent skill for setting up and maintaining dbt analytics-engineering projects with a structured, agent-assisted workflow. It is not ecommerce-only; ecommerce, hospital, finance, customer relationship management, operations, and other examples are examples only.
 
-It helps an agent initialize a dbt project, configure sources, build bronze/silver/gold medallion layers, add semantic layer assets, run quality checks, generate documentation, create continuous integration workflows, publish dbt metadata to Agents Schema, write per-phase status reports, commit each stage separately, and finish with a clear user-facing run summary. It also requires explicit data-engineering decisions before each non-setup build phase, so the agent does not silently guess grain, joins, metrics, privacy, or materialization.
+It helps an agent start with read-only source discovery, initialize a dbt project, configure sources, build bronze/silver/gold medallion layers, add semantic layer assets, run quality checks, generate documentation, recommend a presentation layer, optionally create a Power BI handoff after approval, create continuous integration workflows, publish dbt metadata to Agents Schema, write per-phase status reports, commit each stage separately, and finish with a clear user-facing run summary. It also requires explicit data-engineering decisions before each build phase, so the agent does not silently guess grain, joins, metrics, privacy, or materialization.
 
 ## Installation
 
@@ -74,7 +74,7 @@ Keep passwords, tokens, and private keys in local profiles or GitHub Secrets.
 
 | Phase | What the skill does |
 |---|---|
-| Discovery | Project-oriented and phased source/schema analysis written to `reports/agent/discovery_report.md` and source-derived requirements written to `reports/agent/requirements.md`; includes necessary Mermaid discovery diagrams and recommended medallion direction for sources, bronze/staging, silver/intermediate, and gold/marts; each layer gets focused discovery before build planning |
+| Discovery | First phase, read-only only. Inspects schemas, tables, columns, row counts, candidate keys, date fields, status fields, amount fields, relationships, grain evidence, possible facts, dimensions, marts, and metrics. Writes `reports/agent/discovery_report.md`, `reports/agent/requirements.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md`, then asks whether requirements should be added, removed, or changed before setup/build |
 | Project setup and configuration | Runs automatically after discovery requirements are accepted; setup-only scaffold, dependency install, connection validation, parse validation, and setup reports |
 | Validation | Runs `dbt debug`, `dbt deps`, `dbt parse`, and scoped `dbt build` commands |
 | Environment configuration | Loads non-secret `.env` values before asking for missing inputs |
@@ -91,10 +91,12 @@ Keep passwords, tokens, and private keys in local profiles or GitHub Secrets.
 | Data engineering guardrails | Checks grain, tests, incremental strategy, snapshots, exposures, privacy, and performance |
 | Staging | Builds source-cleaning models with `source()` references |
 | Intermediate | Builds reusable business logic models with `ref()` references and mapping seeds when needed |
-| Marts | Builds final dimension, fact, and reporting models with business-friendly fields |
-| Semantic layer | Adds MetricFlow / dbt semantic layer YAML for mart metrics |
+| Marts | Builds as many credible dimensions, facts, bridge tables, and reporting marts as the source data and approved requirements support. It does not force a fixed model count |
+| Semantic layer | Adds MetricFlow / dbt semantic layer YAML for approved and reconciled mart metrics |
 | Quality | Runs `dbt_project_evaluator` and uses `audit_helper` where useful |
 | Documentation | Runs `dbt docs generate`, verifies manifest/catalog output, and can serve documentation locally for viewing |
+| Presentation layer | After documentation, recommends business-facing presentation options with possible key performance indicators, semantic metrics, dashboard/report pages, source models, caveats, and privacy notes. If approved and no other technology is specified, defaults to a Power BI PBIP/TMDL handoff |
+| Power BI handoff | Optional after approval. Produces a Power BI-ready star schema plan, semantic model plan, DAX measure specifications, dashboard page plan, static validation results, Model Context Protocol validation when available, and Desktop open validation when available |
 | Human review | Summarizes assumptions, data quality notes, mappings, metrics, and open decisions |
 | Git | Commits initialization, sources, each model layer, documentation, continuous integration, and Agents Schema separately |
 | Agents Schema | Publishes dbt metadata into `AGENTS.*` so agents can query project context from the warehouse |
@@ -120,6 +122,24 @@ The skill is designed to keep project history readable. It commits each stage se
 By default, the agent asks before each commit. It asks about push only when a GitHub remote is configured or requested.
 It asks for approval before each non-setup build phase after showing the Markdown plan. Project setup and configuration is automatic setup-only unless a safety gate is triggered.
 After each completed phase, it writes a phase report showing what passed, warned, failed, was skipped, and still needs review, then updates the context tree for future phases.
+
+## Generated Reports
+
+The skill keeps a reviewable audit trail in `reports/agent/`:
+
+- `discovery_report.md` and `requirements.md` for source-derived requirements and evidence
+- `<phase>_report.md` for each completed or blocked phase
+- `PIPELINE_STATUS.md` for current phase status
+- `CONTEXT_TREE.md` for reusable project memory
+- `presentation_report.md` or `presentation_layer_report.md` when the presentation layer is recommended or created
+- `powerbi_model_plan.md`, `dashboard_pages.md`, and `dax_measures.md` when Power BI is approved
+- `final_delivery.md` for the final handoff
+
+Every build phase plan must explain what will be built, why it is recommended, evidence, proven items, uncertain items, blocked or deferred scope, and what needs approval.
+
+## Safety Rules
+
+The skill must not commit `.env`, `profiles.yml`, `target/`, `logs/`, `dbt_packages/`, `.venv/`, secrets, tokens, or private keys. It must not run destructive SQL or modify source data without explicit approval, and source schemas remain read-only. It must not create fake key performance indicators from unclear columns, expose sensitive/private fields in marts without approval, or overwrite user work without showing a plan first.
 
 ## Verification
 

@@ -40,7 +40,15 @@ Choose:
 - Date dimensions or time spines when date analysis is required
 - Reporting marts only when they directly support a known dashboard, KPI, or stakeholder question
 
+Create as many credible dimensions, facts, bridge tables, reporting marts, and metrics as the source data and approved requirements support. Do not force five dimensions, two facts, two reporting marts, or any other fixed model count. Do not invent unsupported models just to increase coverage.
+
 Each final model must have a documented grain.
+
+Final model documentation must include business purpose, lineage, assumptions, caveats, and tests where applicable.
+
+Fact models must define grain, measures, additive/semi-additive/non-additive behavior, primary date field, dimension keys, privacy notes, and validation evidence.
+
+Dimension models must define business entity, primary key, descriptive attributes, privacy notes, and validation evidence.
 
 ## Bridge tables
 

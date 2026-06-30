@@ -30,8 +30,9 @@ If the user approves a presentation layer, treat it as a separate `presentation_
 2. Confirm the inferred output format in the plan, source models, metrics, privacy rules, and validation method.
 3. Build only the approved artifact.
 4. Validate the artifact.
-5. Write or update `reports/agent/presentation_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md`.
-6. Only then continue to final delivery.
+5. Write or update `reports/agent/presentation_report.md`, `reports/agent/presentation_layer_report.md` when the project uses the friendlier filename, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md`.
+6. For approved Power BI work, also write or update `reports/agent/powerbi_model_plan.md`, `reports/agent/dashboard_pages.md`, and `reports/agent/dax_measures.md` with the model plan, page plan, DAX specifications, and validation evidence.
+7. Only then continue to final delivery.
 
 ## Phase contract
 
@@ -42,7 +43,7 @@ If the user approves a presentation layer, treat it as a separate `presentation_
 | Not allowed | Dashboards, reports, slides, notebooks, Power BI projects, guessed measures, or sensitive-field exposure without approval |
 | Commands to run | Read-only model/metadata checks and artifact-specific validation only after the user approves artifact creation |
 | Completion criteria | Best presentation option is recommended with evidence, possible key performance indicators are listed, caveats are clear, and the user is asked whether to create an artifact |
-| Report required | Final report or `reports/agent/presentation_report.md`, plus `reports/agent/PIPELINE_STATUS.md` and `reports/agent/CONTEXT_TREE.md` |
+| Report required | Final report or `reports/agent/presentation_report.md`; optional friendlier alias `reports/agent/presentation_layer_report.md`; `reports/agent/PIPELINE_STATUS.md`; `reports/agent/CONTEXT_TREE.md`; and Power BI planning files when Power BI is approved |
 
 ## What to recommend
 

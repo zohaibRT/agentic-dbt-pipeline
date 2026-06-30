@@ -120,11 +120,11 @@ sources:
     description: Source tables for <domain>
     schema: <source.schema>
     tables:
-      - name: customers
-        description: One row per customer
+      - name: <source_table>
+        description: One row per <source_table_grain>
         columns:
-          - name: customer_id
-            description: Primary key for the customer
+          - name: <primary_key>
+            description: Primary key for <source_table>
 ```
 
 Rules:

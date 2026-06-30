@@ -38,22 +38,22 @@ Every semantic metric must trace to a key performance indicator definition. Incl
 
 If the key performance indicator is not approved, has ambiguous numerator, denominator, filters, or time field, or fails expected-versus-actual reconciliation, do not implement it as a semantic metric. Mark it deferred or blocked and ask for the missing business definition or fix the upstream logic.
 
-## Example semantic models only
+## Generic semantic model examples only
 
 | Semantic model | dbt model | Grain entity |
 |---|---|---|
-| `orders` | `fct_orders` | `order_id` |
-| `order_items` | `fct_order_items` | `order_item_id` |
+| `<business_events>` | `fct_<business_events>` | `<business_event_id>` |
+| `<child_business_events>` | `fct_<child_business_events>` | `<child_business_event_id>` |
 
-## Example metrics only
+## Generic metric examples only
 
 | Metric | Type | Definition |
 |---|---|---|
-| `order_count` | simple | count of orders |
-| `gross_revenue` | simple | sum of `gross_amount` on commercial orders |
-| `net_revenue` | simple | sum of `net_order_amount` on commercial orders |
-| `items_sold` | simple | sum of `quantity` on order items |
-| `average_order_value` | ratio | `gross_revenue` / `order_count` |
+| `<event_count>` | simple | count of validated business events |
+| `<gross_amount>` | simple | sum of an approved gross amount field |
+| `<net_amount>` | simple | sum of an approved net amount field |
+| `<quantity_total>` | simple | sum of an approved quantity field |
+| `<average_value>` | ratio | approved numerator / approved denominator |
 
 ## Example (legacy spec excerpt)
 
@@ -61,53 +61,53 @@ If the key performance indicator is not approved, has ambiguous numerator, denom
 version: 2
 
 semantic_models:
-  - name: orders
-    model: ref('fct_orders')
-    description: Order-level semantic model for revenue metrics
+  - name: business_events
+    model: ref('fct_business_events')
+    description: Business-event semantic model for approved metrics
     defaults:
-      agg_time_dimension: order_date
+      agg_time_dimension: event_date
     entities:
-      - name: order
+      - name: business_event
         type: primary
-        expr: order_id
-      - name: customer
+        expr: business_event_id
+      - name: business_entity
         type: foreign
-        expr: customer_id
+        expr: business_entity_id
     dimensions:
-      - name: order_date
+      - name: event_date
         type: time
         type_params:
           time_granularity: day
-      - name: order_status
+      - name: event_status
         type: categorical
     measures:
-      - name: order_count
+      - name: event_count
         agg: count
-        expr: order_id
-      - name: gross_revenue
+        expr: business_event_id
+      - name: approved_gross_amount
         agg: sum
-        expr: case when is_commercial_order then gross_amount else 0 end
-      - name: net_revenue
+        expr: case when is_reportable_event then gross_amount else 0 end
+      - name: approved_net_amount
         agg: sum
-        expr: case when is_commercial_order then net_order_amount else 0 end
+        expr: case when is_reportable_event then net_amount else 0 end
 
 metrics:
-  - name: order_count
-    label: Order Count
+  - name: event_count
+    label: Event Count
     type: simple
     type_params:
-      measure: order_count
-  - name: gross_revenue
-    label: Gross Revenue
+      measure: event_count
+  - name: approved_gross_amount
+    label: Approved Gross Amount
     type: simple
     type_params:
-      measure: gross_revenue
-  - name: average_order_value
-    label: Average Order Value
+      measure: approved_gross_amount
+  - name: average_event_value
+    label: Average Event Value
     type: ratio
     type_params:
-      numerator: gross_revenue
-      denominator: order_count
+      numerator: approved_gross_amount
+      denominator: event_count
 ```
 
 Use **actual column names** from final fact models. Do not invent fields.

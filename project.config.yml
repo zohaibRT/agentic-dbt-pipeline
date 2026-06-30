@@ -96,10 +96,10 @@ naming:
   layer_3_yaml: _{domain}_marts.yml
 
 examples:
-  source: "source('ecommerce', 'customers')"
-  layer_1: stg_ecommerce__customers
-  layer_2: int_ecommerce__customer_order_metrics
-  layer_3: dim_customers
+  source: "source('<source_name>', '<source_table>')"
+  layer_1: stg_<source_name>__<source_table>
+  layer_2: int_<source_name>__<business_process_or_entity>
+  layer_3: dim_<business_entity> or fct_<business_event> or mart_<business_process>
 
 dbt:
   executable: dbt

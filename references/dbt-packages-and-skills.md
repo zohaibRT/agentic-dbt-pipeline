@@ -81,7 +81,7 @@ See [packages-and-sources.md](packages-and-sources.md) for post-codegen rules.
 
 Use where helpful (not required on every model):
 
-- `{{ dbt_utils.star(from=ref('stg_ecommerce__orders'), except=['_loaded_at']) }}`
+- `{{ dbt_utils.star(from=ref('stg_<source>__<source_table>'), except=['_loaded_at']) }}`
 - `dbt_utils.expression_is_true`, `dbt_utils.unique_combination_of_columns`
 - `dbt_utils.generate_surrogate_key` in dims when needed
 
@@ -136,8 +136,8 @@ Review `dbt_project_evaluator` results; fix critical issues or document accepted
 Use macros (in analyses or one-off ops) when comparing model versions:
 
 ```sql
-{% set old_relation = ref('fct_orders') %}
-{% set new_relation = ref('fct_orders') %}
+{% set old_relation = ref('<old_model_name>') %}
+{% set new_relation = ref('<new_model_name>') %}
 {{ audit_helper.compare_queries(
     a_query="select * from " ~ old_relation,
     b_query="select * from " ~ new_relation,

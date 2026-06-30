@@ -37,6 +37,8 @@ If the presentation decision has not been asked or answered, set status to `Docu
 - Commits created by phase
 - `AGENT_PLAN.md` records approved phase plans and short phase results
 - `reports/agent/` contains phase reports, `PIPELINE_STATUS.md`, and `CONTEXT_TREE.md`
+- `reports/agent/final_delivery.md` records the final delivery status, validation evidence, presentation gate outcome, open decisions, and next actions
+- When Power BI is approved, `reports/agent/powerbi_model_plan.md`, `reports/agent/dashboard_pages.md`, and `reports/agent/dax_measures.md` capture the Power BI-ready star schema handoff, semantic model plan, report page plan, and DAX measure specifications
 
 ## README or handoff notes
 

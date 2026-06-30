@@ -45,6 +45,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Any subagent delegation was read-only/draft work; main agent kept dbt commands, edits, commits, and final decisions
 - [ ] `AGENT_PLAN.md` created or updated with automatic setup-only project setup status and approved plans for each implemented non-setup phase
 - [ ] After valid required inputs were confirmed, discovery created `reports/agent/discovery_report.md` before the chat summary, even if the dbt project root did not exist yet
+- [ ] Discovery inspected schemas, tables, columns, row counts, candidate keys, date fields, status fields, amount fields, relationships, grain evidence, possible facts, possible dimensions, possible marts, and possible metrics where supported by the adapter and source evidence
 - [ ] Discovery created `reports/agent/requirements.md` before the chat summary with source-derived requirements, evidence, confidence, recommended defaults, open questions, and deferred or blocked scope
 - [ ] Discovery report includes recommended medallion direction for sources, bronze/staging, silver/intermediate, and gold/marts
 - [ ] Discovery report includes a Mermaid entity relationship diagram when credible relationships exist
@@ -106,6 +107,9 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Intermediate: domain-appropriate reusable business logic models build successfully
 - [ ] Marts: domain-appropriate facts, dimensions, and reporting marts build successfully
 - [ ] Many-to-many relationships were reviewed during marts planning; required bridge tables were built and tested, or deferrals were documented with evidence
+- [ ] Marts were created based on source evidence and approved requirements; no fixed number of dimensions, facts, bridge tables, reporting marts, or metrics was forced
+- [ ] Final facts document grain, measures, additive/semi-additive/non-additive behavior, date field, dimension keys, validation evidence, assumptions, and caveats
+- [ ] Final dimensions document business entity, primary key, descriptive attributes, privacy notes, validation evidence, assumptions, and caveats
 - [ ] Semantic layer: metrics on marts ([semantic-layer-spec.md](semantic-layer-spec.md))
 - [ ] Gold/marts report includes key performance indicator definitions or explicitly deferred metrics with missing evidence
 - [ ] Gold/marts report includes metric verification results for implemented key performance indicators, including expected versus actual numerator, denominator, filter logic, and final result
@@ -129,6 +133,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Business grain and key assumptions documented in model YAML or handoff notes
 - [ ] Key performance indicators include business meaning, source model, grain, numerator, denominator, filters, time field, caveats, validation evidence, and approval status
 - [ ] Key performance indicators include expected versus actual reconciliation from upstream logic to gold, semantic, and presentation layers where implemented
+- [ ] Metrics define numerator, denominator where applicable, filters, time field, allowed dimensions, caveats, approval status, and validation evidence
 - [ ] Ambiguous key performance indicators were deferred or sent for user approval instead of silently implemented
 
 ## Data engineering guardrails
@@ -163,6 +168,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Presentation options were recommended after documentation: documentation only, business-facing report, dashboard design, semantic layer refinement, or query handoff
 - [ ] Power BI PBIP/TMDL was created when the user approved a presentation layer and did not specify another technology
 - [ ] If Power BI PBIP/TMDL was created, PBIP includes the project file, Report artifact, SemanticModel artifact, TMDL/definition files, relationships, measures, parameters, and handoff README
+- [ ] If Power BI or another presentation layer was approved, `reports/agent/powerbi_model_plan.md`, `reports/agent/dashboard_pages.md`, `reports/agent/dax_measures.md`, or equivalent technology-specific planning files were created when applicable
 - [ ] If Power BI PBIP/TMDL was created from a user-provided contract, every required output path, artifact folder, schema string, compatibility level, parameter, source partition, relationship, measure label, report page, and visual was checked against that contract
 - [ ] If Power BI PBIP/TMDL was created, the `.pbip` points to the Report artifact, and the Report artifact definition links to the SemanticModel artifact with the correct relative path
 - [ ] If Power BI PBIP/TMDL was created as a report deliverable, the root `.pbip` shortcut artifact entry uses the required `report` property and does not use unsupported properties such as `dataset`

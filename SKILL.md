@@ -392,7 +392,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 
 ## Do not use this skill for
 
-- Power BI / dashboard build
+- Standalone Power BI / dashboard builds that are not part of this dbt pipeline's approved presentation-layer phase
 - Ad-hoc business questions -> `answering-natural-language-questions-with-dbt` *(use that skill directly)*
 
 ## Reference files

@@ -17,8 +17,8 @@ Controlled by `materialization_profile` in `project.config.yml` (default: `prod`
 
 ### Incremental facts
 
-`fct_orders` -> `unique_key='order_id'`
-`fct_order_items` -> `unique_key='order_item_id'`
+`fct_<business_event>` -> `unique_key='<fact_primary_key>'`
+`fct_<child_business_event>` -> `unique_key='<child_fact_primary_key>'`
 
 Use `is_incremental()` filter on date or id when adding incremental logic.
 

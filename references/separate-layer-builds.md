@@ -22,14 +22,14 @@ A full-pipeline request defines the intended roadmap, not blanket approval to ex
 **Do not** build intermediate before staging exists.
 **Do not** build marts before intermediate exists.
 
-Example for one entity through all layers:
+Generic example for one entity through all layers:
 
 | Step | Layer | Example model | Warehouse schema |
 |---|---|---|---|
-| 1 | Source | `source('<source_name>', 'customers')` | `<source_schema>` |
-| 2 | Staging | `stg_<source_name>__customers` | `<layer_schema_prefix>_<layer_1_name>` |
-| 3 | Intermediate | `int_<source_name>__customer_metrics` | `<layer_schema_prefix>_<layer_2_name>` |
-| 4 | Marts | `dim_customers` | `<layer_schema_prefix>_<layer_3_name>` |
+| 1 | Source | `source('<source_name>', '<source_table>')` | `<source_schema>` |
+| 2 | Staging | `stg_<source_name>__<source_table>` | `<layer_schema_prefix>_<layer_1_name>` |
+| 3 | Intermediate | `int_<source_name>__<business_process_or_entity>` | `<layer_schema_prefix>_<layer_2_name>` |
+| 4 | Marts | `dim_<business_entity>` or `fct_<business_event>` | `<layer_schema_prefix>_<layer_3_name>` |
 
 Staging comes **before** intermediate. Marts (star schema) come **last**.
 
@@ -69,9 +69,9 @@ workflow_phase: staging
 ```
 
 Creates models like:
-- `stg_ecommerce__customers`
-- `stg_<source>__events`
-- `stg_<source>__entities`
+- `stg_<source>__<source_table>`
+- `stg_<source>__<business_event_table>`
+- `stg_<source>__<business_entity_table>`
 - ... (one per source table)
 
 ```powershell
@@ -166,9 +166,9 @@ Each layer is a separate build and optional separate git push.
 After creating one model in a layer:
 
 ```powershell
-dbt build --select +stg_<source>__customers
-dbt build --select +int_<source>__customer_order_metrics
-dbt build --select +dim_customers
+dbt build --select +stg_<source>__<source_table>
+dbt build --select +int_<source>__<business_process_or_entity>
+dbt build --select +dim_<business_entity>
 ```
 
 `+model_name` builds that model and required upstream only.
