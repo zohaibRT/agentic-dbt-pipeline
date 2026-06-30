@@ -248,17 +248,26 @@ For Power BI PBIP/TMDL artifacts, never accept "files created" as done. The pres
 
 Before validating a Power BI PBIP/TMDL artifact, the agent must actively check whether Power BI Modeling Model Context Protocol tools are available in the current environment. Do not assume they are unavailable because the tool list is not obvious, and do not rely on Cursor, Power BI Desktop, or static file checks alone when Model Context Protocol validation can be used.
 
+Preferred official implementation: Microsoft Power BI Modeling Model Context Protocol, [microsoft/powerbi-modeling-mcp](https://github.com/microsoft/powerbi-modeling-mcp). When the tool is not already exposed but Node.js and `npx` are available, use or recommend:
+
+```powershell
+npx @microsoft/powerbi-modeling-mcp@latest --start
+```
+
+Treat this as the preferred semantic-model validation path for PBIP/TMDL projects, while still running this repository's static validator and Power BI Desktop open validation when available.
+
 Required behavior:
 
-1. Search available tools/connectors for Power BI Modeling Model Context Protocol capabilities such as `ConnectFolder`, connection inspection, table operations, relationship operations, and DAX query operations.
+1. Search available tools/connectors for Power BI Modeling Model Context Protocol capabilities such as `ConnectFolder`, `ConnectToPBIP`, connection inspection, table operations, relationship operations, and DAX query operations.
 2. If the Power BI Modeling Model Context Protocol tools are installed or exposed, use them. Running only static validation while available Model Context Protocol tools are skipped is a failed presentation phase.
-3. If the tools are not exposed but a tool/plugin/connector installation mechanism is available, request or recommend installing the exact Power BI Modeling Model Context Protocol connector/plugin before final presentation validation.
+3. If the tools are not exposed but a tool/plugin/connector installation mechanism is available, request or recommend installing the exact Power BI Modeling Model Context Protocol connector/plugin before final presentation validation. Prefer `@microsoft/powerbi-modeling-mcp` from the official Microsoft repository.
 4. If installation is not possible in the current environment, mark Model Context Protocol validation as `NOT RUN` with the exact reason and mark the presentation phase `BLOCKED` when the user required open/load validation through Model Context Protocol.
 5. Record the availability check, tool names found or missing, install attempt or instruction, and validation result in `reports/agent/presentation_report.md`.
 
 The expected Model Context Protocol validation path is:
 
 - Connect to the SemanticModel definition folder with `ConnectFolder`.
+- If validating an entire PBIP is supported in the current tool surface, connect to the `.pbip` with `ConnectToPBIP`.
 - Confirm the model connection loads.
 - Inspect tables, columns, measures, relationships, and partitions.
 - Run a simple DAX smoke query.

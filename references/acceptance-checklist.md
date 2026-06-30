@@ -196,6 +196,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] If Power BI PBIP/TMDL was created, JSON parse checks, TMDL structure checks, file-tree checks, and known metadata-version checks were run and recorded
 - [ ] If Power BI PBIP/TMDL was created and `scripts/validate_powerbi_pbip.py` was available, the script passed and its result was recorded in `reports/agent/presentation_report.md`
 - [ ] If Power BI PBIP/TMDL was created, the agent checked whether Power BI Modeling Model Context Protocol tools were available or installable before handoff
+- [ ] If Power BI Modeling Model Context Protocol tools were not already exposed, the agent checked or recommended the official Microsoft package `@microsoft/powerbi-modeling-mcp` from `https://github.com/microsoft/powerbi-modeling-mcp`
 - [ ] If Power BI Modeling Model Context Protocol tools were available, they were used for `ConnectFolder`, model inspection, relationship inspection, and DAX smoke testing; availability without use is a validation failure
 - [ ] If Power BI Modeling Model Context Protocol tools were not available, the presentation report records the tool search/connector check, install attempt or install recommendation, and exact reason validation was not run
 - [ ] If Power BI PBIP/TMDL was created, every `.platform` file has a `$schema` value matching the supported Fabric git integration platform properties schema pattern for the target Power BI Desktop version

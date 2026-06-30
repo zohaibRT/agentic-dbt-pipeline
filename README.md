@@ -96,7 +96,7 @@ Keep passwords, tokens, and private keys in local profiles or GitHub Secrets.
 | Quality | Runs `dbt_project_evaluator` and uses `audit_helper` where useful |
 | Documentation | Runs `dbt docs generate`, verifies manifest/catalog output, and can serve documentation locally for viewing |
 | Presentation layer | After documentation, recommends business-facing presentation options with possible key performance indicators, semantic metrics, dashboard/report pages, source models, caveats, and privacy notes. If approved and no other technology is specified, defaults to a Power BI PBIP/TMDL handoff |
-| Power BI handoff | Optional after approval. Produces a Power BI-ready star schema plan, semantic model plan, DAX measure specifications, dashboard page plan, static validation results, Model Context Protocol validation when available, and Desktop open validation when available |
+| Power BI handoff | Optional after approval. Produces a Power BI-ready star schema plan, semantic model plan, DAX measure specifications, dashboard page plan, static validation results, Microsoft Power BI Modeling Model Context Protocol validation when available, and Desktop open validation when available |
 | Human review | Summarizes assumptions, data quality notes, mappings, metrics, and open decisions |
 | Git | Commits initialization, sources, each model layer, documentation, continuous integration, and Agents Schema separately |
 | Agents Schema | Publishes dbt metadata into `AGENTS.*` so agents can query project context from the warehouse |
@@ -134,6 +134,18 @@ The skill keeps a reviewable audit trail in `reports/agent/`:
 - `presentation_report.md` or `presentation_layer_report.md` when the presentation layer is recommended or created
 - `powerbi_model_plan.md`, `dashboard_pages.md`, and `dax_measures.md` when Power BI is approved
 - `final_delivery.md` for the final handoff
+
+## Power BI Validation
+
+When a Power BI PBIP/TMDL artifact is approved, the skill prefers the official Microsoft Power BI Modeling Model Context Protocol server for semantic model validation:
+
+```bash
+npx @microsoft/powerbi-modeling-mcp@latest --start
+```
+
+Repository: [microsoft/powerbi-modeling-mcp](https://github.com/microsoft/powerbi-modeling-mcp)
+
+The agent must still run static PBIP/TMDL validation and Power BI Desktop open validation when available. If the Model Context Protocol server is unavailable, the presentation report must say why instead of claiming model-load validation passed.
 
 Every build phase plan must explain what will be built, why it is recommended, evidence, proven items, uncertain items, blocked or deferred scope, and what needs approval.
 
