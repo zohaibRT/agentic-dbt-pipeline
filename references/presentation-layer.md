@@ -316,7 +316,7 @@ Before handoff, paste the validation results into the chat result summary and `r
 | File tree | `.pbip`, Report folder, SemanticModel folder, `definition.pbism`, `database.tmdl`, `model.tmdl`, and `report.json` exist where expected |
 | Static validator | `python scripts/validate_powerbi_pbip.py <pbip_project_folder>` passes when available |
 | JSON parse | All `.json` files parse cleanly |
-| Path links | `.pbip` links to the Report artifact, and the Report artifact links to the SemanticModel artifact using correct relative paths |
+| Path links | `.pbip` links to an existing `.Report` artifact folder, `definition/definition.pbir` exists and is non-empty, and that report definition links to an existing `.SemanticModel` artifact using correct relative paths |
 | Relationships | No ambiguous active paths; approved active/inactive relationship rules are followed |
 | Partitions | Import or source queries point to real approved gold/mart tables |
 | Power BI Modeling Model Context Protocol load | `ConnectFolder` to the SemanticModel definition folder succeeds |
@@ -350,7 +350,9 @@ When creating PBIP:
 - Add report page tooltips and drill-through pages for important entities when safe, supported by the model, and useful for investigation.
 - Ensure the `.pbip` file points to a Report artifact when a report is requested, not only to a semantic model.
 - For the root `.pbip` shortcut file, do not use a `dataset` property for the artifact entry. A report PBIP must use the schema-allowed report artifact reference so Power BI does not fail with `Property 'dataset' has not been defined` or `Required properties are missing from object: report`.
-- Ensure the Report artifact has a definition file that links to the SemanticModel artifact using the correct relative path.
+- Ensure the `.pbip` report artifact path resolves to an existing `<name>.Report` folder.
+- Ensure the Report artifact has `definition/definition.pbir`, that the file is non-empty, and that it contains a valid ReportDefinition object with `datasetReference.byPath.path`.
+- Ensure `definition/definition.pbir` links to an existing `<name>.SemanticModel` artifact using the correct relative path. Treat Power BI Desktop errors such as `ReportDefinition: Required artifact is missing`, `RequiredArtifactMissing: Path: definition.pbir`, or `RequiredArtifactMissing: ArtifactName: ReportDefinition` as hard validation failures.
 - Ensure the Report artifact includes `definition/version.json` with the Power BI report definition version metadata schema and a non-empty version string.
 - Keep TMDL under the SemanticModel definition folder using the expected artifact layout for the chosen Power BI project format.
 - Create report definition files for the approved pages and visuals when the user asked for clickable/openable Power BI pages. Do not replace report pages with `dashboard_pages.md`.
@@ -383,12 +385,14 @@ Validation before handoff:
 - Verify every required PBIP, report, semantic model, definition, relationship, table, partition, and measure file exists.
 - Parse JSON files with a real parser.
 - Validate the root `.pbip` shortcut schema: artifact entries for report deliverables must contain the required `report` property and must not contain unsupported properties such as `dataset`. Treat `artifacts[0].dataset` or a missing `artifacts[0].report` as a failed presentation phase.
+- Resolve every `.pbip` report artifact path and verify the referenced `.Report` folder exists. Then verify `definition/definition.pbir` exists, is non-empty, parses as JSON, contains `datasetReference.byPath.path`, and points to an existing `.SemanticModel` folder. Treat a missing, empty, or unresolved `definition.pbir` as a failed presentation phase even if other report files exist.
 - Validate every `.platform` file with JSON parsing and a schema-pattern check. The `$schema` value must match the supported Fabric git integration platform properties pattern for the target Desktop version; do not allow stale, guessed, missing, or unsupported `.platform` schema URLs.
 - For `report.json`, explicitly assert `themeCollection.baseTheme.reportVersionAtImport` exists and has the correct type and value for the target Power BI Desktop schema. Run `python scripts/validate_powerbi_pbip.py <pbip_project_folder>` to enforce the default `"5.55"` value, or pass `--expected-report-version-at-import <value>` only when a known-good project reference proves another version. If this metadata check fails, repair with `python scripts/validate_powerbi_pbip.py <pbip_project_folder> --fix-report-version-at-import`, then rerun validation without the fix flag. Treat missing, empty, incorrectly typed, or wrong-valued `reportVersionAtImport` as a failed presentation phase.
 - Check TMDL indentation and root-level object placement against the selected PBIP structure.
 - Scan TMDL table files for invalid loose Power Query keywords such as standalone `let` or `in` lines outside the approved partition/source expression block. Treat `UnknownKeyword` parser risks as failed static validation.
 - Audit TMDL column metadata so no table has more than one column with `IsKey` set to `True`. Do not mark every `*_id` column as a Power BI key. Mark only the table's single primary/technical key when one exists; leave foreign keys unmarked. Treat Power BI errors such as `PFE_TM_TABLE_TWO_KEY_COLUMNS` or "has two columns with the IsKey property set to True" as failed validation.
 - Verify the `.pbip` points to the report artifact and the report points to the semantic model artifact.
+- Verify the exact referenced Report artifact includes `definition/definition.pbir`; do not rely only on scanning for any `.Report` folder.
 - Verify the Report artifact includes `definition/version.json`.
 - Verify all TMDL lineage tags are unique.
 - Verify PostgreSQL import partitions use only approved server/database expressions, quoted parameter references, hardcoded approved schema records, selected columns, changed types, and `PBI_ResultType`.
@@ -447,6 +451,7 @@ Do not:
 - Mark a Power BI artifact complete when the Power BI Modeling Model Context Protocol `ConnectFolder` test fails.
 - Mark a Power BI artifact complete when `report.json` is missing `themeCollection.baseTheme.reportVersionAtImport` or has it as the wrong JSON type.
 - Mark a Power BI artifact complete when `report.json` has `themeCollection.baseTheme.reportVersionAtImport` as an empty string or unvalidated string value.
+- Mark a Power BI artifact complete when the `.pbip` points to a Report artifact whose `definition/definition.pbir` file is missing, empty, invalid, or does not link to an existing SemanticModel artifact.
 - Mark a Power BI artifact complete when any TMDL table file contains invalid loose Power Query keywords such as a standalone `in` line outside a valid expression block.
 - Mark a Power BI artifact complete when Power BI Desktop reports ambiguous relationship paths or any project definition load error.
 - Hardcode one domain's table names, measures, or report pages into the skill.

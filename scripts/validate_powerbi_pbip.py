@@ -41,7 +41,85 @@ def write_json(path: Path, data: object) -> None:
     path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
-def validate_pbip_shortcut(root: Path, errors: list[str]) -> None:
+def report_artifact_reference_path(artifact: dict, pbip_path: Path, errors: list[str], index: int) -> Path | None:
+    report = artifact.get("report")
+    if isinstance(report, str):
+        report_path = report
+    elif isinstance(report, dict):
+        report_path = report.get("path") or report.get("relativePath")
+    else:
+        fail(errors, pbip_path, f"artifacts[{index}].report must be a path string or object with path")
+        return None
+
+    if not isinstance(report_path, str) or not report_path.strip():
+        fail(errors, pbip_path, f"artifacts[{index}].report.path must be a non-empty string")
+        return None
+
+    return (pbip_path.parent / report_path).resolve()
+
+
+def validate_definition_pbir(report_dir: Path, errors: list[str]) -> None:
+    definition_dir = report_dir / "definition"
+    pbir_path = definition_dir / "definition.pbir"
+    if not pbir_path.exists():
+        fail(errors, report_dir, "Report/definition/definition.pbir is required")
+        return
+    if pbir_path.stat().st_size == 0:
+        fail(errors, pbir_path, "definition.pbir must not be empty")
+        return
+
+    data = load_json(pbir_path, errors)
+    if not isinstance(data, dict):
+        return
+    if not data:
+        fail(errors, pbir_path, "definition.pbir must contain a non-empty ReportDefinition object")
+        return
+
+    dataset_reference = data.get("datasetReference")
+    by_path = dataset_reference.get("byPath") if isinstance(dataset_reference, dict) else None
+    semantic_path = by_path.get("path") if isinstance(by_path, dict) else None
+    if not isinstance(semantic_path, str) or ".SemanticModel" not in semantic_path:
+        fail(errors, pbir_path, "datasetReference.byPath.path must point to the SemanticModel artifact")
+        return
+
+    semantic_candidates = [
+        (report_dir / semantic_path).resolve(),
+        (definition_dir / semantic_path).resolve(),
+        (report_dir.parent / semantic_path).resolve(),
+    ]
+    if not any(candidate.exists() and candidate.is_dir() for candidate in semantic_candidates):
+        fail(errors, pbir_path, f"datasetReference.byPath.path does not resolve to an existing SemanticModel folder: {semantic_path}")
+
+
+def validate_single_report_artifact(report_dir: Path, errors: list[str]) -> None:
+    if not report_dir.exists() or not report_dir.is_dir():
+        fail(errors, report_dir, "Referenced Report artifact folder is missing")
+        return
+    if report_dir.suffix != ".Report":
+        fail(errors, report_dir, "Referenced report artifact folder must end with .Report")
+
+    definition_dir = report_dir / "definition"
+    if not definition_dir.exists() or not definition_dir.is_dir():
+        fail(errors, report_dir, "Report/definition folder is required")
+        return
+
+    validate_definition_pbir(report_dir, errors)
+
+    version_path = definition_dir / "version.json"
+    if not version_path.exists():
+        fail(errors, report_dir, "Report/definition/version.json is required")
+    else:
+        data = load_json(version_path, errors)
+        if isinstance(data, dict):
+            schema = data.get("$schema")
+            version = data.get("version")
+            if not isinstance(schema, str) or "report/definition/versionMetadata" not in schema:
+                fail(errors, version_path, "$schema must be the Power BI report definition version metadata schema")
+            if not isinstance(version, str) or not version.strip():
+                fail(errors, version_path, "version must be a non-empty string")
+
+
+def validate_pbip_shortcut(root: Path, errors: list[str], report_dirs_from_shortcuts: set[Path]) -> None:
     pbips = list(root.rglob("*.pbip"))
     if not pbips:
         fail(errors, root, "No .pbip file found")
@@ -63,37 +141,23 @@ def validate_pbip_shortcut(root: Path, errors: list[str]) -> None:
                 fail(errors, path, f"artifacts[{index}].dataset is not allowed for report PBIP shortcuts")
             if "report" not in artifact:
                 fail(errors, path, f"artifacts[{index}].report is required for report PBIP shortcuts")
+                continue
+            report_dir = report_artifact_reference_path(artifact, path, errors, index)
+            if report_dir is None:
+                continue
+            report_dirs_from_shortcuts.add(report_dir)
+            validate_single_report_artifact(report_dir, errors)
 
 
-def validate_report_artifact(root: Path, errors: list[str]) -> None:
+def validate_report_artifact(root: Path, errors: list[str], report_dirs_from_shortcuts: set[Path]) -> None:
     report_dirs = [path for path in root.rglob("*.Report") if path.is_dir()]
+    if not report_dirs:
+        fail(errors, root, "No .Report artifact folder found")
     for report_dir in report_dirs:
-        definition_dir = report_dir / "definition"
-        version_path = definition_dir / "version.json"
-        if not version_path.exists():
-            fail(errors, report_dir, "Report/definition/version.json is required")
-        else:
-            data = load_json(version_path, errors)
-            if isinstance(data, dict):
-                schema = data.get("$schema")
-                version = data.get("version")
-                if not isinstance(schema, str) or "report/definition/versionMetadata" not in schema:
-                    fail(errors, version_path, "$schema must be the Power BI report definition version metadata schema")
-                if not isinstance(version, str) or not version.strip():
-                    fail(errors, version_path, "version must be a non-empty string")
-
-        pbir_path = definition_dir / "definition.pbir"
-        if not pbir_path.exists():
-            fail(errors, report_dir, "Report/definition/definition.pbir is required")
+        resolved = report_dir.resolve()
+        if resolved in report_dirs_from_shortcuts:
             continue
-        data = load_json(pbir_path, errors)
-        if not isinstance(data, dict):
-            continue
-        dataset_reference = data.get("datasetReference")
-        by_path = dataset_reference.get("byPath") if isinstance(dataset_reference, dict) else None
-        semantic_path = by_path.get("path") if isinstance(by_path, dict) else None
-        if not isinstance(semantic_path, str) or ".SemanticModel" not in semantic_path:
-            fail(errors, pbir_path, "datasetReference.byPath.path must point to the SemanticModel artifact")
+        validate_single_report_artifact(resolved, errors)
 
 
 def validate_json_files(
@@ -335,8 +399,9 @@ def main() -> int:
         print(f"ERROR: {root} does not exist", file=sys.stderr)
         return 2
 
-    validate_pbip_shortcut(root, errors)
-    validate_report_artifact(root, errors)
+    report_dirs_from_shortcuts: set[Path] = set()
+    validate_pbip_shortcut(root, errors, report_dirs_from_shortcuts)
+    validate_report_artifact(root, errors, report_dirs_from_shortcuts)
     expected_report_version_at_import = None if args.allow_any_report_version_at_import else args.expected_report_version_at_import
 
     validate_json_files(

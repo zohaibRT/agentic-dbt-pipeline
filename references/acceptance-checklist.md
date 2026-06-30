@@ -180,6 +180,9 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] If Power BI PBIP/TMDL was created from a user-provided contract, every required output path, artifact folder, schema string, compatibility level, parameter, source partition, relationship, measure label, report page, and visual was checked against that contract
 - [ ] If Power BI PBIP/TMDL was created, the `.pbip` points to the Report artifact, and the Report artifact definition links to the SemanticModel artifact with the correct relative path
 - [ ] If Power BI PBIP/TMDL was created as a report deliverable, the root `.pbip` shortcut artifact entry uses the required `report` property and does not use unsupported properties such as `dataset`
+- [ ] If Power BI PBIP/TMDL was created as a report deliverable, every `.pbip` report artifact path resolves to an existing `.Report` folder
+- [ ] If Power BI PBIP/TMDL was created as a report deliverable, the referenced Report artifact includes `definition/definition.pbir`, the file is non-empty, parses as JSON, and contains `datasetReference.byPath.path`
+- [ ] If Power BI PBIP/TMDL was created as a report deliverable, `definition/definition.pbir` points to an existing `.SemanticModel` artifact folder with the correct relative path
 - [ ] If Power BI PBIP/TMDL was created as a report deliverable, the Report artifact includes `definition/version.json` with the report definition version metadata schema and a non-empty version string
 - [ ] If Power BI PBIP/TMDL was created, import partitions use approved parameters for host, database, schema, warehouse, or equivalent connection values
 - [ ] If Power BI PBIP/TMDL was created from PostgreSQL, import partitions do not use a `PgSchema` expression, quote server/database parameter references, hardcode the approved schema in each source record, select only modeled columns, transform date and numeric types, and include `PBI_ResultType = Table`
