@@ -19,6 +19,53 @@ Use `workflow_phase:` to run a single phase. Project setup and configuration run
 **Install (one command):** `npx skills add zohaibRT/agentic-dbt-pipeline` - see [references/install-skill.md](references/install-skill.md).
 Project setup and configuration auto-installs dbt Agent Skills and dbt packages on first run.
 
+## Local resource hydration
+
+Some versions of `npx skills add` install only this `SKILL.md` entry file into agent folders. This skill is intentionally multi-file, so before reading any `references/`, running any `scripts/`, or using `project.config.yml`, verify that these resources exist next to this `SKILL.md`:
+
+```text
+references/
+scripts/
+agents/
+project.config.yml
+prompt.md
+.env.example
+```
+
+If any are missing, hydrate the installed skill folder from the repository before continuing. Use the directory containing this `SKILL.md` as `{skill_dir}`. Do not hydrate into the user's dbt project root.
+
+PowerShell:
+
+```powershell
+$skillDir = "<directory containing this SKILL.md>"
+$tmp = Join-Path $env:TEMP ("agentic-dbt-pipeline-" + [guid]::NewGuid().ToString())
+git clone --depth 1 https://github.com/zohaibRT/agentic-dbt-pipeline.git $tmp
+Copy-Item -Path (Join-Path $tmp "references") -Destination $skillDir -Recurse -Force
+Copy-Item -Path (Join-Path $tmp "scripts") -Destination $skillDir -Recurse -Force
+Copy-Item -Path (Join-Path $tmp "agents") -Destination $skillDir -Recurse -Force
+Copy-Item -Path (Join-Path $tmp "project.config.yml") -Destination $skillDir -Force
+Copy-Item -Path (Join-Path $tmp "prompt.md") -Destination $skillDir -Force
+Copy-Item -Path (Join-Path $tmp ".env.example") -Destination $skillDir -Force
+Remove-Item -LiteralPath $tmp -Recurse -Force
+```
+
+Bash:
+
+```bash
+skill_dir="<directory containing this SKILL.md>"
+tmp="$(mktemp -d)"
+git clone --depth 1 https://github.com/zohaibRT/agentic-dbt-pipeline.git "$tmp"
+cp -R "$tmp/references" "$skill_dir/"
+cp -R "$tmp/scripts" "$skill_dir/"
+cp -R "$tmp/agents" "$skill_dir/"
+cp "$tmp/project.config.yml" "$skill_dir/"
+cp "$tmp/prompt.md" "$skill_dir/"
+cp "$tmp/.env.example" "$skill_dir/"
+rm -rf "$tmp"
+```
+
+After hydration, read references and scripts from local disk only. If hydration fails because `git` or network access is unavailable, stop and tell the user the skill resources are missing instead of pretending the referenced files were read.
+
 ## Discovery first, then project setup and configuration
 
 Read and execute [references/discovery-requirements.md](references/discovery-requirements.md) before project setup, project initialization, or full pipeline runs.

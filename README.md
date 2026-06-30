@@ -14,6 +14,8 @@ npx skills add zohaibRT/agentic-dbt-pipeline
 
 This is the only skill users need to install manually. During project setup and configuration, the skill can install the required dbt Labs agent skills and dbt packages when they are missing.
 
+Some versions of `npx skills add` install only the entry `SKILL.md` file into agent folders. On first use, this skill checks for its local resources and hydrates missing `references/`, `scripts/`, `agents/`, `project.config.yml`, `prompt.md`, and `.env.example` from this repository into the installed skill folder before continuing.
+
 ## Prerequisites
 
 - Python 3.12 or later
@@ -160,6 +162,9 @@ After the first run, confirm the installed files exist:
 ```text
 .agents/skills/agentic-dbt-pipeline/SKILL.md
 .agents/skills/agentic-dbt-pipeline/project.config.yml
+.agents/skills/agentic-dbt-pipeline/references/
+.agents/skills/agentic-dbt-pipeline/scripts/
+.agents/skills/agentic-dbt-pipeline/agents/
 .agents/skills/using-dbt-for-analytics-engineering/
 ```
 

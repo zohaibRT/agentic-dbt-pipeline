@@ -35,13 +35,19 @@ See [prompt.md](../prompt.md) for the full prompt.
 
 ## Verify
 
-After first agent run:
+Some versions of `npx skills add` install only `SKILL.md` first. On first use, the skill must hydrate its local resources from the repository into the installed skill folder. After first agent run, verify:
 
 ```text
 .agents/skills/agentic-dbt-pipeline/SKILL.md
+.agents/skills/agentic-dbt-pipeline/references/
+.agents/skills/agentic-dbt-pipeline/scripts/
+.agents/skills/agentic-dbt-pipeline/agents/
+.agents/skills/agentic-dbt-pipeline/project.config.yml
+.agents/skills/agentic-dbt-pipeline/prompt.md
+.agents/skills/agentic-dbt-pipeline/.env.example
 .agents/skills/using-dbt-for-analytics-engineering/SKILL.md
 ```
 
 ## Configure
 
-Edit [project.config.yml](../project.config.yml) for warehouse, project name, and layer paths.
+Edit `.agents/skills/agentic-dbt-pipeline/project.config.yml` after hydration for warehouse, project name, and layer paths.

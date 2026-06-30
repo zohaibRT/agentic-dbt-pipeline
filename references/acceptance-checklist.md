@@ -7,6 +7,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] `SKILL.md` has `name` and `description` only in frontmatter
 - [ ] Workflow instructions in body; details in `references/`
 - [ ] `agents/openai.yaml` exists and matches the skill
+- [ ] Installed skill folder contains local `references/`, `scripts/`, `agents/`, `project.config.yml`, `prompt.md`, and `.env.example`, or `SKILL.md` hydrated them before reading references
 - [ ] `python scripts/validate_config.py --root .` passes
 - [ ] No secrets or hardcoded GitHub accounts in skill files
 - [ ] `project.config.yml` has non-secret defaults
