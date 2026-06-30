@@ -327,6 +327,7 @@ When creating PBIP:
 - Ensure the `.pbip` file points to a Report artifact when a report is requested, not only to a semantic model.
 - For the root `.pbip` shortcut file, do not use a `dataset` property for the artifact entry. A report PBIP must use the schema-allowed report artifact reference so Power BI does not fail with `Property 'dataset' has not been defined` or `Required properties are missing from object: report`.
 - Ensure the Report artifact has a definition file that links to the SemanticModel artifact using the correct relative path.
+- Ensure the Report artifact includes `definition/version.json` with the Power BI report definition version metadata schema and a non-empty version string.
 - Keep TMDL under the SemanticModel definition folder using the expected artifact layout for the chosen Power BI project format.
 - Create report definition files for the approved pages and visuals when the user asked for clickable/openable Power BI pages. Do not replace report pages with `dashboard_pages.md`.
 - Use parameters for host, database, schema, warehouse, or equivalent connection values instead of hardcoding environment-specific values where practical.
@@ -339,6 +340,8 @@ When creating PBIP:
 - For every Power BI/DAX measure, reconcile the result to the approved gold or semantic key performance indicator definition. Rates, ratios, percentages, and averages must show expected numerator, actual numerator, expected denominator, actual denominator, expected result, and actual result in `reports/agent/presentation_report.md`.
 - Add the standard `Trends` page when fact date columns are available. Include last calendar year, year-to-date, last 12 months, by-year, and by-month visuals for each primary fact where the measure/date pairing is validated.
 - In the Power BI semantic model, each table may have at most one column with `IsKey` set to `True`. If a dbt table has a composite business key, keep only one technical key column marked as the Power BI key or leave key metadata unset and document the composite grain in descriptions and relationships.
+- Use dbt surrogate keys for composite business keys before exposing dimensions to Power BI. Any column used as a Power BI one-side relationship key must have `unique` and `not_null` tests in dbt. Do not use partial natural keys as one-side Power BI keys when they repeat in the dimension.
+- Generated lineage tags must be unique across all TMDL files. Regenerate lineage tags when copying from a known-good PBIP template; do not reuse one table or metrics prefix across unrelated tables.
 - Use simple user-facing measure labels and keep technical column names inside model definitions.
 - Validate that every report page and visual is supported by approved source models, measures, fields, and privacy rules. Remove or mark blocked any visual whose business meaning, grain, or source evidence is not clear.
 - When the user supplies exact measure labels, use those labels exactly unless the expression cannot be supported by the validated marts.
@@ -346,6 +349,8 @@ When creating PBIP:
 - For `.platform` files inside Report or SemanticModel artifact folders, verify `$schema` exists and matches the Power BI Desktop supported Fabric git integration platform properties schema pattern, such as `https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.x.y/schema.json`. Treat `UnrecognizedSchemaVersion: Path: .platform` as a failed presentation phase.
 - For `report.json`, always emit and verify `themeCollection.baseTheme.reportVersionAtImport` as a non-empty string. For the April 2026 Power BI Desktop PBIP format seen in prior failures, use the string value `"5.55"` when no better validated project reference overrides it. Do not emit it as a number, null, object, empty string, or omit it.
 - For TMDL table files, do not write raw Power Query M `let ... in ...` blocks as loose TMDL lines. Place M expressions only in the correct partition/source expression property syntax for the chosen TMDL format. A line such as `in` under a table document outside a valid expression block is a hard validation failure.
+- For PostgreSQL import partitions, keep only server and database as reusable expressions or parameters. Do not create a `PgSchema` expression. In each table partition, quote parameter references such as `#"PgServer"` and `#"PgDatabase"`, hardcode the approved gold schema in the source record, use `Table.SelectColumns` to load only modeled columns, use `Table.TransformColumnTypes` for dates and numeric fields, and include `annotation PBI_ResultType = Table`.
+- Measures or metrics tables must have a calculated partition such as `ROW("MetricKey", 1)` so the semantic model loads correctly.
 - Add a local `powerbi/README.md` or equivalent handoff with open, refresh, and reload-from-disk guidance.
 - Do not tell the user to overwrite the generated project by saving from Power BI Desktop as the default fix. For reload-from-disk edits, instruct the user to close without saving when that is the safe workflow.
 
@@ -360,6 +365,10 @@ Validation before handoff:
 - Scan TMDL table files for invalid loose Power Query keywords such as standalone `let` or `in` lines outside the approved partition/source expression block. Treat `UnknownKeyword` parser risks as failed static validation.
 - Audit TMDL column metadata so no table has more than one column with `IsKey` set to `True`. Do not mark every `*_id` column as a Power BI key. Mark only the table's single primary/technical key when one exists; leave foreign keys unmarked. Treat Power BI errors such as `PFE_TM_TABLE_TWO_KEY_COLUMNS` or "has two columns with the IsKey property set to True" as failed validation.
 - Verify the `.pbip` points to the report artifact and the report points to the semantic model artifact.
+- Verify the Report artifact includes `definition/version.json`.
+- Verify all TMDL lineage tags are unique.
+- Verify PostgreSQL import partitions use only approved server/database expressions, quoted parameter references, hardcoded approved schema records, selected columns, changed types, and `PBI_ResultType`.
+- Verify the measures or metrics table has a calculated partition.
 - Verify approved report pages exist as Power BI report definition artifacts, not only Markdown page descriptions.
 - Verify user-provided technical requirements exactly, including output path, artifact folder names, schema strings, compatibility level, parameter names, import partition source, relationship direction/activity, measure labels, report page names, and expected visuals.
 - Verify every standard time showcase visual with SQL against the final gold/mart schema. Record exact verification queries and results in `reports/agent/presentation_report.md`.
@@ -407,6 +416,9 @@ Do not:
 - Mark a Power BI artifact complete when the root `.pbip` shortcut file contains an unsupported `dataset` artifact property or is missing the required `report` artifact property for a report deliverable.
 - Mark a Power BI artifact complete when any `.platform` file has a missing or unsupported `$schema` value that Power BI Desktop reports as `UnrecognizedSchemaVersion`.
 - Mark a Power BI artifact complete when any table has more than one column with `IsKey` set to `True`.
+- Mark a Power BI artifact complete when duplicate TMDL lineage tags exist.
+- Mark a Power BI artifact complete when a PostgreSQL partition uses `PgSchema`, unquoted parameter references, no `Table.SelectColumns`, no `Table.TransformColumnTypes`, or no `PBI_ResultType` annotation.
+- Mark a Power BI artifact complete when the measures or metrics table is missing a calculated partition.
 - Create direct relationships that introduce ambiguous filter paths when a safer snowflake path exists.
 - Mark a Power BI artifact complete when the Power BI Modeling Model Context Protocol `ConnectFolder` test fails.
 - Mark a Power BI artifact complete when `report.json` is missing `themeCollection.baseTheme.reportVersionAtImport` or has it as the wrong JSON type.

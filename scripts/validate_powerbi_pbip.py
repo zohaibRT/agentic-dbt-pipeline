@@ -21,6 +21,7 @@ PLATFORM_SCHEMA_RE = re.compile(
     r"platformProperties/2\.[0-9]+\.[0-9]+/schema\.json$"
 )
 DEFAULT_REPORT_VERSION_AT_IMPORT = "5.55"
+LINEAGE_TAG_RE = re.compile(r"\blineageTag\s*:\s*([0-9a-fA-F-]{8,})\b")
 
 
 def fail(errors: list[str], path: Path, message: str) -> None:
@@ -62,6 +63,37 @@ def validate_pbip_shortcut(root: Path, errors: list[str]) -> None:
                 fail(errors, path, f"artifacts[{index}].dataset is not allowed for report PBIP shortcuts")
             if "report" not in artifact:
                 fail(errors, path, f"artifacts[{index}].report is required for report PBIP shortcuts")
+
+
+def validate_report_artifact(root: Path, errors: list[str]) -> None:
+    report_dirs = [path for path in root.rglob("*.Report") if path.is_dir()]
+    for report_dir in report_dirs:
+        definition_dir = report_dir / "definition"
+        version_path = definition_dir / "version.json"
+        if not version_path.exists():
+            fail(errors, report_dir, "Report/definition/version.json is required")
+        else:
+            data = load_json(version_path, errors)
+            if isinstance(data, dict):
+                schema = data.get("$schema")
+                version = data.get("version")
+                if not isinstance(schema, str) or "report/definition/versionMetadata" not in schema:
+                    fail(errors, version_path, "$schema must be the Power BI report definition version metadata schema")
+                if not isinstance(version, str) or not version.strip():
+                    fail(errors, version_path, "version must be a non-empty string")
+
+        pbir_path = definition_dir / "definition.pbir"
+        if not pbir_path.exists():
+            fail(errors, report_dir, "Report/definition/definition.pbir is required")
+            continue
+        data = load_json(pbir_path, errors)
+        if not isinstance(data, dict):
+            continue
+        dataset_reference = data.get("datasetReference")
+        by_path = dataset_reference.get("byPath") if isinstance(dataset_reference, dict) else None
+        semantic_path = by_path.get("path") if isinstance(by_path, dict) else None
+        if not isinstance(semantic_path, str) or ".SemanticModel" not in semantic_path:
+            fail(errors, pbir_path, "datasetReference.byPath.path must point to the SemanticModel artifact")
 
 
 def validate_json_files(
@@ -136,13 +168,61 @@ def validate_tmdl_keywords_and_keys(root: Path, errors: list[str]) -> None:
     for path in root.rglob("*.tmdl"):
         text = path.read_text(encoding="utf-8-sig", errors="replace")
         key_count = 0
+        in_fenced_expression = False
         for line_number, line in enumerate(text.splitlines(), start=1):
-            if any(pattern.match(line) for pattern in loose_m_patterns):
+            if "```" in line:
+                in_fenced_expression = not in_fenced_expression
+            if not in_fenced_expression and any(pattern.match(line) for pattern in loose_m_patterns):
                 fail(errors, path, f"Loose Power Query keyword at line {line_number}: {line.strip()}")
             if any(pattern.match(line) for pattern in key_patterns):
                 key_count += 1
         if key_count > 1:
             fail(errors, path, f"More than one column has IsKey=true ({key_count} found)")
+
+
+def validate_tmdl_lineage_tags(root: Path, errors: list[str]) -> None:
+    seen: dict[str, Path] = {}
+    for path in root.rglob("*.tmdl"):
+        text = path.read_text(encoding="utf-8-sig", errors="replace")
+        for tag in LINEAGE_TAG_RE.findall(text):
+            normalized = tag.lower()
+            if normalized in seen:
+                fail(errors, path, f"Duplicate lineageTag {tag}; first seen in {seen[normalized]}")
+            else:
+                seen[normalized] = path
+
+
+def validate_postgres_tmdl_patterns(root: Path, errors: list[str]) -> None:
+    for path in root.rglob("*.tmdl"):
+        text = path.read_text(encoding="utf-8-sig", errors="replace")
+        if re.search(r"\bPgSchema\b", text):
+            fail(errors, path, "PgSchema expression is not allowed; hardcode schema in each partition source record")
+        if re.search(r"PostgreSQL\.Database\(\s*PgServer\s*,\s*PgDatabase\s*\)", text):
+            fail(errors, path, 'PostgreSQL.Database parameters must be quoted as #"PgServer", #"PgDatabase"')
+
+        if "PostgreSQL.Database(" not in text:
+            continue
+        if not re.search(r'PostgreSQL\.Database\(\s*#"[A-Za-z0-9_ ]+"\s*,\s*#"[A-Za-z0-9_ ]+"\s*\)', text):
+            fail(errors, path, 'PostgreSQL.Database call must use quoted parameter references such as #"PgServer", #"PgDatabase"')
+        if "Table.SelectColumns" not in text:
+            fail(errors, path, "PostgreSQL import partitions must use Table.SelectColumns to load only modeled columns")
+        if "Table.TransformColumnTypes" not in text:
+            fail(errors, path, "PostgreSQL import partitions must use Table.TransformColumnTypes for dates and numeric columns")
+        if "PBI_ResultType" not in text:
+            fail(errors, path, "PostgreSQL import partitions must include annotation PBI_ResultType = Table")
+        if re.search(r"Source\s*{\s*\[\s*Schema\s*=\s*#\"", text):
+            fail(errors, path, "Partition schema must be hardcoded in Source{[Schema=\"...\", Item=\"...\"]}[Data], not a parameter expression")
+
+
+def validate_metrics_table_partition(root: Path, errors: list[str]) -> None:
+    for path in root.rglob("*.tmdl"):
+        text = path.read_text(encoding="utf-8-sig", errors="replace")
+        if not re.search(r"^\s*table\s+'?_[^'\n]*\b(Metrics|Measures)\b", text, re.IGNORECASE | re.MULTILINE):
+            continue
+        if not re.search(r"\bpartition\b.*=\s*calculated\b", text, re.IGNORECASE):
+            fail(errors, path, "Metrics or measures table must include a calculated partition")
+        if 'ROW("MetricKey", 1)' not in text and "ROW('MetricKey', 1)" not in text:
+            fail(errors, path, 'Metrics or measures table calculated partition must use ROW("MetricKey", 1)')
 
 
 def relationship_blocks(text: str) -> list[str]:
@@ -256,6 +336,7 @@ def main() -> int:
         return 2
 
     validate_pbip_shortcut(root, errors)
+    validate_report_artifact(root, errors)
     expected_report_version_at_import = None if args.allow_any_report_version_at_import else args.expected_report_version_at_import
 
     validate_json_files(
@@ -266,6 +347,9 @@ def main() -> int:
     )
     validate_platform_files(root, errors)
     validate_tmdl_keywords_and_keys(root, errors)
+    validate_tmdl_lineage_tags(root, errors)
+    validate_postgres_tmdl_patterns(root, errors)
+    validate_metrics_table_partition(root, errors)
     validate_relationship_ambiguity(root, errors)
 
     if errors:

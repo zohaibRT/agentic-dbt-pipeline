@@ -166,7 +166,9 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] If Power BI PBIP/TMDL was created from a user-provided contract, every required output path, artifact folder, schema string, compatibility level, parameter, source partition, relationship, measure label, report page, and visual was checked against that contract
 - [ ] If Power BI PBIP/TMDL was created, the `.pbip` points to the Report artifact, and the Report artifact definition links to the SemanticModel artifact with the correct relative path
 - [ ] If Power BI PBIP/TMDL was created as a report deliverable, the root `.pbip` shortcut artifact entry uses the required `report` property and does not use unsupported properties such as `dataset`
+- [ ] If Power BI PBIP/TMDL was created as a report deliverable, the Report artifact includes `definition/version.json` with the report definition version metadata schema and a non-empty version string
 - [ ] If Power BI PBIP/TMDL was created, import partitions use approved parameters for host, database, schema, warehouse, or equivalent connection values
+- [ ] If Power BI PBIP/TMDL was created from PostgreSQL, import partitions do not use a `PgSchema` expression, quote server/database parameter references, hardcode the approved schema in each source record, select only modeled columns, transform date and numeric types, and include `PBI_ResultType = Table`
 - [ ] If Power BI PBIP/TMDL was created, approved report pages exist as Power BI report definition artifacts, not only Markdown page descriptions
 - [ ] If a presentation artifact was created, the agent produced a consultant-grade page plan from validated facts, dimensions, semantic metrics, source profiling, and data quality evidence instead of asking the user to design every visual
 - [ ] If a presentation artifact was created, every key performance indicator visual or measure was reconciled to gold or semantic SQL, including numerator, denominator, filters, and final result
@@ -195,6 +197,9 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] If Power BI PBIP/TMDL was created, TMDL table files were checked for invalid loose Power Query keywords such as standalone `let` or `in` lines outside a valid partition/source expression block
 - [ ] If Power BI PBIP/TMDL was created, TMDL column metadata was checked so no table has more than one column with `IsKey` set to `True`
 - [ ] If Power BI PBIP/TMDL was created, the generator did not mark every `*_id` column as `IsKey`; foreign keys stayed unmarked unless explicitly required by a validated Power BI pattern
+- [ ] If Power BI PBIP/TMDL was created, every one-side relationship key is unique and not null in dbt, and composite business keys use a surrogate key instead of a repeated partial natural key
+- [ ] If Power BI PBIP/TMDL was created, all TMDL `lineageTag` values are unique across the semantic model
+- [ ] If Power BI PBIP/TMDL was created, the measures or metrics table has a calculated partition such as `ROW("MetricKey", 1)`
 - [ ] If Power BI PBIP/TMDL was created, active relationships were audited for ambiguous filter paths, including multiple active paths between dimensions through facts or bridge tables
 - [ ] If Power BI PBIP/TMDL was created, lower-grain facts, parent facts, bridge tables, and role-playing date relationships were reviewed so only the approved active paths are active
 - [ ] If Power BI PBIP/TMDL was created and Power BI Modeling Model Context Protocol tools were available, `ConnectFolder` to the SemanticModel definition folder succeeded
