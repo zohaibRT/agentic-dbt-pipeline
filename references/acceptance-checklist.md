@@ -191,7 +191,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] If Power BI Modeling Model Context Protocol tools were available, they were used for `ConnectFolder`, model inspection, relationship inspection, and DAX smoke testing; availability without use is a validation failure
 - [ ] If Power BI Modeling Model Context Protocol tools were not available, the presentation report records the tool search/connector check, install attempt or install recommendation, and exact reason validation was not run
 - [ ] If Power BI PBIP/TMDL was created, every `.platform` file has a `$schema` value matching the supported Fabric git integration platform properties schema pattern for the target Power BI Desktop version
-- [ ] If Power BI PBIP/TMDL was created, `report.json` includes `themeCollection.baseTheme.reportVersionAtImport` with the correct JSON type and target-version value
+- [ ] If Power BI PBIP/TMDL was created, every `report.json` includes `themeCollection.baseTheme.reportVersionAtImport` as a non-empty string with the target-version value, defaulting to `"5.55"` unless a known-good project reference proves another value
 - [ ] If Power BI PBIP/TMDL was created, TMDL table files were checked for invalid loose Power Query keywords such as standalone `let` or `in` lines outside a valid partition/source expression block
 - [ ] If Power BI PBIP/TMDL was created, TMDL column metadata was checked so no table has more than one column with `IsKey` set to `True`
 - [ ] If Power BI PBIP/TMDL was created, the generator did not mark every `*_id` column as `IsKey`; foreign keys stayed unmarked unless explicitly required by a validated Power BI pattern
