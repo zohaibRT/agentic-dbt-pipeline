@@ -1,4 +1,4 @@
-# Mapping Seeds and Coverage
+﻿# Mapping Seeds and Coverage
 
 Use this when `project_rules` include manual mappings, code translations, department/group mappings, category mappings, or user-provided business labels.
 
@@ -22,7 +22,7 @@ Do not create mapping seeds for ambiguous, placeholder, abbreviated, generic, or
 
 ## Seed location and naming
 
-- Folder: `seeds/{domain}/`
+- Folder: `seeds/{project_slug}/`
 - File: `{source_name}__<mapping_name>.csv`
 - Include one row per source value
 - Include an explicit fallback or unmapped handling rule when the user approves it
@@ -40,7 +40,7 @@ If seeds are added, configure them in `dbt_project.yml`:
 ```yaml
 seeds:
   {project.name}:
-    {domain}:
+    {project_slug}:
       +schema: {layer_schema_prefix}_seeds
 ```
 
@@ -71,5 +71,5 @@ If a field has no confirmed business definition, do not treat its observed value
 Commit mapping seeds separately when they are a meaningful business artifact:
 
 ```text
-Add mapping seeds for <domain>
+Add mapping seeds for <project_slug>
 ```

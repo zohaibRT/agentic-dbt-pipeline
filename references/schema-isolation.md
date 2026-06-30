@@ -55,20 +55,24 @@ Resolve it in this order:
 1. Explicit prompt value: `layer_schema_prefix`
 2. Advanced `.env`: `DBT_LAYER_SCHEMA_PREFIX`
 3. Existing complete medallion schema set, when detected and approved for reuse
-4. `domain`, when descriptive and not generic
-5. Normalized `source_schema`, when descriptive
+4. Normalized `source_schema`, when descriptive
+5. Normalized `project_slug` / `dbt_project_name`, when descriptive
 6. Normalized `source_name`, only when descriptive
-7. Ask the user
+7. `domain` only as a last fallback when concise, descriptive, and approved for physical naming
+8. Ask the user
 
 Do not use short or abbreviated source names such as `dh`, `src`, `raw`, or names ending in punctuation as the physical schema prefix unless the user explicitly sets `layer_schema_prefix`.
+
+Do not use the full `DBT_DOMAIN` value as a physical schema prefix by default. `DBT_DOMAIN` is business context for modeling and reporting; physical schemas need a short stable prefix. A value such as `real_estate_house_building` should normally inform analytics context while the prefix comes from a better project/source identifier such as `property_sales`, `real_estate`, or an approved existing medallion prefix.
 
 Example:
 
 | Input | Good physical prefix |
 |---|---|
-| `domain: hospital`, `source_name: dh` | `hospital` |
+| `domain: hospital`, `source_name: dh`, no better source/project identifier | `hospital` |
 | `source_schema: doctors_hospital_src`, no useful domain | `doctors_hospital` |
 | `source_name: doctors_hospital_src`, no useful domain/schema | `doctors_hospital` |
+| `DBT_DOMAIN: real_estate_house_building`, `source_schema: property_sales_src` | `property_sales` |
 
 The dbt source name may still be short, such as `dh`, for model names like `stg_dh__appointments`. That does not require physical schemas like `dh_bronze`.
 

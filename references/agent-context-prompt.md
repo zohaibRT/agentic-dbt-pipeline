@@ -1,4 +1,4 @@
-# Agent Context Prompt
+﻿# Agent Context Prompt
 
 Copy into an agent session when starting dbt pipeline work. Edit overrides as needed.
 
@@ -51,7 +51,7 @@ Use full wording in user-facing plans, reports, summaries, diagram notes, and fi
 - Use only the adapter from the selected dbt profile for discovery
 - Do not call any warehouse or cloud connector until `.env` and the selected dbt profile adapter are resolved and announced
 - Do not switch to another database, dataset, catalog, schema, table, tenant, client, domain, environment, or assumption without user approval, even when the configured source is empty and a better candidate is visible
-- Derive dbt project name/root from source schema or domain. Use repository name only when the user provided one for push. Do not use the profile name as the folder unless explicitly requested.
+- Derive dbt project name/root and project slug from source schema, source name, existing project identity, or descriptive profile database/catalog. Use domain only as a last fallback, and use repository name only when the user provided one for push. Do not use the profile name or raw `DBT_DOMAIN` as the folder unless explicitly requested. Use `DBT_BUSINESS_DESCRIPTION` only for analytics understanding, never for physical names.
 - Do not hardcode passwords
 - Do not commit profiles.yml or .env
 - Commit `.env.example` only when it contains no secrets
@@ -72,9 +72,9 @@ See [dbt-packages-and-skills.md](dbt-packages-and-skills.md): codegen, dbt_utils
 
 - sources: models/sources/ only; never place source YAML under bronze, silver, or gold layer folders
 - Do not move source YAML into bronze/staging only to satisfy dbt_project_evaluator source-directory warnings; document accepted exceptions or ask before changing structure
-- layer 1: models/{layer_1_name}/{domain}/ - stg_{source}__* (default layer name: bronze)
-- layer 2: models/{layer_2_name}/{domain}/ - int_{source}__* (default layer name: silver)
-- layer 3: models/{layer_3_name}/{domain}/ - dim_*, fct_*, mart_* (default layer name: gold)
+- layer 1: models/{layer_1_name}/{project_slug}/ - stg_{source}__* (default layer name: bronze)
+- layer 2: models/{layer_2_name}/{project_slug}/ - int_{source}__* (default layer name: silver)
+- layer 3: models/{layer_3_name}/{project_slug}/ - dim_*, fct_*, mart_* (default layer name: gold)
 - materialization_profile: prod (layer 1/2=view; layer 3=table; fct_*=incremental)
 - Apply principal data engineering standards: strict layers, state-based continuous integration when artifacts exist, public model contracts/versioning when safe, explicit SQL style, compute optimization, Power BI star-schema readiness, aggregate table recommendation, and modern table format considerations when relevant
 - ref() only in intermediate/marts; source() only in staging
@@ -117,6 +117,7 @@ See [dbt-packages-and-skills.md](dbt-packages-and-skills.md): codegen, dbt_utils
 | `intermediate` | [intermediate-spec.md](intermediate-spec.md) |
 | `marts` | [marts-spec.md](marts-spec.md) |
 | `docs` | [documentation.md](documentation.md) |
+| `analytics_insight_reporting` | [analytics-insight-reporting.md](analytics-insight-reporting.md) |
 | `presentation_layer` | [presentation-layer.md](presentation-layer.md) |
 | `ci` | [cicd-setup.md](cicd-setup.md) |
 | `agents_schema` | [agents-schema-setup.md](agents-schema-setup.md) |

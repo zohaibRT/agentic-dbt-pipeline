@@ -168,9 +168,9 @@ Read [warehouse-adapter-routing.md](references/warehouse-adapter-routing.md) imm
 
 If the configured source is missing, empty, inaccessible, ambiguous, or mismatched, read [source-confirmation.md](references/source-confirmation.md). Stop after metadata-only candidate listing. Recommend the likely replacement with evidence, then wait for user approval before changing database, dataset, catalog, schema, table, tenant, client, domain, environment, assumption, `.env`, profile settings, profiling, discovery reports, or continuing discovery.
 
-For normal runs, collect only the values the agent cannot infer safely: `domain`, `dbt_profile_name`, and `source_schema`. When `dbt_profile_name` is missing or ambiguous, list available profiles using [profile-listing.md](references/profile-listing.md), then wait for the user to choose. Derive project name/root, dbt source name, schema prefix, layer names, commit behavior, and GitHub mode unless the user explicitly overrides them.
+For normal runs, collect only the values the agent cannot infer safely: `domain`, `dbt_profile_name`, and `source_schema`. Optionally accept `business_description` / `DBT_BUSINESS_DESCRIPTION` when the user wants to explain the client, process, reporting goals, or business context. When `dbt_profile_name` is missing or ambiguous, list available profiles using [profile-listing.md](references/profile-listing.md), then wait for the user to choose. Derive project name/root, project slug, dbt source name, schema prefix, layer names, commit behavior, and GitHub mode unless the user explicitly overrides them.
 
-Resolve `project.name` and `project.root` before `dbt init`. Never use `dbt_profile_name` as the folder/project name unless the user explicitly provides it as `dbt_project_name`. Prefer a clean name derived from `source_schema` or `domain`; use `github_repo_name` only when the user provided it for push.
+Resolve `project.name`, `project.root`, and `project_slug` before `dbt init`. Never use `dbt_profile_name` or raw `DBT_DOMAIN` as the folder/project name unless the user explicitly provides it as `dbt_project_name`, `dbt_project_root`, or `project_slug`. Prefer a clean name derived from `source_schema`, source name, existing project name, or descriptive profile database/catalog; use `domain` only as a last fallback and `github_repo_name` only when the user provided it for push. Use `DBT_BUSINESS_DESCRIPTION` only for analytics understanding, never for physical folder, schema, database, or model names.
 
 Keep the source schema read-only and immutable. Never update, insert, delete, truncate, merge into, create, drop, alter, or repair data in the configured source schema or source tables. Even if the user asks to "mark records complete", "fix source rows", "delete bad source data", or similar, implement the logic only as dbt transformations, tests, seeds, snapshots, or audits in non-source schemas, then explain that the source remains unchanged. Never build dbt models, package models, evaluator tables, seeds, snapshots, or audit outputs into `source_schema`. Route evaluator outputs to `<layer_schema_prefix>_evaluator` and layer outputs to separate medallion schemas. Resolve `layer_schema_prefix` with [schema-isolation.md](references/schema-isolation.md); do not use short source names like `dh` as physical schema prefixes unless the user explicitly sets them.
 
@@ -228,7 +228,7 @@ Use `layer_names` from the prompt, `.env`, or `project.config.yml` when provided
 - Layer 2 (`int_*`): `silver`
 - Layer 3 (`dim_*`/`fct_*`/`mart_*`): `gold`
 
-Do not ask for layer names unless the user requests a non-default naming convention or an existing project already uses different folders. Resolve `layer_schema_prefix` from explicit configuration, existing medallion schemas, domain, source schema, or descriptive source name. Ask only when existing schemas create a real conflict that the agent cannot resolve safely.
+Do not ask for layer names unless the user requests a non-default naming convention or an existing project already uses different folders. Resolve `project_slug` from [project-naming.md](references/project-naming.md) for model folder paths. Resolve `layer_schema_prefix` from explicit configuration, existing approved medallion schemas, source schema, project slug, or descriptive source name; use domain only as a last fallback. Ask only when existing schemas create a real conflict that the agent cannot resolve safely.
 
 Write `dbt_project.yml` per [materialization-rules.md](references/materialization-rules.md):
 
@@ -312,7 +312,7 @@ After project setup and configuration, each stage: **phase-specific discovery ->
 
 Read [packages-and-sources.md](references/packages-and-sources.md), [source-profiling.md](references/source-profiling.md), [schema-isolation.md](references/schema-isolation.md), and [dbt-packages-and-skills.md](references/dbt-packages-and-skills.md).
 
-All four packages in `packages.yml`. Codegen for sources. Derive `source.name` from `source.schema` / `domain` unless explicitly provided. Write source YAML only under `models/sources/`, never under bronze, silver, or gold layer folders. Do not move source YAML into bronze/staging to satisfy evaluator source-directory warnings; document accepted exceptions or ask before changing structure. Add the configured `source.schema` to source YAML after generate. Profile row counts, candidate keys, relationships, important dates, measures, and status/code fields before staging.
+All four packages in `packages.yml`. Codegen for sources. Derive `source.name` from `source.schema` unless explicitly provided; use domain only as a last fallback when the source schema is generic. Write source YAML only under `models/sources/`, never under bronze, silver, or gold layer folders. Do not move source YAML into bronze/staging to satisfy evaluator source-directory warnings; document accepted exceptions or ask before changing structure. Add the configured `source.schema` to source YAML after generate. Profile row counts, candidate keys, relationships, important dates, measures, and status/code fields before staging.
 
 ## Step 3 - Layer 1 (staging)
 
@@ -344,7 +344,7 @@ Read [documentation.md](references/documentation.md). Run `dbt docs generate`. U
 
 ## Step 6a - Analytics insight reporting
 
-Read [analytics-insight-reporting.md](references/analytics-insight-reporting.md), [reporting-standards.md](references/reporting-standards.md), [kpi-definitions.md](references/kpi-definitions.md), and [metric-verification.md](references/metric-verification.md). Before this phase, write/update `AGENT_PLAN.md` and wait for approval. Discover and document the most useful business-facing outputs from validated marts and semantic metrics. Produce `analytics_insight_report.md`, `reporting_catalog.md`, `kpi_catalog.md`, `dashboard_spec.md`, `insight_backlog.md`, and `reporting_readiness_scorecard.md` under `reports/agent/`. Do not create presentation artifacts in this phase.
+Read [analytics-insight-reporting.md](references/analytics-insight-reporting.md), [reporting-standards.md](references/reporting-standards.md), [kpi-definitions.md](references/kpi-definitions.md), and [metric-verification.md](references/metric-verification.md). Before this phase, write/update `AGENT_PLAN.md` and wait for approval. Discover and document the most useful business-facing outputs from validated marts and semantic metrics. Produce `analytics_insight_report.md`, `reporting_catalog.md`, `kpi_catalog.md`, `dashboard_spec.md`, `insight_backlog.md`, `reporting_readiness_scorecard.md`, and `analytics_insight_reporting_report.md` under `reports/agent/`. Do not create presentation artifacts in this phase.
 
 ### Analytics insight reporting hard rules
 
@@ -436,11 +436,13 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 
 - `workflow_phase:` init | sources | staging | intermediate | marts | semantic_layer | project_evaluator | docs | analytics_insight_reporting | presentation_layer | ci | agents_schema
 - `dbt_profile_name:` dbt profile key from `~/.dbt/profiles.yml`; ask if missing or ambiguous
-- `dbt_project_name:` optional explicit dbt project name; otherwise derive from source/domain
+- `dbt_project_name:` optional explicit dbt project name; otherwise derive from source/project signals
 - `dbt_project_root:` optional explicit folder name; otherwise use `dbt_project_name`
-- `domain:` business/domain folder name; ask if missing
+- `project_slug:` optional explicit model folder slug; otherwise derive from source/project signals
+- `domain:` business/domain context; ask if missing, but do not use it directly as a folder/schema prefix
+- `business_description:` optional plain-English business/client context for analytics insight reporting and presentation planning
 - `source_schema:` warehouse schema to inspect with codegen; ask if missing
-- `source_name:` optional dbt source name override; derive from `source_schema` / `domain` when missing
+- `source_name:` optional dbt source name override; derive from `source_schema` when missing
 - `layer_schema_prefix:` prefix for physical output schemas; derive by [schema-isolation.md](references/schema-isolation.md) unless explicitly provided
 - `project_rules:` optional field mappings, joins, metrics, exclusions, privacy rules, naming rules, and special instructions. Apply exactly; ask if unclear.
 - `auto_bootstrap:` true *(default)* | false *(backward-compatible config key for automatic project setup; avoid showing this in normal user-facing prompts)*

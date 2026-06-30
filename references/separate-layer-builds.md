@@ -1,4 +1,4 @@
-# Separate Layer Builds - Order, Schemas, and Examples
+﻿# Separate Layer Builds - Order, Schemas, and Examples
 
 > **Skill default:** always create **all** layers. Use `bronze`/`silver`/`gold` unless the user or existing project provides different layer names. Names become `dbt_project.yml` keys, folders, and `+schema` values. See [dbt-project-layers.md](dbt-project-layers.md).
 
@@ -6,9 +6,9 @@
 
 ```
 1. Sources     ->  models/sources/ only
-2. Layer 1     ->  models/{layer_1_name}/{domain}/  ->  warehouse schema: {layer_schema_prefix}_{layer_1_name}
-3. Layer 2     ->  models/{layer_2_name}/{domain}/  ->  warehouse schema: {layer_schema_prefix}_{layer_2_name}
-4. Layer 3     ->  models/{layer_3_name}/{domain}/  ->  warehouse schema: {layer_schema_prefix}_{layer_3_name}
+2. Layer 1     ->  models/{layer_1_name}/{project_slug}/  ->  warehouse schema: {layer_schema_prefix}_{layer_1_name}
+3. Layer 2     ->  models/{layer_2_name}/{project_slug}/  ->  warehouse schema: {layer_schema_prefix}_{layer_2_name}
+4. Layer 3     ->  models/{layer_3_name}/{project_slug}/  ->  warehouse schema: {layer_schema_prefix}_{layer_3_name}
 ```
 
 Default names: `bronze`, `silver`, `gold`.
@@ -76,7 +76,7 @@ Creates models like:
 
 ```powershell
 dbt parse --no-partial-parse
-dbt build --select +path:models/{layer_1_name}/{domain}
+dbt build --select +path:models/{layer_1_name}/{project_slug}
 ```
 
 **Builds:** staging models + tests + upstream source dependencies.
@@ -86,7 +86,7 @@ Warehouse models land in: **`<layer_schema_prefix>_<layer_1_name>`** (default ma
 
 Run bronze discovery first: table grains, column pass/drop decisions, casts, naming, source tests, and sensitive-column handling. Recommend the staging path with evidence, then explain planned staging models, source tables, casts, tests, approval needs, schema target, and post-build data validation checks before creating files.
 After `dbt build`, run [layer-data-validation.md](layer-data-validation.md). Verify source-to-staging row counts, staging row presence, grain/key checks, relationship tests, status/category distributions, and expected-empty sources. Share the validation results with the user.
-Write `reports/agent/{layer_1_name}_report.md`, update `reports/agent/PIPELINE_STATUS.md` and `reports/agent/CONTEXT_TREE.md`, then ask commit -> push `models/{layer_1_name}/{domain}/` and `reports/agent/`.
+Write `reports/agent/{layer_1_name}_report.md`, update `reports/agent/PIPELINE_STATUS.md` and `reports/agent/CONTEXT_TREE.md`, then ask commit -> push `models/{layer_1_name}/{project_slug}/` and `reports/agent/`.
 
 ---
 
@@ -103,7 +103,7 @@ Creates models like:
 
 ```powershell
 dbt parse --no-partial-parse
-dbt build --select +path:models/{layer_2_name}/{domain}
+dbt build --select +path:models/{layer_2_name}/{project_slug}
 ```
 
 **Builds:** intermediate + staging (upstream) + tests.
@@ -113,7 +113,7 @@ Warehouse models land in: **`<layer_schema_prefix>_<layer_2_name>`** (default ma
 
 Run silver discovery first: join cardinality, grain preservation, mapping/reference needs, reusable business logic, flags, and tests. Recommend the intermediate path with evidence, then explain planned intermediate models, joins, grains, mappings, flags, approval needs, tests, and post-build data validation checks before creating files.
 After `dbt build`, run [layer-data-validation.md](layer-data-validation.md). Verify row presence, expected-empty evidence, grain/key checks, row loss, row multiplication, relationship checks, mapping coverage, and derived measure/flag sanity. Share the validation results with the user.
-Write `reports/agent/{layer_2_name}_report.md`, update `reports/agent/PIPELINE_STATUS.md` and `reports/agent/CONTEXT_TREE.md`, then ask commit -> push `models/{layer_2_name}/{domain}/` and `reports/agent/`.
+Write `reports/agent/{layer_2_name}_report.md`, update `reports/agent/PIPELINE_STATUS.md` and `reports/agent/CONTEXT_TREE.md`, then ask commit -> push `models/{layer_2_name}/{project_slug}/` and `reports/agent/`.
 
 ---
 
@@ -130,7 +130,7 @@ Creates models like:
 
 ```powershell
 dbt parse --no-partial-parse
-dbt build --select +path:models/{layer_3_name}/{domain}
+dbt build --select +path:models/{layer_3_name}/{project_slug}
 ```
 
 **Builds:** marts + intermediate + staging (upstream) + tests.
@@ -140,7 +140,7 @@ Warehouse models land in: **`<layer_schema_prefix>_<layer_3_name>`** (prod defau
 
 Run gold discovery first: approved facts, dimensions, metric grains, privacy exposure, reporting marts, and materializations. Recommend the mart path with evidence, then explain planned facts, dimensions, reporting marts, metrics, privacy handling, grains, approval needs, materializations, and post-build data validation checks before creating files.
 After `dbt build`, run [layer-data-validation.md](layer-data-validation.md). Verify every fact, dimension, and reporting mart has data when upstream data exists; validate grain/key checks, relationships, date coverage, key performance indicator measures, and privacy exposure. Unexpected empty gold models are blockers until fixed or explicitly accepted. Share the validation results with the user.
-Write `reports/agent/{layer_3_name}_report.md`, update `reports/agent/PIPELINE_STATUS.md` and `reports/agent/CONTEXT_TREE.md`, then ask commit -> push `models/{layer_3_name}/{domain}/`, `reports/agent/`, and `dbt_project.yml` if changed.
+Write `reports/agent/{layer_3_name}_report.md`, update `reports/agent/PIPELINE_STATUS.md` and `reports/agent/CONTEXT_TREE.md`, then ask commit -> push `models/{layer_3_name}/{project_slug}/`, `reports/agent/`, and `dbt_project.yml` if changed.
 
 ---
 
@@ -153,9 +153,9 @@ Run the default prompt without `workflow_phase`.
 Run in order after automatic project setup and configuration, **stop for phase plan approval before each non-setup build and ask commit after each**:
 
 1. Sources (if needed) -> source discovery -> plan approval -> source files -> phase report -> ask commit
-2. Staging -> bronze discovery -> plan approval -> build `+path:models/{layer_1_name}/{domain}` -> layer data validation -> phase report -> share results -> ask commit
-3. Intermediate -> silver discovery -> plan approval -> build `+path:models/{layer_2_name}/{domain}` -> layer data validation -> phase report -> share results -> ask commit
-4. Marts -> gold discovery -> plan approval -> build `+path:models/{layer_3_name}/{domain}` -> layer data validation -> phase report -> share results -> ask commit
+2. Staging -> bronze discovery -> plan approval -> build `+path:models/{layer_1_name}/{project_slug}` -> layer data validation -> phase report -> share results -> ask commit
+3. Intermediate -> silver discovery -> plan approval -> build `+path:models/{layer_2_name}/{project_slug}` -> layer data validation -> phase report -> share results -> ask commit
+4. Marts -> gold discovery -> plan approval -> build `+path:models/{layer_3_name}/{project_slug}` -> layer data validation -> phase report -> share results -> ask commit
 
 Each layer is a separate build and optional separate git push.
 
@@ -225,7 +225,7 @@ Use for incremental work inside a layer; default skill flow still builds the **w
 
 | Selector | Meaning |
 |---|---|
-| `path:models/{layer_1_name}/{domain}` | Only models in that folder |
-| `+path:models/{layer_1_name}/{domain}` | That folder **+ all upstream** dependencies |
+| `path:models/{layer_1_name}/{project_slug}` | Only models in that folder |
+| `+path:models/{layer_1_name}/{project_slug}` | That folder **+ all upstream** dependencies |
 
 Prefer **`+path`** so upstream layers are built automatically when you build intermediate or marts alone.

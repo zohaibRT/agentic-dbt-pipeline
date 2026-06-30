@@ -47,7 +47,7 @@ For a full copy-paste prompt, see [prompt.md](prompt.md).
 
 All diagrams created by the skill use Mermaid. Entity relationships use Mermaid `erDiagram`, and added or changed diagrams must be verified as visible/parseable before the related phase is marked complete.
 
-Keep repeatable non-secret settings in `.env` by copying `.env.example`. If `.env` is missing on a fresh clone, the skill creates a safe local `.env` template, lists available dbt profiles with adapter and non-secret notes, and asks you to fill the required values before running dbt. Most projects only need domain, dbt profile, and source schema there. The skill infers project name/root, dbt source name, layer names, schema prefix, commit mode, push behavior, materialization, and Agents Schema handling unless you override them. Add GitHub repository details only when you want the agent to push.
+Keep repeatable non-secret settings in `.env` by copying `.env.example`. If `.env` is missing on a fresh clone, the skill creates a safe local `.env` template, lists available dbt profiles with adapter and non-secret notes, and asks you to fill the required values before running dbt. Most projects only need domain, dbt profile, and source schema there; optionally add `DBT_BUSINESS_DESCRIPTION` to explain the client, business process, reporting goals, and decision context. The skill infers project name/root, project slug for layer folders, dbt source name, layer names, schema prefix, commit mode, push behavior, materialization, and Agents Schema handling unless you override them. Add GitHub repository details only when you want the agent to push.
 
 Discovery uses the adapter from the selected dbt profile. If `.env` points to a PostgreSQL profile, the skill uses PostgreSQL discovery only; it does not probe AWS, Redshift, or other warehouses unless you explicitly change profiles.
 
@@ -61,7 +61,7 @@ After installation, edit:
 
 Use this file for non-secret defaults and advanced overrides:
 
-- dbt project name and root path, when you do not want the skill to derive them from source/domain
+- dbt project name, root path, or project slug, when you do not want the skill to derive them from source/project signals
 - dbt profile name
 - adapter, host, port, database, and default schema
 - source schema and source YAML path

@@ -85,7 +85,7 @@ approve evaluator
 approve docs
 ```
 
-The exact wording is not the control mechanism. The active checkpoint is the control mechanism: discovery, setup, sources, bronze/staging, silver/intermediate, gold/marts, semantic layer, evaluator, documentation, presentation layer, continuous integration, Agents Schema, commit, and push are separate checkpoints. Any approval that does not explicitly name additional future phases applies only to the active checkpoint.
+The exact wording is not the control mechanism. The active checkpoint is the control mechanism: discovery, setup, sources, bronze/staging, silver/intermediate, gold/marts, semantic layer, evaluator, documentation, analytics insight reporting, presentation layer, continuous integration, Agents Schema, commit, and push are separate checkpoints. Any approval that does not explicitly name additional future phases applies only to the active checkpoint.
 
 ## Markdown template
 

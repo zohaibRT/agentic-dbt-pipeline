@@ -8,7 +8,8 @@ Most runs need only these non-secret values:
 
 | Input | Config key | When to ask |
 |---|---|---|
-| Domain | `domain` prompt or `DBT_DOMAIN` | Ask if missing; used for modeling context and folders |
+| Domain | `domain` prompt or `DBT_DOMAIN` | Ask if missing; used for business and modeling context only, not physical folders |
+| Business description | `business_description` prompt or `DBT_BUSINESS_DESCRIPTION` | Optional; ask only when business meaning is unclear or reporting design needs more context |
 | dbt profile name | `dbt_profile_name` prompt or `DBT_PROFILE_NAME` | Ask if missing or multiple profiles exist |
 | Source/raw schema | `source_schema` prompt or `DBT_SOURCE_SCHEMA` | Ask if missing; codegen must inspect a real warehouse schema |
 
@@ -18,8 +19,9 @@ Do not ask a new user for project name, dbt source name, layer schema prefix, la
 
 | Input | Config key | project default |
 |---|---|---|
-| dbt project name | `dbt_project_name`, `DBT_PROJECT_NAME`, or derived by [project-naming.md](project-naming.md) | derive from source/domain |
+| dbt project name | `dbt_project_name`, `DBT_PROJECT_NAME`, or derived by [project-naming.md](project-naming.md) | derive from source/project signals; domain is last fallback |
 | dbt project root | `dbt_project_root`, `DBT_PROJECT_ROOT`, or derived project name | same as project name |
+| Project slug / model folder slug | `project_slug`, `DBT_PROJECT_SLUG`, or derived by [project-naming.md](project-naming.md) | derive from source/project signals; do not use raw domain automatically |
 | dbt profile name | `dbt_profile_name` prompt, `DBT_PROFILE_NAME`, or `project.profile` | ask if missing or ambiguous |
 | Adapter | selected profile target `type` | resolve from `DBT_PROFILE_NAME`; no adapter default before selection |
 | Host | selected profile target host, when applicable | resolve from selected profile |
@@ -27,9 +29,9 @@ Do not ask a new user for project name, dbt source name, layer schema prefix, la
 | Database | selected profile target database/dbname/project, when applicable | resolve from selected profile |
 | Profile target schema | `database.target_schema` | `dbt_work`; must not equal `source_schema` |
 | Source/raw schema | `source_schema` prompt, `DBT_SOURCE_SCHEMA`, or `source.schema` | required human input when missing |
-| Source name | `source_name`, `DBT_SOURCE_NAME`, or derived from `source_schema` / `domain` | derive; ask only for existing-project collisions |
+| Source name | `source_name`, `DBT_SOURCE_NAME`, or derived from `source_schema` | derive; ask only for existing-project collisions |
 | Layer schema prefix | `layer_schema_prefix`, `DBT_LAYER_SCHEMA_PREFIX`, or derived by [schema-isolation.md](schema-isolation.md) | derive; ask only when existing schemas conflict |
-| Domain folder | `domain` prompt, `DBT_DOMAIN`, or `domain` config | required human input when missing |
+| Business context | `domain`, `DBT_DOMAIN`, `business_description`, `DBT_BUSINESS_DESCRIPTION` | required domain when missing; optional description for better analytics |
 | Project rules | `project_rules` prompt | optional; ask if unclear |
 | Layer 1 schema suffix | prompt, advanced `.env`, or config -> `+schema` | `bronze` |
 | Layer 2 schema suffix | prompt, advanced `.env`, or config -> `+schema` | `silver` |
@@ -72,19 +74,21 @@ Only resolve GitHub when the user asks to push, provides `github_repo_name` / `D
 - After `dbt_profile_name` is selected from the prompt or `.env`, use that profile's adapter as the only discovery route. Do not probe unrelated warehouses or cloud connectors.
 - Do not use `dbt_profile_name` as the project folder. The profile is only the connection key. Derive project name/root from [project-naming.md](project-naming.md).
 - Keep `source_schema` read-only. If the dbt profile target schema equals `source_schema`, stop and follow [schema-isolation.md](schema-isolation.md) before any build.
-- Ask for `source_schema` before running codegen or writing layer config. Derive `source_name` from `source_schema` or `domain` unless the user explicitly overrides it. Derive `layer_schema_prefix` with [schema-isolation.md](schema-isolation.md); do not default physical schemas to short source names such as `dh`. Do not guess the source schema from the dbt profile target schema.
+- Ask for `source_schema` before running codegen or writing layer config. Derive `source_name` from `source_schema` unless the user explicitly overrides it; use `domain` only as a last fallback when the source schema is generic. Derive `project_slug` with [project-naming.md](project-naming.md) and `layer_schema_prefix` with [schema-isolation.md](schema-isolation.md); do not default folders or physical schemas to raw `DBT_DOMAIN` or short source names such as `dh`. Do not guess the source schema from the dbt profile target schema.
 - If `project_rules` include mappings, joins, metrics, exclusions, privacy rules, naming rules, or special instructions, apply them exactly and ask before interpreting ambiguous rules.
 
 ## Optional overrides (user prompt wins)
 
 ```text
-dbt_project_name: hospital_analytics     # optional; otherwise derived from source/domain
+dbt_project_name: hospital_analytics     # optional; otherwise derived from source/project signals
 dbt_project_root: hospital_analytics     # optional; defaults to dbt_project_name
 dbt_profile_name: hospital_analytics     # profile key from ~/.dbt/profiles.yml
-domain: hospital                         # domain folder and naming context
+domain: hospital                         # business and modeling context only
+business_description: "..."              # optional plain-English client/business context
 source_schema: hospital_raw              # warehouse schema to inspect with codegen
-source_name: hospital                    # optional; otherwise derived from source_schema/domain
-layer_schema_prefix: hospital            # optional; otherwise derived from existing schemas/domain/source schema/descriptive source name
+source_name: hospital                    # optional; otherwise derived from source_schema
+project_slug: hospital                   # optional; otherwise derived from source/project signals for folder paths
+layer_schema_prefix: hospital            # optional; otherwise derived from existing schemas/source schema/project slug/descriptive source name
 project_rules:                           # optional business/modeling rules
   field_mappings: []
   joins: []
@@ -120,6 +124,7 @@ For repeat projects, allow the user to keep required fields in `.env`:
 
 ```text
 DBT_DOMAIN=<domain_name>
+DBT_BUSINESS_DESCRIPTION=<plain_english_business_context>
 DBT_PROFILE_NAME=<dbt_profile_name>
 DBT_SOURCE_SCHEMA=<raw_source_schema>
 ```

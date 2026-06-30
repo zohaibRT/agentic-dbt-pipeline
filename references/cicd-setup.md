@@ -1,4 +1,4 @@
-# CI/CD - GitHub Actions
+﻿# CI/CD - GitHub Actions
 
 Basic dbt validation on pull requests; Agents Schema sync on `main`.
 
@@ -32,7 +32,7 @@ jobs:
       - run: dbt deps
       - run: dbt parse --no-partial-parse
       # Uncomment when CI warehouse credentials are configured:
-      # - run: dbt build --select +path:models/<layer_1_name>/<domain>
+      # - run: dbt build --select +path:models/<layer_1_name>/<project_slug>
       env:
         DBT_PROFILES_DIR: ${{ github.workspace }}/.dbt-ci
 ```

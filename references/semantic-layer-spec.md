@@ -1,4 +1,4 @@
-# Semantic Layer Spec
+﻿# Semantic Layer Spec
 
 Before creating or changing semantic layer files, follow [phase-plan-approval.md](phase-plan-approval.md), [kpi-definitions.md](kpi-definitions.md), and [metric-verification.md](metric-verification.md).
 
@@ -19,8 +19,8 @@ Before creating or changing semantic layer files, follow [phase-plan-approval.md
 
 ## Folder
 
-- `models/semantic/{domain}/` or co-locate YAML next to mart models
-- File: `_{domain}_semantic.yml`
+- `models/semantic/{project_slug}/` or co-locate YAML next to mart models
+- File: `_{project_slug}_semantic.yml`
 
 ## Semantic model design
 

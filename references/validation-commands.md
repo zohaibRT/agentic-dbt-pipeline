@@ -1,4 +1,4 @@
-# dbt Validation Commands
+﻿# dbt Validation Commands
 
 Run from `{project.root}`. Prefer the active environment's `dbt` command.
 If `dbt` is not available, try `python -m dbt`.
@@ -37,9 +37,9 @@ if ($IsWindows -and -not (Get-Command "dbt" -ErrorAction SilentlyContinue)) {
 
 ```powershell
 # Full layer (with upstream)
-& $dbt build --select +path:models/{layer_1_name}/{domain}
-& $dbt build --select +path:models/{layer_2_name}/{domain}
-& $dbt build --select +path:models/{layer_3_name}/{domain}
+& $dbt build --select +path:models/{layer_1_name}/{project_slug}
+& $dbt build --select +path:models/{layer_2_name}/{project_slug}
+& $dbt build --select +path:models/{layer_3_name}/{project_slug}
 ```
 
 ## Layer data validation *(required after every layer build)*
@@ -102,7 +102,7 @@ See [semantic-layer-spec.md](semantic-layer-spec.md).
 ## Tests only *(when debugging)*
 
 ```powershell
-& $dbt test --select path:models/{layer_3_name}/{domain}
+& $dbt test --select path:models/{layer_3_name}/{project_slug}
 ```
 
 ## Documentation

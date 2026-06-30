@@ -1,4 +1,4 @@
-# GitHub Setup
+﻿# GitHub Setup
 
 Initial repository setup. Layer-by-layer commits: [git-workflow.md](git-workflow.md).
 Repo resolution: [github-repo-resolution.md](github-repo-resolution.md).
@@ -43,9 +43,9 @@ If repo does not exist: `gh repo create $repo --private --source=. --remote=orig
 | 4. Safe config/profile examples | `dbt_project.yml`, `.env.example`, `profiles.example.yml` | `Configure dbt profile and source settings` |
 | 5. Evaluator config | `dbt_project.yml` dispatch | `Configure dbt project evaluator` |
 | 6. Sources | `models/sources/` | `Define dbt sources` |
-| 7. Layer 1 | `models/{layer_1_name}/{domain}/` | `Add dbt staging layer for {source} sources.` |
-| 8. Layer 2 | `models/{layer_2_name}/{domain}/` | `Add dbt intermediate layer for {source} analytics.` |
-| 9. Layer 3 | `models/{layer_3_name}/{domain}/` | `Add dbt marts layer for {source} star schema.` |
+| 7. Layer 1 | `models/{layer_1_name}/{project_slug}/` | `Add dbt staging layer for {source} sources.` |
+| 8. Layer 2 | `models/{layer_2_name}/{project_slug}/` | `Add dbt intermediate layer for {source} analytics.` |
+| 9. Layer 3 | `models/{layer_3_name}/{project_slug}/` | `Add dbt marts layer for {source} star schema.` |
 | 10. Semantic layer | `models/semantic/` or `*_semantic.yml` | `Add semantic layer metrics` |
 | 11. Docs/tests | model YAML updates | `Add dbt tests and documentation` |
 | 12. CI | `.github/workflows/` | `Add dbt automation workflows` |

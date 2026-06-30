@@ -95,7 +95,8 @@ Verify before marking the dbt pipeline workflow complete.
 
 ## dbt project
 
-- [ ] Project name/root were derived from source/domain or explicitly provided; not accidentally copied from `dbt_profile_name`
+- [ ] Project name/root and project slug were derived from source/project signals or explicitly provided; not accidentally copied from `dbt_profile_name` or raw `DBT_DOMAIN`
+- [ ] `DBT_DOMAIN` and `DBT_BUSINESS_DESCRIPTION` were used for business context only, not directly as folder paths, physical schema prefixes, database names, or source names
 - [ ] Source YAML UTF-8 with `schema:` set
 - [ ] Source YAML is stored under `models/sources/`, not under bronze/silver/gold layer folders
 - [ ] Source YAML was not moved into bronze/staging only to satisfy evaluator source-directory warnings

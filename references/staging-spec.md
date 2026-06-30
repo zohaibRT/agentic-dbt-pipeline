@@ -1,4 +1,4 @@
-# Staging Layer Spec
+﻿# Staging Layer Spec
 
 ## Goal
 
@@ -16,17 +16,17 @@ Before creating or changing staging files, follow [phase-plan-approval.md](phase
 | Inputs required | Approved staging phase plan, source YAML, source profiling findings, primary key candidates, important dates/statuses, and sensitive or unclear field decisions |
 | Allowed changes | Staging SQL models, staging YAML, staging tests, and staging documentation |
 | Not allowed | Intermediate models, marts models, semantic metrics, dashboards, final key performance indicators, or business-process joins |
-| Commands to run | `dbt parse --no-partial-parse`, `dbt build --select +path:models/{layer_1_name}/{domain}`, and staging data validation queries |
+| Commands to run | `dbt parse --no-partial-parse`, `dbt build --select +path:models/{layer_1_name}/{project_slug}`, and staging data validation queries |
 | Completion criteria | Every included source table has a source-shaped staging model, expected row counts are verified, primary keys/statuses are tested where possible, and unclear fields are documented |
 | Report required | `reports/agent/staging_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
 
 ## Folder and naming
 
-- Folder: `models/{layer_1_name}/{domain}/` (default: `models/bronze/{domain}/`)
+- Folder: `models/{layer_1_name}/{project_slug}/` (default: `models/bronze/{project_slug}/`)
 - SQL: `stg_{source}__<table_name>.sql`
 - YAML: `_stg_{source}.yml`
 
-Do not create `models/staging/` unless `{layer_1_name}` is explicitly configured as `staging`. With default layer names, staging models live in `models/bronze/{domain}/`.
+Do not create `models/staging/` unless `{layer_1_name}` is explicitly configured as `staging`. With default layer names, staging models live in `models/bronze/{project_slug}/`.
 
 ## Rules
 
@@ -75,7 +75,7 @@ Run from dbt project root. **Build is mandatory** - a layer is not complete unti
 
 ```powershell
 dbt parse --no-partial-parse
-dbt build --select +path:models/{layer_1_name}/{domain}
+dbt build --select +path:models/{layer_1_name}/{project_slug}
 ```
 
 `+path` builds staging models, their tests, and required upstream dependencies.

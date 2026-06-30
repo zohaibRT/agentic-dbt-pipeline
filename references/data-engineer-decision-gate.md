@@ -15,7 +15,7 @@ Every build-phase plan must include these checks when relevant:
 | Check | What the agent must decide or ask |
 |---|---|
 | Source boundary | Which schemas/tables are read-only inputs, and which tables are excluded |
-| Project shape | Project/root name, folders, source name, and schema prefix derived from domain/source, not profile name |
+| Project shape | Project/root name, project slug, folders, source name, and schema prefix derived from source/project signals; domain is business context and only a last fallback |
 | Grain | One clear grain for each planned model |
 | Keys | Candidate primary keys, uniqueness/null checks, and safe surrogate keys when needed |
 | Joins | Join keys, expected cardinality, and whether joins can multiply rows |
@@ -55,11 +55,11 @@ Stop and ask when:
 The agent may infer simple technical defaults when they do not change business meaning:
 
 - Standard dbt folder names from configured layer names.
-- Source name from source schema/domain.
-- Project name from domain/source schema.
+- Source name from source schema; domain only as a last fallback when source schema is generic.
+- Project name and project slug from source/project signals; domain only as a last fallback.
 - Basic casts, trimming, and column renames in staging.
 - Generic tests for obvious primary keys when the data confirms uniqueness and non-nullness.
-- Schema prefix from domain/source schema when there is no conflict.
+- Schema prefix from approved existing medallion schemas, source schema, project slug, or descriptive source name when there is no conflict; domain only as a last fallback.
 
 Document inferred choices in the phase plan and phase report.
 

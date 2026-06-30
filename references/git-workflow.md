@@ -1,4 +1,4 @@
-# Git Workflow - Ask After Each Layer
+﻿# Git Workflow - Ask After Each Layer
 
 ## Default behavior
 
@@ -64,9 +64,9 @@ $dbt = "dbt"
 Examples:
 
 ```powershell
-& $dbt build --select +path:models/{layer_1_name}/{domain}
-& $dbt build --select +path:models/{layer_2_name}/{domain}
-& $dbt build --select +path:models/{layer_3_name}/{domain}
+& $dbt build --select +path:models/{layer_1_name}/{project_slug}
+& $dbt build --select +path:models/{layer_2_name}/{project_slug}
+& $dbt build --select +path:models/{layer_3_name}/{project_slug}
 ```
 
 ## Stage only this layer (use user-defined folder names)
@@ -74,9 +74,9 @@ Examples:
 | Role | Stage paths |
 |---|---|
 | Sources | `models/sources/` + `AGENT_PLAN.md` + `reports/agent/` including `CONTEXT_TREE.md` |
-| Layer 1 | `models/{layer_1_name}/{domain}/` + `AGENT_PLAN.md` + `reports/agent/` including `CONTEXT_TREE.md` |
-| Layer 2 | `models/{layer_2_name}/{domain}/` + `AGENT_PLAN.md` + `reports/agent/` including `CONTEXT_TREE.md` |
-| Layer 3 | `models/{layer_3_name}/{domain}/` + `dbt_project.yml` if changed + `AGENT_PLAN.md` + `reports/agent/` including `CONTEXT_TREE.md` |
+| Layer 1 | `models/{layer_1_name}/{project_slug}/` + `AGENT_PLAN.md` + `reports/agent/` including `CONTEXT_TREE.md` |
+| Layer 2 | `models/{layer_2_name}/{project_slug}/` + `AGENT_PLAN.md` + `reports/agent/` including `CONTEXT_TREE.md` |
+| Layer 3 | `models/{layer_3_name}/{project_slug}/` + `dbt_project.yml` if changed + `AGENT_PLAN.md` + `reports/agent/` including `CONTEXT_TREE.md` |
 
 Run from `{project.root}` (where `.git` lives).
 

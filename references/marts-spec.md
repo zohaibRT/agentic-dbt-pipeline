@@ -1,4 +1,4 @@
-# Marts / Star Schema Layer Spec
+﻿# Marts / Star Schema Layer Spec
 
 ## Goal
 
@@ -17,16 +17,16 @@ Before creating or changing marts files, follow [phase-plan-approval.md](phase-p
 | Inputs required | Approved marts phase plan, validated staging/intermediate models, agreed grains, privacy decisions, and key performance indicator definitions or deferrals |
 | Allowed changes | Fact models, dimension models, reporting mart models, marts YAML, marts tests, semantic-ready fields, and key performance indicator documentation |
 | Not allowed | Semantic layer files, dashboards, reports, unclear metric implementation, direct source reads, or unapproved sensitive-field exposure |
-| Commands to run | `dbt parse --no-partial-parse`, `dbt build --select +path:models/{layer_3_name}/{domain}`, and marts data validation queries |
+| Commands to run | `dbt parse --no-partial-parse`, `dbt build --select +path:models/{layer_3_name}/{project_slug}`, and marts data validation queries |
 | Completion criteria | Facts and dimensions have documented grains, tests pass, non-empty expectations are verified, metric sanity checks pass, and privacy exposure is reviewed |
 | Report required | `reports/agent/marts_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
 
 ## Folder and naming
 
-- Folder: `models/{layer_3_name}/{domain}/` (default: `models/gold/{domain}/`)
-- YAML: `_<domain>_marts.yml`
+- Folder: `models/{layer_3_name}/{project_slug}/` (default: `models/gold/{project_slug}/`)
+- YAML: `_<project_slug>_marts.yml`
 
-Do not create `models/marts/` unless `{layer_3_name}` is explicitly configured as `marts`. With default layer names, facts, dimensions, and reporting marts live in `models/gold/{domain}/`.
+Do not create `models/marts/` unless `{layer_3_name}` is explicitly configured as `marts`. With default layer names, facts, dimensions, and reporting marts live in `models/gold/{project_slug}/`.
 
 ## Domain-driven design
 
@@ -162,7 +162,7 @@ Run from dbt project root. **Build is mandatory** - a layer is not complete unti
 
 ```powershell
 dbt parse --no-partial-parse
-dbt build --select +path:models/{layer_3_name}/{domain}
+dbt build --select +path:models/{layer_3_name}/{project_slug}
 ```
 
 `+path` builds marts models, their tests, and required upstream (staging + intermediate) dependencies.

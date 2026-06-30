@@ -19,7 +19,8 @@ Keep the normal `.env` small. These are the only fields most users should fill:
 
 | `.env` key | Meaning |
 |---|---|
-| `DBT_DOMAIN` | `domain` |
+| `DBT_DOMAIN` | Business/domain context for analytics and modeling; not a physical folder or schema prefix |
+| `DBT_BUSINESS_DESCRIPTION` | Optional plain-English client/business context for analytics insight reporting and presentation planning |
 | `DBT_PROFILE_NAME` | `dbt_profile_name` / `project.profile` |
 | `DBT_SOURCE_SCHEMA` | `source_schema` / `source.schema` |
 
@@ -29,10 +30,11 @@ Do not require these in the prompt or `.env`:
 
 | Decision | Default behavior |
 |---|---|
-| Project name/root | Derive from source schema or domain; never from dbt profile |
-| dbt source name | Derive from source schema or domain |
+| Project name/root | Derive from explicit override, repository, source schema, source name, existing project, or profile metadata; domain is last fallback |
+| Model folder slug | Derive from the best stable source/project identifier; never directly from raw `DBT_DOMAIN` |
+| dbt source name | Derive from source schema; domain is last fallback |
 | Schema isolation | Keep source schema read-only; route evaluator/seeds/snapshots to separate schemas |
-| Layer schema prefix | Derive from explicit override, existing medallion schemas, domain, source schema, or descriptive source name |
+| Layer schema prefix | Derive from explicit override, existing approved medallion schemas, source schema, project slug, or descriptive source name; domain is last fallback |
 | Layer names | Use `bronze`, `silver`, `gold` |
 | Commit behavior | Ask before each phase commit |
 | GitHub behavior | Commit locally by default; ask for repo details only when the user requests a push |
@@ -47,6 +49,7 @@ These keys are supported for teams that need a non-default workflow, but keep th
 |---|---|
 | `DBT_PROJECT_NAME` | `dbt_project_name` |
 | `DBT_PROJECT_ROOT` | `dbt_project_root` |
+| `DBT_PROJECT_SLUG` | `project_slug` for model layer folder paths |
 | `DBT_SOURCE_NAME` | `source_name` |
 | `DBT_LAYER_SCHEMA_PREFIX` | `layer_schema_prefix` |
 | `DBT_GITHUB_REPO_NAME` | `github_repo_name` |
@@ -63,6 +66,7 @@ These keys are supported for teams that need a non-default workflow, but keep th
 Good:
 
 - Domain name
+- Business/client description when it helps analytics and reporting
 - dbt profile key
 - Source schema
 
@@ -112,11 +116,14 @@ When the agent creates `.env` from `.env.example`, the generated file must keep 
 
 ```text
 DBT_DOMAIN=<domain_name>
+DBT_BUSINESS_DESCRIPTION=<plain_english_business_context>
 DBT_PROFILE_NAME=<dbt_profile_name>
 DBT_SOURCE_SCHEMA=<raw_source_schema>
 ```
 
 These placeholders are not valid configuration. Treat placeholder values, blank values, `auto`, `default`, `example`, `raw`, `schema`, `source`, `na`, and `none` as missing until the user provides real values.
+
+`DBT_BUSINESS_DESCRIPTION` may be blank. If provided, use it to understand business processes, reporting needs, and insight language. Never use it as a folder, model, schema, database, or source name.
 
 Do not replace placeholder values with inferred values from:
 
@@ -192,8 +199,12 @@ Available profiles in your `profiles.yml`:
 
 Please also provide:
 
-- DBT_DOMAIN: <business domain, for example hospital or retail>
+- DBT_DOMAIN: <business domain, for example hospital, retail, or real estate>
 - DBT_SOURCE_SCHEMA: <raw/source schema to inspect>
+
+Optional:
+
+- DBT_BUSINESS_DESCRIPTION: <plain-English context about the client, business process, and reporting goals>
 
 Keep passwords in ~/.dbt/profiles.yml, not in `.env`.
 After I update `.env`, I will summarize the values, resolve the selected profile adapter, and wait for your approval before read-only discovery.

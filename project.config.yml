@@ -1,8 +1,8 @@
-# Edit this file when starting a new domain or environment.
+# Edit this file when starting a new source system or environment.
 # The agent reads this before building dbt layers.
 
 project:
-  name: auto                 # derive from repo/source/domain; see references/project-naming.md
+  name: auto                 # derive from repo/source/profile metadata; see references/project-naming.md
   root: auto                 # default to project.name unless explicitly overridden
   profile: auto              # use DBT_PROFILE_NAME or ask; never infer from project name
 
@@ -68,7 +68,12 @@ dbt_agent_skills:
     - adding-dbt-unit-test
     - answering-natural-language-questions-with-dbt
 
-domain: auto
+business_context:
+  domain: auto               # analytics context only; not a folder/schema prefix
+  description: auto          # optional DBT_BUSINESS_DESCRIPTION free text
+
+project_slug: auto           # stable folder slug derived by references/project-naming.md
+schema_prefix: auto          # physical warehouse prefix derived by references/schema-isolation.md
 
 layer_names:
   ask_user: false
@@ -84,16 +89,16 @@ layer_roles:
 
 paths:
   sources: models/sources
-  layer_1: models/bronze/{domain}
-  layer_2: models/silver/{domain}
-  layer_3: models/gold/{domain}
+  layer_1: models/bronze/{project_slug}
+  layer_2: models/silver/{project_slug}
+  layer_3: models/gold/{project_slug}
 
 naming:
   layer_1_prefix: stg_{source}__
   layer_2_prefix: int_{source}__
   layer_1_yaml: _stg_{source}.yml
   layer_2_yaml: _int_{source}.yml
-  layer_3_yaml: _{domain}_marts.yml
+  layer_3_yaml: _{project_slug}_marts.yml
 
 examples:
   source: "source('<source_name>', '<source_table>')"
@@ -108,9 +113,9 @@ dbt:
   adapter_version: '1.10.0'
   parse_flags: '--no-partial-parse'
   build_selectors:
-    layer_1: '+path:models/bronze/{domain}'
-    layer_2: '+path:models/silver/{domain}'
-    layer_3: '+path:models/gold/{domain}'
+    layer_1: '+path:models/bronze/{project_slug}'
+    layer_2: '+path:models/silver/{project_slug}'
+    layer_3: '+path:models/gold/{project_slug}'
 
 materialization_profile: prod
 materialization:
@@ -161,7 +166,7 @@ commit_messages:
   agents_schema: 'Add Agents Schema sync workflow'
 
 workflow_phases:
-  - bootstrap
+  - project_setup
   - init
   - sources
   - staging

@@ -1,4 +1,4 @@
-# dbt_project.yml - Layer Names
+﻿# dbt_project.yml - Layer Names
 
 **Always create all three model layers** (plus sources).
 Default to `bronze`, `silver`, and `gold` unless the prompt, advanced `.env` keys, or an existing project clearly uses different names.
@@ -26,9 +26,9 @@ Layer roles and physical folder names are different concepts:
 
 | Role wording | Default physical folder | Default warehouse schema |
 |---|---|---|
-| Staging role / Layer 1 | `models/bronze/<domain>/` | `<layer_schema_prefix>_bronze` |
-| Intermediate role / Layer 2 | `models/silver/<domain>/` | `<layer_schema_prefix>_silver` |
-| Marts role / Layer 3 | `models/gold/<domain>/` | `<layer_schema_prefix>_gold` |
+| Staging role / Layer 1 | `models/bronze/<project_slug>/` | `<layer_schema_prefix>_bronze` |
+| Intermediate role / Layer 2 | `models/silver/<project_slug>/` | `<layer_schema_prefix>_silver` |
+| Marts role / Layer 3 | `models/gold/<project_slug>/` | `<layer_schema_prefix>_gold` |
 
 When the configured layer names are `bronze`, `silver`, and `gold`, do not also create `models/staging/`, `models/intermediate/`, or `models/marts/`. Those words describe model roles and workflow phases only.
 
@@ -52,9 +52,9 @@ Example:
 
 | Role | User name (example) | `dbt_project.yml` | Folder | Physical warehouse schema |
 |---|---|---|---|---|
-| Layer 1 | `bronze` | `bronze:` | `models/bronze/{domain}/` | `{layer_schema_prefix}_bronze` |
-| Layer 2 | `silver` | `silver:` | `models/silver/{domain}/` | `{layer_schema_prefix}_silver` |
-| Layer 3 | `gold` | `gold:` | `models/gold/{domain}/` | `{layer_schema_prefix}_gold` |
+| Layer 1 | `bronze` | `bronze:` | `models/bronze/{project_slug}/` | `{layer_schema_prefix}_bronze` |
+| Layer 2 | `silver` | `silver:` | `models/silver/{project_slug}/` | `{layer_schema_prefix}_silver` |
+| Layer 3 | `gold` | `gold:` | `models/gold/{project_slug}/` | `{layer_schema_prefix}_gold` |
 
 If user chooses `bronze`, `silver`, `gold` (production defaults):
 
@@ -88,7 +88,7 @@ vars:
     other_prefixes: ['rpt_']
 ```
 
-Folders: `models/bronze/{domain}/`, `models/silver/{domain}/`, `models/gold/{domain}/`
+Folders: `models/bronze/{project_slug}/`, `models/silver/{project_slug}/`, `models/gold/{project_slug}/`
 Schemas: `{layer_schema_prefix}_bronze`, `{layer_schema_prefix}_silver`, `{layer_schema_prefix}_gold`
 Package/evaluator schema: `{layer_schema_prefix}_evaluator`
 
@@ -131,9 +131,9 @@ Model **prefixes** stay the same; only folder / `dbt_project.yml` / schema **nam
 After names are confirmed, run in order:
 
 1. **Sources** -> `models/sources/` -> `dbt parse`
-2. **Layer 1** (`{name_1}`) -> create models -> `build --select +path:models/{name_1}/{domain}` -> ask commit
-3. **Layer 2** (`{name_2}`) -> create models -> `build --select +path:models/{name_2}/{domain}` -> ask commit
-4. **Layer 3** (`{name_3}`) -> create models -> `build --select +path:models/{name_3}/{domain}` -> ask commit
+2. **Layer 1** (`{name_1}`) -> create models -> `build --select +path:models/{name_1}/{project_slug}` -> ask commit
+3. **Layer 2** (`{name_2}`) -> create models -> `build --select +path:models/{name_2}/{project_slug}` -> ask commit
+4. **Layer 3** (`{name_3}`) -> create models -> `build --select +path:models/{name_3}/{project_slug}` -> ask commit
 
 Write all three layer blocks to `dbt_project.yml` up front (when starting a new project) or ensure missing blocks are added before building that layer.
 
@@ -142,7 +142,7 @@ Write all three layer blocks to `dbt_project.yml` up front (when starting a new 
 ## Build commands (use user names)
 
 ```powershell
-dbt build --select +path:models/{layer_1_name}/{domain}
-dbt build --select +path:models/{layer_2_name}/{domain}
-dbt build --select +path:models/{layer_3_name}/{domain}
+dbt build --select +path:models/{layer_1_name}/{project_slug}
+dbt build --select +path:models/{layer_2_name}/{project_slug}
+dbt build --select +path:models/{layer_3_name}/{project_slug}
 ```

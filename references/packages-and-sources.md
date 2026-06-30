@@ -1,4 +1,4 @@
-# Packages & Source YAML (Phase 3)
+﻿# Packages & Source YAML (Phase 3)
 
 See full stack: [dbt-packages-and-skills.md](dbt-packages-and-skills.md) and schema routing rules in [schema-isolation.md](schema-isolation.md).
 
@@ -74,8 +74,8 @@ Layer folders are for dbt models and layer-specific model YAML only. For example
 
 ```text
 models/sources/<source.name>_sources.yml
-models/<layer_1_name>/<domain>/stg_<source.name>__<table>.sql
-models/<layer_1_name>/<domain>/_stg_<source.name>.yml
+models/<layer_1_name>/<project_slug>/stg_<source.name>__<table>.sql
+models/<layer_1_name>/<project_slug>/_stg_<source.name>.yml
 ```
 
 If codegen output is accidentally written to a layer folder, move it to `models/sources/`, update references if needed, and run `dbt parse --no-partial-parse` before continuing.
@@ -89,8 +89,8 @@ The user does not need to provide a source name. Derive `source.name` before wri
 1. Use explicit `source_name` / `DBT_SOURCE_NAME` only when provided.
 2. Otherwise normalize `source_schema`.
 3. Remove generic suffixes such as `_src`, `_source`, `_raw`, `_schema`.
-4. If the result is generic (`raw`, `source`, `src`) or unclear, use `domain`.
-5. Ask only if both `source_schema` and `domain` are unclear.
+4. If the result is generic (`raw`, `source`, `src`) or unclear, use a concise domain-derived fallback only when no better source/project signal exists.
+5. Ask only if both `source_schema` and business context are unclear.
 
 Examples:
 
@@ -117,7 +117,7 @@ version: 2
 
 sources:
   - name: <source.name>
-    description: Source tables for <domain>
+    description: Source tables for <business_context>
     schema: <source.schema>
     tables:
       - name: <source_table>

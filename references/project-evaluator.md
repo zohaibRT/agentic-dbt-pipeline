@@ -1,4 +1,4 @@
-# Project Evaluator Alignment
+﻿# Project Evaluator Alignment
 
 Use this after marts are built and before final docs/summary.
 
@@ -63,8 +63,8 @@ Derive `source_folder` from `source_name` or `source_schema`. If an existing pro
 Intermediate and gold folders may stay domain-oriented:
 
 ```text
-models/<layer_2_name>/<domain>/
-models/<layer_3_name>/<domain>/
+models/<layer_2_name>/<project_slug>/
+models/<layer_3_name>/<project_slug>/
 ```
 
 ## Run

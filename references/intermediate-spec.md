@@ -1,4 +1,4 @@
-# Intermediate Layer Spec
+﻿# Intermediate Layer Spec
 
 ## Goal
 
@@ -15,17 +15,17 @@ Before creating or changing intermediate files, follow [phase-plan-approval.md](
 | Inputs required | Approved intermediate phase plan, validated staging models, relationship/cardinality evidence, mapping requirements, and business process understanding |
 | Allowed changes | Intermediate SQL models, intermediate YAML, intermediate tests, mapping seeds when approved, and intermediate documentation |
 | Not allowed | Marts, semantic metrics, dashboards, direct source reads, joins with unproven cardinality, or final reporting calculations |
-| Commands to run | `dbt parse --no-partial-parse`, `dbt build --select +path:models/{layer_2_name}/{domain}`, and intermediate data validation queries |
+| Commands to run | `dbt parse --no-partial-parse`, `dbt build --select +path:models/{layer_2_name}/{project_slug}`, and intermediate data validation queries |
 | Completion criteria | Reusable business logic has clear grain, joins do not unexpectedly lose or multiply rows, mappings are covered, and validation results are documented |
 | Report required | `reports/agent/intermediate_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
 
 ## Folder and naming
 
-- Folder: `models/{layer_2_name}/{domain}/` (default: `models/silver/{domain}/`)
+- Folder: `models/{layer_2_name}/{project_slug}/` (default: `models/silver/{project_slug}/`)
 - SQL: `int_{source}__<name>.sql`
 - YAML: `_int_{source}.yml`
 
-Do not create `models/intermediate/` unless `{layer_2_name}` is explicitly configured as `intermediate`. With default layer names, intermediate models live in `models/silver/{domain}/`.
+Do not create `models/intermediate/` unless `{layer_2_name}` is explicitly configured as `intermediate`. With default layer names, intermediate models live in `models/silver/{project_slug}/`.
 
 ## Model design pattern
 
@@ -98,7 +98,7 @@ Run from dbt project root. **Build is mandatory** - a layer is not complete unti
 
 ```powershell
 dbt parse --no-partial-parse
-dbt build --select +path:models/{layer_2_name}/{domain}
+dbt build --select +path:models/{layer_2_name}/{project_slug}
 ```
 
 `+path` builds intermediate models, their tests, and required upstream (staging) dependencies.
