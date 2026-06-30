@@ -2,6 +2,8 @@
 
 Use this after marts, semantic layer, project evaluator, documentation, and **analytics insight reporting** have completed.
 
+For approved Power BI PBIP/TMDL artifacts, also read [powerbi-pbip-desktop-requirements.md](powerbi-pbip-desktop-requirements.md). That reference contains Desktop-load guardrails for enhanced PBIR layout, `.platform` metadata, TMDL syntax, page visual inventory, and validation gates.
+
 Read [analytics-insight-reporting.md](analytics-insight-reporting.md) first. The presentation layer consumes analytics insight outputs:
 
 | Analytics insight output | Presentation use |
@@ -316,7 +318,7 @@ Before handoff, paste the validation results into the chat result summary and `r
 | File tree | `.pbip`, Report folder, SemanticModel folder, `definition.pbism`, `database.tmdl`, `model.tmdl`, and `report.json` exist where expected |
 | Static validator | `python scripts/validate_powerbi_pbip.py <pbip_project_folder>` passes when available |
 | JSON parse | All `.json` files parse cleanly |
-| Path links | `.pbip` links to an existing `.Report` artifact folder, `definition/definition.pbir` exists and is non-empty, and that report definition links to an existing `.SemanticModel` artifact using correct relative paths |
+| Path links | `.pbip` links to an existing `.Report` artifact folder, root-level `definition.pbir` exists and is non-empty, and that report definition links to an existing `.SemanticModel` artifact using correct relative paths |
 | Relationships | No ambiguous active paths; approved active/inactive relationship rules are followed |
 | Partitions | Import or source queries point to real approved gold/mart tables |
 | Power BI Modeling Model Context Protocol load | `ConnectFolder` to the SemanticModel definition folder succeeds |
@@ -351,8 +353,11 @@ When creating PBIP:
 - Ensure the `.pbip` file points to a Report artifact when a report is requested, not only to a semantic model.
 - For the root `.pbip` shortcut file, do not use a `dataset` property for the artifact entry. A report PBIP must use the schema-allowed report artifact reference so Power BI does not fail with `Property 'dataset' has not been defined` or `Required properties are missing from object: report`.
 - Ensure the `.pbip` report artifact path resolves to an existing `<name>.Report` folder.
-- Ensure the Report artifact has `definition/definition.pbir`, that the file is non-empty, and that it contains a valid ReportDefinition object with `datasetReference.byPath.path`.
-- Ensure `definition/definition.pbir` links to an existing `<name>.SemanticModel` artifact using the correct relative path. Treat Power BI Desktop errors such as `ReportDefinition: Required artifact is missing`, `RequiredArtifactMissing: Path: definition.pbir`, or `RequiredArtifactMissing: ArtifactName: ReportDefinition` as hard validation failures.
+- Ensure the Report artifact has root-level `definition.pbir`, that the file is non-empty, and that it contains a valid ReportDefinition object with `datasetReference.byPath.path`.
+- Ensure `definition.pbir` links to an existing `<name>.SemanticModel` artifact using the correct relative path. Do not create legacy `definition/definition.pbir` for enhanced PBIR. Treat Power BI Desktop errors such as `ReportDefinition: Required artifact is missing`, `RequiredArtifactMissing: Path: definition.pbir`, or `RequiredArtifactMissing: ArtifactName: ReportDefinition` as hard validation failures.
+- Ensure enhanced PBIR report metadata lives under the Report `definition/` folder: `definition/report.json`, `definition/version.json`, and `definition/pages/pages.json`.
+- Do not create or keep legacy root-level `report.json` in the Report artifact when using enhanced PBIR.
+- Ensure every page listed in `definition/pages/pages.json` has a page folder, `page.json`, and at least one `visual.json`. Page shells are not complete report pages.
 - Ensure the Report artifact includes `definition/version.json` with the Power BI report definition version metadata schema and a non-empty version string.
 - Keep TMDL under the SemanticModel definition folder using the expected artifact layout for the chosen Power BI project format.
 - Create report definition files for the approved pages and visuals when the user asked for clickable/openable Power BI pages. Do not replace report pages with `dashboard_pages.md`.
@@ -374,7 +379,7 @@ When creating PBIP:
 - Use supported PBIP/TMDL metadata versions for the target Power BI Desktop release. Known requirements from prior failures include `definition.pbism` using the semantic model definition-properties schema path, `database.tmdl` using `compatibilityLevel: 1605` when requested, `model.tmdl` table references at the root level when the chosen structure requires it, and `report.json` values such as `themeCollection.baseTheme.reportVersionAtImport` typed exactly as Power BI expects.
 - For `.platform` files inside Report or SemanticModel artifact folders, verify `$schema` exists and matches the Power BI Desktop supported Fabric git integration platform properties schema pattern, such as `https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.x.y/schema.json`, and verify `config` exists as a non-empty object. Treat `UnrecognizedSchemaVersion: Path: .platform` and `ObjectNotPerSchema: Path: .platform` errors such as "Required properties are missing from object: config" as failed presentation phases.
 - For `report.json`, always emit and verify `themeCollection.baseTheme.reportVersionAtImport` as a non-empty string. For the April 2026 Power BI Desktop PBIP format seen in prior failures, use the string value `"5.55"` when no better validated project reference overrides it. Do not emit it as a number, null, object, empty string, or omit it.
-- For TMDL table files, do not write raw Power Query M `let ... in ...` blocks as loose TMDL lines. Place M expressions only in the correct partition/source expression property syntax for the chosen TMDL format. A line such as `in` under a table document outside a valid expression block is a hard validation failure.
+- For TMDL table files, do not write Markdown code fences in `.tmdl` files. Place Power Query M expressions only in the correct partition/source expression property syntax for the chosen TMDL format. Indented `let ... in ...` blocks are allowed when they follow a known-good TMDL partition pattern; unindented loose `let` or `in` lines are hard validation failures.
 - For PostgreSQL import partitions, keep only server and database as reusable expressions or parameters. Do not create a `PgSchema` expression. In each table partition, quote parameter references such as `#"PgServer"` and `#"PgDatabase"`, hardcode the approved gold schema in the source record, use `Table.SelectColumns` to load only modeled columns, use `Table.TransformColumnTypes` for dates and numeric fields, and include `annotation PBI_ResultType = Table`.
 - Measures or metrics tables must have a calculated partition such as `ROW("MetricKey", 1)` so the semantic model loads correctly.
 - Add a local `powerbi/README.md` or equivalent handoff with open, refresh, and reload-from-disk guidance.
@@ -385,19 +390,21 @@ Validation before handoff:
 - Verify every required PBIP, report, semantic model, definition, relationship, table, partition, and measure file exists.
 - Parse JSON files with a real parser.
 - Validate the root `.pbip` shortcut schema: artifact entries for report deliverables must contain the required `report` property and must not contain unsupported properties such as `dataset`. Treat `artifacts[0].dataset` or a missing `artifacts[0].report` as a failed presentation phase.
-- Resolve every `.pbip` report artifact path and verify the referenced `.Report` folder exists. Then verify `definition/definition.pbir` exists, is non-empty, parses as JSON, contains `datasetReference.byPath.path`, and points to an existing `.SemanticModel` folder. Treat a missing, empty, or unresolved `definition.pbir` as a failed presentation phase even if other report files exist.
+- Resolve every `.pbip` report artifact path and verify the referenced `.Report` folder exists. Then verify root-level `definition.pbir` exists, is non-empty, parses as JSON, contains `datasetReference.byPath.path`, and points to an existing `.SemanticModel` folder. Treat a missing, empty, unresolved, or legacy nested `definition/definition.pbir` as a failed presentation phase even if other report files exist.
+- Verify enhanced PBIR report metadata exists at `definition/report.json`, `definition/version.json`, and `definition/pages/pages.json`; reject legacy root-level `report.json` for enhanced PBIR.
+- Verify every page in `definition/pages/pages.json` has real visuals by counting `visual.json` files under each page folder. Record the visual inventory in `reports/agent/presentation_report.md`.
 - Validate every `.platform` file with JSON parsing, schema-pattern check, and required artifact details check. The `$schema` value must match the supported Fabric git integration platform properties pattern for the target Desktop version, and `config` must be present as a non-empty object. Do not allow stale, guessed, missing, unsupported, or schema-stub-only `.platform` files.
 - For `report.json`, explicitly assert `themeCollection.baseTheme.reportVersionAtImport` exists and has the correct type and value for the target Power BI Desktop schema. Run `python scripts/validate_powerbi_pbip.py <pbip_project_folder>` to enforce the default `"5.55"` value, or pass `--expected-report-version-at-import <value>` only when a known-good project reference proves another version. If this metadata check fails, repair with `python scripts/validate_powerbi_pbip.py <pbip_project_folder> --fix-report-version-at-import`, then rerun validation without the fix flag. Treat missing, empty, incorrectly typed, or wrong-valued `reportVersionAtImport` as a failed presentation phase.
 - Check TMDL indentation and root-level object placement against the selected PBIP structure.
-- Scan TMDL table files for invalid loose Power Query keywords such as standalone `let` or `in` lines outside the approved partition/source expression block. Treat `UnknownKeyword` parser risks as failed static validation.
+- Scan TMDL table files for Markdown code fences and invalid loose Power Query keywords such as unindented standalone `let` or `in` lines outside the approved partition/source expression block. Treat `UnknownKeyword` or invalid indentation parser risks as failed static validation.
 - Audit TMDL column metadata so no table has more than one column with `IsKey` set to `True`. Do not mark every `*_id` column as a Power BI key. Mark only the table's single primary/technical key when one exists; leave foreign keys unmarked. Treat Power BI errors such as `PFE_TM_TABLE_TWO_KEY_COLUMNS` or "has two columns with the IsKey property set to True" as failed validation.
 - Verify the `.pbip` points to the report artifact and the report points to the semantic model artifact.
-- Verify the exact referenced Report artifact includes `definition/definition.pbir`; do not rely only on scanning for any `.Report` folder.
+- Verify the exact referenced Report artifact includes root-level `definition.pbir`; do not rely only on scanning for any `.Report` folder.
 - Verify the Report artifact includes `definition/version.json`.
 - Verify all TMDL lineage tags are unique.
 - Verify PostgreSQL import partitions use only approved server/database expressions, quoted parameter references, hardcoded approved schema records, selected columns, changed types, and `PBI_ResultType`.
 - Verify the measures or metrics table has a calculated partition.
-- Verify approved report pages exist as Power BI report definition artifacts, not only Markdown page descriptions.
+- Verify approved report pages exist as Power BI report definition artifacts with actual `visual.json` files, not only Markdown page descriptions or empty page shells.
 - Verify user-provided technical requirements exactly, including output path, artifact folder names, schema strings, compatibility level, parameter names, import partition source, relationship direction/activity, measure labels, report page names, and expected visuals.
 - Verify every standard time showcase visual with SQL against the final gold/mart schema. Record exact verification queries and results in `reports/agent/presentation_report.md`.
 - Verify every key performance indicator visual and DAX measure with [metric-verification.md](metric-verification.md). Treat mismatched numerator, denominator, filter, or final result as a failed presentation phase.
@@ -451,8 +458,9 @@ Do not:
 - Mark a Power BI artifact complete when the Power BI Modeling Model Context Protocol `ConnectFolder` test fails.
 - Mark a Power BI artifact complete when `report.json` is missing `themeCollection.baseTheme.reportVersionAtImport` or has it as the wrong JSON type.
 - Mark a Power BI artifact complete when `report.json` has `themeCollection.baseTheme.reportVersionAtImport` as an empty string or unvalidated string value.
-- Mark a Power BI artifact complete when the `.pbip` points to a Report artifact whose `definition/definition.pbir` file is missing, empty, invalid, or does not link to an existing SemanticModel artifact.
-- Mark a Power BI artifact complete when any TMDL table file contains invalid loose Power Query keywords such as a standalone `in` line outside a valid expression block.
+- Mark a Power BI artifact complete when the `.pbip` points to a Report artifact whose root-level `definition.pbir` file is missing, empty, invalid, or does not link to an existing SemanticModel artifact.
+- Mark a Power BI artifact complete when any planned page is only a shell with no `visual.json` files.
+- Mark a Power BI artifact complete when any TMDL table file contains Markdown code fences or invalid loose Power Query keywords such as an unindented standalone `in` line outside a valid expression block.
 - Mark a Power BI artifact complete when Power BI Desktop reports ambiguous relationship paths or any project definition load error.
 - Hardcode one domain's table names, measures, or report pages into the skill.
 - Tell the user to save over the generated files from Power BI Desktop as the default reload strategy.

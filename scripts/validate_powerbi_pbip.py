@@ -22,6 +22,7 @@ PLATFORM_SCHEMA_RE = re.compile(
 )
 DEFAULT_REPORT_VERSION_AT_IMPORT = "5.55"
 LINEAGE_TAG_RE = re.compile(r"\blineageTag\s*:\s*([0-9a-fA-F-]{8,})\b")
+UUID_LIKE_RE = re.compile(r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
 
 
 def fail(errors: list[str], path: Path, message: str) -> None:
@@ -60,9 +61,12 @@ def report_artifact_reference_path(artifact: dict, pbip_path: Path, errors: list
 
 def validate_definition_pbir(report_dir: Path, errors: list[str]) -> None:
     definition_dir = report_dir / "definition"
-    pbir_path = definition_dir / "definition.pbir"
+    pbir_path = report_dir / "definition.pbir"
+    legacy_pbir_path = definition_dir / "definition.pbir"
+    if legacy_pbir_path.exists():
+        fail(errors, legacy_pbir_path, "legacy nested definition.pbir is not allowed for enhanced PBIR; use Report/definition.pbir")
     if not pbir_path.exists():
-        fail(errors, report_dir, "Report/definition/definition.pbir is required")
+        fail(errors, report_dir, "Report/definition.pbir is required for enhanced PBIR")
         return
     if pbir_path.stat().st_size == 0:
         fail(errors, pbir_path, "definition.pbir must not be empty")
@@ -91,6 +95,41 @@ def validate_definition_pbir(report_dir: Path, errors: list[str]) -> None:
         fail(errors, pbir_path, f"datasetReference.byPath.path does not resolve to an existing SemanticModel folder: {semantic_path}")
 
 
+def validate_report_pages(report_dir: Path, errors: list[str]) -> None:
+    pages_dir = report_dir / "definition" / "pages"
+    pages_json = pages_dir / "pages.json"
+    if not pages_json.exists():
+        fail(errors, pages_json, "definition/pages/pages.json is required for enhanced PBIR report pages")
+        return
+
+    data = load_json(pages_json, errors)
+    if not isinstance(data, dict):
+        return
+
+    page_order = data.get("pageOrder")
+    if not isinstance(page_order, list) or not page_order:
+        fail(errors, pages_json, "pageOrder must be a non-empty list")
+        return
+    active_page_name = data.get("activePageName")
+    if isinstance(active_page_name, str) and active_page_name and active_page_name not in page_order:
+        fail(errors, pages_json, "activePageName must refer to a page listed in pageOrder")
+
+    for page_name in page_order:
+        if not isinstance(page_name, str) or not page_name.strip():
+            fail(errors, pages_json, "pageOrder entries must be non-empty strings")
+            continue
+        page_dir = pages_dir / page_name
+        if not page_dir.exists() or not page_dir.is_dir():
+            fail(errors, page_dir, "page folder from pageOrder is missing")
+            continue
+        page_json = page_dir / "page.json"
+        if not page_json.exists():
+            fail(errors, page_json, "page.json is required for every page in pageOrder")
+        visual_count = sum(1 for path in page_dir.rglob("visual.json") if path.is_file())
+        if visual_count == 0:
+            fail(errors, page_dir, "page has no visual.json files; shell-only or blank pages are not allowed")
+
+
 def validate_single_report_artifact(report_dir: Path, errors: list[str]) -> None:
     if not report_dir.exists() or not report_dir.is_dir():
         fail(errors, report_dir, "Referenced Report artifact folder is missing")
@@ -104,6 +143,15 @@ def validate_single_report_artifact(report_dir: Path, errors: list[str]) -> None
         return
 
     validate_definition_pbir(report_dir, errors)
+    validate_report_pages(report_dir, errors)
+
+    root_report_json = report_dir / "report.json"
+    if root_report_json.exists():
+        fail(errors, root_report_json, "legacy root report.json is not allowed for enhanced PBIR; use Report/definition/report.json")
+
+    report_json = definition_dir / "report.json"
+    if not report_json.exists():
+        fail(errors, report_json, "Report/definition/report.json is required")
 
     version_path = definition_dir / "version.json"
     if not version_path.exists():
@@ -219,6 +267,13 @@ def validate_platform_files(root: Path, errors: list[str]) -> None:
         config = data.get("config")
         if not isinstance(config, dict) or not config:
             fail(errors, path, "config object is required and must not be empty")
+            continue
+        version = config.get("version")
+        logical_id = config.get("logicalId")
+        if version != "2.0":
+            fail(errors, path, 'config.version must be "2.0"')
+        if not isinstance(logical_id, str) or not UUID_LIKE_RE.match(logical_id):
+            fail(errors, path, "config.logicalId must be a stable UUID string")
 
 
 def validate_tmdl_keywords_and_keys(root: Path, errors: list[str]) -> None:
@@ -227,7 +282,7 @@ def validate_tmdl_keywords_and_keys(root: Path, errors: list[str]) -> None:
         re.compile(r"^\s*IsKey\s*=\s*True\s*$"),
         re.compile(r"^\s*isKey\s*=\s*true\s*$", re.IGNORECASE),
     ]
-    loose_m_patterns = [
+    unindented_m_patterns = [
         re.compile(r"^\s*let\s*$", re.IGNORECASE),
         re.compile(r"^\s*in\s*$", re.IGNORECASE),
     ]
@@ -235,12 +290,11 @@ def validate_tmdl_keywords_and_keys(root: Path, errors: list[str]) -> None:
     for path in root.rglob("*.tmdl"):
         text = path.read_text(encoding="utf-8-sig", errors="replace")
         key_count = 0
-        in_fenced_expression = False
         for line_number, line in enumerate(text.splitlines(), start=1):
             if "```" in line:
-                in_fenced_expression = not in_fenced_expression
-            if not in_fenced_expression and any(pattern.match(line) for pattern in loose_m_patterns):
-                fail(errors, path, f"Loose Power Query keyword at line {line_number}: {line.strip()}")
+                fail(errors, path, f"Markdown code fence is not valid TMDL at line {line_number}")
+            if line and not line[0].isspace() and any(pattern.match(line) for pattern in unindented_m_patterns):
+                fail(errors, path, f"Unindented loose Power Query keyword at line {line_number}: {line.strip()}")
             if any(pattern.match(line) for pattern in key_patterns):
                 key_count += 1
         if key_count > 1:

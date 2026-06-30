@@ -181,12 +181,15 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] If Power BI PBIP/TMDL was created, the `.pbip` points to the Report artifact, and the Report artifact definition links to the SemanticModel artifact with the correct relative path
 - [ ] If Power BI PBIP/TMDL was created as a report deliverable, the root `.pbip` shortcut artifact entry uses the required `report` property and does not use unsupported properties such as `dataset`
 - [ ] If Power BI PBIP/TMDL was created as a report deliverable, every `.pbip` report artifact path resolves to an existing `.Report` folder
-- [ ] If Power BI PBIP/TMDL was created as a report deliverable, the referenced Report artifact includes `definition/definition.pbir`, the file is non-empty, parses as JSON, and contains `datasetReference.byPath.path`
-- [ ] If Power BI PBIP/TMDL was created as a report deliverable, `definition/definition.pbir` points to an existing `.SemanticModel` artifact folder with the correct relative path
+- [ ] If Power BI PBIP/TMDL was created as a report deliverable, the referenced Report artifact includes root-level `definition.pbir`, the file is non-empty, parses as JSON, and contains `datasetReference.byPath.path`
+- [ ] If Power BI PBIP/TMDL was created as a report deliverable, root-level `definition.pbir` points to an existing `.SemanticModel` artifact folder with the correct relative path
+- [ ] If Power BI PBIP/TMDL was created as a report deliverable, legacy nested `definition/definition.pbir` was not created for enhanced PBIR
 - [ ] If Power BI PBIP/TMDL was created as a report deliverable, the Report artifact includes `definition/version.json` with the report definition version metadata schema and a non-empty version string
+- [ ] If Power BI PBIP/TMDL was created as a report deliverable, enhanced PBIR metadata exists at `definition/report.json`, `definition/version.json`, and `definition/pages/pages.json`
+- [ ] If Power BI PBIP/TMDL was created as a report deliverable, legacy root-level `report.json` was not created for enhanced PBIR
 - [ ] If Power BI PBIP/TMDL was created, import partitions use approved parameters for host, database, schema, warehouse, or equivalent connection values
 - [ ] If Power BI PBIP/TMDL was created from PostgreSQL, import partitions do not use a `PgSchema` expression, quote server/database parameter references, hardcode the approved schema in each source record, select only modeled columns, transform date and numeric types, and include `PBI_ResultType = Table`
-- [ ] If Power BI PBIP/TMDL was created, approved report pages exist as Power BI report definition artifacts, not only Markdown page descriptions
+- [ ] If Power BI PBIP/TMDL was created, approved report pages exist as Power BI report definition artifacts with actual `visual.json` files, not only Markdown page descriptions or empty page shells
 - [ ] If a presentation artifact was created, the agent produced a consultant-grade page plan from validated facts, dimensions, semantic metrics, source profiling, and data quality evidence instead of asking the user to design every visual
 - [ ] If a presentation artifact was created, every key performance indicator visual or measure was reconciled to gold or semantic SQL, including numerator, denominator, filters, and final result
 - [ ] If a presentation artifact or business-facing report was created, it includes the five report pillars: context and strategy, key performance indicators, trend analysis and variance, insights and attribution, and recommendations and next steps; unsupported pillars are visibly deferred with reasons
@@ -212,8 +215,9 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] If Power BI Modeling Model Context Protocol tools were not available, the presentation report records the tool search/connector check, install attempt or install recommendation, and exact reason validation was not run
 - [ ] If Power BI PBIP/TMDL was created, every `.platform` file has a `$schema` value matching the supported Fabric git integration platform properties schema pattern for the target Power BI Desktop version
 - [ ] If Power BI PBIP/TMDL was created, every `.platform` file has a non-empty `config` object and is not only a schema stub
+- [ ] If Power BI PBIP/TMDL was created, every `.platform` file has `config.version` set to `"2.0"` and `config.logicalId` set to a stable UUID string
 - [ ] If Power BI PBIP/TMDL was created, every `report.json` includes `themeCollection.baseTheme.reportVersionAtImport` as a non-empty string with the target-version value, defaulting to `"5.55"` unless a known-good project reference proves another value
-- [ ] If Power BI PBIP/TMDL was created, TMDL table files were checked for invalid loose Power Query keywords such as standalone `let` or `in` lines outside a valid partition/source expression block
+- [ ] If Power BI PBIP/TMDL was created, TMDL table files were checked for Markdown code fences and invalid unindented loose Power Query keywords outside a valid partition/source expression block
 - [ ] If Power BI PBIP/TMDL was created, TMDL column metadata was checked so no table has more than one column with `IsKey` set to `True`
 - [ ] If Power BI PBIP/TMDL was created, the generator did not mark every `*_id` column as `IsKey`; foreign keys stayed unmarked unless explicitly required by a validated Power BI pattern
 - [ ] If Power BI PBIP/TMDL was created, every one-side relationship key is unique and not null in dbt, and composite business keys use a surrogate key instead of a repeated partial natural key
