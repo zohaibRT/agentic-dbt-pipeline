@@ -6,7 +6,7 @@ The goal is to keep the data engineer in control without forcing exact magic phr
 
 ## Core rule
 
-After every completed phase, prepare the exact next-phase execution prompt, save it to `reports/agent/NEXT_PHASE_PROMPT.md`, show it in chat, and ask a simple approval question. When the agent runtime supports native questions, buttons, choice prompts, or approval widgets, use that interactive UI so the data engineer can click approval instead of copying, pasting, or typing a magic phrase.
+After every completed phase, prepare the exact next-phase execution prompt, save it to `reports/agent/NEXT_PHASE_PROMPT.md`, summarize the completed phase and recommended next phase in chat, paste the exact prompt in chat, and ask a simple approval question. When the agent runtime supports native questions, buttons, choice prompts, or approval widgets, use that interactive UI so the data engineer can click approval instead of copying, pasting, or typing a magic phrase.
 
 The user may approve naturally after seeing the prompt:
 
@@ -59,6 +59,8 @@ Do you want me to run this next-phase prompt as written? Reply Yes to proceed, o
 - Do not treat silence as approval.
 - Do not auto-run the next phase immediately after completing a phase.
 - Do not hide the next-phase prompt.
+- Do not tell the user only that the prompt is in `NEXT_PHASE_PROMPT.md`.
+- Do not ask the user to reply `Yes` when a native interactive question is available.
 - Do not ask only for `approve <phase>` without showing the exact prompt.
 - Do not make the user copy/paste the generated next-phase prompt back into chat when an interactive approval question is available.
 - Always show what will be run before asking approval.
@@ -68,15 +70,44 @@ Do you want me to run this next-phase prompt as written? Reply Yes to proceed, o
 
 After every completed phase, the chat summary must include:
 
-1. Short phase completion summary.
-2. Validation results.
-3. Next recommended phase.
-4. Exact next-phase execution prompt.
-5. Files/reports that will be created in the next phase.
-6. What is included.
-7. What is not included.
-8. Known caveats or deferred items.
-9. Interactive approval question when available; text fallback when not available.
+1. Current checkpoint and status.
+2. Short phase completion summary: what was done, built, and validated.
+3. Validation results: pass, warn, fail, skipped, and any important evidence.
+4. Next recommended phase and why it is next.
+5. What the next phase will build or change.
+6. Files/reports that will be created in the next phase.
+7. What is included.
+8. What is not included.
+9. Known caveats or deferred items.
+10. Exact next-phase execution prompt pasted in chat, not only linked by path.
+11. Interactive approval question when available; text fallback when not available.
+
+Use this chat shape:
+
+````markdown
+<Completed phase friendly name> complete - <next phase friendly name> approval pending
+
+Status: <PASS / WARN / BLOCKED>
+Report: `reports/agent/<phase>_report.md`
+Next-phase prompt file: `reports/agent/NEXT_PHASE_PROMPT.md`
+
+What was completed:
+- <short result>
+
+Validation:
+- <important pass/warn/fail evidence>
+
+What I recommend next:
+- Next phase: <next_phase>
+- Why now: <evidence>
+- Will build/change: <short scope>
+- Will not include: <short non-scope>
+
+The next phase prompt I will run if approved:
+```text
+<paste exact NEXT_PHASE_PROMPT.md content or the exact runnable prompt section>
+```
+````
 
 Use this text fallback when interactive questions are unavailable:
 

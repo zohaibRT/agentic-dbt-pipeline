@@ -83,7 +83,7 @@ Discovery reports are mandatory even before dbt project initialization. Write th
 
 ## Chat result summary
 
-After every completed or blocked checkpoint, send a short chat summary in addition to writing the report files. This summary is the user's quick control panel; it must show what changed, whether validation passed, and exactly what the next approval would allow.
+After every completed or blocked checkpoint, send a short chat summary in addition to writing the report files. This summary is the user's quick control panel; it must show what changed, whether validation passed, exactly what the next approval would allow, and the exact next-phase prompt. Do not only say "the exact prompt is in `NEXT_PHASE_PROMPT.md`"; paste the runnable prompt or exact prompt section in chat before asking approval.
 
 Use this format for discovery, project setup and configuration, sources, bronze/staging, silver/intermediate, gold/marts, semantic layer, evaluator, documentation, presentation layer, continuous integration, Agents Schema, commits, and blocked checkpoints. Omit a section only when it is truly not applicable, and write `None` for empty open decisions.
 
@@ -134,6 +134,8 @@ Approval needed: ask with a native interactive question when available.
 - Other options: Tell me what to change; Not now
 - Text fallback: Reply Yes to proceed, or tell me what to change.
 ```
+
+Do not replace the summary with a one-line status such as `Silver complete - gold/marts approval pending`. The summary must include what was completed, what passed/warned/failed, what is recommended next, what the next phase will and will not include, and the exact prompt to be approved.
 
 For project setup and configuration, the summary must make clear that setup was automatic/setup-only and did not approve source YAML or model builds.
 
@@ -340,7 +342,7 @@ Update `reports/agent/CONTEXT_TREE.md` after every phase using [context-tree.md]
 
 ## Next phase prompt
 
-After every completed or blocked checkpoint, read [next-phase-prompt.md](next-phase-prompt.md), write/update `reports/agent/NEXT_PHASE_PROMPT.md`, show the exact prompt in chat, and ask the interactive approval question from that file when available. If the user asks for changes, revise the next-phase prompt and `AGENT_PLAN.md` before proceeding.
+After every completed or blocked checkpoint, read [next-phase-prompt.md](next-phase-prompt.md), write/update `reports/agent/NEXT_PHASE_PROMPT.md`, share the required chat control-panel summary, show the exact prompt in chat, and ask the interactive approval question from that file when available. If the user asks for changes, revise the next-phase prompt and `AGENT_PLAN.md` before proceeding.
 
 ## Commit behavior
 
