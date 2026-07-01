@@ -1,0 +1,8 @@
+{
+  "version": "4.0",
+  "datasetReference": {
+    "byPath": {
+      "path": "../__PBIP_PROJECT_NAME__.SemanticModel"
+    }
+  }
+}

@@ -4,6 +4,20 @@ Use this when the user approves a Power BI presentation layer, PBIP project, TMD
 
 These rules are domain-neutral. Apply them to any gold/mart schema after validating the current project's facts, dimensions, measures, relationships, privacy rules, and reporting scope.
 
+## Bundled neutral template
+
+Use the bundled neutral template at `assets/powerbi/pbip_template/` as the default starting structure for generated PBIP/TMDL projects. Instantiate it with:
+
+```bash
+python scripts/create_powerbi_pbip_from_template.py --name <safe_pbip_name> --display-name "<report display name>" --output-dir <powerbi_parent_folder>
+```
+
+Then add project-specific tables, source partitions, relationships, measures, pages, visuals, and handoff documentation from validated dbt gold/semantic evidence.
+
+Do not depend on finding a local existing PBIP project on the user's machine. If the agent finds a local PBIP such as IHMS, ShopSphere, Hospital, or another nearby project, it may use that project only as an optional structural reference after showing the exact path and receiving user approval. Never copy source connections, business content, page names, visuals, measures, relationships, branding, `.pbi/` cache files, logical IDs, lineage tags, or source database names from a local reference unless explicitly approved.
+
+Every generated PBIP must regenerate Report and SemanticModel `.platform` logical IDs and TMDL lineage tags, then pass `scripts/validate_powerbi_pbip.py`.
+
 ## Enhanced PBIR report layout
 
 For current Power BI Desktop enhanced PBIR projects, create a complete report artifact, not only a semantic model or Markdown plan:

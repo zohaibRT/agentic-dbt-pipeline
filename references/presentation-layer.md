@@ -336,12 +336,16 @@ Before creating files:
 - Confirm metric verification queries for every key performance indicator measure, including numerator, denominator, filter logic, and expected versus actual result.
 - Discover fact date columns and planned time showcase visuals before writing report pages.
 - In the plan, state that Power BI PBIP/TMDL is the default because no other presentation technology was specified. Ask for changes only if the user wants a different technology or a Markdown-only guide.
-- If a known-good PBIP project exists in the workspace and the user allows it as a reference, inspect its folder structure and metadata patterns before writing new files.
+- Prefer the bundled neutral PBIP template at `assets/powerbi/pbip_template/` and instantiate it with `scripts/create_powerbi_pbip_from_template.py` before adding project-specific tables, measures, relationships, pages, and visuals.
+- If a known-good PBIP project exists in the workspace, do not silently adapt it. Show the exact `.pbip` path, state which structural files would be inspected, explain what would and would not be reused, and get user approval before using it as a reference.
 - When the user names required source schemas or gold tables, verify those tables exist before wiring import queries or partitions.
 
 When creating PBIP:
 
 - Create a complete PBIP project, not only loose TMDL text.
+- Use the bundled neutral PBIP template as the default structural base. Do not depend on local projects such as IHMS, ShopSphere, Hospital, or another nearby PBIP being present on the machine.
+- To create the starting structure, run `python scripts/create_powerbi_pbip_from_template.py --name <safe_pbip_name> --display-name "<report display name>" --output-dir <powerbi_parent_folder>`, then add the approved project-specific semantic model and report content.
+- If a local known-good PBIP is approved as a reference, use it only for file layout and metadata patterns. Do not copy source connections, business tables, relationships, measures, report pages, visuals, page names, branding, `.pbi/` cache files, logical IDs, lineage tags, source database names, or domain-specific text unless the user explicitly approves that specific content.
 - Include the `.pbip` file, a Report artifact folder, and a SemanticModel artifact folder.
 - Build the approved enterprise page set from validated facts and dimensions, including useful slicers, user-facing labels, hidden technical fields, tooltips, drillthrough/detail pages where safe, and data-quality/limitation notes where needed.
 - Each main report page must use the standard Power BI canvas layout where supported: header/navigation bar, prioritized key performance indicator card row, visible primary slicers, trend and comparison visuals, secondary driver visuals, and matrix/detail or drill-through entry point.
@@ -373,12 +377,14 @@ When creating PBIP:
 - In the Power BI semantic model, each table may have at most one column with `IsKey` set to `True`. If a dbt table has a composite business key, keep only one technical key column marked as the Power BI key or leave key metadata unset and document the composite grain in descriptions and relationships.
 - Use dbt surrogate keys for composite business keys before exposing dimensions to Power BI. Any column used as a Power BI one-side relationship key must have `unique` and `not_null` tests in dbt. Do not use partial natural keys as one-side Power BI keys when they repeat in the dimension.
 - Generated lineage tags must be unique across all TMDL files. Regenerate lineage tags when copying from a known-good PBIP template; do not reuse one table or metrics prefix across unrelated tables.
+- Report and SemanticModel `.platform` logical IDs must be regenerated for every generated PBIP project. Never reuse logical IDs from the bundled template or a local reference PBIP.
 - Use simple user-facing measure labels and keep technical column names inside model definitions.
 - Validate that every report page and visual is supported by approved source models, measures, fields, and privacy rules. Remove or mark blocked any visual whose business meaning, grain, or source evidence is not clear.
 - When the user supplies exact measure labels, use those labels exactly unless the expression cannot be supported by the validated marts.
 - Use supported PBIP/TMDL metadata versions for the target Power BI Desktop release. Known requirements from prior failures include `definition.pbism` using the semantic model definition-properties schema path, `database.tmdl` using `compatibilityLevel: 1605` when requested, `model.tmdl` table references at the root level when the chosen structure requires it, and `report.json` values such as `themeCollection.baseTheme.reportVersionAtImport` typed exactly as Power BI expects.
 - For `.platform` files inside Report or SemanticModel artifact folders, verify `$schema` exists and matches the Power BI Desktop supported Fabric git integration platform properties schema pattern, such as `https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.x.y/schema.json`, and verify `config` exists as a non-empty object. Treat `UnrecognizedSchemaVersion: Path: .platform` and `ObjectNotPerSchema: Path: .platform` errors such as "Required properties are missing from object: config" as failed presentation phases.
 - For `report.json`, always emit and verify `themeCollection.baseTheme.reportVersionAtImport` as a non-empty string. For the April 2026 Power BI Desktop PBIP format seen in prior failures, use the string value `"5.55"` when no better validated project reference overrides it. Do not emit it as a number, null, object, empty string, or omit it.
+- Do not trust a local reference PBIP's `reportVersionAtImport` blindly. Some working or previously generated files may contain object-shaped version metadata that this skill treats as unsafe for generated reports. The generated artifact must pass `scripts/validate_powerbi_pbip.py`.
 - For TMDL table files, do not write Markdown code fences in `.tmdl` files. Place Power Query M expressions only in the correct partition/source expression property syntax for the chosen TMDL format. Indented `let ... in ...` blocks are allowed when they follow a known-good TMDL partition pattern; unindented loose `let` or `in` lines are hard validation failures.
 - For PostgreSQL import partitions, keep only server and database as reusable expressions or parameters. Do not create a `PgSchema` expression. In each table partition, quote parameter references such as `#"PgServer"` and `#"PgDatabase"`, hardcode the approved gold schema in the source record, use `Table.SelectColumns` to load only modeled columns, use `Table.TransformColumnTypes` for dates and numeric fields, and include `annotation PBI_ResultType = Table`.
 - Measures or metrics tables must have a calculated partition such as `ROW("MetricKey", 1)` so the semantic model loads correctly.
@@ -388,6 +394,8 @@ When creating PBIP:
 Validation before handoff:
 
 - Verify every required PBIP, report, semantic model, definition, relationship, table, partition, and measure file exists.
+- If the bundled template was used, record the template path, generator command, regenerated IDs, and static validation result in `reports/agent/presentation_report.md`.
+- If a local reference PBIP was used, record the exact path, user approval, inspected structural files, reused patterns, and explicitly state that business content, IDs, lineage tags, and source connections were not copied.
 - Parse JSON files with a real parser.
 - Validate the root `.pbip` shortcut schema: artifact entries for report deliverables must contain the required `report` property and must not contain unsupported properties such as `dataset`. Treat `artifacts[0].dataset` or a missing `artifacts[0].report` as a failed presentation phase.
 - Resolve every `.pbip` report artifact path and verify the referenced `.Report` folder exists. Then verify root-level `definition.pbir` exists, is non-empty, parses as JSON, contains `datasetReference.byPath.path`, and points to an existing `.SemanticModel` folder. Treat a missing, empty, unresolved, or legacy nested `definition/definition.pbir` as a failed presentation phase even if other report files exist.

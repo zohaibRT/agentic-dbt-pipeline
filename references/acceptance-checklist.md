@@ -183,6 +183,9 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Documentation serve command or local documentation URL provided when user wants to view documentation
 - [ ] Presentation options were recommended after analytics insight reporting: documentation only, business-facing report, dashboard design, semantic layer refinement, or query handoff
 - [ ] Power BI PBIP/TMDL was created when the user approved a presentation layer and did not specify another technology
+- [ ] If Power BI PBIP/TMDL was created, the bundled neutral template at `assets/powerbi/pbip_template/` was used as the default structural base, or any local PBIP reference was explicitly approved by the user with the exact path documented
+- [ ] If a local PBIP reference was used, only structural patterns were reused; source connections, business content, measures, relationships, visuals, page names, branding, `.pbi/` cache files, logical IDs, lineage tags, and source database names were not copied unless explicitly approved
+- [ ] If the bundled template or a local reference was used, Report and SemanticModel logical IDs and TMDL lineage tags were regenerated
 - [ ] If Power BI PBIP/TMDL was created, PBIP includes the project file, Report artifact, SemanticModel artifact, TMDL/definition files, relationships, measures, parameters, and handoff README
 - [ ] If Power BI or another presentation layer was approved, `reports/agent/powerbi_model_plan.md`, `reports/agent/dashboard_pages.md`, `reports/agent/dax_measures.md`, or equivalent technology-specific planning files were created when applicable
 - [ ] If Power BI PBIP/TMDL was created from a user-provided contract, every required output path, artifact folder, schema string, compatibility level, parameter, source partition, relationship, measure label, report page, and visual was checked against that contract

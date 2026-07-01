@@ -1,0 +1,45 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
+  "name": "report_title",
+  "position": {
+    "x": 40,
+    "y": 32,
+    "z": 0,
+    "height": 96,
+    "width": 720
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "__REPORT_DISPLAY_NAME__",
+                    "textStyle": {
+                      "fontSize": "24pt",
+                      "fontWeight": "Bold"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Generated from the agentic-dbt-pipeline neutral PBIP template. Replace this page with project-specific report information, definitions, validation notes, and navigation.",
+                    "textStyle": {
+                      "fontSize": "11pt"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
