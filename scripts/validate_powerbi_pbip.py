@@ -12,6 +12,7 @@ import argparse
 import json
 import re
 import sys
+import xml.etree.ElementTree as ET
 from collections import defaultdict
 from pathlib import Path
 
@@ -27,6 +28,14 @@ SECRET_PATTERN_RE = re.compile(
     r"\b(password|passwd|pwd|secret|api[_-]?key|access[_-]?key|private[_-]?key|client[_-]?secret|token)\b",
     re.IGNORECASE,
 )
+LINGUISTIC_METADATA_RE = re.compile(r"\blinguisticMetadata\b\s*=\s*(.*)$", re.IGNORECASE)
+CONTENT_TYPE_RE = re.compile(r"\bcontentType\s*[:=]\s*([A-Za-z_][\w-]*)", re.IGNORECASE)
+BARE_M_STEP_RE = re.compile(
+    r"^[A-Za-z_]\w*\s*=\s*"
+    r"(Table|Record|List|Value|Text|Number|Date|DateTime|Duration|Binary|Json|Csv|Excel|OData|PostgreSQL)\.",
+    re.IGNORECASE,
+)
+BAD_LINGUISTIC_JSON_RE = re.compile(r'^\s*\{\s*"Version"\s*:\s*"1\.0\.0"\s*\}\s*$', re.IGNORECASE | re.DOTALL)
 
 
 def fail(errors: list[str], path: Path, message: str) -> None:
@@ -299,10 +308,114 @@ def validate_tmdl_keywords_and_keys(root: Path, errors: list[str]) -> None:
                 fail(errors, path, f"Markdown code fence is not valid TMDL at line {line_number}")
             if line and not line[0].isspace() and any(pattern.match(line) for pattern in unindented_m_patterns):
                 fail(errors, path, f"Unindented loose Power Query keyword at line {line_number}: {line.strip()}")
+            if line and not line[0].isspace() and BARE_M_STEP_RE.match(line):
+                fail(
+                    errors,
+                    path,
+                    f"Bare Power Query M step at TMDL root line {line_number}: {line.strip()}. "
+                    "Place M steps inside a valid partition source expression block.",
+                )
             if any(pattern.match(line) for pattern in key_patterns):
                 key_count += 1
         if key_count > 1:
             fail(errors, path, f"More than one column has IsKey=true ({key_count} found)")
+
+
+def indentation(line: str) -> int:
+    return len(line) - len(line.lstrip(" \t"))
+
+
+def normalize_linguistic_content(content: str) -> str:
+    stripped = content.strip()
+    if len(stripped) >= 2 and stripped[0] == stripped[-1] and stripped[0] in {"'", '"'}:
+        return stripped[1:-1]
+    return stripped
+
+
+def iter_linguistic_metadata_blocks(text: str) -> list[tuple[int, str | None, str]]:
+    lines = text.splitlines()
+    blocks: list[tuple[int, str | None, str]] = []
+    index = 0
+    while index < len(lines):
+        line = lines[index]
+        match = LINGUISTIC_METADATA_RE.search(line)
+        if not match:
+            index += 1
+            continue
+
+        start_line = index + 1
+        base_indent = indentation(line)
+        block_lines: list[tuple[int, str]] = [(start_line, match.group(1).strip())]
+        index += 1
+        while index < len(lines):
+            child_line = lines[index]
+            if child_line.strip() and indentation(child_line) <= base_indent:
+                break
+            block_lines.append((index + 1, child_line.strip()))
+            index += 1
+
+        content_type: str | None = None
+        content_parts: list[str] = []
+        for _line_number, block_line in block_lines:
+            if not block_line:
+                continue
+            type_match = CONTENT_TYPE_RE.search(block_line)
+            if type_match:
+                content_type = type_match.group(1).lower()
+                continue
+            content_parts.append(block_line)
+        blocks.append((start_line, content_type, normalize_linguistic_content("\n".join(content_parts))))
+    return blocks
+
+
+def validate_linguistic_metadata_content(root: Path, errors: list[str]) -> None:
+    for path in root.rglob("*.tmdl"):
+        text = path.read_text(encoding="utf-8-sig", errors="replace")
+        for line_number, content_type, content in iter_linguistic_metadata_blocks(text):
+            if not content_type or not content:
+                continue
+            normalized_type = content_type.lower()
+            first_char = content.lstrip()[:1]
+            if normalized_type == "xml":
+                if first_char in {"{", "["} or BAD_LINGUISTIC_JSON_RE.match(content):
+                    fail(
+                        errors,
+                        path,
+                        "Invalid linguistic metadata content-type: content is declared as XML but contains JSON "
+                        f"at line {line_number}. Power BI Desktop will fail with "
+                        '"does not comply with the Xml content-type." Use valid XML, change content type to JSON '
+                        "if supported, or omit linguistic metadata.",
+                    )
+                    continue
+                try:
+                    ET.fromstring(content)
+                except ET.ParseError as exc:
+                    fail(
+                        errors,
+                        path,
+                        "Invalid linguistic metadata content-type: XML content does not parse "
+                        f"at line {line_number}: {exc}. Power BI Desktop may fail with "
+                        '"does not comply with the Xml content-type."',
+                    )
+            elif normalized_type == "json":
+                if first_char == "<":
+                    fail(
+                        errors,
+                        path,
+                        "Invalid linguistic metadata content-type: content is declared as JSON but contains XML "
+                        f"at line {line_number}. Use valid JSON, change content type to XML if supported, "
+                        "or omit linguistic metadata.",
+                    )
+                    continue
+                try:
+                    json.loads(content)
+                except json.JSONDecodeError as exc:
+                    fail(
+                        errors,
+                        path,
+                        "Invalid linguistic metadata content-type: JSON content does not parse "
+                        f"at line {line_number}: {exc}. Use valid JSON or omit linguistic metadata.",
+                    )
 
 
 def validate_tmdl_lineage_tags(root: Path, errors: list[str]) -> None:
@@ -490,6 +603,7 @@ def main() -> int:
     )
     validate_platform_files(root, errors)
     validate_tmdl_keywords_and_keys(root, errors)
+    validate_linguistic_metadata_content(root, errors)
     validate_tmdl_lineage_tags(root, errors)
     validate_postgres_tmdl_patterns(root, errors)
     validate_metrics_table_partition(root, errors)

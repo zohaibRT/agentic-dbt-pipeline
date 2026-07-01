@@ -162,6 +162,7 @@ Use a compact table when helpful:
 - Phase report status and path
 - Next-phase prompt status and path
 - Power BI PBIP/TMDL validation status when used: file validation, relationship ambiguity audit, Power BI Modeling Model Context Protocol model load, DAX smoke test, Desktop open test, and unresolved load errors
+- Power BI TMDL parser safety status when used: no bare M steps at TMDL root, no invalid linguistic metadata content-type mismatch, no JSON payload such as `{ "Version": "1.0.0" }` inside XML-typed metadata
 - Power BI template/generator status when used: bundled template found or fallback used, `dashboard_spec.md` and `kpi_catalog.md` consumed or blocked, no credentials found, no duplicate lineage tags, and local PBIP references approved before use
 - Power BI Modeling Model Context Protocol availability status: checked, available and used, unavailable with install path, unavailable with reason, or failed
 - Presentation time showcase validation status: discovered fact date fields, governed measures used, SQL verification queries, and any blocked trend visuals

@@ -1,0 +1,8 @@
+{
+  "version": "4.0",
+  "datasetReference": {
+    "byPath": {
+      "path": "../bad_linguistic_metadata_xml_json_mismatch.SemanticModel"
+    }
+  }
+}

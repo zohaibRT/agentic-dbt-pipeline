@@ -1,0 +1,8 @@
+{
+  "version": "4.0",
+  "datasetReference": {
+    "byPath": {
+      "path": "../bad_bare_m_step_addedkey.SemanticModel"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "version": "4.0",
+  "datasetReference": {
+    "byPath": {
+      "path": "../good_bare_m_step.SemanticModel"
+    }
+  }
+}

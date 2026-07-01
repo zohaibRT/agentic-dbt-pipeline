@@ -1,0 +1,17 @@
+table _Metrics
+	lineageTag: cf9566c2-a9e8-457e-a96c-336dca0e26b2
+
+	column MetricKey
+		dataType: int64
+		isHidden
+		summarizeBy: none
+
+	measure 'Template Measure' = 1
+		formatString: 0
+
+	partition _Metrics = calculated
+		mode: import
+		source = ROW("MetricKey", 1)
+
+annotation PBI_ResultType = Table
+

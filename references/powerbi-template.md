@@ -43,6 +43,7 @@ The bundled template must stay neutral. It must not include:
 - Reused lineage tags or `.platform` logical IDs.
 - Business-specific report page names.
 - Customer branding unless it is generic and optional.
+- Invalid linguistic metadata or JSON payloads inside XML-typed metadata content.
 
 The template should only provide:
 
@@ -73,9 +74,10 @@ The template should only provide:
 4. Add project-specific tables, relationships, measures, parameters, source partitions, pages, slicers, key performance indicator cards, and visuals only from validated dbt gold models, semantic metrics, and analytics insight outputs.
 5. Regenerate all project-specific IDs and lineage tags. Do not reuse fixed template IDs.
 6. Never write credentials into PBIP, TMDL, PBIR, JSON, or Markdown handoff files.
-7. Run `python scripts/validate_powerbi_pbip.py <generated_pbip_folder>`.
-8. Continue with Power BI Modeling Model Context Protocol validation and Power BI Desktop open validation when available.
-9. Write or update the presentation reports required by [presentation-layer.md](presentation-layer.md).
+7. Do not generate linguistic metadata by default. Preserve bundled template metadata only when it validates. XML content type requires XML; JSON content type requires JSON.
+8. Run `python scripts/validate_powerbi_pbip.py <generated_pbip_folder>`.
+9. Continue with Power BI Modeling Model Context Protocol validation and Power BI Desktop open validation when available.
+10. Write or update the presentation reports required by [presentation-layer.md](presentation-layer.md).
 
 ## Fallback Priority
 
@@ -109,6 +111,7 @@ Before presentation delivery, verify:
 - Bundled template was found or generator fallback was documented.
 - No credentials are present in generated files.
 - No duplicate `lineageTag` values exist.
+- No invalid linguistic metadata content-type mismatch exists; JSON such as `{ "Version": "1.0.0" }` must never appear inside XML-typed metadata content.
 - No hardcoded source schema/table assumptions bypass the approved gold schema.
 - Power BI one-side relationship keys are unique and not null in dbt.
 - Composite business keys use tested surrogate keys.

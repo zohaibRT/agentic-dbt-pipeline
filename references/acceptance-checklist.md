@@ -230,6 +230,9 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] If Power BI PBIP/TMDL was created, every `.platform` file has `config.version` set to `"2.0"` and `config.logicalId` set to a stable UUID string
 - [ ] If Power BI PBIP/TMDL was created, every `report.json` includes `themeCollection.baseTheme.reportVersionAtImport` as a non-empty string with the target-version value, defaulting to `"5.55"` unless a known-good project reference proves another value
 - [ ] If Power BI PBIP/TMDL was created, TMDL table files were checked for Markdown code fences and invalid unindented loose Power Query keywords outside a valid partition/source expression block
+- [ ] If Power BI PBIP/TMDL was created, TMDL files were checked for bare Power Query M steps such as `AddedKey = Table.AddColumn(...)` outside valid partition source expression blocks
+- [ ] If Power BI PBIP/TMDL was created, linguistic metadata content type and actual content format were checked; XML-typed metadata does not contain JSON and JSON-typed metadata does not contain XML
+- [ ] If Power BI PBIP/TMDL was created, JSON such as `{ "Version": "1.0.0" }` was not written into XML-typed linguistic metadata
 - [ ] If Power BI PBIP/TMDL was created, TMDL column metadata was checked so no table has more than one column with `IsKey` set to `True`
 - [ ] If Power BI PBIP/TMDL was created, the generator did not mark every `*_id` column as `IsKey`; foreign keys stayed unmarked unless explicitly required by a validated Power BI pattern
 - [ ] If Power BI PBIP/TMDL was created, every one-side relationship key is unique and not null in dbt, and composite business keys use a surrogate key instead of a repeated partial natural key

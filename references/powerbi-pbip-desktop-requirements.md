@@ -61,9 +61,21 @@ When a user reports "blank pages", "no visuals", or "only key performance indica
 
 - Do not put Markdown code fences inside `.tmdl` files.
 - Power Query M must be placed in the valid TMDL expression or partition source syntax for the chosen format.
+- Do not put bare Power Query M steps such as `AddedKey = Table.AddColumn(...)` at the root of `.tmdl` files.
 - Indented `let ... in ...` partition expressions are allowed when they follow a known-good TMDL pattern.
 - Unindented loose `let` or `in` lines are not allowed.
 - For PostgreSQL imports, quote server and database parameters, hardcode the approved gold/mart schema in the source record, select only modeled columns, transform important types, and include the `PBI_ResultType = Table` annotation.
+
+## Linguistic metadata content type
+
+Do not generate linguistic metadata by default. If TMDL contains `LinguisticMetadata`, `culture`, `linguisticMetadata`, `content`, or content-type sections, the declared content type and actual content must match:
+
+- XML content type requires valid XML.
+- JSON content type requires valid JSON.
+- JSON such as `{ "Version": "1.0.0" }` must never be written into XML-typed linguistic metadata.
+- XML must never be written into JSON-typed linguistic metadata.
+
+If the generator cannot guarantee correctness, omit linguistic metadata. Treat Power BI Desktop errors such as `does not comply with the Xml content-type` and `Data at the root level is invalid. Line 1, position 1` as validation failures.
 
 ## Report metadata
 

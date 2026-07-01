@@ -54,6 +54,8 @@ def write_generation_report(project_root: Path, pbip_folder: Path, planning_stat
             "",
             "## Notes",
             "- This step creates a neutral PBIP shell only.",
+            "- The generator does not create linguistic metadata by default; bundled template linguistic metadata is preserved and validated.",
+            "- Never write JSON such as `{ \"Version\": \"1.0.0\" }` into XML-typed linguistic metadata. If metadata content type cannot be guaranteed, omit linguistic metadata.",
             "- Project-specific tables, relationships, measures, report pages, visuals, and source partitions must be generated from validated dbt gold/semantic evidence before presentation delivery.",
             "- Do not mark presentation complete until `scripts/validate_powerbi_pbip.py`, Power BI Modeling MCP when available, and Power BI Desktop open validation when available are recorded in `reports/agent/presentation_report.md`.",
             "",
