@@ -4,6 +4,8 @@ Use this when the user approves a Power BI presentation layer, PBIP project, TMD
 
 These rules are domain-neutral. Apply them to any gold/mart schema after validating the current project's facts, dimensions, measures, relationships, privacy rules, and reporting scope.
 
+Also read [powerbi-official-docs.md](powerbi-official-docs.md). When internet access is available, prefer current Microsoft Learn PBIP/PBIR/TMDL project documentation over guessed structure.
+
 ## Bundled neutral template
 
 Use the bundled neutral template at `assets/powerbi/pbip_template/` as the default starting structure for generated PBIP/TMDL projects. Instantiate it with:

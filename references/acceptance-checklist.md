@@ -185,6 +185,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Presentation options were recommended after analytics insight reporting: documentation only, business-facing report, dashboard design, semantic layer refinement, or query handoff
 - [ ] Power BI PBIP/TMDL was created when the user approved a presentation layer and did not specify another technology
 - [ ] If Power BI PBIP/TMDL was created, the bundled neutral template at `assets/powerbi/pbip_template/` was used as the default structural base, or any local PBIP reference was explicitly approved by the user with the exact path documented
+- [ ] If Power BI PBIP/TMDL structure was uncertain and internet access was available, official Microsoft Power BI project documentation was checked and cited in `reports/agent/presentation_report.md`
 - [ ] If Power BI PBIP/TMDL was created from the bundled template, `scripts/generate_powerbi_pbip.py` was used or an equivalent generator fallback was documented
 - [ ] If a local PBIP reference was used, only structural patterns were reused; source connections, business content, measures, relationships, visuals, page names, branding, `.pbi/` cache files, logical IDs, lineage tags, and source database names were not copied unless explicitly approved
 - [ ] If the bundled template or a local reference was used, Report and SemanticModel logical IDs and TMDL lineage tags were regenerated

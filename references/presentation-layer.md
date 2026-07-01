@@ -2,7 +2,7 @@
 
 Use this after marts, semantic layer, project evaluator, documentation, and **analytics insight reporting** have completed.
 
-For approved Power BI PBIP/TMDL artifacts, also read [powerbi-pbip-desktop-requirements.md](powerbi-pbip-desktop-requirements.md). That reference contains Desktop-load guardrails for enhanced PBIR layout, `.platform` metadata, TMDL syntax, page visual inventory, and validation gates.
+For approved Power BI PBIP/TMDL artifacts, also read [powerbi-template.md](powerbi-template.md), [powerbi-official-docs.md](powerbi-official-docs.md), and [powerbi-pbip-desktop-requirements.md](powerbi-pbip-desktop-requirements.md). Those references contain the bundled template flow, official Microsoft documentation links, Desktop-load guardrails for enhanced PBIR layout, `.platform` metadata, TMDL syntax, page visual inventory, and validation gates.
 
 Read [analytics-insight-reporting.md](analytics-insight-reporting.md) first. The presentation layer consumes analytics insight outputs:
 

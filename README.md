@@ -154,6 +154,8 @@ Repository: [microsoft/powerbi-modeling-mcp](https://github.com/microsoft/powerb
 
 The agent must still run static PBIP/TMDL validation and Power BI Desktop open validation when available. If the Model Context Protocol server is unavailable, the presentation report must say why instead of claiming model-load validation passed.
 
+For PBIP/PBIR/TMDL structure, the skill points agents to the official Microsoft Power BI Desktop project documentation at [Power BI Desktop developer mode documentation](https://learn.microsoft.com/en-us/power-bi/developer/projects/), plus semantic model and report folder references under `references/powerbi-official-docs.md`.
+
 The skill includes a neutral PBIP starter template at `assets/powerbi/pbip_template/`. When Power BI is approved, the agent should instantiate it with `scripts/generate_powerbi_pbip.py` and then add the project-specific gold tables, relationships, measures, pages, visuals, and validation evidence. Existing local PBIP files can be used only as optional structural references after the agent shows the exact path and gets user approval.
 
 The Power BI validator blocks known Desktop open failures before handoff, including bare Power Query M steps such as `AddedKey = Table.AddColumn(...)` at TMDL root and linguistic metadata content-type mismatches such as JSON `{ "Version": "1.0.0" }` inside XML-typed metadata.

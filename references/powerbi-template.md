@@ -2,6 +2,8 @@
 
 Use this when the approved presentation layer is Power BI PBIP/TMDL.
 
+Read [powerbi-official-docs.md](powerbi-official-docs.md) with this file. The official Microsoft Learn pages are the source of truth when PBIP/PBIR/TMDL project layout or preview behavior is uncertain.
+
 ## Purpose
 
 The skill bundles a neutral PBIP/PBIR/TMDL template so generated reports do not depend on random local projects on one developer machine.
