@@ -154,7 +154,7 @@ Repository: [microsoft/powerbi-modeling-mcp](https://github.com/microsoft/powerb
 
 The agent must still run static PBIP/TMDL validation and Power BI Desktop open validation when available. If the Model Context Protocol server is unavailable, the presentation report must say why instead of claiming model-load validation passed.
 
-The skill includes a neutral PBIP starter template at `assets/powerbi/pbip_template/`. When Power BI is approved, the agent should instantiate it with `scripts/create_powerbi_pbip_from_template.py` and then add the project-specific gold tables, relationships, measures, pages, visuals, and validation evidence. Existing local PBIP files can be used only as optional structural references after the agent shows the exact path and gets user approval.
+The skill includes a neutral PBIP starter template at `assets/powerbi/pbip_template/`. When Power BI is approved, the agent should instantiate it with `scripts/generate_powerbi_pbip.py` and then add the project-specific gold tables, relationships, measures, pages, visuals, and validation evidence. Existing local PBIP files can be used only as optional structural references after the agent shows the exact path and gets user approval.
 
 Every build phase plan must explain what will be built, why it is recommended, evidence, proven items, uncertain items, blocked or deferred scope, and what needs approval.
 

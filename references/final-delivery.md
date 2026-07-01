@@ -66,6 +66,7 @@ Update or create project handoff notes with:
 - Standard time showcase status for presentation artifacts: fact date columns discovered, time visuals included or blocked, and SQL verification evidence
 - Project knowledge used, including `project_rules`, `AGENT_KNOWLEDGE.md`, `docs/dbt_knowledge.md`, `docs/business_rules.md`, `.agents/project_knowledge.md`, or context tree decisions when present
 - Power BI PBIP/TMDL status when used as the default or requested presentation technology, including PBIP structure validation and open/refresh notes
+- Power BI template status when used: bundled template path or generator fallback, generator command, planning inputs consumed, regenerated logical IDs/lineage tags, local reference PBIP approval if any, and proof that no credentials or local business content were copied
 - Power BI Modeling Model Context Protocol status when Power BI is created: availability check, install attempt or install recommendation, tools used, `ConnectFolder` result, inspection result, DAX smoke test result, and any reason validation was blocked or not run
 - Known empty tables or data quality limitations
 - Confidence notes: what was validated vs what still needs confirmation
@@ -161,6 +162,7 @@ Use a compact table when helpful:
 - Phase report status and path
 - Next-phase prompt status and path
 - Power BI PBIP/TMDL validation status when used: file validation, relationship ambiguity audit, Power BI Modeling Model Context Protocol model load, DAX smoke test, Desktop open test, and unresolved load errors
+- Power BI template/generator status when used: bundled template found or fallback used, `dashboard_spec.md` and `kpi_catalog.md` consumed or blocked, no credentials found, no duplicate lineage tags, and local PBIP references approved before use
 - Power BI Modeling Model Context Protocol availability status: checked, available and used, unavailable with install path, unavailable with reason, or failed
 - Presentation time showcase validation status: discovered fact date fields, governed measures used, SQL verification queries, and any blocked trend visuals
 - Presentation delivery gate result: `PASS`, `BLOCKED`, `SKIPPED`, or `PENDING`; never omit this when a presentation artifact was approved

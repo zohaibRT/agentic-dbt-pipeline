@@ -9,7 +9,7 @@ These rules are domain-neutral. Apply them to any gold/mart schema after validat
 Use the bundled neutral template at `assets/powerbi/pbip_template/` as the default starting structure for generated PBIP/TMDL projects. Instantiate it with:
 
 ```bash
-python scripts/create_powerbi_pbip_from_template.py --name <safe_pbip_name> --display-name "<report display name>" --output-dir <powerbi_parent_folder>
+python scripts/generate_powerbi_pbip.py --name <safe_pbip_name> --display-name "<report display name>" --output-dir <powerbi_parent_folder> --project-root <project_root>
 ```
 
 Then add project-specific tables, source partitions, relationships, measures, pages, visuals, and handoff documentation from validated dbt gold/semantic evidence.

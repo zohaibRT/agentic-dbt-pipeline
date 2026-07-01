@@ -222,7 +222,18 @@ The presentation layer must consume these outputs:
 | `reporting_readiness_scorecard.md` | Validation gate before artifact build |
 | `analytics_insight_report.md` | Business-facing rationale |
 
-Read [presentation-layer.md](presentation-layer.md) after this phase. The presentation layer must not invent pages, key performance indicators, visuals, or business scope that contradict or bypass these outputs unless the user explicitly overrides them.
+Read [presentation-layer.md](presentation-layer.md) and [powerbi-template.md](powerbi-template.md) after this phase when a presentation artifact is being considered. The presentation layer must not invent pages, key performance indicators, visuals, or business scope that contradict or bypass these outputs unless the user explicitly overrides them.
+
+For Power BI PBIP/TMDL, these files are the scope contract for the generator and must be used or explicitly marked missing/blocking:
+
+- `dashboard_spec.md`
+- `kpi_catalog.md`
+- `reporting_catalog.md`
+- `analytics_insight_report.md`
+- `reporting_readiness_scorecard.md`
+- `insight_backlog.md`
+
+Blocked or deferred visuals from `insight_backlog.md` must not be generated silently.
 
 ## Consultant reporting guidance
 

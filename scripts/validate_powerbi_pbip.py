@@ -23,6 +23,10 @@ PLATFORM_SCHEMA_RE = re.compile(
 DEFAULT_REPORT_VERSION_AT_IMPORT = "5.55"
 LINEAGE_TAG_RE = re.compile(r"\blineageTag\s*:\s*([0-9a-fA-F-]{8,})\b")
 UUID_LIKE_RE = re.compile(r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
+SECRET_PATTERN_RE = re.compile(
+    r"\b(password|passwd|pwd|secret|api[_-]?key|access[_-]?key|private[_-]?key|client[_-]?secret|token)\b",
+    re.IGNORECASE,
+)
 
 
 def fail(errors: list[str], path: Path, message: str) -> None:
@@ -346,6 +350,23 @@ def validate_metrics_table_partition(root: Path, errors: list[str]) -> None:
             fail(errors, path, 'Metrics or measures table calculated partition must use ROW("MetricKey", 1)')
 
 
+def validate_no_secret_patterns(root: Path, errors: list[str]) -> None:
+    checked_suffixes = {".pbip", ".json", ".pbir", ".tmdl", ".md", ".platform"}
+    for path in root.rglob("*"):
+        if not path.is_file():
+            continue
+        if path.name == ".platform":
+            suffix_ok = True
+        else:
+            suffix_ok = path.suffix.lower() in checked_suffixes
+        if not suffix_ok:
+            continue
+        text = path.read_text(encoding="utf-8-sig", errors="replace")
+        for line_number, line in enumerate(text.splitlines(), start=1):
+            if SECRET_PATTERN_RE.search(line):
+                fail(errors, path, f"possible credential or secret reference at line {line_number}")
+
+
 def relationship_blocks(text: str) -> list[str]:
     blocks: list[str] = []
     current: list[str] = []
@@ -472,6 +493,7 @@ def main() -> int:
     validate_tmdl_lineage_tags(root, errors)
     validate_postgres_tmdl_patterns(root, errors)
     validate_metrics_table_partition(root, errors)
+    validate_no_secret_patterns(root, errors)
     validate_relationship_ambiguity(root, errors)
 
     if errors:

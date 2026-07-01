@@ -336,7 +336,7 @@ Before creating files:
 - Confirm metric verification queries for every key performance indicator measure, including numerator, denominator, filter logic, and expected versus actual result.
 - Discover fact date columns and planned time showcase visuals before writing report pages.
 - In the plan, state that Power BI PBIP/TMDL is the default because no other presentation technology was specified. Ask for changes only if the user wants a different technology or a Markdown-only guide.
-- Prefer the bundled neutral PBIP template at `assets/powerbi/pbip_template/` and instantiate it with `scripts/create_powerbi_pbip_from_template.py` before adding project-specific tables, measures, relationships, pages, and visuals.
+- Prefer the bundled neutral PBIP template at `assets/powerbi/pbip_template/` and instantiate it with `scripts/generate_powerbi_pbip.py` before adding project-specific tables, measures, relationships, pages, and visuals.
 - If a known-good PBIP project exists in the workspace, do not silently adapt it. Show the exact `.pbip` path, state which structural files would be inspected, explain what would and would not be reused, and get user approval before using it as a reference.
 - When the user names required source schemas or gold tables, verify those tables exist before wiring import queries or partitions.
 
@@ -344,7 +344,7 @@ When creating PBIP:
 
 - Create a complete PBIP project, not only loose TMDL text.
 - Use the bundled neutral PBIP template as the default structural base. Do not depend on local projects such as IHMS, ShopSphere, Hospital, or another nearby PBIP being present on the machine.
-- To create the starting structure, run `python scripts/create_powerbi_pbip_from_template.py --name <safe_pbip_name> --display-name "<report display name>" --output-dir <powerbi_parent_folder>`, then add the approved project-specific semantic model and report content.
+- To create the starting structure, run `python scripts/generate_powerbi_pbip.py --name <safe_pbip_name> --display-name "<report display name>" --output-dir <powerbi_parent_folder> --project-root <project_root>`, then add the approved project-specific semantic model and report content.
 - If a local known-good PBIP is approved as a reference, use it only for file layout and metadata patterns. Do not copy source connections, business tables, relationships, measures, report pages, visuals, page names, branding, `.pbi/` cache files, logical IDs, lineage tags, source database names, or domain-specific text unless the user explicitly approves that specific content.
 - Include the `.pbip` file, a Report artifact folder, and a SemanticModel artifact folder.
 - Build the approved enterprise page set from validated facts and dimensions, including useful slicers, user-facing labels, hidden technical fields, tooltips, drillthrough/detail pages where safe, and data-quality/limitation notes where needed.
