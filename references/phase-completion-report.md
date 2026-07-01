@@ -24,6 +24,7 @@ Default files:
 reports/agent/<phase>_report.md
 reports/agent/PIPELINE_STATUS.md
 reports/agent/CONTEXT_TREE.md
+reports/agent/NEXT_PHASE_PROMPT.md
 ```
 
 Examples:
@@ -51,6 +52,7 @@ reports/agent/dax_measures.md
 reports/agent/final_delivery.md
 reports/agent/ci_report.md
 reports/agent/agents_schema_report.md
+reports/agent/NEXT_PHASE_PROMPT.md
 ```
 
 ## Discovery report exception
@@ -121,7 +123,12 @@ Next checkpoint: <phase name>
 Next goal: <one sentence>
 Next includes: <short scope>
 Next does not include: <short non-scope>
-Approval needed: <exact current-checkpoint approval instruction, or "None">
+Next-phase prompt file: `reports/agent/NEXT_PHASE_PROMPT.md`
+The next phase prompt I will use is:
+```text
+<paste the exact prompt from reports/agent/NEXT_PHASE_PROMPT.md>
+```
+Approval needed: Do you want me to run this next-phase prompt as written? Reply Yes to proceed, or tell me what to change.
 ```
 
 For project setup and configuration, the summary must make clear that setup was automatic/setup-only and did not approve source YAML or model builds.
@@ -165,6 +172,11 @@ Every phase report must include:
 - Open questions or user decisions
 - Commit status
 - Next recommended phase
+- Exact next-phase execution prompt and `reports/agent/NEXT_PHASE_PROMPT.md` path
+- Files/reports that will be created in the next phase
+- What is included and not included in the next phase
+- Known caveats or deferred items for the next phase
+- Natural approval question from [next-phase-prompt.md](next-phase-prompt.md)
 
 ## Status labels
 
@@ -293,6 +305,16 @@ Overall: <PASS | WARN | FAIL | SKIPPED | BLOCKED>
 
 ## Next Step
 <recommended next phase>
+
+## Next Phase Prompt
+Path: `reports/agent/NEXT_PHASE_PROMPT.md`
+
+Summary:
+- Recommended next phase: <next_phase>
+- Included: <short scope>
+- Not included: <short non-scope>
+- Known caveats: <deferred or uncertain items>
+- Approval question: Do you want me to run this next-phase prompt as written? Reply Yes to proceed, or tell me what to change.
 ```
 
 ## Pipeline status file
@@ -312,8 +334,12 @@ Update `reports/agent/PIPELINE_STATUS.md` after every phase:
 
 Update `reports/agent/CONTEXT_TREE.md` after every phase using [context-tree.md](context-tree.md). The context tree should summarize the phase input, output, decisions, report link, status, and next action.
 
+## Next phase prompt
+
+After every completed or blocked checkpoint, read [next-phase-prompt.md](next-phase-prompt.md), write/update `reports/agent/NEXT_PHASE_PROMPT.md`, show the exact prompt in chat, and ask the approval question from that file. If the user asks for changes, revise the next-phase prompt and `AGENT_PLAN.md` before proceeding.
+
 ## Commit behavior
 
-Include the phase report, `PIPELINE_STATUS.md`, and `CONTEXT_TREE.md` in the same phase commit when commit approval is granted.
+Include the phase report, `PIPELINE_STATUS.md`, `CONTEXT_TREE.md`, and `NEXT_PHASE_PROMPT.md` in the same phase commit when commit approval is granted.
 
 Do not commit reports that contain secrets, passwords, tokens, or sensitive record samples.

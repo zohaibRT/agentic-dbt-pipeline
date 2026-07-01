@@ -149,7 +149,7 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 | **10 Agents Schema / continuous integration** | Metadata + automation | [agents-schema-setup.md](references/agents-schema-setup.md), [cicd-setup.md](references/cicd-setup.md) |
 | **Plan approval** | Before each non-setup build phase | [phase-plan-approval.md](references/phase-plan-approval.md) |
 | **Review** | Human approval points | [human-review.md](references/human-review.md) |
-| **Phase report** | After each completed phase | [phase-completion-report.md](references/phase-completion-report.md) |
+| **Phase report** | After each completed phase | [phase-completion-report.md](references/phase-completion-report.md), [next-phase-prompt.md](references/next-phase-prompt.md) |
 | **Context tree** | Ongoing project memory | [context-tree.md](references/context-tree.md) |
 | **Done** | Final check + user summary | [acceptance-checklist.md](references/acceptance-checklist.md), [final-delivery.md](references/final-delivery.md) |
 
@@ -157,7 +157,7 @@ Context prompt template: [agent-context-prompt.md](references/agent-context-prom
 
 ## Step 0 - Load configuration
 
-Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), [profile-listing.md](references/profile-listing.md), [project-naming.md](references/project-naming.md), [schema-isolation.md](references/schema-isolation.md), [env-configuration.md](references/env-configuration.md), [source-confirmation.md](references/source-confirmation.md), [warehouse-adapter-routing.md](references/warehouse-adapter-routing.md), [skill-knowledge.md](references/skill-knowledge.md), [project-knowledge.md](references/project-knowledge.md), [discovery-requirements.md](references/discovery-requirements.md), [phased-discovery.md](references/phased-discovery.md), [recommendation-and-review.md](references/recommendation-and-review.md), [writing-style.md](references/writing-style.md), [reporting-standards.md](references/reporting-standards.md), [analytics-insight-reporting.md](references/analytics-insight-reporting.md), [mermaid-diagrams.md](references/mermaid-diagrams.md), [principal-data-engineering-standards.md](references/principal-data-engineering-standards.md), [layer-data-validation.md](references/layer-data-validation.md), [kpi-definitions.md](references/kpi-definitions.md), [metric-verification.md](references/metric-verification.md), [advanced-data-engineering-review.md](references/advanced-data-engineering-review.md), [phase-plan-approval.md](references/phase-plan-approval.md), [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md), [phase-completion-report.md](references/phase-completion-report.md), and [context-tree.md](references/context-tree.md).
+Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), [profile-listing.md](references/profile-listing.md), [project-naming.md](references/project-naming.md), [schema-isolation.md](references/schema-isolation.md), [env-configuration.md](references/env-configuration.md), [source-confirmation.md](references/source-confirmation.md), [warehouse-adapter-routing.md](references/warehouse-adapter-routing.md), [skill-knowledge.md](references/skill-knowledge.md), [project-knowledge.md](references/project-knowledge.md), [discovery-requirements.md](references/discovery-requirements.md), [phased-discovery.md](references/phased-discovery.md), [recommendation-and-review.md](references/recommendation-and-review.md), [writing-style.md](references/writing-style.md), [reporting-standards.md](references/reporting-standards.md), [analytics-insight-reporting.md](references/analytics-insight-reporting.md), [mermaid-diagrams.md](references/mermaid-diagrams.md), [principal-data-engineering-standards.md](references/principal-data-engineering-standards.md), [layer-data-validation.md](references/layer-data-validation.md), [kpi-definitions.md](references/kpi-definitions.md), [metric-verification.md](references/metric-verification.md), [advanced-data-engineering-review.md](references/advanced-data-engineering-review.md), [phase-plan-approval.md](references/phase-plan-approval.md), [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md), [phase-completion-report.md](references/phase-completion-report.md), [next-phase-prompt.md](references/next-phase-prompt.md), and [context-tree.md](references/context-tree.md).
 
 For smaller context windows, read required references fully, extract the rules that apply to the active checkpoint into the phase plan or working notes, and avoid carrying unused details forward. Prefer loading phase-specific references only when entering that phase. Do not skip required safety references, but summarize-and-discard details that are not relevant to the active checkpoint.
 
@@ -309,7 +309,7 @@ Read [separate-layer-builds.md](references/separate-layer-builds.md).
 12. Automation - continuous integration workflow
 13. **Advanced review, acceptance + final summary** - [advanced-data-engineering-review.md](references/advanced-data-engineering-review.md), [acceptance-checklist.md](references/acceptance-checklist.md), [final-delivery.md](references/final-delivery.md)
 
-After project setup and configuration, each stage: **phase-specific discovery -> agent recommendation -> data engineer decision check -> write Markdown plan -> ask approval -> implement -> parse/build -> warehouse data validation queries -> write phase report with validation results -> update context tree -> summarize validation results in the standard chat result format -> ask commit**. Ask for push only when a non-local GitHub repository is configured or the user requested push.
+After project setup and configuration, each stage: **phase-specific discovery -> agent recommendation -> data engineer decision check -> write Markdown plan -> ask approval -> implement -> parse/build -> warehouse data validation queries -> write phase report with validation results -> update context tree -> write `reports/agent/NEXT_PHASE_PROMPT.md` -> summarize validation results and show the exact next-phase prompt -> ask natural approval for the displayed prompt -> ask commit**. Ask for push only when a non-local GitHub repository is configured or the user requested push.
 
 ## Step 2 - Sources
 
@@ -420,6 +420,12 @@ Read [stuck-recovery.md](references/stuck-recovery.md) whenever a command hangs,
 
 Read [phase-rollback.md](references/phase-rollback.md) when a completed phase must be undone, rebuilt differently, or marked stale because a grain, mapping, privacy, metric, naming, source, or presentation decision changed. Do not quietly delete files, drop warehouse objects, or leave `PIPELINE_STATUS.md` / `CONTEXT_TREE.md` claiming a rolled-back phase is complete. Write a rollback plan, ask for approval when warehouse objects or shared reports are affected, update status/context files, and then return to the normal phase plan workflow.
 
+## Next-phase prompt after each phase
+
+After every completed or blocked checkpoint, read [next-phase-prompt.md](references/next-phase-prompt.md). Write or update `reports/agent/NEXT_PHASE_PROMPT.md` with the exact prompt for the recommended next phase, show that prompt in chat, and ask: `Do you want me to run this next-phase prompt as written? Reply Yes to proceed, or tell me what to change.`
+
+Natural approval responses such as `Yes`, `Proceed`, `Approved`, `Continue`, `Run this prompt`, `Looks good`, or `Go ahead` approve only the displayed next-phase prompt for the active checkpoint. Silence is never approval. If the user changes scope, models, key performance indicators, privacy, schemas, validation, materialization, or files, update `AGENT_PLAN.md` and `reports/agent/NEXT_PHASE_PROMPT.md`, show the revised prompt, and ask again before proceeding.
+
 ## Summary template (end of each phase)
 
 ```text
@@ -434,7 +440,8 @@ Read [phase-rollback.md](references/phase-rollback.md) when a completed phase mu
 9. Mermaid diagram verification status when diagrams were added or changed
 10. Phase report path and status
 11. Context tree update status
-12. Commit status (asked / skipped / completed / pushed to GitHub)
+12. Next-phase prompt path and exact approval question
+13. Commit status (asked / skipped / completed / pushed to GitHub)
 ```
 
 For the final response, use [final-delivery.md](references/final-delivery.md) instead of only the phase template.
@@ -485,6 +492,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 | [profile-listing.md](references/profile-listing.md) | Safe available-profile table when `DBT_PROFILE_NAME` is missing or ambiguous |
 | [phase-plan-approval.md](references/phase-plan-approval.md) | Markdown plan and approval gate before every phase |
 | [phase-completion-report.md](references/phase-completion-report.md) | Per-phase report files showing done/correct/wrong/open items |
+| [next-phase-prompt.md](references/next-phase-prompt.md) | Required next-phase execution prompt and natural approval gate after each phase |
 | [context-tree.md](references/context-tree.md) | Curated project memory: inputs, outputs, decisions, reports, and open items |
 | [skill-knowledge.md](references/skill-knowledge.md) | Built-in reusable dbt, big data, warehouse, semantic, Power BI, privacy, and validation knowledge |
 | [project-knowledge.md](references/project-knowledge.md) | User-provided dbt standards, domain knowledge, and business rules |

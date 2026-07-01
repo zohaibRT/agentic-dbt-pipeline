@@ -20,7 +20,7 @@ The same Markdown should also be summarized in chat so the user can approve with
 
 Do not create or modify models, seeds, snapshots, workflows, semantic files, documentation files, or warehouse schemas for a phase until the user approves that phase plan.
 
-One approval authorizes only the current checkpoint or named phase. It never authorizes the whole remaining pipeline unless the user explicitly approves each named phase in the same response, for example `approve sources, bronze, and silver`. Even then, complete each phase report and validation before starting the next approved phase.
+One approval authorizes only the current checkpoint or named phase. It never authorizes the whole remaining pipeline unless the user explicitly approves multiple named future phases in the same response. Even then, complete each phase report, validation, and next-phase prompt before starting the next approved phase.
 
 ## Applies to these phases
 
@@ -66,26 +66,30 @@ For each phase, include:
 
 ## Approval wording
 
-End each phase plan with:
+Approval is based on the displayed active checkpoint plan or next-phase prompt, not a magic phrase.
+
+For a phase plan before implementation, end with:
 
 ```text
-Approval needed before build:
-Reply "approve <phase>" to continue, or tell me what to change.
+Approval needed before build.
+Do you want me to run this phase plan as written? Reply Yes to proceed, or tell me what to change.
 ```
 
-Examples:
+Natural approval responses count as approval for the displayed plan only:
 
-```text
-approve sources
-approve bronze
-approve silver
-approve gold
-approve semantic
-approve evaluator
-approve docs
-```
+- Yes
+- Proceed
+- Approved
+- Continue
+- Run this prompt
+- Looks good
+- Go ahead
+- Yes, run this
+- Approved as written
 
-The exact wording is not the control mechanism. The active checkpoint is the control mechanism: discovery, setup, sources, bronze/staging, silver/intermediate, gold/marts, semantic layer, evaluator, documentation, analytics insight reporting, presentation layer, continuous integration, Agents Schema, commit, and push are separate checkpoints. Any approval that does not explicitly name additional future phases applies only to the active checkpoint.
+The active checkpoint is the control mechanism: discovery, setup, sources, bronze/staging, silver/intermediate, gold/marts, semantic layer, evaluator, documentation, analytics insight reporting, presentation layer, continuous integration, Agents Schema, commit, and push are separate checkpoints. Any approval that does not explicitly name additional future phases applies only to the active checkpoint.
+
+Silence is never approval. If the user changes scope, models, key performance indicators, privacy, schema, validation, materialization, or files, update `AGENT_PLAN.md`, show the revised plan, and ask again before proceeding.
 
 ## Markdown template
 
@@ -182,7 +186,7 @@ The exact wording is not the control mechanism. The active checkpoint is the con
 - <assumption or question>
 
 ### Approval Needed Before Build
-Reply `approve <phase>` to continue, or tell me what to change.
+Do you want me to run this phase plan as written? Reply Yes to proceed, or tell me what to change.
 ````
 
 ## After approval
@@ -196,13 +200,15 @@ After the user approves:
 5. Update `reports/agent/CONTEXT_TREE.md` using [context-tree.md](context-tree.md).
 6. Summarize actual files/models built, test results, assumptions used, open decisions, report path, and context tree update.
 7. Ask for commit approval according to [git-workflow.md](git-workflow.md).
-8. Move to the next phase and repeat the plan/approval process.
+8. Read [next-phase-prompt.md](next-phase-prompt.md), write/update `reports/agent/NEXT_PHASE_PROMPT.md` with the exact recommended next-phase prompt, show it to the user, and ask the natural approval question before running the next phase.
 
-If the user has not approved the next named phase, stop after reporting the completed phase. Do not infer approval from a prior discovery, setup, or layer approval.
+If the user has not approved the displayed next-phase prompt, stop after reporting the completed phase. Do not infer approval from a prior discovery, setup, or layer approval.
 
 ## Do not
 
 - Treat approval for one phase as approval for all future phases.
+- Require exact magic phrases such as `approve sources`, `approve bronze`, `approve silver`, or `approve gold` after a prompt has been shown.
+- Proceed from a natural response unless the next-phase prompt or phase plan was shown first.
 - Hide important business logic in code without explaining it first.
 - Build gold marts or semantic metrics before the user understands the planned facts, dimensions, metrics, and privacy handling.
 - Guess source tables, relationships, business processes, required metrics, data quality rules, required output models, or reporting needs when they are unclear.

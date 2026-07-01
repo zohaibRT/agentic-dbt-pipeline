@@ -73,7 +73,7 @@ What needs your approval:
 - ...
 
 Approval needed before build:
-Reply "approve <phase>" to continue, or tell me what to change.
+Do you want me to run this phase plan as written? Reply Yes to proceed, or tell me what to change.
 ```
 
 Do not flood chat with full discovery details when the file exists.

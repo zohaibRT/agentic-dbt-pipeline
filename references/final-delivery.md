@@ -39,7 +39,7 @@ If the presentation decision has not been asked or answered, set status to `Anal
 - Continuous integration workflow prepared when GitHub automation is requested
 - Commits created by phase
 - `AGENT_PLAN.md` records approved phase plans and short phase results
-- `reports/agent/` contains phase reports, `PIPELINE_STATUS.md`, and `CONTEXT_TREE.md`
+- `reports/agent/` contains phase reports, `PIPELINE_STATUS.md`, `CONTEXT_TREE.md`, and `NEXT_PHASE_PROMPT.md`
 - `reports/agent/final_delivery.md` records the final delivery status, validation evidence, presentation gate outcome, open decisions, and next actions
 - When Power BI is approved, `reports/agent/powerbi_model_plan.md`, `reports/agent/dashboard_pages.md`, and `reports/agent/dax_measures.md` capture the Power BI-ready star schema handoff, semantic model plan, report page plan, and DAX measure specifications
 
@@ -129,6 +129,7 @@ Use a compact table when helpful:
 | Plan file | `AGENT_PLAN.md` |
 | Phase reports | `reports/agent/` |
 | Context tree | `reports/agent/CONTEXT_TREE.md` |
+| Next-phase prompt | `reports/agent/NEXT_PHASE_PROMPT.md` |
 | Git | `<commit/push status>` |
 
 ### What changed
@@ -158,6 +159,7 @@ Use a compact table when helpful:
 - Key pass/warn/fail counts when available
 - Phase plan approval status
 - Phase report status and path
+- Next-phase prompt status and path
 - Power BI PBIP/TMDL validation status when used: file validation, relationship ambiguity audit, Power BI Modeling Model Context Protocol model load, DAX smoke test, Desktop open test, and unresolved load errors
 - Power BI Modeling Model Context Protocol availability status: checked, available and used, unavailable with install path, unavailable with reason, or failed
 - Presentation time showcase validation status: discovered fact date fields, governed measures used, SQL verification queries, and any blocked trend visuals

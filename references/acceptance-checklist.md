@@ -54,6 +54,12 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] `reports/agent/<phase>_report.md` created or updated for each implemented phase
 - [ ] `reports/agent/PIPELINE_STATUS.md` updated after each phase
 - [ ] `reports/agent/CONTEXT_TREE.md` updated with user inputs, decisions, phase outputs, report links, and open items
+- [ ] `reports/agent/NEXT_PHASE_PROMPT.md` created or updated after each completed or blocked checkpoint when a next phase is recommended
+- [ ] The next-phase prompt shown to the user includes current completed phase, recommended next phase, why it is next, exact prompt to run, included scope, not included scope, known caveats, reports/files to create, and approval question
+- [ ] Natural approval responses such as Yes, Proceed, Approved, Continue, Run this prompt, Looks good, or Go ahead were accepted only after the exact plan or next-phase prompt was shown
+- [ ] The agent did not require exact magic phrases such as `approve sources`, `approve bronze`, `approve silver`, or `approve gold` after showing the exact prompt
+- [ ] The agent did not treat silence as approval and did not auto-run the next phase immediately after phase completion
+- [ ] If the user requested changes to scope, models, key performance indicators, privacy, schemas, validation, materialization, or files, `AGENT_PLAN.md` and `NEXT_PHASE_PROMPT.md` were revised before proceeding
 - [ ] Final delivery included analytics insight reporting outputs before the presentation-layer recommendation
 - [ ] `reports/agent/analytics_insight_report.md`, `reporting_catalog.md`, `kpi_catalog.md`, `dashboard_spec.md`, `insight_backlog.md`, and `reporting_readiness_scorecard.md` exist when analytics insight reporting ran
 - [ ] Analytics insight reporting separated trusted outputs from uncertain or deferred outputs
@@ -263,6 +269,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Final handoff notes or README include domain, profile name, schemas, final models, metrics, run commands, and known limitations
 - [ ] Final response starts with a short summary, then includes results, validation, data notes, git/automation status, and open decisions
 - [ ] Final response references `AGENT_PLAN.md`, `reports/agent/PIPELINE_STATUS.md`, `reports/agent/CONTEXT_TREE.md`, and relevant phase reports
+- [ ] Final response references `reports/agent/NEXT_PHASE_PROMPT.md` when a recommended next action remains
 - [ ] Final response includes the advanced data-engineering review status
 - [ ] Phase commits created or intentionally skipped
 - [ ] Final response summarizes build status, documentation status, evaluator status, Agents Schema status, git status, limitations, and open decisions

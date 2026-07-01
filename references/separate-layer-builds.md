@@ -17,7 +17,7 @@ Default names: `bronze`, `silver`, `gold`.
 
 For a new full pipeline, run lightweight project Discovery & Requirements, then automatic project setup and configuration, before this build order. Then run phase-specific discovery before each layer.
 
-A full-pipeline request defines the intended roadmap, not blanket approval to execute every layer. The active workflow checkpoint controls what may happen next: discovery approval moves only to automatic project setup and configuration; setup completion moves only to the sources phase plan; each approved layer moves only through its own build, validation, report, and next checkpoint. After each approved phase, write the phase report and stop again unless the user explicitly approved the next named phase.
+A full-pipeline request defines the intended roadmap, not blanket approval to execute every layer. The active workflow checkpoint controls what may happen next: discovery approval moves only to automatic project setup and configuration; setup completion moves only to the sources phase plan; each approved layer moves only through its own build, validation, report, and next checkpoint. After each approved phase, write the phase report, write `reports/agent/NEXT_PHASE_PROMPT.md`, show the exact next-phase prompt, and stop unless the user approves that displayed prompt.
 
 **Do not** build intermediate before staging exists.
 **Do not** build marts before intermediate exists.
@@ -39,7 +39,7 @@ Staging comes **before** intermediate. Marts (star schema) come **last**.
 
 Set `workflow_phase:` in the prompt to run **only** that phase.
 
-After project setup and configuration, for every non-setup phase: **phase-specific discovery -> agent recommendation -> data engineer decision check -> write `AGENT_PLAN.md` -> ask approval -> implement -> parse/build -> run layer data validation queries -> write `reports/agent/<phase>_report.md` with results -> update context tree -> summarize validation results -> ask commit**.
+After project setup and configuration, for every non-setup phase: **phase-specific discovery -> agent recommendation -> data engineer decision check -> write `AGENT_PLAN.md` -> ask approval -> implement -> parse/build -> run layer data validation queries -> write `reports/agent/<phase>_report.md` with results -> update context tree -> write `reports/agent/NEXT_PHASE_PROMPT.md` -> summarize validation results and show the exact next-phase prompt -> ask natural approval for the displayed prompt -> ask commit**.
 
 ### Sources only
 
@@ -58,7 +58,7 @@ dbt parse --no-partial-parse
 
 Explain the source YAML plan and get approval before running codegen or writing source files.
 Generated and curated source YAML must stay under `models/sources/`; do not place source YAML in `models/<layer_1_name>/`, `models/<layer_2_name>/`, or `models/<layer_3_name>/`.
-Write `reports/agent/sources_report.md`, update `reports/agent/PIPELINE_STATUS.md` and `reports/agent/CONTEXT_TREE.md`, then ask commit for `models/sources/` and `reports/agent/`.
+Write `reports/agent/sources_report.md`, update `reports/agent/PIPELINE_STATUS.md` and `reports/agent/CONTEXT_TREE.md`, write `reports/agent/NEXT_PHASE_PROMPT.md` for staging/bronze, show the prompt, ask whether to run it as written, then ask commit for `models/sources/` and `reports/agent/`.
 
 ---
 
@@ -86,7 +86,7 @@ Warehouse models land in: **`<layer_schema_prefix>_<layer_1_name>`** (default ma
 
 Run bronze discovery first: table grains, column pass/drop decisions, casts, naming, source tests, and sensitive-column handling. Recommend the staging path with evidence, then explain planned staging models, source tables, casts, tests, approval needs, schema target, and post-build data validation checks before creating files.
 After `dbt build`, run [layer-data-validation.md](layer-data-validation.md). Verify source-to-staging row counts, staging row presence, grain/key checks, relationship tests, status/category distributions, and expected-empty sources. Share the validation results with the user.
-Write `reports/agent/{layer_1_name}_report.md`, update `reports/agent/PIPELINE_STATUS.md` and `reports/agent/CONTEXT_TREE.md`, then ask commit -> push `models/{layer_1_name}/{project_slug}/` and `reports/agent/`.
+Write `reports/agent/{layer_1_name}_report.md`, update `reports/agent/PIPELINE_STATUS.md` and `reports/agent/CONTEXT_TREE.md`, write `reports/agent/NEXT_PHASE_PROMPT.md` for intermediate/silver, show the prompt, ask whether to run it as written, then ask commit -> push `models/{layer_1_name}/{project_slug}/` and `reports/agent/`.
 
 ---
 
@@ -113,7 +113,7 @@ Warehouse models land in: **`<layer_schema_prefix>_<layer_2_name>`** (default ma
 
 Run silver discovery first: join cardinality, grain preservation, mapping/reference needs, reusable business logic, flags, and tests. Recommend the intermediate path with evidence, then explain planned intermediate models, joins, grains, mappings, flags, approval needs, tests, and post-build data validation checks before creating files.
 After `dbt build`, run [layer-data-validation.md](layer-data-validation.md). Verify row presence, expected-empty evidence, grain/key checks, row loss, row multiplication, relationship checks, mapping coverage, and derived measure/flag sanity. Share the validation results with the user.
-Write `reports/agent/{layer_2_name}_report.md`, update `reports/agent/PIPELINE_STATUS.md` and `reports/agent/CONTEXT_TREE.md`, then ask commit -> push `models/{layer_2_name}/{project_slug}/` and `reports/agent/`.
+Write `reports/agent/{layer_2_name}_report.md`, update `reports/agent/PIPELINE_STATUS.md` and `reports/agent/CONTEXT_TREE.md`, write `reports/agent/NEXT_PHASE_PROMPT.md` for marts/gold, show the prompt, ask whether to run it as written, then ask commit -> push `models/{layer_2_name}/{project_slug}/` and `reports/agent/`.
 
 ---
 
@@ -140,7 +140,7 @@ Warehouse models land in: **`<layer_schema_prefix>_<layer_3_name>`** (prod defau
 
 Run gold discovery first: approved facts, dimensions, metric grains, privacy exposure, reporting marts, and materializations. Recommend the mart path with evidence, then explain planned facts, dimensions, reporting marts, metrics, privacy handling, grains, approval needs, materializations, and post-build data validation checks before creating files.
 After `dbt build`, run [layer-data-validation.md](layer-data-validation.md). Verify every fact, dimension, and reporting mart has data when upstream data exists; validate grain/key checks, relationships, date coverage, key performance indicator measures, and privacy exposure. Unexpected empty gold models are blockers until fixed or explicitly accepted. Share the validation results with the user.
-Write `reports/agent/{layer_3_name}_report.md`, update `reports/agent/PIPELINE_STATUS.md` and `reports/agent/CONTEXT_TREE.md`, then ask commit -> push `models/{layer_3_name}/{project_slug}/`, `reports/agent/`, and `dbt_project.yml` if changed.
+Write `reports/agent/{layer_3_name}_report.md`, update `reports/agent/PIPELINE_STATUS.md` and `reports/agent/CONTEXT_TREE.md`, write `reports/agent/NEXT_PHASE_PROMPT.md` for the next applicable phase such as semantic layer or project evaluator, show the prompt, ask whether to run it as written, then ask commit -> push `models/{layer_3_name}/{project_slug}/`, `reports/agent/`, and `dbt_project.yml` if changed.
 
 ---
 
@@ -152,10 +152,10 @@ Run the default prompt without `workflow_phase`.
 
 Run in order after automatic project setup and configuration, **stop for phase plan approval before each non-setup build and ask commit after each**:
 
-1. Sources (if needed) -> source discovery -> plan approval -> source files -> phase report -> ask commit
-2. Staging -> bronze discovery -> plan approval -> build `+path:models/{layer_1_name}/{project_slug}` -> layer data validation -> phase report -> share results -> ask commit
-3. Intermediate -> silver discovery -> plan approval -> build `+path:models/{layer_2_name}/{project_slug}` -> layer data validation -> phase report -> share results -> ask commit
-4. Marts -> gold discovery -> plan approval -> build `+path:models/{layer_3_name}/{project_slug}` -> layer data validation -> phase report -> share results -> ask commit
+1. Sources (if needed) -> source discovery -> plan approval -> source files -> phase report -> next-phase prompt -> ask natural approval -> ask commit
+2. Staging -> bronze discovery -> plan approval -> build `+path:models/{layer_1_name}/{project_slug}` -> layer data validation -> phase report -> share results -> next-phase prompt -> ask natural approval -> ask commit
+3. Intermediate -> silver discovery -> plan approval -> build `+path:models/{layer_2_name}/{project_slug}` -> layer data validation -> phase report -> share results -> next-phase prompt -> ask natural approval -> ask commit
+4. Marts -> gold discovery -> plan approval -> build `+path:models/{layer_3_name}/{project_slug}` -> layer data validation -> phase report -> share results -> next-phase prompt -> ask natural approval -> ask commit
 
 Each layer is a separate build and optional separate git push.
 
@@ -181,7 +181,7 @@ After completion, write:
 - `reports/agent/reporting_readiness_scorecard.md`
 - `reports/agent/analytics_insight_reporting_report.md`
 
-Update `reports/agent/PIPELINE_STATUS.md` and `reports/agent/CONTEXT_TREE.md`, then stop at the presentation-layer gate unless presentation work was explicitly approved.
+Update `reports/agent/PIPELINE_STATUS.md`, `reports/agent/CONTEXT_TREE.md`, and `reports/agent/NEXT_PHASE_PROMPT.md`, then stop at the presentation-layer gate unless presentation work was explicitly approved.
 
 Do not create Power BI, dashboard, slide, or notebook artifacts in this phase.
 

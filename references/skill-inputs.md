@@ -62,6 +62,28 @@ Only resolve GitHub when the user asks to push, provides `github_repo_name` / `D
 | `ci` | GitHub Actions validation |
 | `prod` | Production warehouse - **ask before changes** |
 
+## Approval response interpretation
+
+Approval responses are interpreted by the active checkpoint and the displayed plan or next-phase prompt.
+
+When the agent has shown `AGENT_PLAN.md` or `reports/agent/NEXT_PHASE_PROMPT.md`, these natural replies approve only that displayed prompt for the current checkpoint:
+
+- Yes
+- Proceed
+- Approved
+- Continue
+- Run this prompt
+- Looks good
+- Go ahead
+- Yes, run this
+- Approved as written
+
+Do not require exact phrases such as `approve sources`, `approve bronze`, `approve silver`, or `approve gold` after the exact prompt has been shown.
+
+Do not treat silence as approval. Do not treat a natural approval response as permission for future phases, commits, pushes, source switching, schema behavior changes, privacy changes, or hidden scope.
+
+If the user changes scope, models, key performance indicators, privacy, schemas, validation, materialization, files, or business rules, update `AGENT_PLAN.md` and `reports/agent/NEXT_PHASE_PROMPT.md`, show the revised prompt, and ask again before proceeding.
+
 ## Credentials
 
 - **Never** hardcode passwords in skills, prompts, or project files.
