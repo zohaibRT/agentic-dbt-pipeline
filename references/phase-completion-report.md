@@ -128,7 +128,11 @@ The next phase prompt I will use is:
 ```text
 <paste the exact prompt from reports/agent/NEXT_PHASE_PROMPT.md>
 ```
-Approval needed: Do you want me to run this next-phase prompt as written? Reply Yes to proceed, or tell me what to change.
+Approval needed: ask with a native interactive question when available.
+- Question: Do you want me to run this next-phase prompt as written?
+- Recommended option: Yes, run this prompt
+- Other options: Tell me what to change; Not now
+- Text fallback: Reply Yes to proceed, or tell me what to change.
 ```
 
 For project setup and configuration, the summary must make clear that setup was automatic/setup-only and did not approve source YAML or model builds.
@@ -176,7 +180,7 @@ Every phase report must include:
 - Files/reports that will be created in the next phase
 - What is included and not included in the next phase
 - Known caveats or deferred items for the next phase
-- Natural approval question from [next-phase-prompt.md](next-phase-prompt.md)
+- Interactive approval question from [next-phase-prompt.md](next-phase-prompt.md), or the text fallback when interactive questions are unavailable
 
 ## Status labels
 
@@ -314,7 +318,7 @@ Summary:
 - Included: <short scope>
 - Not included: <short non-scope>
 - Known caveats: <deferred or uncertain items>
-- Approval question: Do you want me to run this next-phase prompt as written? Reply Yes to proceed, or tell me what to change.
+- Approval question: Use a native interactive question when available: Do you want me to run this next-phase prompt as written? Recommended option: Yes, run this prompt. Text fallback: Reply Yes to proceed, or tell me what to change.
 ```
 
 ## Pipeline status file
@@ -336,7 +340,7 @@ Update `reports/agent/CONTEXT_TREE.md` after every phase using [context-tree.md]
 
 ## Next phase prompt
 
-After every completed or blocked checkpoint, read [next-phase-prompt.md](next-phase-prompt.md), write/update `reports/agent/NEXT_PHASE_PROMPT.md`, show the exact prompt in chat, and ask the approval question from that file. If the user asks for changes, revise the next-phase prompt and `AGENT_PLAN.md` before proceeding.
+After every completed or blocked checkpoint, read [next-phase-prompt.md](next-phase-prompt.md), write/update `reports/agent/NEXT_PHASE_PROMPT.md`, show the exact prompt in chat, and ask the interactive approval question from that file when available. If the user asks for changes, revise the next-phase prompt and `AGENT_PLAN.md` before proceeding.
 
 ## Commit behavior
 

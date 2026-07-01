@@ -75,6 +75,22 @@ Approval needed before build.
 Do you want me to run this phase plan as written? Reply Yes to proceed, or tell me what to change.
 ```
 
+When the agent runtime supports native questions, buttons, choice prompts, or approval widgets, ask the approval as an interactive question instead of only plain text. In Codex, use `request_user_input` or the current native question/approval UI when that tool is available in the active mode.
+
+Recommended question:
+
+```text
+Do you want me to run this phase plan as written?
+```
+
+Recommended options:
+
+- Yes, run this phase plan (Recommended) - approves only the displayed active checkpoint plan.
+- Tell me what to change - pauses so the user can revise scope, models, metrics, privacy, validation, or files.
+- Not now - pauses without starting the phase.
+
+Do not set an automatic approval timeout. If interactive questions are unavailable, use the text fallback above.
+
 Natural approval responses count as approval for the displayed plan only:
 
 - Yes
@@ -186,7 +202,13 @@ Silence is never approval. If the user changes scope, models, key performance in
 - <assumption or question>
 
 ### Approval Needed Before Build
-Do you want me to run this phase plan as written? Reply Yes to proceed, or tell me what to change.
+Use a native interactive approval question when available:
+
+- Question: Do you want me to run this phase plan as written?
+- Recommended option: Yes, run this phase plan
+- Other options: Tell me what to change; Not now
+
+Text fallback: Do you want me to run this phase plan as written? Reply Yes to proceed, or tell me what to change.
 ````
 
 ## After approval
@@ -200,7 +222,7 @@ After the user approves:
 5. Update `reports/agent/CONTEXT_TREE.md` using [context-tree.md](context-tree.md).
 6. Summarize actual files/models built, test results, assumptions used, open decisions, report path, and context tree update.
 7. Ask for commit approval according to [git-workflow.md](git-workflow.md).
-8. Read [next-phase-prompt.md](next-phase-prompt.md), write/update `reports/agent/NEXT_PHASE_PROMPT.md` with the exact recommended next-phase prompt, show it to the user, and ask the natural approval question before running the next phase.
+8. Read [next-phase-prompt.md](next-phase-prompt.md), write/update `reports/agent/NEXT_PHASE_PROMPT.md` with the exact recommended next-phase prompt, show it to the user, and ask the interactive approval question when available before running the next phase.
 
 If the user has not approved the displayed next-phase prompt, stop after reporting the completed phase. Do not infer approval from a prior discovery, setup, or layer approval.
 

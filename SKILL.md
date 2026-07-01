@@ -309,7 +309,7 @@ Read [separate-layer-builds.md](references/separate-layer-builds.md).
 12. Automation - continuous integration workflow
 13. **Advanced review, acceptance + final summary** - [advanced-data-engineering-review.md](references/advanced-data-engineering-review.md), [acceptance-checklist.md](references/acceptance-checklist.md), [final-delivery.md](references/final-delivery.md)
 
-After project setup and configuration, each stage: **phase-specific discovery -> agent recommendation -> data engineer decision check -> write Markdown plan -> ask approval -> implement -> parse/build -> warehouse data validation queries -> write phase report with validation results -> update context tree -> write `reports/agent/NEXT_PHASE_PROMPT.md` -> summarize validation results and show the exact next-phase prompt -> ask natural approval for the displayed prompt -> ask commit**. Ask for push only when a non-local GitHub repository is configured or the user requested push.
+After project setup and configuration, each stage: **phase-specific discovery -> agent recommendation -> data engineer decision check -> write Markdown plan -> ask approval -> implement -> parse/build -> warehouse data validation queries -> write phase report with validation results -> update context tree -> write `reports/agent/NEXT_PHASE_PROMPT.md` -> summarize validation results and show the exact next-phase prompt -> ask interactive approval for the displayed prompt when available -> ask commit**. Ask for push only when a non-local GitHub repository is configured or the user requested push.
 
 ## Step 2 - Sources
 
@@ -422,7 +422,7 @@ Read [phase-rollback.md](references/phase-rollback.md) when a completed phase mu
 
 ## Next-phase prompt after each phase
 
-After every completed or blocked checkpoint, read [next-phase-prompt.md](references/next-phase-prompt.md). Write or update `reports/agent/NEXT_PHASE_PROMPT.md` with the exact prompt for the recommended next phase, show that prompt in chat, and ask: `Do you want me to run this next-phase prompt as written? Reply Yes to proceed, or tell me what to change.`
+After every completed or blocked checkpoint, read [next-phase-prompt.md](references/next-phase-prompt.md). Write or update `reports/agent/NEXT_PHASE_PROMPT.md` with the exact prompt for the recommended next phase, show that prompt in chat, and ask through a native interactive question when the runtime supports it. In Codex, use `request_user_input` or the current native question/approval UI when available in the active mode. Recommended question: `Do you want me to run this next-phase prompt as written?` Recommended option: `Yes, run this prompt`. Other options: `Tell me what to change` and `Not now`. If interactive questions are unavailable, use the text fallback: `Do you want me to run this next-phase prompt as written? Reply Yes to proceed, or tell me what to change.`
 
 Natural approval responses such as `Yes`, `Proceed`, `Approved`, `Continue`, `Run this prompt`, `Looks good`, or `Go ahead` approve only the displayed next-phase prompt for the active checkpoint. Silence is never approval. If the user changes scope, models, key performance indicators, privacy, schemas, validation, materialization, or files, update `AGENT_PLAN.md` and `reports/agent/NEXT_PHASE_PROMPT.md`, show the revised prompt, and ask again before proceeding.
 
@@ -440,7 +440,7 @@ Natural approval responses such as `Yes`, `Proceed`, `Approved`, `Continue`, `Ru
 9. Mermaid diagram verification status when diagrams were added or changed
 10. Phase report path and status
 11. Context tree update status
-12. Next-phase prompt path and exact approval question
+12. Next-phase prompt path and exact interactive approval question or fallback text question
 13. Commit status (asked / skipped / completed / pushed to GitHub)
 ```
 
@@ -492,7 +492,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 | [profile-listing.md](references/profile-listing.md) | Safe available-profile table when `DBT_PROFILE_NAME` is missing or ambiguous |
 | [phase-plan-approval.md](references/phase-plan-approval.md) | Markdown plan and approval gate before every phase |
 | [phase-completion-report.md](references/phase-completion-report.md) | Per-phase report files showing done/correct/wrong/open items |
-| [next-phase-prompt.md](references/next-phase-prompt.md) | Required next-phase execution prompt and natural approval gate after each phase |
+| [next-phase-prompt.md](references/next-phase-prompt.md) | Required next-phase execution prompt and interactive approval gate after each phase |
 | [context-tree.md](references/context-tree.md) | Curated project memory: inputs, outputs, decisions, reports, and open items |
 | [skill-knowledge.md](references/skill-knowledge.md) | Built-in reusable dbt, big data, warehouse, semantic, Power BI, privacy, and validation knowledge |
 | [project-knowledge.md](references/project-knowledge.md) | User-provided dbt standards, domain knowledge, and business rules |

@@ -56,6 +56,8 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] `reports/agent/CONTEXT_TREE.md` updated with user inputs, decisions, phase outputs, report links, and open items
 - [ ] `reports/agent/NEXT_PHASE_PROMPT.md` created or updated after each completed or blocked checkpoint when a next phase is recommended
 - [ ] The next-phase prompt shown to the user includes current completed phase, recommended next phase, why it is next, exact prompt to run, included scope, not included scope, known caveats, reports/files to create, and approval question
+- [ ] When the agent runtime supports native questions, buttons, choice prompts, or approval widgets, the agent asked approval through that interactive UI instead of making the user copy/paste or type a magic phrase
+- [ ] Interactive next-phase approval offered `Yes, run this prompt` as the recommended option and included a change/pause option; if unavailable, the text fallback was shown
 - [ ] Natural approval responses such as Yes, Proceed, Approved, Continue, Run this prompt, Looks good, or Go ahead were accepted only after the exact plan or next-phase prompt was shown
 - [ ] The agent did not require exact magic phrases such as `approve sources`, `approve bronze`, `approve silver`, or `approve gold` after showing the exact prompt
 - [ ] The agent did not treat silence as approval and did not auto-run the next phase immediately after phase completion

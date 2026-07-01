@@ -40,7 +40,7 @@ Run the full pipeline from source discovery through final delivery.
 
 First, perform read-only discovery only: inspect source schemas/tables, create necessary Mermaid discovery diagrams including an entity relationship diagram when credible relationships exist, summarize what you conclude from the data, include a recommended medallion direction for sources, bronze/staging, silver/intermediate, and gold/marts, recommend the best next path with evidence, and ask whether I want to add or change requirements.
 
-After I answer, run project setup and configuration automatically, then before each build phase, write/update `AGENT_PLAN.md`, explain what will be built, what looks right, what is not ready yet, confidence about proven vs uncertain items, and what needs my approval, then wait for approval. After each completed phase, write/update `reports/agent/<phase>_report.md`, `reports/agent/PIPELINE_STATUS.md`, `reports/agent/CONTEXT_TREE.md`, and `reports/agent/NEXT_PHASE_PROMPT.md`. Show me the exact next-phase prompt and ask whether to run it as written.
+After I answer, run project setup and configuration automatically, then before each build phase, write/update `AGENT_PLAN.md`, explain what will be built, what looks right, what is not ready yet, confidence about proven vs uncertain items, and what needs my approval, then wait for approval. After each completed phase, write/update `reports/agent/<phase>_report.md`, `reports/agent/PIPELINE_STATUS.md`, `reports/agent/CONTEXT_TREE.md`, and `reports/agent/NEXT_PHASE_PROMPT.md`. Show me the exact next-phase prompt and ask whether to run it as written with a clickable/native question when the agent platform supports it.
 ```
 
 For a full copy-paste prompt, see [prompt.md](prompt.md).
@@ -83,7 +83,7 @@ Keep passwords, tokens, and private keys in local profiles or GitHub Secrets.
 | Warehouse adapter routing | Uses only the adapter from the selected dbt profile for discovery |
 | Subagents | Optionally parallelizes read-only profiling, planning, documentation, and review work |
 | Phase planning | Writes a Markdown plan before each non-setup phase and waits for approval before building |
-| Next-phase prompt | After each completed phase, writes `reports/agent/NEXT_PHASE_PROMPT.md`, shows the exact prompt for the recommended next phase, and accepts natural approval such as Yes, Proceed, Continue, Looks good, or Go ahead for that displayed prompt only |
+| Next-phase prompt | After each completed phase, writes `reports/agent/NEXT_PHASE_PROMPT.md`, shows the exact prompt for the recommended next phase, asks a clickable/native approval question when supported, and accepts natural approval such as Yes, Proceed, Continue, Looks good, or Go ahead for that displayed prompt only |
 | Agent recommendations | Recommends the best path with evidence, confidence, and risks, then asks the data engineer to approve or change business-impacting choices |
 | Data engineer decision gate | Documents grain, keys, joins, mappings, metrics, privacy, tests, materialization, and validation evidence before build |
 | Phase reports | Writes `reports/agent/<phase>_report.md`, `PIPELINE_STATUS.md`, and `CONTEXT_TREE.md` after each phase |
@@ -126,7 +126,7 @@ The skill is designed to keep project history readable. It commits each stage se
 
 By default, the agent asks before each commit. It asks about push only when a GitHub remote is configured or requested.
 It asks for approval before each non-setup build phase after showing the Markdown plan. Project setup and configuration is automatic setup-only unless a safety gate is triggered.
-After each completed phase, it writes a phase report showing what passed, warned, failed, was skipped, and still needs review, then updates the context tree and prepares `reports/agent/NEXT_PHASE_PROMPT.md` for the recommended next phase. The user can approve that displayed prompt naturally with replies like `Yes`, `Proceed`, `Approved`, `Continue`, `Run this prompt`, `Looks good`, or `Go ahead`. Silence is never approval, and changed scope requires a revised prompt before work continues.
+After each completed phase, it writes a phase report showing what passed, warned, failed, was skipped, and still needs review, then updates the context tree and prepares `reports/agent/NEXT_PHASE_PROMPT.md` for the recommended next phase. The agent should ask approval with a clickable/native question when supported so the user can choose `Yes, run this prompt` instead of typing. Text approvals like `Yes`, `Proceed`, `Approved`, `Continue`, `Run this prompt`, `Looks good`, or `Go ahead` still work for that displayed prompt only. Silence is never approval, and changed scope requires a revised prompt before work continues.
 
 ## Generated Reports
 
@@ -206,7 +206,7 @@ The skill can add and install these dbt packages:
 | [references/warehouse-adapter-routing.md](references/warehouse-adapter-routing.md) | Use the selected dbt profile adapter for discovery |
 | [references/mermaid-diagrams.md](references/mermaid-diagrams.md) | Mermaid-only diagrams and visibility verification |
 | [references/phase-completion-report.md](references/phase-completion-report.md) | Per-phase reports and pipeline status file |
-| [references/next-phase-prompt.md](references/next-phase-prompt.md) | Required next-phase prompt and natural approval gate after each phase |
+| [references/next-phase-prompt.md](references/next-phase-prompt.md) | Required next-phase prompt and interactive approval gate after each phase |
 | [references/context-tree.md](references/context-tree.md) | Curated project memory for inputs, decisions, outputs, and report links |
 | [references/data-engineer-decision-gate.md](references/data-engineer-decision-gate.md) | Required senior data-engineering decision checks before build |
 | [references/privacy-and-unknown-fields.md](references/privacy-and-unknown-fields.md) | Safe defaults for sensitive fields and unclear coded fields |

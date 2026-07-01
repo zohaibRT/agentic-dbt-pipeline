@@ -6,7 +6,7 @@ The goal is to keep the data engineer in control without forcing exact magic phr
 
 ## Core rule
 
-After every completed phase, prepare the exact next-phase execution prompt, save it to `reports/agent/NEXT_PHASE_PROMPT.md`, show it in chat, and ask a simple approval question.
+After every completed phase, prepare the exact next-phase execution prompt, save it to `reports/agent/NEXT_PHASE_PROMPT.md`, show it in chat, and ask a simple approval question. When the agent runtime supports native questions, buttons, choice prompts, or approval widgets, use that interactive UI so the data engineer can click approval instead of copying, pasting, or typing a magic phrase.
 
 The user may approve naturally after seeing the prompt:
 
@@ -24,6 +24,35 @@ Natural approval applies only to the displayed next-phase prompt and only to the
 
 If the user asks for any change to scope, models, key performance indicators, privacy, schemas, validation, materialization, or files, revise `AGENT_PLAN.md` and `reports/agent/NEXT_PHASE_PROMPT.md`, show the revised prompt, and ask again before proceeding.
 
+## Interactive approval question
+
+Prefer a platform-native interactive question when available. In Codex, use `request_user_input` or the current native question/approval UI when that tool is available in the active mode. In other agent runtimes, use the equivalent choice, button, or approval widget.
+
+Recommended question:
+
+```text
+Do you want me to run this next-phase prompt as written?
+```
+
+Recommended options:
+
+- Yes, run this prompt (Recommended) - approves only the displayed prompt for the active checkpoint.
+- Tell me what to change - pauses so the user can provide changes; revise `AGENT_PLAN.md` and `reports/agent/NEXT_PHASE_PROMPT.md`, then ask again.
+- Not now - pauses without running the next phase.
+
+If the runtime only supports two options, use:
+
+- Yes, run this prompt (Recommended)
+- Tell me what to change
+
+Do not set an automatic approval timeout. If the runtime requires a fallback or default result, default to not approved.
+
+If native interactive questions are unavailable, use the text fallback:
+
+```text
+Do you want me to run this next-phase prompt as written? Reply Yes to proceed, or tell me what to change.
+```
+
 ## Safety rules
 
 - Do not proceed without explicit user approval.
@@ -31,6 +60,7 @@ If the user asks for any change to scope, models, key performance indicators, pr
 - Do not auto-run the next phase immediately after completing a phase.
 - Do not hide the next-phase prompt.
 - Do not ask only for `approve <phase>` without showing the exact prompt.
+- Do not make the user copy/paste the generated next-phase prompt back into chat when an interactive approval question is available.
 - Always show what will be run before asking approval.
 - Always save the prompt under `reports/agent/NEXT_PHASE_PROMPT.md`.
 
@@ -46,9 +76,9 @@ After every completed phase, the chat summary must include:
 6. What is included.
 7. What is not included.
 8. Known caveats or deferred items.
-9. Approval question.
+9. Interactive approval question when available; text fallback when not available.
 
-Use this approval question:
+Use this text fallback when interactive questions are unavailable:
 
 ```text
 Do you want me to run this next-phase prompt as written? Reply Yes to proceed, or tell me what to change.
@@ -142,7 +172,13 @@ After completion, write/update:
 
 ## Approval question
 
-Do you want me to run this next-phase prompt as written? Reply Yes to proceed, or tell me what to change.
+Use a native interactive question when available:
+
+- Question: Do you want me to run this next-phase prompt as written?
+- Recommended option: Yes, run this prompt
+- Other options: Tell me what to change; Not now
+
+Text fallback: Do you want me to run this next-phase prompt as written? Reply Yes to proceed, or tell me what to change.
 ````
 
 ## Phase-specific prompt content
