@@ -128,6 +128,8 @@ By default, the agent asks before each commit. It asks about push only when a Gi
 It asks for approval before each non-setup build phase after showing the Markdown plan. Project setup and configuration is automatic setup-only unless a safety gate is triggered.
 After each completed phase, it writes a phase report showing what passed, warned, failed, was skipped, and still needs review, then updates the context tree and prepares `reports/agent/NEXT_PHASE_PROMPT.md` for the recommended next phase. The agent must also summarize in chat what was completed, what is recommended next, what the next phase will and will not include, and paste the exact next-phase prompt before asking approval. It should ask approval with a clickable/native question when supported so the user can choose `Yes, run this prompt` instead of typing. Text approvals like `Yes`, `Proceed`, `Approved`, `Continue`, `Run this prompt`, `Looks good`, or `Go ahead` still work for that displayed prompt only. Silence is never approval, and changed scope requires a revised prompt before work continues.
 
+When the next-phase prompt is approved, the agent should not run that file alone. It first reloads the phase context bundle: `SKILL.md`, `prompt.md`, phase references, `AGENT_PLAN.md`, `PIPELINE_STATUS.md`, `CONTEXT_TREE.md`, `requirements.md` when present, the latest phase report, `NEXT_PHASE_PROMPT.md`, and project knowledge files when present.
+
 ## Generated Reports
 
 The skill keeps a reviewable audit trail in `reports/agent/`:

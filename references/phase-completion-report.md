@@ -179,6 +179,7 @@ Every phase report must include:
 - Commit status
 - Next recommended phase
 - Exact next-phase execution prompt and `reports/agent/NEXT_PHASE_PROMPT.md` path
+- Approved next-phase context bundle that must be reloaded before executing `NEXT_PHASE_PROMPT.md`
 - Files/reports that will be created in the next phase
 - What is included and not included in the next phase
 - Known caveats or deferred items for the next phase
@@ -321,6 +322,7 @@ Summary:
 - Not included: <short non-scope>
 - Known caveats: <deferred or uncertain items>
 - Approval question: Use a native interactive question when available: Do you want me to run this next-phase prompt as written? Recommended option: Yes, run this prompt. Text fallback: Reply Yes to proceed, or tell me what to change.
+- Context bundle before execution: `SKILL.md`, `prompt.md`, phase references, `AGENT_PLAN.md`, `PIPELINE_STATUS.md`, `CONTEXT_TREE.md`, `requirements.md` when present, latest phase report, and `NEXT_PHASE_PROMPT.md`.
 ```
 
 ## Pipeline status file

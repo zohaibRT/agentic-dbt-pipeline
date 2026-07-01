@@ -96,6 +96,7 @@ See [dbt-packages-and-skills.md](dbt-packages-and-skills.md): codegen, dbt_utils
 - Do not silently skip presentation-layer recommendation in a full pipeline; report blocked or skipped status with reason when needed
 - Before each non-setup phase build: write/update AGENT_PLAN.md, explain what will be built, include recommendation, confidence, and data-engineering decision check, and wait for approval
 - After each completed or blocked checkpoint: write/update reports/agent/NEXT_PHASE_PROMPT.md, explain in chat what completed and what will happen next, paste the exact prompt for the recommended next phase, ask through a native interactive question when available, and accept approval only for that displayed prompt
+- Before executing an approved NEXT_PHASE_PROMPT.md: reload SKILL.md, prompt.md, phase-specific references, AGENT_PLAN.md, PIPELINE_STATUS.md, CONTEXT_TREE.md, requirements.md when present, the latest relevant phase report, NEXT_PHASE_PROMPT.md, and project knowledge files; do not run NEXT_PHASE_PROMPT.md in isolation
 - Use Mermaid for all diagrams; verify Mermaid visibility/parse status before marking the phase complete
 - Use full wording in user-facing output; avoid shorthand such as primary key abbreviations, foreign key abbreviations, entity relationship diagram abbreviations, documentation abbreviations, repository abbreviations, and continuous integration abbreviations
 - After each completed phase: write/update reports/agent/<phase>_report.md, reports/agent/PIPELINE_STATUS.md, and reports/agent/CONTEXT_TREE.md

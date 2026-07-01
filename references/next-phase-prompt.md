@@ -24,6 +24,27 @@ Natural approval applies only to the displayed next-phase prompt and only to the
 
 If the user asks for any change to scope, models, key performance indicators, privacy, schemas, validation, materialization, or files, revise `AGENT_PLAN.md` and `reports/agent/NEXT_PHASE_PROMPT.md`, show the revised prompt, and ask again before proceeding.
 
+## Approved next-phase context bundle
+
+When the user approves the displayed next-phase prompt, do not execute `reports/agent/NEXT_PHASE_PROMPT.md` in isolation. First reload the phase context bundle so the original project rules, project memory, and prior validation are still active.
+
+Required context bundle before running the approved next phase:
+
+1. `SKILL.md`
+2. `prompt.md`
+3. Phase-specific references required by `SKILL.md`
+4. `AGENT_PLAN.md`
+5. `reports/agent/PIPELINE_STATUS.md`
+6. `reports/agent/CONTEXT_TREE.md`
+7. `reports/agent/requirements.md` when it exists
+8. The latest relevant phase report, such as `reports/agent/<completed_phase>_report.md`
+9. `reports/agent/NEXT_PHASE_PROMPT.md`
+10. Project knowledge files when present: `AGENT_KNOWLEDGE.md`, `docs/dbt_knowledge.md`, `docs/business_rules.md`, `.agents/project_knowledge.md`
+
+`NEXT_PHASE_PROMPT.md` answers what exact checkpoint to run next. The context bundle answers how to behave safely, what already happened, what must not be forgotten, which approvals are scoped, and which validation/reporting rules still apply.
+
+If any required context file is missing, continue only when the missing file is not applicable yet, and document the missing/not-applicable item in the phase plan or report. Do not use missing context as permission to ignore source safety, schema isolation, privacy, validation, commit, presentation, or approval rules.
+
 ## Interactive approval question
 
 Prefer a platform-native interactive question when available. In Codex, use `request_user_input` or the current native question/approval UI when that tool is available in the active mode. In other agent runtimes, use the equivalent choice, button, or approval widget.
@@ -63,6 +84,7 @@ Do you want me to run this next-phase prompt as written? Reply Yes to proceed, o
 - Do not ask the user to reply `Yes` when a native interactive question is available.
 - Do not ask only for `approve <phase>` without showing the exact prompt.
 - Do not make the user copy/paste the generated next-phase prompt back into chat when an interactive approval question is available.
+- Do not execute `NEXT_PHASE_PROMPT.md` without reloading the approved next-phase context bundle.
 - Always show what will be run before asking approval.
 - Always save the prompt under `reports/agent/NEXT_PHASE_PROMPT.md`.
 
@@ -217,6 +239,7 @@ Text fallback: Do you want me to run this next-phase prompt as written? Reply Ye
 The exact prompt must be specific to the actual project state and previous phase outputs. Include:
 
 - The completed phase and report path.
+- The context bundle files that must be reloaded before execution.
 - The recommended next phase and why it is next.
 - Current project name/root, profile, adapter/database, source schema, and target schemas when known.
 - Models, files, reports, or workflow artifacts expected in the next phase.

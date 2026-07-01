@@ -63,6 +63,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] The agent did not require exact magic phrases such as `approve sources`, `approve bronze`, `approve silver`, or `approve gold` after showing the exact prompt
 - [ ] The agent did not treat silence as approval and did not auto-run the next phase immediately after phase completion
 - [ ] If the user requested changes to scope, models, key performance indicators, privacy, schemas, validation, materialization, or files, `AGENT_PLAN.md` and `NEXT_PHASE_PROMPT.md` were revised before proceeding
+- [ ] Before executing an approved `NEXT_PHASE_PROMPT.md`, the agent reloaded the approved next-phase context bundle and did not run the next prompt in isolation
 - [ ] Final delivery included analytics insight reporting outputs before the presentation-layer recommendation
 - [ ] `reports/agent/analytics_insight_report.md`, `reporting_catalog.md`, `kpi_catalog.md`, `dashboard_spec.md`, `insight_backlog.md`, and `reporting_readiness_scorecard.md` exist when analytics insight reporting ran
 - [ ] Analytics insight reporting separated trusted outputs from uncertain or deferred outputs
