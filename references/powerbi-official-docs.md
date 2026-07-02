@@ -8,6 +8,7 @@ Use this when creating, validating, or troubleshooting Power BI PBIP/PBIR/TMDL p
 - Power BI Desktop projects overview: https://learn.microsoft.com/en-us/power-bi/developer/projects/projects-overview
 - Power BI Desktop project semantic model folder: https://learn.microsoft.com/en-us/power-bi/developer/projects/projects-dataset
 - Power BI Desktop project report folder: https://learn.microsoft.com/en-us/power-bi/developer/projects/projects-report
+- Power BI Model Context Protocol servers overview: https://learn.microsoft.com/en-us/power-bi/developer/mcp/mcp-servers-overview
 
 These pages are the source of truth for PBIP project layout, report folder layout, semantic model folder layout, required files, local-only files, and current preview limitations. When internet access is available and Power BI behavior is uncertain, check these Microsoft Learn pages before inventing structure.
 
@@ -24,6 +25,7 @@ These pages are the source of truth for PBIP project layout, report folder layou
 - Do not edit or rely on undocumented preview files as stable generation targets unless a validated template and Desktop open test prove they work.
 - Automatic date tables created by Power BI Desktop should not be generated or modified by the agent. Prefer an explicit dbt date dimension or validated time spine.
 - Report Linguistic Schema is not supported with Power BI projects. Do not generate unsupported report linguistic schema files.
+- Power BI Model Context Protocol tooling can help create or update semantic model objects and validate DAX, but it must be used as an implementation and validation layer after dbt and analytics insight reporting define the approved metrics.
 - Any Desktop open validation result must say which file was opened: `.pbip` or Report `definition.pbir`.
 
 ## How This Skill Uses The Docs

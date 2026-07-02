@@ -63,7 +63,7 @@ The template should only provide:
 
 1. Use `scripts/generate_powerbi_pbip.py`.
 2. Generate into the project, usually under `reports/powerbi/<project_name>/`.
-3. Read and use these planning inputs when available:
+3. Read [powerbi-kpi-dax-tooling.md](powerbi-kpi-dax-tooling.md), then read and use these planning inputs when available:
    - `reports/agent/dashboard_spec.md`
    - `reports/agent/kpi_catalog.md`
    - `reports/agent/reporting_catalog.md`
@@ -73,7 +73,7 @@ The template should only provide:
    - `target/manifest.json`
    - `target/catalog.json`
    - `target/semantic_manifest.json`
-4. Add project-specific tables, relationships, measures, parameters, source partitions, pages, slicers, key performance indicator cards, and visuals only from validated dbt gold models, semantic metrics, and analytics insight outputs.
+4. Add project-specific tables, relationships, measures, parameters, source partitions, pages, slicers, key performance indicator cards, and visuals only from validated dbt gold models, semantic metrics, analytics insight outputs, and explicit user-approved requirements.
 5. Regenerate all project-specific IDs and lineage tags. Do not reuse fixed template IDs.
 6. Never write credentials into PBIP, TMDL, PBIR, JSON, or Markdown handoff files.
 7. Do not generate linguistic metadata by default. Preserve bundled template metadata only when it validates. XML content type requires XML; JSON content type requires JSON.
@@ -119,6 +119,8 @@ Before presentation delivery, verify:
 - Composite business keys use tested surrogate keys.
 - `scripts/validate_powerbi_pbip.py` passes.
 - `dashboard_spec.md` and `kpi_catalog.md` were used or their absence was documented as blocking/deferred.
+- Every generated DAX measure maps to `kpi_catalog.md`, a validated semantic metric, or an explicit user-approved requirement.
+- Optional Power BI Modeling Model Context Protocol tools and `pbi-cli` availability were checked when measure/model validation is needed, and the presentation report records whether they were used, unavailable, skipped with reason, or blocked.
 - Blocked or deferred visuals from `insight_backlog.md` were not generated.
 
 Record the results in `reports/agent/presentation_report.md`.

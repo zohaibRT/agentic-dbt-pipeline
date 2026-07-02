@@ -2,7 +2,7 @@
 
 Use this after marts, semantic layer, project evaluator, documentation, and **analytics insight reporting** have completed.
 
-For approved Power BI PBIP/TMDL artifacts, also read [powerbi-template.md](powerbi-template.md), [powerbi-official-docs.md](powerbi-official-docs.md), and [powerbi-pbip-desktop-requirements.md](powerbi-pbip-desktop-requirements.md). Those references contain the bundled template flow, official Microsoft documentation links, Desktop-load guardrails for enhanced PBIR layout, `.platform` metadata, TMDL syntax, page visual inventory, and validation gates.
+For approved Power BI PBIP/TMDL artifacts, also read [powerbi-template.md](powerbi-template.md), [powerbi-kpi-dax-tooling.md](powerbi-kpi-dax-tooling.md), [powerbi-official-docs.md](powerbi-official-docs.md), and [powerbi-pbip-desktop-requirements.md](powerbi-pbip-desktop-requirements.md). Those references contain the bundled template flow, key performance indicator and DAX ownership rules, optional Power BI tooling guidance, official Microsoft documentation links, Desktop-load guardrails for enhanced PBIR layout, `.platform` metadata, TMDL syntax, page visual inventory, and validation gates.
 
 Read [analytics-insight-reporting.md](analytics-insight-reporting.md) first. The presentation layer consumes analytics insight outputs:
 
@@ -15,7 +15,9 @@ Read [analytics-insight-reporting.md](analytics-insight-reporting.md) first. The
 | `reports/agent/reporting_readiness_scorecard.md` | Validation gate before artifact build |
 | `reports/agent/analytics_insight_report.md` | Business-facing rationale |
 
-The presentation layer must not invent pages, key performance indicators, visuals, or business scope that contradict or bypass analytics insight reporting outputs unless the user explicitly overrides them.
+The presentation layer must not invent pages, key performance indicators, visuals, measures, denominators, filters, or business scope that contradict or bypass analytics insight reporting outputs unless the user explicitly overrides them.
+
+Power BI measures must be generated only from `reports/agent/kpi_catalog.md`, validated dbt semantic metrics, or explicit user-approved requirements. Each generated DAX measure must map back to the key performance indicator name, source dbt model, formula, time field, grain, allowed dimensions, confidence, caveats, and verification evidence.
 
 ## Purpose
 
@@ -234,6 +236,8 @@ If the recommendation cannot be produced, mark it `BLOCKED` or `SKIPPED` with th
 - Do not invent key performance indicators that are not supported by final marts or approved semantic metrics.
 - Do not recommend advanced key performance indicators unless numerator, denominator, filters, time field, source model, and caveats are known or clearly marked as deferred.
 - Do not put a key performance indicator into Power BI until [metric-verification.md](metric-verification.md) reconciles expected versus actual numerator, denominator, and result from gold or semantic logic.
+- Do not create Power BI-only key performance indicators or DAX measures that bypass `kpi_catalog.md`, validated semantic metrics, or user-approved requirements.
+- Do not create missing keys, business flags, denominator logic, or relationship shortcuts in Power BI when they belong in dbt.
 - Do not ask the user to design every page. Recommend a consultant-grade default design from validated data and ask only for decisions that affect business meaning, privacy, cost, refresh behavior, or downstream usability.
 - Do not maximize information by exposing every field. Maximize validated business insight.
 - Do not skip the standard time showcase when validated facts have usable date columns. If no fact date columns exist, document that trend visuals are blocked.
