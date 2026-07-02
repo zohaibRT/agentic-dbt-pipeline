@@ -47,30 +47,49 @@ For a full copy-paste prompt, see [prompt.md](prompt.md).
 
 All diagrams created by the skill use Mermaid. Entity relationships use Mermaid `erDiagram`, and added or changed diagrams must be verified as visible/parseable before the related phase is marked complete.
 
-Keep repeatable non-secret settings in `.env` by copying `.env.example`. If `.env` is missing on a fresh clone, the skill creates a safe local `.env` template, lists available dbt profiles with adapter and non-secret notes, and asks you to fill the required values before running dbt. Most projects only need domain, dbt profile, and source schema there; optionally add `DBT_BUSINESS_DESCRIPTION` to explain the client, business process, reporting goals, and decision context. The skill infers project name/root, project slug for layer folders, dbt source name, layer names, schema prefix, commit mode, push behavior, materialization, and Agents Schema handling unless you override them. Add GitHub repository details only when you want the agent to push.
-
-Discovery uses the adapter from the selected dbt profile. If `.env` points to a PostgreSQL profile, the skill uses PostgreSQL discovery only; it does not probe AWS, Redshift, or other warehouses unless you explicitly change profiles.
-
 ## Configuration
 
-After installation, edit:
+Skill install and project configuration are different locations.
 
-```text
-.agents/skills/agentic-dbt-pipeline/project.config.yml
+| Location | What it is | Created when |
+|---|---|---|
+| `.agents/skills/agentic-dbt-pipeline/` | Installed skill files (`SKILL.md`, `references/`, `scripts/`, `project.config.yml`, `prompt.md`, `.env.example`) | `npx skills add` (plus hydration on first agent run if needed) |
+| `.env` in your workspace or dbt project root | Your active project settings for this run | **First agent run**, not during skill install |
+| `~/.dbt/profiles.yml` | Warehouse credentials | You maintain this separately |
+
+### What install does not create
+
+`npx skills add` does **not** create `.env` in your workspace. That is intentional:
+
+- `.env` is local, gitignored, and project-specific
+- The skill creates it on the **first prompt** when it is missing
+- Until then, you will only see `.env.example` inside the installed skill folder after hydration
+
+### First-time setup flow
+
+1. Install the skill:
+
+```bash
+npx skills add zohaibRT/agentic-dbt-pipeline
 ```
 
-Use this file for non-secret defaults and advanced overrides:
+2. Open your dbt project workspace in the agent (or create/open the folder where the dbt project should live).
 
-- dbt project name, root path, or project slug, when you do not want the skill to derive them from source/project signals
-- dbt profile name
-- adapter, host, port, database, and default schema
-- source schema and source YAML path
-- layer names and model paths, when your team does not use the default bronze/silver/gold flow
-- materialization profile
-- GitHub repository behavior, only when pushing to a remote
-- Agents Schema settings
+3. Run the prompt from [prompt.md](prompt.md). You do **not** need to create `.env` manually first.
 
-Keep passwords, tokens, and private keys in local profiles or GitHub Secrets.
+4. On first run, if `.env` is missing in the workspace, the agent will:
+   - use `.env.example` from the workspace if present, otherwise from `.agents/skills/agentic-dbt-pipeline/.env.example`
+   - create a local `.env` in the workspace root with placeholder values
+   - list available dbt profiles from `~/.dbt/profiles.yml`
+   - stop and ask you for `DBT_DOMAIN`, `DBT_PROFILE_NAME`, and `DBT_SOURCE_SCHEMA`
+
+5. Update `.env` in the workspace root with your real values, then approve the agent to continue.
+
+6. Optional advanced overrides: edit `.agents/skills/agentic-dbt-pipeline/project.config.yml` only when you need non-default skill behavior. Most users should use workspace `.env` instead.
+
+Keep repeatable non-secret settings in workspace `.env`. Most projects only need domain, dbt profile, and source schema there; optionally add `DBT_BUSINESS_DESCRIPTION` to explain the client, business process, reporting goals, and decision context. The skill infers project name/root, project slug for layer folders, dbt source name, layer names, schema prefix, commit mode, push behavior, materialization, and Agents Schema handling unless you override them. Add GitHub repository details only when you want the agent to push.
+
+Discovery uses the adapter from the selected dbt profile. If `.env` points to a PostgreSQL profile, the skill uses PostgreSQL discovery only; it does not probe AWS, Redshift, or other warehouses unless you explicitly change profiles.
 
 ## Workflow
 

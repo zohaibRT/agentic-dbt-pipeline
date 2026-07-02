@@ -101,14 +101,18 @@ After resolving `DBT_PROFILE_NAME`, follow [warehouse-adapter-routing.md](wareho
 
 When the user runs the default prompt in a freshly cloned skill or dbt project and `.env` is missing:
 
-1. Check whether `.env.example` exists.
-2. If `.env.example` exists, create a local `.env` from it only when `.env` is gitignored or clearly excluded from commits.
-3. If `.env.example` is missing, create `.env.example` with the minimal placeholder keys, then create local `.env` from it.
-4. Do not fill fake real values. Leave placeholders for values the user must provide.
-5. Read [profile-listing.md](profile-listing.md) and list available profiles from `~/.dbt/profiles.yml` when readable.
-6. Stop before dbt discovery, `dbt debug`, `dbt deps`, codegen, or build commands.
-7. Ask the user to choose the dbt profile first using the question format from [profile-listing.md](profile-listing.md), then ask for `DBT_DOMAIN` and `DBT_SOURCE_SCHEMA`.
-8. Tell the user exactly which required values are missing and ask them to update `.env` or provide the values in chat.
+1. Resolve `.env.example` in this order:
+   - workspace root `.env.example`
+   - dbt project root `.env.example`
+   - installed skill folder `.env.example` (the directory containing this skill's `SKILL.md`, usually `.agents/skills/agentic-dbt-pipeline/.env.example`)
+2. If no `.env.example` is found in those locations, hydrate the skill folder first per `SKILL.md`, then use the hydrated `.env.example`.
+3. If `.env.example` still does not exist, create workspace `.env.example` with the minimal placeholder keys, then continue.
+4. Create a local workspace `.env` from the resolved `.env.example` only when `.env` is gitignored or clearly excluded from commits.
+5. Do not fill fake real values. Leave placeholders for values the user must provide.
+6. Read [profile-listing.md](profile-listing.md) and list available profiles from `~/.dbt/profiles.yml` when readable.
+7. Stop before dbt discovery, `dbt debug`, `dbt deps`, codegen, or build commands.
+8. Ask the user to choose the dbt profile first using the question format from [profile-listing.md](profile-listing.md), then ask for `DBT_DOMAIN` and `DBT_SOURCE_SCHEMA`.
+9. Tell the user exactly which required values are missing and ask them to update `.env` or provide the values in chat.
 
 ## Placeholder `.env` hard stop
 

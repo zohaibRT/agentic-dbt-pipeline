@@ -162,7 +162,7 @@ DBT_GITHUB_REPO_NAME=<repo_name_if_push_is_required>
 
 Prompt values override `.env`. Do not commit `.env`; commit only `.env.example`.
 
-On a fresh clone, if `.env` is missing, follow [env-configuration.md](env-configuration.md): create a safe local `.env` from `.env.example` with placeholder values only, list available profiles from `~/.dbt/profiles.yml` when readable, stop, and ask the user to provide `DBT_DOMAIN`, `DBT_PROFILE_NAME`, and `DBT_SOURCE_SCHEMA` before running discovery or dbt commands.
+On a fresh clone or first skill use, if workspace `.env` is missing, follow [env-configuration.md](env-configuration.md): resolve `.env.example` from the workspace root, dbt project root, or installed skill folder, create a safe local workspace `.env` from that template with placeholder values only, list available profiles from `~/.dbt/profiles.yml` when readable, stop, and ask the user to provide `DBT_DOMAIN`, `DBT_PROFILE_NAME`, and `DBT_SOURCE_SCHEMA` before running discovery or dbt commands.
 
 Do not satisfy missing required inputs from repo search, terminal output, other workspaces, previous runs, existing schemas, profile target schemas, profile database names, or guessed warehouse patterns. Do not suggest values. Do not auto-fill `.env` with anything except placeholder values. Ask the user directly for `DBT_DOMAIN`, `DBT_PROFILE_NAME`, and `DBT_SOURCE_SCHEMA`, then update `.env` only from the user's answer.
 

@@ -50,4 +50,30 @@ Some versions of `npx skills add` install only `SKILL.md` first. On first use, t
 
 ## Configure
 
-Edit `.agents/skills/agentic-dbt-pipeline/project.config.yml` after hydration for warehouse, project name, and layer paths.
+Skill install does **not** create workspace `.env`. That file is created on the **first agent run** in your workspace or dbt project root.
+
+### Expected files after install
+
+```text
+.agents/skills/agentic-dbt-pipeline/SKILL.md
+.agents/skills/agentic-dbt-pipeline/references/
+.agents/skills/agentic-dbt-pipeline/scripts/
+.agents/skills/agentic-dbt-pipeline/agents/
+.agents/skills/agentic-dbt-pipeline/project.config.yml
+.agents/skills/agentic-dbt-pipeline/prompt.md
+.agents/skills/agentic-dbt-pipeline/.env.example
+```
+
+You should **not** expect `.env` in the workspace immediately after install.
+
+### First run
+
+1. Open the dbt project workspace in the agent.
+2. Run the prompt from `prompt.md`.
+3. If `.env` is missing, the agent creates it in the workspace from `.env.example`.
+4. Fill `DBT_DOMAIN`, `DBT_PROFILE_NAME`, and `DBT_SOURCE_SCHEMA` in workspace `.env`.
+5. Approve the agent to continue with discovery.
+
+### Optional advanced overrides
+
+Edit `.agents/skills/agentic-dbt-pipeline/project.config.yml` only when you need non-default skill behavior. Most users should configure the workspace `.env` instead.
