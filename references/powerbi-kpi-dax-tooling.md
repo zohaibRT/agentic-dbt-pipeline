@@ -8,10 +8,10 @@ Power BI implements and validates reporting logic. It does not own the business 
 
 Measure generation must be driven by:
 
-1. `reports/agent/kpi_catalog.md`
+1. `reports/agent/09_analytics_insights/kpis/kpi_catalog.md`, or legacy `reports/agent/kpi_catalog.md` when the canonical file is absent
 2. Validated dbt semantic metrics
 3. Explicit user-approved requirements
-4. Reconciled key performance indicator proof from `reports/agent/kpi_reconciliation_report.md`
+4. Reconciled key performance indicator proof from `reports/agent/09_analytics_insights/kpis/kpi_reconciliation_report.md`, or legacy `reports/agent/kpi_reconciliation_report.md` when the canonical file is absent
 
 Do not invent Power BI-only key performance indicators, denominators, filters, business flags, or relationship shortcuts just to make a report look complete.
 
@@ -28,7 +28,7 @@ If a key, relationship path, status flag, amount classification, privacy transfo
 
 ## Measure Generation Contract
 
-For every generated DAX measure, record the source mapping in `reports/agent/dax_measures.md` and `reports/agent/presentation_report.md`:
+For every generated DAX measure, record the source mapping in `reports/agent/10_presentation/dax_measures.md` and `reports/agent/10_presentation/presentation_report.md`. For older flat-layout projects, read legacy `reports/agent/dax_measures.md` and `reports/agent/presentation_report.md` when canonical files are absent.
 
 | Field | Required |
 |---|---|
@@ -46,6 +46,21 @@ For every generated DAX measure, record the source mapping in `reports/agent/dax
 
 Only create measures whose confidence is `HIGH` or user-approved `MEDIUM` and whose reconciliation status is `PASS` or explicitly accepted `WARN`. For `LOW`, `BLOCKED`, `Deferred`, or unreconciled key performance indicators, document them as blocked or deferred unless the user explicitly approves further discovery and the metric is rescored and reconciled.
 
+## Thin Model Measure Injection
+
+When using a Power BI Desktop-created PBIP template, the agent should not regenerate the physical semantic model. It should inject DAX only into the approved measures table such as `_KPI_Measures` or `_Measures`.
+
+Required behavior:
+
+1. Locate the measures table in TMDL or `model.bim`.
+2. Insert only approved measures from the key performance indicator catalog, validated semantic metrics, or explicit requirements.
+3. Set `displayFolder`, description, format string, and safe annotations from the key performance indicator category and reporting catalog when available.
+4. Preserve existing measures unless the user approved replacing them.
+5. Do not edit Power Query M, import partitions, connection strings, physical table names, schemas, credentials, or relationships as part of measure injection.
+6. Record the list of changed files and an explicit "physical model unchanged" check in the presentation report.
+
+If the template has no measures table, pause and ask whether the user wants to add one in Power BI Desktop or approve agent creation of a calculated measures table.
+
 ## Optional Tooling Priority
 
 Use available tooling in this order, without making optional tools a hard dependency:
@@ -57,7 +72,7 @@ Use available tooling in this order, without making optional tools a hard depend
 
 When Power BI Modeling Model Context Protocol tools are available, use them for model load, table inspection, relationship inspection, DAX validation or smoke queries, and report the results. Availability without use is a validation failure for PBIP/TMDL delivery.
 
-When `pbi-cli` is available, use it as an optional helper for DAX validation, semantic model audits, relationship checks, and report-layer inspection. Do not require `pbi-cli` for the skill to work, and do not let it bypass dbt or analytics insight definitions.
+`pbi-cli` is not required for this skill. It is useful only as an optional helper for DAX validation, semantic model audits, relationship checks, and report-layer inspection when it is already installed or the user approves it. Prefer Power BI Modeling Model Context Protocol for model-load validation and Power BI Desktop for real open validation. Do not install `pbi-cli` automatically, do not require it for non-Power BI phases, and do not let it bypass dbt or analytics insight definitions.
 
 Use `pbi-tools` only for source-control or DevOps-oriented Power BI workflows when explicitly useful. Do not treat it as the primary key performance indicator definition or DAX authoring tool.
 
@@ -84,6 +99,6 @@ Before marking a Power BI phase complete:
 5. Run `scripts/validate_powerbi_pbip.py` for PBIP/TMDL artifacts when available.
 6. Run Power BI Modeling Model Context Protocol validation when available.
 7. Run Power BI Desktop open validation when available.
-8. Record tool availability, commands, results, failures, and unresolved validation gaps in `reports/agent/presentation_report.md`.
+8. Record tool availability, commands, results, failures, and unresolved validation gaps in `reports/agent/10_presentation/presentation_report.md`, or legacy `reports/agent/presentation_report.md` when the project uses the flat layout.
 
 If validation cannot run, do not claim the PBIP opens or the semantic model loads. Mark the unavailable check as `NOT RUN` with the reason, or mark the phase `BLOCKED` when the missing check is required for delivery.

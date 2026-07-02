@@ -2,7 +2,7 @@
 
 Use this after marts, semantic layer, project evaluator, documentation, and **analytics insight reporting** have completed.
 
-For approved Power BI PBIP/TMDL artifacts, also read [powerbi-template.md](powerbi-template.md), [powerbi-kpi-dax-tooling.md](powerbi-kpi-dax-tooling.md), [powerbi-official-docs.md](powerbi-official-docs.md), and [powerbi-pbip-desktop-requirements.md](powerbi-pbip-desktop-requirements.md). Those references contain the bundled template flow, key performance indicator and DAX ownership rules, optional Power BI tooling guidance, official Microsoft documentation links, Desktop-load guardrails for enhanced PBIR layout, `.platform` metadata, TMDL syntax, page visual inventory, and validation gates.
+For approved Power BI PBIP/TMDL artifacts, also read [powerbi-template.md](powerbi-template.md), [powerbi-thin-model-template.md](powerbi-thin-model-template.md), [powerbi-kpi-dax-tooling.md](powerbi-kpi-dax-tooling.md), [powerbi-official-docs.md](powerbi-official-docs.md), and [powerbi-pbip-desktop-requirements.md](powerbi-pbip-desktop-requirements.md). Those references contain the bundled template flow, thin model template workflow, key performance indicator and DAX ownership rules, optional Power BI tooling guidance, official Microsoft documentation links, Desktop-load guardrails for enhanced PBIR layout, `.platform` metadata, TMDL syntax, page visual inventory, and validation gates.
 
 Read [analytics-insight-reporting.md](analytics-insight-reporting.md) first. The presentation layer consumes analytics insight outputs:
 
@@ -34,6 +34,32 @@ Default artifact: if the user approves a presentation layer and does not specify
 ## Presentation decision gate
 
 After analytics insight reporting in a full pipeline, the agent must stop at this gate and ask the user whether to create a presentation layer. The agent must not mark the full delivery as complete while the presentation decision is still unanswered.
+
+The gate must be a user-facing decision, not a hidden note in a report. When the runtime supports native questions, buttons, choices, or approval widgets, ask with that interactive UI so the data engineer can click a choice. Do not make the user copy and paste a phrase when a clickable question is available.
+
+Before asking, summarize the evidence in one concise paragraph:
+
+- Analytics insight reporting status.
+- Validated key performance indicators with values when available.
+- Recommended presentation technology.
+- Recommended page set.
+- Important blockers or caveats.
+
+Use this interactive question shape:
+
+```text
+Analytics insight reporting is complete. Validated key performance indicators: <short KPI/value summary>. <Recommended technology> is recommended with <page list>. <Important caveat if any>.
+
+Do you want a presentation layer?
+```
+
+Recommended options:
+
+- `Yes - build Power BI PBIP presentation layer` - approves only the separate presentation-layer phase using Power BI PBIP/TMDL as the default artifact.
+- `No presentation layer - complete final delivery now` - records that the artifact was declined and moves to final delivery with dbt documentation and analytics insight outputs only.
+- `Tell me what to change first` - pauses so the user can change scope, metrics, pages, privacy rules, technology, validation, or report design.
+
+If another technology is clearly better than Power BI, replace the first option with that recommended technology and explain why. If the user already requested a specific technology, use that technology in the first option. If native interactive questions are unavailable, use the same wording as a text fallback and ask the user to choose one option.
 
 Use these statuses:
 
@@ -231,6 +257,8 @@ Reply "yes" to use the default Power BI project, "no" to stop at dbt documentati
 
 Do not force the user to choose all options. Recommend the best next option based on the project evidence.
 
+For full-pipeline runs, prefer the interactive presentation decision gate above over a plain text-only question. The user should see the recommendation, understand the key evidence, and click the desired path.
+
 If the user says yes without specifying a technology, infer Power BI PBIP/TMDL as the approved default, create the presentation-layer phase plan, and wait for approval when required by [phase-plan-approval.md](phase-plan-approval.md). Do not ask the user to say "Power BI as code" explicitly. Do not answer only with advice when the user approved artifact creation.
 
 If the recommendation cannot be produced, mark it `BLOCKED` or `SKIPPED` with the exact reason in the final report, pipeline status, context tree, and final response. Do not silently omit the presentation-layer section.
@@ -265,9 +293,37 @@ Power BI as code completion means the generated project is intended to open from
 
 When the user provides a detailed Power BI contract, copy the contract into the presentation phase plan and validate against every item. Do not generalize away user-provided table names, relationship rules, measure labels, report page names, output paths, schema versions, or known technical fixes.
 
+## Preferred Power BI thin model template workflow
+
+If the user provides or approves a Power BI Desktop-created PBIP template, prefer [powerbi-thin-model-template.md](powerbi-thin-model-template.md) over generating the full physical semantic model from scratch.
+
+In this mode, the Power BI Desktop template owns source connections, credentials, physical imported tables, Power Query M, source partitions, date table, and relationships. The agent copies the approved template and injects only approved measures, descriptions, format strings, display folders, and safe annotations into the approved measures table such as `_KPI_Measures` or `_Measures`.
+
+Do not edit physical source objects, schemas, table names, M code, credentials, or relationship paths in thin model mode unless the user explicitly approves that scope and dbt cardinality proof supports it. If the template does not include a measures table, pause and ask whether to add one in Desktop or approve the agent creating it.
+
+If no approved PBIP template exists yet, create a human-connected template checkpoint instead of generating fragile source connections. List the approved gold, mart, bridge, and date/time tables, the relationship rules, the required measures table name, and the recommended storage mode. Ask the user to connect those tables in Power BI Desktop, confirm relationships, create the measures table, save as PBIP, and provide the PBIP path. Stop until that confirmation arrives.
+
+The template must have opened successfully in Power BI Desktop before agent edits when Desktop is available. After edits, run the same validation loop as generated PBIP artifacts, plus a diff or explicit check proving that source partitions, M expressions, physical tables, and connection definitions were not changed.
+
 ## Power BI validation workflow
 
 For Power BI PBIP/TMDL artifacts, never accept "files created" as done. The presentation phase can be marked complete only after the validation loop passes or a required external validation step is explicitly unavailable and documented as not run.
+
+## Power BI Desktop version compatibility rule
+
+Before final PBIP/TMDL delivery, detect and record the target Power BI Desktop version. Do not assume the generated PBIP schema is compatible with the user's installed Desktop.
+
+Required behavior:
+
+1. Run `python scripts/detect_powerbi_desktop.py` when Power BI Desktop validation is expected on the local machine.
+2. Record the detected Desktop product version, release channel/month when known, enabled relevant preview features when available from error logs, and validation target in `reports/agent/10_presentation/presentation_report.md`.
+3. Run `python scripts/validate_powerbi_pbip.py <pbip_project_folder> --require-powerbi-desktop-version --powerbi-desktop-version <detected_version>` before final presentation handoff.
+4. Do not generate or keep PBIP metadata that is newer than the target Desktop can open.
+5. Treat Desktop errors such as `This file is incompatible with your current version of Microsoft Power BI Desktop` and `NewerLinguisticSchemaVersion` as hard blockers, not as user-side update requests.
+
+For April 2026 Desktop `2.153.1206.0`, avoid generated linguistic/culture metadata unless the exact files were created by that same Desktop version and validated. The bundled template must omit SemanticModel `definition/cultures/` files and `ref cultureInfo` references by default.
+
+Microsoft's PBIP documentation says Power BI Projects are preview, externally edited files can prevent Desktop from opening, and Report Linguistic Schema is not supported with Power BI projects. Use official documentation when version behavior is unclear, and cite the checked page in the presentation report.
 
 ## Power BI MCP availability rule
 
@@ -326,6 +382,8 @@ Before handoff, paste the validation results into the chat result summary and `r
 |---|---|
 | File tree | `.pbip`, Report folder, SemanticModel folder, `definition.pbism`, `database.tmdl`, `model.tmdl`, and `report.json` exist where expected |
 | Static validator | `python scripts/validate_powerbi_pbip.py <pbip_project_folder>` passes when available |
+| Desktop version evidence | `python scripts/detect_powerbi_desktop.py` result recorded when Desktop validation is expected |
+| Version-aware static validator | `validate_powerbi_pbip.py --require-powerbi-desktop-version --powerbi-desktop-version <version>` passes before final handoff |
 | JSON parse | All `.json` files parse cleanly |
 | Path links | `.pbip` links to an existing `.Report` artifact folder, root-level `definition.pbir` exists and is non-empty, and that report definition links to an existing `.SemanticModel` artifact using correct relative paths |
 | Relationships | No ambiguous active paths; approved active/inactive relationship rules are followed |
@@ -346,6 +404,7 @@ Before creating files:
 - Discover fact date columns and planned time showcase visuals before writing report pages.
 - In the plan, state that Power BI PBIP/TMDL is the default because no other presentation technology was specified. Ask for changes only if the user wants a different technology or a Markdown-only guide.
 - Prefer the bundled neutral PBIP template at `assets/powerbi/pbip_template/` and instantiate it with `scripts/generate_powerbi_pbip.py` before adding project-specific tables, measures, relationships, pages, and visuals.
+- Detect the local Power BI Desktop version before final PBIP handoff. If Desktop cannot be detected, record that fact and do not claim version compatibility.
 - If a known-good PBIP project exists in the workspace, do not silently adapt it. Show the exact `.pbip` path, state which structural files would be inspected, explain what would and would not be reused, and get user approval before using it as a reference.
 - When the user names required source schemas or gold tables, verify those tables exist before wiring import queries or partitions.
 
@@ -358,6 +417,7 @@ When creating PBIP:
 - Include the `.pbip` file, a Report artifact folder, and a SemanticModel artifact folder.
 - Build the approved enterprise page set from validated facts and dimensions, including useful slicers, user-facing labels, hidden technical fields, tooltips, drillthrough/detail pages where safe, and data-quality/limitation notes where needed.
 - Each main report page must use the standard Power BI canvas layout where supported: header/navigation bar, prioritized key performance indicator card row, visible primary slicers, trend and comparison visuals, secondary driver visuals, and matrix/detail or drill-through entry point.
+- Apply the professional visual theme and color rules from [reporting-standards.md](reporting-standards.md). Do not leave report pages on default Power BI colors, default white-only styling, or unformatted placeholder visuals. Use a consistent palette, header treatment, card styling, chart series colors, slicer styling, detail-table formatting, and conditional colors for positive, warning, and failure states. If a brand palette is unavailable, use the skill's neutral enterprise palette and document the theme choices in the presentation report.
 - Analyze the maximum useful supported key performance indicators from the validated model. Put the highest-priority three to five on the executive canvas row for readability, and place additional supported key performance indicators on a scorecard/details page, tooltip, drill-through, or Report Information page. List blocked or deferred key performance indicators with reasons.
 - Create a Report Information, Report Settings, or About This Report page with report purpose, audience, data source, refresh details, page guide, key performance indicator definitions, slicer/filter definitions, metric caveats, data quality notes, privacy handling, grain/relationship summary, validation summary, and open decisions.
 - Include report title, page title, last refreshed timestamp, reset filters button, and native page navigation when the chosen PBIP/report format supports them. If any element cannot be generated safely, document the reason in `reports/agent/presentation_report.md`.
@@ -389,10 +449,13 @@ When creating PBIP:
 - Report and SemanticModel `.platform` logical IDs must be regenerated for every generated PBIP project. Never reuse logical IDs from the bundled template or a local reference PBIP.
 - Use simple user-facing measure labels and keep technical column names inside model definitions.
 - Validate that every report page and visual is supported by approved source models, measures, fields, and privacy rules. Remove or mark blocked any visual whose business meaning, grain, or source evidence is not clear.
+- Validate that report pages use intentional formatting rather than default visuals. The presentation report must record theme path, palette source, color meanings, and any visual formatting limitations.
 - When the user supplies exact measure labels, use those labels exactly unless the expression cannot be supported by the validated marts.
 - Use supported PBIP/TMDL metadata versions for the target Power BI Desktop release. Known requirements from prior failures include `definition.pbism` using the semantic model definition-properties schema path, `database.tmdl` using `compatibilityLevel: 1605` when requested, `model.tmdl` table references at the root level when the chosen structure requires it, and `report.json` values such as `themeCollection.baseTheme.reportVersionAtImport` typed exactly as Power BI expects.
 - For `.platform` files inside Report or SemanticModel artifact folders, verify `$schema` exists and matches the Power BI Desktop supported Fabric git integration platform properties schema pattern, such as `https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.x.y/schema.json`, and verify `config` exists as a non-empty object. Treat `UnrecognizedSchemaVersion: Path: .platform` and `ObjectNotPerSchema: Path: .platform` errors such as "Required properties are missing from object: config" as failed presentation phases.
 - For `report.json`, always emit and verify `themeCollection.baseTheme.reportVersionAtImport` as a non-empty string. For the April 2026 Power BI Desktop PBIP format seen in prior failures, use the string value `"5.55"` when no better validated project reference overrides it. Do not emit it as a number, null, object, empty string, or omit it.
+- If `report.json` includes `resourcePackages`, verify every package item `path` is a safe relative path and resolves to an existing file under the Report `definition/` folder. Treat missing theme files such as `BaseThemes/CY24SU10.json` as failed static validation because Power BI Desktop may reject or partially load the report.
+- Do not generate SemanticModel `definition/cultures/` files, `ref cultureInfo`, report linguistic metadata, or other linguistic schema artifacts by default. These can trigger `NewerLinguisticSchemaVersion` and are not supported by Power BI Projects unless created and validated by the exact target Desktop version.
 - Do not trust a local reference PBIP's `reportVersionAtImport` blindly. Some working or previously generated files may contain object-shaped version metadata that this skill treats as unsafe for generated reports. The generated artifact must pass `scripts/validate_powerbi_pbip.py`.
 - For TMDL table files, do not write Markdown code fences in `.tmdl` files. Place Power Query M expressions only in the correct partition/source expression property syntax for the chosen TMDL format. Indented `let ... in ...` blocks are allowed when they follow a known-good TMDL partition pattern; unindented loose `let` or `in` lines are hard validation failures.
 - Do not write bare Power Query M steps such as `AddedKey = Table.AddColumn(...)` at the root of a `.tmdl` file. M steps belong only inside valid partition source expression blocks.
@@ -414,6 +477,8 @@ Validation before handoff:
 - Verify every page in `definition/pages/pages.json` has real visuals by counting `visual.json` files under each page folder. Record the visual inventory in `reports/agent/presentation_report.md`.
 - Validate every `.platform` file with JSON parsing, schema-pattern check, and required artifact details check. The `$schema` value must match the supported Fabric git integration platform properties pattern for the target Desktop version, and `config` must be present as a non-empty object. Do not allow stale, guessed, missing, unsupported, or schema-stub-only `.platform` files.
 - For `report.json`, explicitly assert `themeCollection.baseTheme.reportVersionAtImport` exists and has the correct type and value for the target Power BI Desktop schema. Run `python scripts/validate_powerbi_pbip.py <pbip_project_folder>` to enforce the default `"5.55"` value, or pass `--expected-report-version-at-import <value>` only when a known-good project reference proves another version. If this metadata check fails, repair with `python scripts/validate_powerbi_pbip.py <pbip_project_folder> --fix-report-version-at-import`, then rerun validation without the fix flag. Treat missing, empty, incorrectly typed, or wrong-valued `reportVersionAtImport` as a failed presentation phase.
+- Verify all `report.json` `resourcePackages.items[].path` references resolve to existing files. Re-run `python scripts/validate_powerbi_pbip.py <pbip_project_folder>` after adding or removing theme/resource files.
+- Verify no SemanticModel `definition/cultures/` folder, `ref cultureInfo`, or linguistic metadata block exists unless exact-version Desktop-generated support was approved and validated.
 - Check TMDL indentation and root-level object placement against the selected PBIP structure.
 - Scan TMDL table files for Markdown code fences and invalid loose Power Query keywords such as unindented standalone `let` or `in` lines outside the approved partition/source expression block. Treat `UnknownKeyword` or invalid indentation parser risks as failed static validation.
 - Scan semantic model TMDL files for invalid linguistic metadata content-type mismatches. Treat Power BI Desktop errors such as `does not comply with the Xml content-type` and `Data at the root level is invalid. Line 1, position 1` as failed validation. Do not mark delivery ready while XML-typed metadata contains JSON or JSON-typed metadata contains XML.
@@ -478,6 +543,10 @@ Do not:
 - Mark a Power BI artifact complete when the Power BI Modeling Model Context Protocol `ConnectFolder` test fails.
 - Mark a Power BI artifact complete when `report.json` is missing `themeCollection.baseTheme.reportVersionAtImport` or has it as the wrong JSON type.
 - Mark a Power BI artifact complete when `report.json` has `themeCollection.baseTheme.reportVersionAtImport` as an empty string or unvalidated string value.
+- Mark a Power BI artifact complete when `report.json` references a missing resource package item, including a missing base theme JSON file.
+- Mark a Power BI artifact complete when Desktop version was not checked for a PBIP intended to open on the user's machine.
+- Mark a Power BI artifact complete after an incompatible-version Desktop error such as `NewerLinguisticSchemaVersion`.
+- Mark a Power BI artifact complete when generated culture or linguistic schema files are present without exact target-version validation.
 - Mark a Power BI artifact complete when the `.pbip` points to a Report artifact whose root-level `definition.pbir` file is missing, empty, invalid, or does not link to an existing SemanticModel artifact.
 - Mark a Power BI artifact complete when any planned page is only a shell with no `visual.json` files.
 - Mark a Power BI artifact complete when any TMDL table file contains Markdown code fences or invalid loose Power Query keywords such as an unindented standalone `in` line outside a valid expression block.

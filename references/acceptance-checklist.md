@@ -56,6 +56,9 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] `reports/agent/PIPELINE_STATUS.md` updated after each phase
 - [ ] `reports/agent/CONTEXT_TREE.md` updated with user inputs, decisions, phase outputs, report links, and open items
 - [ ] `reports/agent/NEXT_PHASE_PROMPT.md` created or updated after each completed or blocked checkpoint when a next phase is recommended
+- [ ] `reports/agent/REPORT_INDEX.md` exists and groups reports by phase, status, purpose, and human verification action
+- [ ] New phase-specific reports use the managed folder layout from `references/report-artifact-organization.md`, or legacy flat layout is explicitly documented for an existing project
+- [ ] `reports/agent/HUMAN_VERIFICATION_GUIDE.md` exists after analytics insight reporting or final delivery and explains where to verify layers, key performance indicators, blocked items, and presentation artifacts
 - [ ] The next-phase prompt shown to the user includes current completed phase, recommended next phase, why it is next, exact prompt to run, included scope, not included scope, known caveats, reports/files to create, and approval question
 - [ ] Chat summary after each completed or blocked checkpoint explained what was completed, what passed/warned/failed, what is recommended next, what the next phase will and will not include, and pasted the exact next-phase prompt; it did not only point to `NEXT_PHASE_PROMPT.md`
 - [ ] When the agent runtime supports native questions, buttons, choice prompts, or approval widgets, the agent asked approval through that interactive UI instead of making the user copy/paste or type a magic phrase
@@ -66,6 +69,8 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] If the user requested changes to scope, models, key performance indicators, privacy, schemas, validation, materialization, or files, `AGENT_PLAN.md` and `NEXT_PHASE_PROMPT.md` were revised before proceeding
 - [ ] Before executing an approved `NEXT_PHASE_PROMPT.md`, the agent reloaded the approved next-phase context bundle and did not run the next prompt in isolation
 - [ ] Final delivery included analytics insight reporting outputs before the presentation-layer recommendation
+- [ ] After analytics insight reporting, the agent asked the presentation-layer decision with a concise evidence summary, recommended technology/page set, key caveats, and native clickable options when available
+- [ ] Presentation decision options included the equivalent of `Yes - build Power BI PBIP presentation layer`, `No presentation layer - complete final delivery now`, and `Tell me what to change first`
 - [ ] `reports/agent/analytics_insight_report.md`, `kpi_discovery_matrix.md`, `reporting_catalog.md`, `kpi_catalog.md`, `dashboard_spec.md`, `insight_backlog.md`, and `reporting_readiness_scorecard.md` exist when analytics insight reporting ran
 - [ ] `reports/agent/kpi_reconciliation_report.md`, `kpi_lineage_proofs.md`, `kpi_variance_report.md`, and `kpi_sql_proofs/` exist when approved or implemented key performance indicators exist
 - [ ] Analytics insight reporting separated trusted outputs from uncertain or deferred outputs
@@ -195,6 +200,13 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Documentation serve command or local documentation URL provided when user wants to view documentation
 - [ ] Presentation options were recommended after analytics insight reporting: documentation only, business-facing report, dashboard design, semantic layer refinement, or query handoff
 - [ ] Power BI PBIP/TMDL was created when the user approved a presentation layer and did not specify another technology
+- [ ] If the user provided or approved a Power BI Desktop-created PBIP template, the thin model template workflow was used as the preferred path
+- [ ] If no approved PBIP template existed and source connection generation was risky, the agent created a human-connected template checkpoint with the exact tables, relationships, storage mode, measures table requirement, and PBIP path confirmation request
+- [ ] If a human-connected template checkpoint was needed, the agent stopped before injecting measures, visuals, or editing PBIP files until the user confirmed the saved PBIP path
+- [ ] If the thin model template workflow was used, the exact template path, approval, copied output path, and pre-edit Desktop open status were recorded
+- [ ] If the thin model template workflow was used, the agent injected only approved DAX measures, descriptions, format strings, display folders, and safe annotations into the approved measures table such as `_KPI_Measures` or `_Measures`
+- [ ] If the thin model template workflow was used, Power Query M, connection definitions, credentials, physical imported tables, source partitions, schemas, and relationships were verified unchanged unless explicitly approved
+- [ ] If the thin model template workflow was used and no measures table existed, the agent paused for approval before creating one
 - [ ] If Power BI PBIP/TMDL was created, the bundled neutral template at `assets/powerbi/pbip_template/` was used as the default structural base, or any local PBIP reference was explicitly approved by the user with the exact path documented
 - [ ] If Power BI PBIP/TMDL structure was uncertain and internet access was available, official Microsoft Power BI project documentation was checked and cited in `reports/agent/presentation_report.md`
 - [ ] If Power BI PBIP/TMDL was created from the bundled template, `scripts/generate_powerbi_pbip.py` was used or an equivalent generator fallback was documented
@@ -222,6 +234,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] If a Power BI artifact was created, no Power BI-only key performance indicator, denominator, business flag, surrogate key, or relationship shortcut was invented to compensate for missing dbt logic
 - [ ] If a presentation artifact or business-facing report was created, it includes the five report pillars: context and strategy, key performance indicators, trend analysis and variance, insights and attribution, and recommendations and next steps; unsupported pillars are visibly deferred with reasons
 - [ ] If a Power BI report was created, each main page follows the fixed canvas standard when supported: header/navigation, last refreshed timestamp, reset filters, prioritized key performance indicator cards, primary slicers, trend/comparison visuals, detail layer, and tooltip or drill-through behavior
+- [ ] If a Power BI report was created, it uses an intentional professional theme instead of default Power BI styling, and `presentation_report.md` records the palette source, color meanings, theme path, and formatting limitations
 - [ ] If a Power BI report was created, the agent analyzed the maximum useful supported key performance indicators, prioritized the executive card row, placed supporting key performance indicators in a suitable detail/report information area, and listed deferred key performance indicators with reasons
 - [ ] If a Power BI report was created, it includes a Report Information, Report Settings, or About This Report page with purpose, audience, data source, refresh details, page guide, key performance indicator definitions, filter definitions, caveats, privacy handling, validation summary, and open decisions
 - [ ] If a Power BI report could not include a canvas-standard element, `reports/agent/presentation_report.md` documents the missing element and reason
@@ -237,6 +250,8 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] If Power BI PBIP/TMDL was created, Markdown import guides, DAX snippets, relationship notes, or dashboard page descriptions were not marked as the completed Power BI artifact
 - [ ] If Power BI PBIP/TMDL was created, JSON parse checks, TMDL structure checks, file-tree checks, and known metadata-version checks were run and recorded
 - [ ] If Power BI PBIP/TMDL was created and `scripts/validate_powerbi_pbip.py` was available, the script passed and its result was recorded in `reports/agent/presentation_report.md`
+- [ ] If Power BI PBIP/TMDL was created for Power BI Desktop, the target Desktop version was detected or explicitly recorded as unavailable, and the result was recorded in `reports/agent/10_presentation/presentation_report.md` or the legacy presentation report
+- [ ] If Power BI PBIP/TMDL was created for Power BI Desktop, version-aware static validation was run with `--require-powerbi-desktop-version --powerbi-desktop-version <version>` when a Desktop version was available
 - [ ] If Power BI PBIP/TMDL was created, the agent checked whether Power BI Modeling Model Context Protocol tools were available or installable before handoff
 - [ ] If Power BI Modeling Model Context Protocol tools were not already exposed, the agent checked or recommended the official Microsoft package `@microsoft/powerbi-modeling-mcp` from `https://github.com/microsoft/powerbi-modeling-mcp`
 - [ ] If Power BI Modeling Model Context Protocol tools were available, they were used for `ConnectFolder`, model inspection, relationship inspection, and DAX smoke testing; availability without use is a validation failure
@@ -246,10 +261,12 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] If Power BI PBIP/TMDL was created, every `.platform` file has a non-empty `config` object and is not only a schema stub
 - [ ] If Power BI PBIP/TMDL was created, every `.platform` file has `config.version` set to `"2.0"` and `config.logicalId` set to a stable UUID string
 - [ ] If Power BI PBIP/TMDL was created, every `report.json` includes `themeCollection.baseTheme.reportVersionAtImport` as a non-empty string with the target-version value, defaulting to `"5.55"` unless a known-good project reference proves another value
+- [ ] If Power BI PBIP/TMDL was created, every `report.json` `resourcePackages.items[].path` reference resolves to an existing file under the Report definition folder, including base theme JSON files
 - [ ] If Power BI PBIP/TMDL was created, TMDL table files were checked for Markdown code fences and invalid unindented loose Power Query keywords outside a valid partition/source expression block
 - [ ] If Power BI PBIP/TMDL was created, TMDL files were checked for bare Power Query M steps such as `AddedKey = Table.AddColumn(...)` outside valid partition source expression blocks
 - [ ] If Power BI PBIP/TMDL was created, linguistic metadata content type and actual content format were checked; XML-typed metadata does not contain JSON and JSON-typed metadata does not contain XML
 - [ ] If Power BI PBIP/TMDL was created, JSON such as `{ "Version": "1.0.0" }` was not written into XML-typed linguistic metadata
+- [ ] If Power BI PBIP/TMDL was created, SemanticModel `definition/cultures/` files, `ref cultureInfo`, and report linguistic schema artifacts were omitted unless exact target-version Desktop-generated support was approved and validated
 - [ ] If Power BI PBIP/TMDL was created, TMDL column metadata was checked so no table has more than one column with `IsKey` set to `True`
 - [ ] If Power BI PBIP/TMDL was created, the generator did not mark every `*_id` column as `IsKey`; foreign keys stayed unmarked unless explicitly required by a validated Power BI pattern
 - [ ] If Power BI PBIP/TMDL was created, every one-side relationship key is unique and not null in dbt, and composite business keys use a surrogate key instead of a repeated partial natural key
@@ -262,6 +279,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] If Power BI PBIP/TMDL was created and Power BI Modeling Model Context Protocol tools were available, connection inspection, table inspection, relationship inspection, and a simple DAX smoke query succeeded
 - [ ] If Power BI PBIP/TMDL was created and Power BI Modeling Model Context Protocol validation was not run, the presentation report clearly says it was not run and why; it does not claim the semantic model loaded successfully
 - [ ] If Power BI PBIP/TMDL was created and Power BI Desktop was available, the generated `.pbip` was opened or launched for load validation, and any Desktop load error was fixed before marking the presentation phase complete
+- [ ] If Power BI Desktop reported an incompatible-version error such as `NewerLinguisticSchemaVersion`, the presentation phase was marked blocked until the PBIP metadata was downgraded/removed or regenerated for the target version
 - [ ] If Power BI PBIP/TMDL was created and Power BI Desktop validation was not run, the presentation report clearly says it was not run and why; it does not claim the project was opened successfully
 - [ ] If Power BI PBIP/TMDL was created, `reports/agent/presentation_report.md` records file validation, relationship audit, Power BI Modeling Model Context Protocol validation, Desktop open validation, fixes applied, and final result
 - [ ] If Power BI PBIP/TMDL was created, `reports/agent/PIPELINE_STATUS.md` marks presentation `PASS` only after required validation passed, or `BLOCKED` when required validation could not run or failed

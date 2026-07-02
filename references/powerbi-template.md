@@ -46,6 +46,7 @@ The bundled template must stay neutral. It must not include:
 - Business-specific report page names.
 - Customer branding unless it is generic and optional.
 - Invalid linguistic metadata or JSON payloads inside XML-typed metadata content.
+- SemanticModel `definition/cultures/` files or `ref cultureInfo` references unless exact target-version Desktop-generated support was approved and validated.
 
 The template should only provide:
 
@@ -61,7 +62,8 @@ The template should only provide:
 
 ## Generation Flow
 
-1. Use `scripts/generate_powerbi_pbip.py`.
+0. If the user provides or approves a Power BI Desktop-created PBIP template, use [powerbi-thin-model-template.md](powerbi-thin-model-template.md) as the preferred workflow. Copy the approved template, preserve its physical model, and inject only approved measures and harmless metadata into the approved measures table.
+1. If no approved Desktop-created template exists, use `scripts/generate_powerbi_pbip.py`.
 2. Generate into the project, usually under `reports/powerbi/<project_name>/`.
 3. Read [powerbi-kpi-dax-tooling.md](powerbi-kpi-dax-tooling.md), then read and use these planning inputs when available:
    - `reports/agent/dashboard_spec.md`
@@ -76,18 +78,20 @@ The template should only provide:
 4. Add project-specific tables, relationships, measures, parameters, source partitions, pages, slicers, key performance indicator cards, and visuals only from validated dbt gold models, semantic metrics, analytics insight outputs, and explicit user-approved requirements.
 5. Regenerate all project-specific IDs and lineage tags. Do not reuse fixed template IDs.
 6. Never write credentials into PBIP, TMDL, PBIR, JSON, or Markdown handoff files.
-7. Do not generate linguistic metadata by default. Preserve bundled template metadata only when it validates. XML content type requires XML; JSON content type requires JSON.
-8. Run `python scripts/validate_powerbi_pbip.py <generated_pbip_folder>`.
-9. Continue with Power BI Modeling Model Context Protocol validation and Power BI Desktop open validation when available.
-10. Write or update the presentation reports required by [presentation-layer.md](presentation-layer.md).
+7. Do not generate linguistic metadata or SemanticModel culture files by default. XML content type requires XML; JSON content type requires JSON. Omit linguistic/culture schema artifacts unless exact target-version Desktop-generated support was approved and validated.
+8. Detect Power BI Desktop with `python scripts/detect_powerbi_desktop.py` when Desktop validation is expected.
+9. Run `python scripts/validate_powerbi_pbip.py <generated_pbip_folder>`, and run version-aware validation with `--require-powerbi-desktop-version --powerbi-desktop-version <version>` when the Desktop version is available.
+10. Continue with Power BI Modeling Model Context Protocol validation and Power BI Desktop open validation when available.
+11. Write or update the presentation reports required by [presentation-layer.md](presentation-layer.md).
 
 ## Fallback Priority
 
 Use this priority order:
 
-1. Use the bundled neutral PBIP template from `assets/powerbi/pbip_template/`.
-2. If the bundled template is missing, use `scripts/generate_powerbi_pbip.py` or the current generator logic to create a minimal PBIP/PBIR/TMDL skeleton, then validate it.
-3. Use an existing local PBIP only as a reference when:
+1. Use a user-approved Power BI Desktop-created PBIP template through the thin model workflow when available.
+2. Use the bundled neutral PBIP template from `assets/powerbi/pbip_template/`.
+3. If the bundled template is missing, use `scripts/generate_powerbi_pbip.py` or the current generator logic to create a minimal PBIP/PBIR/TMDL skeleton, then validate it.
+4. Use an existing local PBIP only as a reference when:
    - The exact path is shown to the user.
    - The user explicitly approves it.
    - The agent sanitizes before use.
@@ -111,13 +115,16 @@ Do not claim Power BI Desktop validation passed unless Power BI Desktop or an ap
 Before presentation delivery, verify:
 
 - Bundled template was found or generator fallback was documented.
+- If a Desktop-created template was used, the exact template path was approved, copied to the output location, and physical source partitions, M expressions, connection definitions, physical tables, and relationships were not changed unless explicitly approved.
 - No credentials are present in generated files.
 - No duplicate `lineageTag` values exist.
 - No invalid linguistic metadata content-type mismatch exists; JSON such as `{ "Version": "1.0.0" }` must never appear inside XML-typed metadata content.
+- No SemanticModel `definition/cultures/` files or `ref cultureInfo` references exist unless exact target-version Desktop-generated support was approved and validated.
 - No hardcoded source schema/table assumptions bypass the approved gold schema.
 - Power BI one-side relationship keys are unique and not null in dbt.
 - Composite business keys use tested surrogate keys.
 - `scripts/validate_powerbi_pbip.py` passes.
+- Power BI Desktop version was detected or recorded as unavailable; version-aware validation passed when the version was available.
 - `dashboard_spec.md` and `kpi_catalog.md` were used or their absence was documented as blocking/deferred.
 - Every generated DAX measure maps to `kpi_catalog.md`, a validated semantic metric, or an explicit user-approved requirement.
 - Optional Power BI Modeling Model Context Protocol tools and `pbi-cli` availability were checked when measure/model validation is needed, and the presentation report records whether they were used, unavailable, skipped with reason, or blocked.

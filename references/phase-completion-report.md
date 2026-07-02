@@ -6,7 +6,9 @@ Use this after every phase that performs discovery, changes files, runs dbt comm
 
 After each phase, create or update a Markdown report that tells the user what happened, what is correct, what is warning or wrong, and what needs review. Also apply [reporting-standards.md](reporting-standards.md): every report must include context and strategy, key performance indicators, trend analysis and variance, insights and attribution, and recommendations and next steps when relevant. If a pillar is not supported yet, mark it `Not applicable`, `Not available yet`, or `Deferred` with the reason.
 
-Default folder:
+Read [report-artifact-organization.md](report-artifact-organization.md) before writing files. Use the managed folder layout there for new projects.
+
+Root control-plane folder:
 
 ```text
 <project.root>/reports/agent/
@@ -18,42 +20,41 @@ If `{project.root}` does not exist yet, use the current workspace/run root:
 <workspace.root>/reports/agent/
 ```
 
-Default files:
+Root control-plane files:
 
 ```text
-reports/agent/<phase>_report.md
 reports/agent/PIPELINE_STATUS.md
 reports/agent/CONTEXT_TREE.md
 reports/agent/NEXT_PHASE_PROMPT.md
+reports/agent/REPORT_INDEX.md
+reports/agent/HUMAN_VERIFICATION_GUIDE.md
 ```
 
-Examples:
+Phase reports should be written to the canonical phase folder from [report-artifact-organization.md](report-artifact-organization.md). Examples:
 
 ```text
-reports/agent/discovery_report.md
-reports/agent/requirements.md
-reports/agent/sources_discovery.md
-reports/agent/bronze_discovery.md
-reports/agent/silver_discovery.md
-reports/agent/gold_discovery.md
-reports/agent/setup_report.md
-reports/agent/sources_report.md
-reports/agent/bronze_report.md
-reports/agent/silver_report.md
-reports/agent/gold_report.md
-reports/agent/semantic_report.md
-reports/agent/evaluator_report.md
-reports/agent/docs_report.md
-reports/agent/analytics_insight_reporting_report.md
-reports/agent/presentation_layer_report.md
-reports/agent/powerbi_model_plan.md
-reports/agent/dashboard_pages.md
-reports/agent/dax_measures.md
+reports/agent/00_discovery/discovery_report.md
+reports/agent/00_discovery/requirements.md
+reports/agent/01_setup/setup_report.md
+reports/agent/02_sources/sources_report.md
+reports/agent/03_bronze/bronze_report.md
+reports/agent/04_silver/silver_report.md
+reports/agent/05_gold/gold_report.md
+reports/agent/06_semantic/semantic_report.md
+reports/agent/07_evaluator/evaluator_report.md
+reports/agent/08_documentation/docs_report.md
+reports/agent/09_analytics_insights/analytics_insight_reporting_report.md
+reports/agent/10_presentation/presentation_report.md
+reports/agent/10_presentation/powerbi_model_plan.md
+reports/agent/10_presentation/dashboard_pages.md
+reports/agent/10_presentation/dax_measures.md
 reports/agent/final_delivery.md
-reports/agent/ci_report.md
-reports/agent/agents_schema_report.md
+reports/agent/11_operations/ci_report.md
+reports/agent/11_operations/agents_schema_report.md
 reports/agent/NEXT_PHASE_PROMPT.md
 ```
+
+For existing projects that already use a flat `reports/agent/` layout, do not move files without user approval. Create `REPORT_INDEX.md`, keep reading legacy files when canonical files are absent, and write new artifacts to the canonical folders unless the user asks to preserve the old layout.
 
 ## Discovery report exception
 
@@ -148,6 +149,10 @@ For phase plans awaiting approval, use the same shape but write `What will be bu
 Every phase report must include:
 
 - Phase name and date/time
+- Why this report exists
+- How to use this report
+- What the data engineer should verify
+- What to do next after verification
 - Context and strategy: objective, scope, audience, target, benchmark, or why the phase matters
 - Approval status and approved plan reference
 - Files created or changed

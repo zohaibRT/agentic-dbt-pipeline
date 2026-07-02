@@ -19,19 +19,19 @@ import create_powerbi_pbip_from_template
 
 
 PLANNING_FILES = [
-    "reports/agent/dashboard_spec.md",
-    "reports/agent/kpi_catalog.md",
-    "reports/agent/reporting_catalog.md",
-    "reports/agent/analytics_insight_report.md",
-    "reports/agent/reporting_readiness_scorecard.md",
-    "reports/agent/insight_backlog.md",
-    "target/manifest.json",
-    "target/catalog.json",
-    "target/semantic_manifest.json",
+    ("reports/agent/09_analytics_insights/dashboard_spec.md", "reports/agent/dashboard_spec.md"),
+    ("reports/agent/09_analytics_insights/kpis/kpi_catalog.md", "reports/agent/kpi_catalog.md"),
+    ("reports/agent/09_analytics_insights/reporting_catalog.md", "reports/agent/reporting_catalog.md"),
+    ("reports/agent/09_analytics_insights/analytics_insight_report.md", "reports/agent/analytics_insight_report.md"),
+    ("reports/agent/09_analytics_insights/reporting_readiness_scorecard.md", "reports/agent/reporting_readiness_scorecard.md"),
+    ("reports/agent/09_analytics_insights/insight_backlog.md", "reports/agent/insight_backlog.md"),
+    ("target/manifest.json",),
+    ("target/catalog.json",),
+    ("target/semantic_manifest.json",),
 ]
 
 
-def write_generation_report(project_root: Path, pbip_folder: Path, planning_status: list[tuple[str, bool]]) -> None:
+def write_generation_report(project_root: Path, pbip_folder: Path, planning_status: list[tuple[tuple[str, ...], str | None]]) -> None:
     reports_dir = project_root / "reports" / "agent"
     reports_dir.mkdir(parents=True, exist_ok=True)
     report_path = reports_dir / "powerbi_template_generation_report.md"
@@ -47,15 +47,17 @@ def write_generation_report(project_root: Path, pbip_folder: Path, planning_stat
         "| File | Status |",
         "|---|---|",
     ]
-    for relative_path, exists in planning_status:
-        lines.append(f"| `{relative_path}` | {'FOUND' if exists else 'MISSING'} |")
+    for relative_paths, found_path in planning_status:
+        display_path = " or ".join(f"`{relative_path}`" for relative_path in relative_paths)
+        lines.append(f"| {display_path} | {f'FOUND: `{found_path}`' if found_path else 'MISSING'} |")
     lines.extend(
         [
             "",
             "## Notes",
             "- This step creates a neutral PBIP shell only.",
-            "- The generator does not create linguistic metadata by default; bundled template linguistic metadata is preserved and validated.",
-            "- Never write JSON such as `{ \"Version\": \"1.0.0\" }` into XML-typed linguistic metadata. If metadata content type cannot be guaranteed, omit linguistic metadata.",
+            "- The generator does not create linguistic metadata or SemanticModel culture files by default.",
+            "- Never write JSON such as `{ \"Version\": \"1.0.0\" }` into XML-typed linguistic metadata. If metadata content type or Desktop support cannot be guaranteed, omit linguistic metadata.",
+            "- Before final presentation delivery, run `python scripts/detect_powerbi_desktop.py` when Desktop validation is expected, then pass the detected version to `scripts/validate_powerbi_pbip.py --require-powerbi-desktop-version --powerbi-desktop-version <version>`.",
             "- Project-specific tables, relationships, measures, report pages, visuals, and source partitions must be generated from validated dbt gold/semantic evidence before presentation delivery.",
             "- Do not mark presentation complete until `scripts/validate_powerbi_pbip.py`, Power BI Modeling MCP when available, and Power BI Desktop open validation when available are recorded in `reports/agent/presentation_report.md`.",
             "",
@@ -108,8 +110,13 @@ def main() -> int:
     print(f"Created PBIP project: {pbip_path}")
 
     planning_status = []
-    for relative_path in PLANNING_FILES:
-        planning_status.append((relative_path, (project_root / relative_path).exists()))
+    for relative_paths in PLANNING_FILES:
+        found_path = None
+        for relative_path in relative_paths:
+            if (project_root / relative_path).exists():
+                found_path = relative_path
+                break
+        planning_status.append((relative_paths, found_path))
     write_generation_report(project_root, pbip_folder, planning_status)
 
     if args.skip_validation:

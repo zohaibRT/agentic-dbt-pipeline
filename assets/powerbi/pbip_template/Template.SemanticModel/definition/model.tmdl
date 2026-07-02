@@ -13,5 +13,3 @@ annotation PBI_ProTooling = ["DevMode"]
 
 ref table _Metrics
 
-ref cultureInfo en-US
-

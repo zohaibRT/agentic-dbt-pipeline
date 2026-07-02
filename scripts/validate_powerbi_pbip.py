@@ -36,6 +36,7 @@ BARE_M_STEP_RE = re.compile(
     re.IGNORECASE,
 )
 BAD_LINGUISTIC_JSON_RE = re.compile(r'^\s*\{\s*"Version"\s*:\s*"1\.0\.0"\s*\}\s*$', re.IGNORECASE | re.DOTALL)
+POWERBI_DESKTOP_VERSION_RE = re.compile(r"^\d+\.\d+\.\d+\.\d+")
 
 
 def fail(errors: list[str], path: Path, message: str) -> None:
@@ -268,6 +269,34 @@ def validate_json_files(
                     f'"{expected_report_version_at_import}" unless a known-good project reference proves another value',
                 )
 
+            resource_packages = data.get("resourcePackages")
+            if isinstance(resource_packages, list):
+                for package_index, package in enumerate(resource_packages):
+                    if not isinstance(package, dict):
+                        fail(errors, path, f"resourcePackages[{package_index}] must be an object")
+                        continue
+                    items = package.get("items")
+                    if items is None:
+                        continue
+                    if not isinstance(items, list):
+                        fail(errors, path, f"resourcePackages[{package_index}].items must be a list")
+                        continue
+                    for item_index, item in enumerate(items):
+                        if not isinstance(item, dict):
+                            fail(errors, path, f"resourcePackages[{package_index}].items[{item_index}] must be an object")
+                            continue
+                        item_path = item.get("path")
+                        if not isinstance(item_path, str) or not item_path.strip():
+                            fail(errors, path, f"resourcePackages[{package_index}].items[{item_index}].path must be a non-empty string")
+                            continue
+                        candidate = Path(item_path)
+                        if candidate.is_absolute() or ".." in candidate.parts:
+                            fail(errors, path, f"resource package item path must be a safe relative path: {item_path}")
+                            continue
+                        resolved = path.parent / candidate
+                        if not resolved.exists() or not resolved.is_file():
+                            fail(errors, path, f"resource package item path does not exist: {item_path}")
+
 
 def validate_platform_files(root: Path, errors: list[str]) -> None:
     for path in root.rglob(".platform"):
@@ -369,8 +398,26 @@ def iter_linguistic_metadata_blocks(text: str) -> list[tuple[int, str | None, st
 
 
 def validate_linguistic_metadata_content(root: Path, errors: list[str]) -> None:
+    for cultures_dir in root.rglob("cultures"):
+        if cultures_dir.is_dir() and ".SemanticModel" in str(cultures_dir):
+            fail(
+                errors,
+                cultures_dir,
+                "SemanticModel definition/cultures files are not allowed in generated PBIP templates by default. "
+                "Power BI Desktop project docs state report linguistic schema is not supported with Power BI projects, "
+                "and Desktop can fail with NewerLinguisticSchemaVersion. Omit culture/linguistic files unless a "
+                "Desktop-generated reference for the exact target version is approved and validated.",
+            )
+
     for path in root.rglob("*.tmdl"):
         text = path.read_text(encoding="utf-8-sig", errors="replace")
+        if re.search(r"^\s*ref\s+cultureInfo\b", text, re.IGNORECASE | re.MULTILINE):
+            fail(
+                errors,
+                path,
+                "ref cultureInfo is not allowed in generated PBIP templates by default because it depends on "
+                "culture/linguistic files that can trigger Desktop version incompatibility.",
+            )
         for line_number, content_type, content in iter_linguistic_metadata_blocks(text):
             if not content_type or not content:
                 continue
@@ -416,6 +463,20 @@ def validate_linguistic_metadata_content(root: Path, errors: list[str]) -> None:
                         "Invalid linguistic metadata content-type: JSON content does not parse "
                         f"at line {line_number}: {exc}. Use valid JSON or omit linguistic metadata.",
                     )
+
+
+def validate_powerbi_desktop_version_metadata(root: Path, errors: list[str], desktop_version: str | None, require_desktop_version: bool) -> None:
+    if not require_desktop_version:
+        return
+    if not desktop_version or not POWERBI_DESKTOP_VERSION_RE.match(desktop_version):
+        fail(
+            errors,
+            root,
+            "Power BI Desktop version metadata is required for presentation delivery. "
+            "Run scripts/detect_powerbi_desktop.py or pass --powerbi-desktop-version with the exact Desktop version "
+            "used for open validation.",
+        )
+        return
 
 
 def validate_tmdl_lineage_tags(root: Path, errors: list[str]) -> None:
@@ -582,6 +643,15 @@ def main() -> int:
         action="store_true",
         help="Repair missing, non-string, or wrong reportVersionAtImport to the expected string before validation.",
     )
+    parser.add_argument(
+        "--powerbi-desktop-version",
+        help="Exact Power BI Desktop version used or targeted for validation, for example 2.153.1206.0.",
+    )
+    parser.add_argument(
+        "--require-powerbi-desktop-version",
+        action="store_true",
+        help="Fail unless --powerbi-desktop-version is supplied. Use for final presentation delivery gates.",
+    )
     args = parser.parse_args()
 
     root = args.path.resolve()
@@ -604,6 +674,12 @@ def main() -> int:
     validate_platform_files(root, errors)
     validate_tmdl_keywords_and_keys(root, errors)
     validate_linguistic_metadata_content(root, errors)
+    validate_powerbi_desktop_version_metadata(
+        root,
+        errors,
+        desktop_version=args.powerbi_desktop_version,
+        require_desktop_version=args.require_powerbi_desktop_version,
+    )
     validate_tmdl_lineage_tags(root, errors)
     validate_postgres_tmdl_patterns(root, errors)
     validate_metrics_table_partition(root, errors)

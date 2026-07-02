@@ -74,6 +74,37 @@ Default top-to-bottom canvas order:
 4. Secondary driver, attribution, or segmentation visuals.
 5. Matrix/detail table or drill-through entry point.
 
+## Visual Theme And Color Standard
+
+Do not use default Power BI styling as the final report design. Every generated presentation layer must use a deliberate, professional visual theme that supports fast reading, hierarchy, and accessibility.
+
+Use these rules unless the user provides brand guidelines:
+
+- Choose a restrained enterprise palette with a neutral background, dark readable text, one primary accent, one secondary accent, and one warning/exception color.
+- Avoid one-note palettes where the entire report is only blue, purple, beige, brown, or gray.
+- Use color to encode meaning consistently: positive/pass, warning, failure, selected state, muted context, and categorical series.
+- Keep key performance indicator cards visually prominent, but do not overuse saturated colors on every card.
+- Use muted gridlines, clear labels, and sufficient contrast for text, axes, legends, and data labels.
+- Use conditional formatting in matrices and exception visuals when it helps users detect outliers or risk.
+- Use consistent page headers, navigation treatment, slicer styling, card styling, chart colors, and detail table formatting across every page.
+- If company branding, logo, or brand colors are available and approved, use them. If not, create a neutral professional theme and document it in the presentation report.
+- Document theme choices, color meanings, and any accessibility limitations in `reports/agent/10_presentation/presentation_report.md`, or the legacy presentation report path when the project uses the flat layout.
+
+Recommended generic palette:
+
+| Purpose | Color |
+|---|---|
+| Background | `#F7F8FA` |
+| Surface | `#FFFFFF` |
+| Primary text | `#1F2933` |
+| Secondary text | `#5B677A` |
+| Primary accent | `#2563EB` |
+| Secondary accent | `#0F766E` |
+| Positive | `#16A34A` |
+| Warning | `#D97706` |
+| Failure | `#DC2626` |
+| Neutral series | `#64748B` |
+
 ## Key performance indicator coverage
 
 The agent must analyze the maximum useful key performance indicators the validated model can support. Do not limit analysis to only three to five metrics.

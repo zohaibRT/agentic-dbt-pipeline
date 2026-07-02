@@ -2,7 +2,7 @@
 
 Use this after marts/gold, semantic layer, `dbt_project_evaluator`, and documentation are complete and validated. Run this before the presentation-layer recommendation or any Power BI / business intelligence handoff.
 
-Also read [kpi-discovery-framework.md](kpi-discovery-framework.md), [kpi-reconciliation.md](kpi-reconciliation.md), [cardinality-validation.md](cardinality-validation.md), [reporting-standards.md](reporting-standards.md), [kpi-definitions.md](kpi-definitions.md), [metric-verification.md](metric-verification.md), [privacy-and-unknown-fields.md](privacy-and-unknown-fields.md), and [writing-style.md](writing-style.md).
+Also read [report-artifact-organization.md](report-artifact-organization.md), [kpi-discovery-framework.md](kpi-discovery-framework.md), [kpi-reconciliation.md](kpi-reconciliation.md), [cardinality-validation.md](cardinality-validation.md), [reporting-standards.md](reporting-standards.md), [kpi-definitions.md](kpi-definitions.md), [metric-verification.md](metric-verification.md), [privacy-and-unknown-fields.md](privacy-and-unknown-fields.md), and [writing-style.md](writing-style.md).
 
 ## Phase purpose
 
@@ -60,7 +60,7 @@ These rules apply to every domain, source schema, and warehouse adapter:
 | Area | Contract |
 |---|---|
 | Inputs required | Completed and validated gold/marts, semantic layer status, evaluator results, documentation artifacts, key performance indicator definitions, metric verification results, layer validation evidence, privacy decisions, and `reports/agent/docs_report.md` |
-| Allowed changes | Analytics insight reporting files under `reports/agent/` only; read-only warehouse queries for validation and evidence |
+| Allowed changes | Analytics insight reporting files under `reports/agent/09_analytics_insights/`, key performance indicator files under `reports/agent/09_analytics_insights/kpis/`, root `REPORT_INDEX.md`, root `HUMAN_VERIFICATION_GUIDE.md`, and read-only warehouse queries for validation and evidence |
 | Not allowed | dbt model SQL/YAML changes, semantic file changes, Power BI/PBIP/TMDL files, dashboards, slides, notebooks, guessed measures, or sensitive-field exposure without approval |
 | Commands to run | Read-only `dbt ls`, manifest/catalog review, approved warehouse aggregate queries, and metric reconciliation checks from [metric-verification.md](metric-verification.md) |
 | Completion criteria | All required reporting deliverables exist, trusted vs deferred outputs are separated, readiness scorecard is recorded, and presentation-layer gate is ready |
@@ -107,22 +107,24 @@ Before drafting catalogs and specs, verify:
 
 ## Required deliverables
 
-After phase completion, create or update these files under `reports/agent/`:
+After phase completion, create or update these files. Use canonical paths for new projects; when reading older projects, fall back to the legacy flat `reports/agent/<file>` path if the canonical file is missing.
 
 | File | Purpose |
 |---|---|
-| `analytics_insight_report.md` | Executive summary of what the business can meaningfully see; trusted facts, dimensions, metrics; useful questions; recommended dashboards; visuals; filters; drill-downs; caveats; sensitive fields; missing/deferred insights |
-| `kpi_discovery_matrix.md` | Domain-neutral key performance indicator candidate matrix with table classification, grain, formula, confidence, caveats, validation query, and approval status |
-| `kpi_reconciliation_report.md` | Layer-by-layer key performance indicator proof table with result, expected result, variance, status, and notes |
-| `kpi_lineage_proofs.md` | Source-to-final key performance indicator lineage summary showing where values changed |
-| `kpi_variance_report.md` | First-layer versus final-layer variance and likely cause for each reconciled key performance indicator |
-| `kpi_sql_proofs/` | SQL and DAX proof files for each key performance indicator and layer where applicable |
-| `reporting_catalog.md` | Catalog of report/page candidates |
-| `kpi_catalog.md` | Catalog of trusted and deferred key performance indicators with definitions, confidence, and caveats |
-| `dashboard_spec.md` | Full dashboard/report design spec for the presentation phase |
-| `insight_backlog.md` | Useful insights not ready yet and what unlocks them |
-| `reporting_readiness_scorecard.md` | PASS/WARN/FAIL/BLOCKED scorecard across readiness areas |
-| `analytics_insight_reporting_report.md` | Phase completion report consistent with other `<phase>_report.md` files |
+| `reports/agent/09_analytics_insights/analytics_insight_report.md` | Executive summary of what the business can meaningfully see; trusted facts, dimensions, metrics; useful questions; recommended dashboards; visuals; filters; drill-downs; caveats; sensitive fields; missing/deferred insights |
+| `reports/agent/09_analytics_insights/kpis/kpi_discovery_matrix.md` | Domain-neutral key performance indicator candidate matrix with table classification, grain, formula, confidence, caveats, validation query, and approval status |
+| `reports/agent/09_analytics_insights/kpis/kpi_reconciliation_report.md` | Layer-by-layer key performance indicator proof table with result, expected result, variance, status, and notes |
+| `reports/agent/09_analytics_insights/kpis/kpi_lineage_proofs.md` | Source-to-final key performance indicator lineage summary showing where values changed |
+| `reports/agent/09_analytics_insights/kpis/kpi_variance_report.md` | First-layer versus final-layer variance and likely cause for each reconciled key performance indicator |
+| `reports/agent/09_analytics_insights/kpis/sql_proofs/` | SQL and DAX proof files for each key performance indicator and layer where applicable |
+| `reports/agent/09_analytics_insights/reporting_catalog.md` | Catalog of report/page candidates |
+| `reports/agent/09_analytics_insights/kpis/kpi_catalog.md` | Catalog of trusted and deferred key performance indicators with definitions, confidence, and caveats |
+| `reports/agent/09_analytics_insights/dashboard_spec.md` | Full dashboard/report design spec for the presentation phase |
+| `reports/agent/09_analytics_insights/insight_backlog.md` | Useful insights not ready yet and what unlocks them |
+| `reports/agent/09_analytics_insights/reporting_readiness_scorecard.md` | PASS/WARN/FAIL/BLOCKED scorecard across readiness areas |
+| `reports/agent/09_analytics_insights/analytics_insight_reporting_report.md` | Phase completion report consistent with other `<phase>_report.md` files |
+| `reports/agent/REPORT_INDEX.md` | Human-readable index of all reports, status, purpose, and verification action |
+| `reports/agent/HUMAN_VERIFICATION_GUIDE.md` | Short guide that tells the data engineer what to review and how to verify key results |
 
 ## Output templates
 
