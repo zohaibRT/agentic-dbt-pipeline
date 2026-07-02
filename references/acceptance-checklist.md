@@ -76,7 +76,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] `metric_catalog.md` was created or updated with contextual metrics derived from validated measures
 - [ ] `kpi_catalog.md` contains only decision-relevant metrics tied to business goals, thresholds, targets, risks, operating review, or user-approved strategic use
 - [ ] After analytics insight reporting, the agent asked the presentation-layer decision with a concise evidence summary, recommended technology/page set, key caveats, and native clickable options when available
-- [ ] Presentation decision options included the equivalent of `Yes - build Power BI PBIP presentation layer`, `No presentation layer - complete final delivery now`, and `Tell me what to change first`
+- [ ] Presentation decision options included the equivalent of `Yes - prepare Power BI Desktop template handoff`, `No presentation layer - complete final delivery now`, and `Tell me what to change first`
 - [ ] `reports/agent/09_analytics_insights/analytics_insight_report.md`, `kpi_discovery_matrix.md`, `reporting_catalog.md`, `kpi_catalog.md`, `dashboard_spec.md`, `insight_backlog.md`, and `reporting_readiness_scorecard.md` exist when analytics insight reporting ran
 - [ ] `reports/agent/09_analytics_insights/kpis/kpi_reconciliation_report.md`, `kpi_lineage_proofs.md`, `kpi_variance_report.md`, and `sql_proofs/` exist when approved or implemented key performance indicators exist
 - [ ] Analytics insight reporting separated trusted outputs from uncertain or deferred outputs
@@ -205,15 +205,16 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] `dbt docs generate` -> manifest + catalog exist
 - [ ] Documentation serve command or local documentation URL provided when user wants to view documentation
 - [ ] Presentation options were recommended after analytics insight reporting: documentation only, business-facing report, dashboard design, semantic layer refinement, or query handoff
-- [ ] Power BI PBIP/TMDL was created when the user approved a presentation layer and did not specify another technology
-- [ ] If the user provided or approved a Power BI Desktop-created PBIP template, the thin model template workflow was used as the preferred path
-- [ ] If no approved PBIP template existed and source connection generation was risky, the agent created a human-connected template checkpoint with the exact tables, relationships, storage mode, measures table requirement, and PBIP path confirmation request
-- [ ] If a human-connected template checkpoint was needed, the agent stopped before injecting measures, visuals, or editing PBIP files until the user confirmed the saved PBIP path
+- [ ] If the user approved a presentation layer and did not specify another technology, the agent used the Power BI Desktop human-connected template workflow by default instead of generating a full PBIP automatically
+- [ ] The human-connected Power BI checkpoint created the output folder and provided the exact PBIP path/name, approved table list, relationship checklist, storage-mode recommendation, measures table requirement, and confirmation request
+- [ ] The agent stopped before injecting measures, visuals, or editing PBIP files until the user confirmed the PBIP was saved and data was attached
+- [ ] Generated PBIP mode was not used unless the user explicitly approved generated PBIP/TMDL creation
+- [ ] If the user provided or approved a Power BI Desktop-created PBIP template, the thin model template workflow was used and the approved path was recorded
 - [ ] If the thin model template workflow was used, the exact template path, approval, copied output path, and pre-edit Desktop open status were recorded
 - [ ] If the thin model template workflow was used, the agent injected only approved DAX measures, descriptions, format strings, display folders, and safe annotations into the approved measures table such as `_KPI_Measures` or `_Measures`
 - [ ] If the thin model template workflow was used, Power Query M, connection definitions, credentials, physical imported tables, source partitions, schemas, and relationships were verified unchanged unless explicitly approved
 - [ ] If the thin model template workflow was used and no measures table existed, the agent paused for approval before creating one
-- [ ] If Power BI PBIP/TMDL was created, the bundled neutral template at `assets/powerbi/pbip_template/` was used as the default structural base, or any local PBIP reference was explicitly approved by the user with the exact path documented
+- [ ] If generated Power BI PBIP/TMDL mode was explicitly approved, the bundled neutral template at `assets/powerbi/pbip_template/` was used as the default structural base, or any local PBIP reference was explicitly approved by the user with the exact path documented
 - [ ] If Power BI PBIP/TMDL structure was uncertain and internet access was available, official Microsoft Power BI project documentation was checked and cited in `reports/agent/10_presentation/presentation_report.md` or a documented legacy presentation report
 - [ ] If Power BI PBIP/TMDL was created from the bundled template, `scripts/generate_powerbi_pbip.py` was used or an equivalent generator fallback was documented
 - [ ] If a local PBIP reference was used, only structural patterns were reused; source connections, business content, measures, relationships, visuals, page names, branding, `.pbi/` cache files, logical IDs, lineage tags, and source database names were not copied unless explicitly approved
@@ -281,6 +282,8 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] If Power BI PBIP/TMDL was created, many-to-many relationships were not created unless explicitly approved and backed by a tested bridge table
 - [ ] If Power BI PBIP/TMDL was created, all TMDL `lineageTag` values are unique across the semantic model
 - [ ] If Power BI PBIP/TMDL was created, the measures or metrics table has a calculated partition such as `ROW("MetricKey", 1)`
+- [ ] If Power BI PBIP/TMDL was created, calculated measures or metrics table columns such as `MetricKey` include `sourceColumn` metadata such as `sourceColumn: [MetricKey]`
+- [ ] If Power BI Desktop reports `PFE_TM_METADATA_CALCTABLE_COLUMN_MISSING_SOURCECOLUMN`, the presentation phase is marked failed and fixed before handoff
 - [ ] If Power BI PBIP/TMDL was created, active relationships were audited for ambiguous filter paths, including multiple active paths between dimensions through facts or bridge tables
 - [ ] If Power BI PBIP/TMDL was created, lower-grain facts, parent facts, bridge tables, and role-playing date relationships were reviewed so only the approved active paths are active
 - [ ] If Power BI PBIP/TMDL was created and Power BI Modeling Model Context Protocol tools were available, `ConnectFolder` to the SemanticModel definition folder succeeded

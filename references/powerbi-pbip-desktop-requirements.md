@@ -1,6 +1,6 @@
 # Power BI PBIP Desktop Requirements
 
-Use this when the user approves a Power BI presentation layer, PBIP project, TMDL semantic model, or Power BI Desktop report artifact.
+Use this when the user explicitly approves generated Power BI PBIP/TMDL work, PBIP project editing, TMDL semantic model editing, or Power BI Desktop report artifact validation. If the user only approves a presentation layer, first use the human-connected Desktop template workflow in [powerbi-thin-model-template.md](powerbi-thin-model-template.md).
 
 These rules are domain-neutral. Apply them to any gold/mart schema after validating the current project's facts, dimensions, measures, relationships, privacy rules, and reporting scope.
 
@@ -8,7 +8,7 @@ Also read [powerbi-official-docs.md](powerbi-official-docs.md). When internet ac
 
 ## Bundled neutral template
 
-Use the bundled neutral template at `assets/powerbi/pbip_template/` as the default starting structure for generated PBIP/TMDL projects. Instantiate it with:
+Use the bundled neutral template at `assets/powerbi/pbip_template/` as the starting structure only for explicitly approved generated PBIP/TMDL projects. Instantiate it with:
 
 ```bash
 python scripts/generate_powerbi_pbip.py --name <safe_pbip_name> --display-name "<report display name>" --output-dir <powerbi_parent_folder> --project-root <project_root>
@@ -84,6 +84,7 @@ If the generator cannot guarantee correctness, omit linguistic metadata. Treat P
 - `definition/report.json` must include `themeCollection.baseTheme.reportVersionAtImport` as a non-empty string.
 - Default to `"5.55"` for the April 2026 Desktop format unless a known-good project reference proves another value.
 - The SemanticModel should include the required model definition files for the selected format, such as `definition.pbism`, `database.tmdl`, `model.tmdl`, expressions, cultures, relationships, tables, and a calculated measures table when measures are generated.
+- Calculated measures or metrics table columns such as `MetricKey` must include matching source column metadata, for example `sourceColumn: [MetricKey]`. Treat `PFE_TM_METADATA_CALCTABLE_COLUMN_MISSING_SOURCECOLUMN` as a validation failure.
 
 ## Consultant-grade content
 

@@ -532,6 +532,17 @@ def validate_metrics_table_partition(root: Path, errors: list[str]) -> None:
             fail(errors, path, "Metrics or measures table must include a calculated partition")
         if 'ROW("MetricKey", 1)' not in text and "ROW('MetricKey', 1)" not in text:
             fail(errors, path, 'Metrics or measures table calculated partition must use ROW("MetricKey", 1)')
+        if re.search(r"^\s*column\s+MetricKey\s*$", text, re.IGNORECASE | re.MULTILINE) and not re.search(
+            r"^\s*sourceColumn\s*:\s*\[?MetricKey\]?\s*$",
+            text,
+            re.IGNORECASE | re.MULTILINE,
+        ):
+            fail(
+                errors,
+                path,
+                'Calculated metrics/measures table column MetricKey must include sourceColumn: [MetricKey] '
+                'to avoid Power BI Desktop PFE_TM_METADATA_CALCTABLE_COLUMN_MISSING_SOURCECOLUMN.',
+            )
 
 
 def validate_no_secret_patterns(root: Path, errors: list[str]) -> None:

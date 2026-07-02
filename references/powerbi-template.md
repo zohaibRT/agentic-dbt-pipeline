@@ -1,6 +1,6 @@
 # Power BI Template System
 
-Use this when the approved presentation layer is Power BI PBIP/TMDL.
+Use this only when the user explicitly approves generated Power BI PBIP/TMDL mode, or when validating the bundled neutral PBIP template. For the normal presentation-layer approval path, use [powerbi-thin-model-template.md](powerbi-thin-model-template.md) first.
 
 Read [powerbi-official-docs.md](powerbi-official-docs.md) with this file. The official Microsoft Learn pages are the source of truth when PBIP/PBIR/TMDL project layout or preview behavior is uncertain.
 
@@ -62,8 +62,8 @@ The template should only provide:
 
 ## Generation Flow
 
-0. If the user provides or approves a Power BI Desktop-created PBIP template, use [powerbi-thin-model-template.md](powerbi-thin-model-template.md) as the preferred workflow. Copy the approved template, preserve its physical model, and inject only approved measures and harmless metadata into the approved measures table.
-1. If no approved Desktop-created template exists, use `scripts/generate_powerbi_pbip.py`.
+0. Generated PBIP mode is not the default. If the user approves a presentation layer without explicitly asking the agent to generate the full PBIP, use [powerbi-thin-model-template.md](powerbi-thin-model-template.md): create the handoff folder/checklist, ask the human to connect data in Power BI Desktop, save the PBIP at the requested path, and wait for confirmation.
+1. Use `scripts/generate_powerbi_pbip.py` only after the user explicitly approves generated PBIP mode or when validating the bundled template itself.
 2. Generate into the project, usually under `reports/powerbi/<project_name>/`.
 3. Read [powerbi-kpi-dax-tooling.md](powerbi-kpi-dax-tooling.md), then read and use these planning inputs when available:
    - `reports/agent/09_analytics_insights/dashboard_spec.md`
@@ -88,9 +88,10 @@ The template should only provide:
 
 Use this priority order:
 
-1. Use a user-approved Power BI Desktop-created PBIP template through the thin model workflow when available.
-2. Use the bundled neutral PBIP template from `assets/powerbi/pbip_template/`.
-3. If the bundled template is missing, use `scripts/generate_powerbi_pbip.py` or the current generator logic to create a minimal PBIP/PBIR/TMDL skeleton, then validate it.
+1. Use the human-connected Power BI Desktop template workflow by default. The agent creates the handoff folder and exact PBIP path, then waits while the human connects data and saves the PBIP.
+2. Use a user-approved existing Power BI Desktop-created PBIP template through the thin model workflow.
+3. Use the bundled neutral PBIP template from `assets/powerbi/pbip_template/` only when generated PBIP mode is explicitly approved.
+4. If generated PBIP mode is approved and the bundled template is missing, use `scripts/generate_powerbi_pbip.py` or the current generator logic to create a minimal PBIP/PBIR/TMDL skeleton, then validate it.
 4. Use an existing local PBIP only as a reference when:
    - The exact path is shown to the user.
    - The user explicitly approves it.
@@ -123,6 +124,7 @@ Before presentation delivery, verify:
 - No hardcoded source schema/table assumptions bypass the approved gold schema.
 - Power BI one-side relationship keys are unique and not null in dbt.
 - Composite business keys use tested surrogate keys.
+- Calculated metrics or measures table columns such as `MetricKey` include `sourceColumn` metadata such as `sourceColumn: [MetricKey]`; treat `PFE_TM_METADATA_CALCTABLE_COLUMN_MISSING_SOURCECOLUMN` as a validation failure.
 - `scripts/validate_powerbi_pbip.py` passes.
 - Power BI Desktop version was detected or recorded as unavailable; version-aware validation passed when the version was available.
 - `dashboard_spec.md` and `kpi_catalog.md` were used or their absence was documented as blocking/deferred.

@@ -5,6 +5,7 @@ table _Metrics
 		dataType: int64
 		isHidden
 		summarizeBy: none
+		sourceColumn: [MetricKey]
 
 	measure 'Template Measure' = 1
 		formatString: 0

@@ -1,8 +1,8 @@
 # Power BI Thin Model Template Workflow
 
-Use this when the user provides or approves a Power BI Desktop-created PBIP template.
+Use this as the default Power BI workflow when the user approves a Power BI presentation layer.
 
-This is the preferred Power BI path when Desktop open stability is more important than generating the full semantic model from scratch. The physical model stays in a known-good PBIP template. The agent only injects approved reporting semantics such as DAX measures, descriptions, display folders, and harmless annotations.
+This is the preferred Power BI path. The human uses Power BI Desktop to create the physical model and attach data. The agent creates the handoff folder/checklist, waits for the saved PBIP path, and then only injects approved reporting semantics such as DAX measures, descriptions, display folders, and harmless annotations.
 
 ## When To Use This
 
@@ -37,32 +37,36 @@ _KPI_Measures = ROW("Status", "Initialized")
 
 ## Human-Connected Template Checkpoint
 
-When no approved PBIP template exists yet, do not continue by inventing database connections or Power Query M. Create a human handoff checkpoint instead.
+When no approved PBIP template exists yet, do not continue by inventing database connections, Power Query M, relationships, visuals, or source partitions. Create a human handoff checkpoint instead.
 
 The agent should:
 
-1. List the recommended gold, mart, bridge, and date/time tables to connect.
-2. List the required relationships and one-side uniqueness checks that were proven in dbt.
-3. List the recommended import mode, DirectQuery mode, or composite mode with the reason.
-4. Ask the user to open Power BI Desktop, connect the approved tables, confirm or create relationships, create the measures table, and save as PBIP.
-5. Ask for a simple confirmation with the PBIP path, such as `Connected and saved: <path>`.
-6. Stop until the user confirms the template is ready.
+1. Create the requested Power BI output folder.
+2. State the exact `.pbip` path and filename the human should use.
+3. List the recommended gold, mart, bridge, and date/time tables to connect.
+4. List the required relationships and one-side uniqueness checks that were proven in dbt.
+5. List the recommended import mode, DirectQuery mode, or composite mode with the reason.
+6. Ask the user to open Power BI Desktop, connect the approved tables, confirm or create relationships, create the measures table, and save as PBIP at the specified path.
+7. Ask for a simple confirmation with the PBIP path, such as `Connected and saved: <path>`.
+8. Stop until the user confirms the template is ready and data is attached.
 
 Use a native clickable question when available:
 
 ```text
-Power BI needs a Desktop-created template before I inject measures and visuals.
+Power BI needs a Desktop-created template before I inject measures.
 
-Do you want to create/connect the Power BI template now?
+I created the Power BI handoff folder and table checklist. Please open Power BI Desktop, connect the approved data, create the measures table, and save the PBIP at the specified path.
+
+Is the PBIP created, saved, and connected to data?
 ```
 
 Recommended options:
 
-- `Yes - I will connect and save the PBIP template`
-- `Use existing PBIP template`
+- `Yes - PBIP is saved and data is connected`
+- `Use existing PBIP template path`
 - `Skip Power BI for now`
 
-After the user confirms the PBIP path, validate the template before editing it. If the template does not open, has missing tables, missing relationships, ambiguous relationships, or no measures table, report the issue and ask for approval before changing it.
+After the user confirms the PBIP path, validate the template before editing it. If the template does not open, has missing tables, missing relationships, ambiguous relationships, no data connection, or no measures table, report the issue and ask for approval before changing it.
 
 ## Agent Scope
 
@@ -72,7 +76,7 @@ The agent may:
 - Parse approved key performance indicator Markdown, semantic metrics, or explicit user requirements.
 - Insert DAX measures only into the approved measures table.
 - Add measure descriptions, format strings, display folders, and safe annotations.
-- Update report pages only when the user approved report-page generation or editing.
+- Update report pages only when the user explicitly approved report-page generation or editing after the Desktop-created template exists.
 - Run static PBIP validation, Power BI Modeling Model Context Protocol validation, DAX smoke tests, and Desktop open validation when available.
 
 The agent must not:
@@ -80,6 +84,7 @@ The agent must not:
 - Edit Power Query M, source partitions, connection strings, credentials, physical table names, or schema names.
 - Add, remove, or rename physical imported tables unless the user explicitly approves that change.
 - Change relationship paths unless the user approved relationship work and dbt cardinality proof exists.
+- Create visuals or report pages by default; focus on measures, descriptions, display folders, and validation unless report editing is explicitly approved.
 - Create business logic only in Power BI when it belongs in dbt.
 - Mark presentation complete if the copied and modified PBIP was not validated.
 

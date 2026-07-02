@@ -29,7 +29,7 @@ Help the data engineer decide whether the completed dbt project should expose a 
 
 The presentation artifact is optional, but the recommendation is required for full pipeline final delivery. Ask the user in simple terms whether they want a presentation layer. Do not ask them to choose "Power BI as code" unless they already used that wording.
 
-Default artifact: if the user approves a presentation layer and does not specify another tool or artifact type, create a Power BI PBIP/TMDL project by default. Do not create dashboards, reports, slides, notebooks, or other business intelligence artifacts unless the user approves the presentation layer.
+Default artifact: if the user approves a presentation layer and does not specify another tool or artifact type, use the Power BI Desktop human-connected template workflow by default. Create the Power BI handoff folder and checklist, then wait for the user to save and confirm the PBIP path before injecting measures. Do not create dashboards, reports, slides, notebooks, generated PBIP semantic models, or other business intelligence artifacts unless the user approves that specific presentation-layer scope.
 
 ## Presentation decision gate
 
@@ -55,7 +55,7 @@ Do you want a presentation layer?
 
 Recommended options:
 
-- `Yes - build Power BI PBIP presentation layer` - approves only the separate presentation-layer phase using Power BI PBIP/TMDL as the default artifact.
+- `Yes - prepare Power BI Desktop template handoff` - approves only the separate presentation-layer phase using the Power BI Desktop human-connected template workflow by default.
 - `No presentation layer - complete final delivery now` - records that the artifact was declined and moves to final delivery with dbt documentation and analytics insight outputs only.
 - `Tell me what to change first` - pauses so the user can change scope, metrics, pages, privacy rules, technology, validation, or report design.
 
@@ -102,7 +102,8 @@ Review `reports/agent/09_analytics_insights/analytics_insight_report.md`, `repor
 | dbt documentation only | The user only needs technical lineage and model docs | `dbt docs generate`, optional `dbt docs serve`, final model list |
 | Presentation layer report | The user wants a concise business-facing summary | Key performance indicators, metrics, model grains, suggested analysis pages, limitations |
 | Dashboard design | The user wants interactive consumption in a business intelligence tool | Suggested pages, filters, metrics, facts/dimensions, privacy notes |
-| Power BI PBIP/TMDL project | Default when the user says yes to presentation layer and does not specify another technology | Complete PBIP project, semantic model, report artifact, relationships, measures, parameters, report pages, and open/refresh notes |
+| Power BI Desktop template handoff | Default when the user says yes to presentation layer and does not specify another technology | Handoff folder, table/relationship/storage-mode checklist, required PBIP path/name, measures table instructions, and post-confirmation measure injection |
+| Generated Power BI PBIP/TMDL project | Only when the user explicitly approves generated PBIP mode | Complete generated PBIP project, semantic model, report artifact, relationships, measures, parameters, report pages, and validation evidence |
 | Semantic layer first | Metrics need governed definitions before dashboards | MetricFlow metrics, entities, dimensions, time dimensions, safe denominators |
 | Export/query handoff | The user wants to query marts manually | Final schemas, sample SQL, model grains, recommended joins |
 
@@ -209,13 +210,13 @@ These are different deliverables:
 
 | User asks for | Required deliverable |
 |---|---|
-| Presentation layer, with no technology specified | A complete Power BI PBIP/TMDL project by default |
+| Presentation layer, with no technology specified | Power BI Desktop human-connected template workflow by default |
 | Power BI, PBIP, TMDL, or a Power BI Desktop file/project | A complete PBIP project that Power BI Desktop can open, with report and semantic model artifacts |
 | Dashboard design | Markdown design/specification only, unless the user later approves PBIP creation |
 | Presentation layer report | Markdown report only |
 | Query handoff | SQL examples and model-grain guide only |
 
-If the user approves the default presentation layer, the agent must create PBIP/TMDL files, not only explain what to do manually.
+If the user approves the default presentation layer, the agent must create the Power BI handoff folder/checklist and ask the human to save the Desktop-connected PBIP at the specified path. Do not mark the phase complete with only advice; the phase is pending until the human confirms the PBIP path or declines Power BI.
 
 ## Required recommendation section
 
@@ -250,16 +251,16 @@ Ask clearly after final validation:
 ```text
 Documentation and dbt validation are complete. Before I close delivery, do you want me to create a presentation layer artifact?
 
-Recommended default: Power BI Desktop presentation layer as code, using a PBIP/TMDL project with report pages and a semantic model.
+Recommended default: Power BI Desktop human-connected template workflow. The human creates and saves the PBIP with data attached; the agent injects approved measures after confirmation.
 
-Reply "yes" to use the default Power BI project, "no" to stop at dbt documentation, or name another option such as Markdown report, dashboard design only, semantic layer refinement, or query handoff.
+Reply "yes" to use the default Power BI Desktop template workflow, "no" to stop at dbt documentation, or name another option such as generated PBIP, Markdown report, dashboard design only, semantic layer refinement, or query handoff.
 ```
 
 Do not force the user to choose all options. Recommend the best next option based on the project evidence.
 
 For full-pipeline runs, prefer the interactive presentation decision gate above over a plain text-only question. The user should see the recommendation, understand the key evidence, and click the desired path.
 
-If the user says yes without specifying a technology, infer Power BI PBIP/TMDL as the approved default, create the presentation-layer phase plan, and wait for approval when required by [phase-plan-approval.md](phase-plan-approval.md). Do not ask the user to say "Power BI as code" explicitly. Do not answer only with advice when the user approved artifact creation.
+If the user says yes without specifying a technology, infer the Power BI Desktop human-connected template workflow as the approved default, create the presentation-layer phase plan, and wait for approval when required by [phase-plan-approval.md](phase-plan-approval.md). Do not ask the user to say "Power BI as code" explicitly. Do not generate a full PBIP unless the user explicitly approves generated PBIP mode.
 
 If the recommendation cannot be produced, mark it `BLOCKED` or `SKIPPED` with the exact reason in the final report, pipeline status, context tree, and final response. Do not silently omit the presentation-layer section.
 
@@ -289,7 +290,7 @@ If the recommendation cannot be produced, mark it `BLOCKED` or `SKIPPED` with th
 
 Use this section when the user explicitly asks for a Power BI project, PBIP, TMDL, or Power BI presentation layer as code, or when the user says yes to the default presentation layer without specifying another technology.
 
-Power BI as code completion means the generated project is intended to open from a `.pbip` file in Power BI Desktop. A folder containing only `import_guide.md`, `relationships.md`, `kpi_measures.dax`, and `dashboard_pages.md` is a useful dashboard design handoff, but it is not Power BI as code and must not be marked complete as such.
+Power BI completion in the default workflow means the user-created PBIP exists, data is attached, and the agent has injected approved measures/metadata and validated the result. A folder containing only `import_guide.md`, `relationships.md`, `kpi_measures.dax`, and `dashboard_pages.md` is a useful dashboard design handoff, but it is not a completed Power BI presentation layer.
 
 When the user provides a detailed Power BI contract, copy the contract into the presentation phase plan and validate against every item. Do not generalize away user-provided table names, relationship rules, measure labels, report page names, output paths, schema versions, or known technical fixes.
 
@@ -402,8 +403,8 @@ Before creating files:
 - Confirm output location, model name, connection source, consultant-grade page plan, measures, verification queries, blocked visuals, and privacy rules.
 - Confirm metric verification queries for every key performance indicator measure, including numerator, denominator, filter logic, and expected versus actual result.
 - Discover fact date columns and planned time showcase visuals before writing report pages.
-- In the plan, state that Power BI PBIP/TMDL is the default because no other presentation technology was specified. Ask for changes only if the user wants a different technology or a Markdown-only guide.
-- Prefer the bundled neutral PBIP template at `assets/powerbi/pbip_template/` and instantiate it with `scripts/generate_powerbi_pbip.py` before adding project-specific tables, measures, relationships, pages, and visuals.
+- In the plan, state that the Power BI Desktop human-connected template workflow is the default because no other presentation technology was specified. Ask for changes only if the user wants a different technology, generated PBIP mode, report-page editing, or a Markdown-only guide.
+- Create the Power BI handoff folder, table/relationship checklist, required PBIP path/name, storage-mode recommendation, and measures table instructions. Stop until the user confirms the PBIP was saved and data is attached.
 - Detect the local Power BI Desktop version before final PBIP handoff. If Desktop cannot be detected, record that fact and do not claim version compatibility.
 - If a known-good PBIP project exists in the workspace, do not silently adapt it. Show the exact `.pbip` path, state which structural files would be inspected, explain what would and would not be reused, and get user approval before using it as a reference.
 - When the user names required source schemas or gold tables, verify those tables exist before wiring import queries or partitions.
@@ -411,8 +412,8 @@ Before creating files:
 When creating PBIP:
 
 - Create a complete PBIP project, not only loose TMDL text.
-- Use the bundled neutral PBIP template as the default structural base. Do not depend on local projects such as IHMS, ShopSphere, Hospital, or another nearby PBIP being present on the machine.
-- To create the starting structure, run `python scripts/generate_powerbi_pbip.py --name <safe_pbip_name> --display-name "<report display name>" --output-dir <powerbi_parent_folder> --project-root <project_root>`, then add the approved project-specific semantic model and report content.
+- Use the human-created Power BI Desktop PBIP as the default structural base. Do not depend on local projects such as IHMS, ShopSphere, Hospital, or another nearby PBIP being present on the machine.
+- Generate PBIP files with `scripts/generate_powerbi_pbip.py` only when the user explicitly approves generated PBIP mode.
 - If a local known-good PBIP is approved as a reference, use it only for file layout and metadata patterns. Do not copy source connections, business tables, relationships, measures, report pages, visuals, page names, branding, `.pbi/` cache files, logical IDs, lineage tags, source database names, or domain-specific text unless the user explicitly approves that specific content.
 - Include the `.pbip` file, a Report artifact folder, and a SemanticModel artifact folder.
 - Build the approved enterprise page set from validated facts and dimensions, including useful slicers, user-facing labels, hidden technical fields, tooltips, drillthrough/detail pages where safe, and data-quality/limitation notes where needed.
@@ -461,7 +462,7 @@ When creating PBIP:
 - Do not write bare Power Query M steps such as `AddedKey = Table.AddColumn(...)` at the root of a `.tmdl` file. M steps belong only inside valid partition source expression blocks.
 - Do not generate linguistic metadata by default. If `LinguisticMetadata`, `culture`, `linguisticMetadata`, `content`, or content-type sections are written or copied, the declared content type and actual content format must match. XML content type requires valid XML; JSON content type requires valid JSON. JSON such as `{ "Version": "1.0.0" }` must never be written into XML-typed linguistic metadata. If uncertain, omit linguistic metadata.
 - For PostgreSQL import partitions, keep only server and database as reusable expressions or parameters. Do not create a `PgSchema` expression. In each table partition, quote parameter references such as `#"PgServer"` and `#"PgDatabase"`, hardcode the approved gold schema in the source record, use `Table.SelectColumns` to load only modeled columns, use `Table.TransformColumnTypes` for dates and numeric fields, and include `annotation PBI_ResultType = Table` indented under the table object, never at TMDL root.
-- Measures or metrics tables must have a calculated partition such as `ROW("MetricKey", 1)` so the semantic model loads correctly.
+- Measures or metrics tables must have a calculated partition such as `ROW("MetricKey", 1)` so the semantic model loads correctly. The `MetricKey` column must include `sourceColumn: [MetricKey]`; otherwise Power BI Desktop can fail with `PFE_TM_METADATA_CALCTABLE_COLUMN_MISSING_SOURCECOLUMN`.
 - Add a local `powerbi/README.md` or equivalent handoff with open, refresh, and reload-from-disk guidance.
 - Do not tell the user to overwrite the generated project by saving from Power BI Desktop as the default fix. For reload-from-disk edits, instruct the user to close without saving when that is the safe workflow.
 
@@ -540,6 +541,7 @@ Do not:
 - Mark a Power BI artifact complete when duplicate TMDL lineage tags exist.
 - Mark a Power BI artifact complete when a PostgreSQL partition uses `PgSchema`, unquoted parameter references, no `Table.SelectColumns`, no `Table.TransformColumnTypes`, or no `PBI_ResultType` annotation.
 - Mark a Power BI artifact complete when any table `.tmdl` file contains root-level annotations such as unindented `annotation PBI_ResultType = Table`, or when Power BI Desktop reports duplicate annotation merge errors such as `both declare the same property: value`.
+- Mark a Power BI artifact complete when a calculated measures or metrics table column is missing `sourceColumn`, or when Power BI Desktop reports `PFE_TM_METADATA_CALCTABLE_COLUMN_MISSING_SOURCECOLUMN`.
 - Mark a Power BI artifact complete when the measures or metrics table is missing a calculated partition.
 - Create direct relationships that introduce ambiguous filter paths when a safer snowflake path exists.
 - Mark a Power BI artifact complete when the Power BI Modeling Model Context Protocol `ConnectFolder` test fails.
