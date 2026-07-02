@@ -1,4 +1,4 @@
-﻿# Separate Layer Builds - Order, Schemas, and Examples
+# Separate Layer Builds - Order, Schemas, and Examples
 
 > **Skill default:** always create **all** layers. Use `bronze`/`silver`/`gold` unless the user or existing project provides different layer names. Names become `dbt_project.yml` keys, folders, and `+schema` values. See [dbt-project-layers.md](dbt-project-layers.md).
 
@@ -173,13 +173,13 @@ Before implementation: phase plan in `AGENT_PLAN.md` and approval.
 
 After completion, write:
 
-- `reports/agent/analytics_insight_report.md`
-- `reports/agent/reporting_catalog.md`
-- `reports/agent/kpi_catalog.md`
-- `reports/agent/dashboard_spec.md`
+- `reports/agent/09_analytics_insights/analytics_insight_report.md`
+- `reports/agent/09_analytics_insights/reporting_catalog.md`
+- `reports/agent/09_analytics_insights/kpis/kpi_catalog.md`
+- `reports/agent/09_analytics_insights/dashboard_spec.md`
 - `reports/agent/insight_backlog.md`
 - `reports/agent/reporting_readiness_scorecard.md`
-- `reports/agent/analytics_insight_reporting_report.md`
+- `reports/agent/09_analytics_insights/analytics_insight_reporting_report.md`
 
 Update `reports/agent/PIPELINE_STATUS.md`, `reports/agent/CONTEXT_TREE.md`, and `reports/agent/NEXT_PHASE_PROMPT.md`, then stop at the presentation-layer gate unless presentation work was explicitly approved.
 

@@ -15,7 +15,7 @@ Before docs-only work, write/update `AGENT_PLAN.md` with the docs plan and get a
 | Not allowed | Business logic changes, model rewrites, unapproved source freshness fields, dashboards, or presentation artifacts |
 | Commands to run | `dbt parse --no-partial-parse`, `dbt docs generate`, and optional non-blocking `dbt docs serve` when useful |
 | Completion criteria | Model/source documentation is useful, generated documentation artifacts exist, and any missing docs are reported |
-| Report required | `reports/agent/docs_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
+| Report required | `reports/agent/08_documentation/docs_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
 
 ## Handoff to analytics insight reporting
 

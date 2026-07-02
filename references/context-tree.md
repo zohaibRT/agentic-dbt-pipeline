@@ -110,12 +110,12 @@ Use this structure:
 - Discovery
   - Input: <what was used>
   - Output: <main conclusion>
-  - Report: reports/agent/discovery_report.md
-  - Requirements: reports/agent/requirements.md
+  - Report: reports/agent/00_discovery/discovery_report.md
+  - Requirements: reports/agent/00_discovery/requirements.md
   - Status: <status>
 - Project setup and configuration
   - Plan: <approved/not approved>
-  - Report: reports/agent/setup_report.md
+  - Report: reports/agent/01_setup/setup_report.md
   - Status: <status>
 
 ## Open Decisions
@@ -124,7 +124,7 @@ Use this structure:
 ## Report Index
 | Phase | Report | Status |
 |---|---|---|
-| Discovery | reports/agent/discovery_report.md | <status> |
+| Discovery | reports/agent/00_discovery/discovery_report.md | <status> |
 ```
 
 ## Update style

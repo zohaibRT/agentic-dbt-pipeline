@@ -134,7 +134,7 @@ The Report Information page should include:
 - Metric caveats, data quality notes, expected-empty facts, and known limitations.
 - Privacy handling and hidden technical fields.
 - Relationship/grain summary for the semantic model.
-- Validation summary and link/path to `reports/agent/presentation_report.md`.
+- Validation summary and link/path to `reports/agent/10_presentation/presentation_report.md`.
 - Open decisions, missing targets or benchmarks, and recommended next steps.
 
 Power BI page rules:
@@ -150,7 +150,7 @@ Power BI page rules:
 - Add report page tooltips for important charts when the PBIP/report format supports them.
 - Add drill-through pages for important entities such as customer, patient, provider, product, location, department, account, or order when safe and useful.
 - Hide technical fields from the report canvas and report view unless they are needed for investigation.
-- Document any missing layout element in `reports/agent/presentation_report.md` with the reason, such as unsupported by current PBIP generation, missing dimension, or privacy risk.
+- Document any missing layout element in `reports/agent/10_presentation/presentation_report.md` with the reason, such as unsupported by current PBIP generation, missing dimension, or privacy risk.
 
 ## Required report sections
 

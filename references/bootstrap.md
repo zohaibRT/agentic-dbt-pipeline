@@ -13,7 +13,7 @@ Run this setup phase before layer work. Do not skip unless the user explicitly d
 | Not allowed | Source YAML generation, model layer creation, warehouse model builds, continuous integration workflows, Agents Schema workflows, profile edits without approval, commits, or pushes |
 | Commands to run | `dbt --version`, `dbt debug`, `dbt deps`, `dbt parse --no-partial-parse`, plus skill/config validation when available |
 | Completion criteria | dbt connection works, packages install, parse succeeds or skip is documented, profile target schema hygiene is safe or blocked, and next phase is ready |
-| Report required | `reports/agent/setup_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
+| Report required | `reports/agent/01_setup/setup_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
 
 ## Automatic setup rule
 
@@ -32,7 +32,7 @@ Before running it, write or update `AGENT_PLAN.md` with:
 Then run only the setup actions allowed in this file and write:
 
 ```text
-reports/agent/setup_report.md
+reports/agent/01_setup/setup_report.md
 reports/agent/PIPELINE_STATUS.md
 reports/agent/CONTEXT_TREE.md
 ```

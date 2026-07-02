@@ -96,14 +96,14 @@ Use the validated gold/mart model and analytics insight outputs to create:
 - Trends page when usable fact dates exist.
 - Report Information or Report Settings page with definitions, caveats, privacy handling, validation status, and open decisions.
 
-Every planned page must either have real visuals or be explicitly deferred with the reason in `reports/agent/presentation_report.md`.
+Every planned page must either have real visuals or be explicitly deferred with the reason in `reports/agent/10_presentation/presentation_report.md`.
 
 ## Validation gate
 
 Before handoff:
 
 1. Run `python scripts/validate_powerbi_pbip.py <pbip_project_folder>`.
-2. Record visual counts by page in `reports/agent/presentation_report.md`.
+2. Record visual counts by page in `reports/agent/10_presentation/presentation_report.md`.
 3. Run Power BI Modeling Model Context Protocol validation when available.
 4. Run Power BI Desktop open validation when available.
 5. Fix and repeat until validation passes, or mark the phase blocked with exact evidence.

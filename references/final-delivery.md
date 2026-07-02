@@ -13,7 +13,7 @@ Do not call a full pipeline complete immediately after documentation or analytic
 
 If analytics insight reporting is not complete, set status to `Documentation complete - analytics insight reporting pending` and run [analytics-insight-reporting.md](analytics-insight-reporting.md) before the presentation question.
 
-When a presentation artifact is approved, final delivery is not allowed until that presentation phase reaches one of these recorded states in `reports/agent/presentation_report.md` and `reports/agent/PIPELINE_STATUS.md`:
+When a presentation artifact is approved, final delivery is not allowed until that presentation phase reaches one of these recorded states in `reports/agent/10_presentation/presentation_report.md` and `reports/agent/PIPELINE_STATUS.md`:
 
 - `PASS`: all required artifact validation completed and evidence is recorded.
 - `BLOCKED`: validation failed or could not run, the exact blocker is recorded, and the user is told delivery is blocked.
@@ -43,7 +43,7 @@ If the presentation decision has not been asked or answered, set status to `Anal
 - `AGENT_PLAN.md` records approved phase plans and short phase results
 - `reports/agent/` contains phase reports, `PIPELINE_STATUS.md`, `CONTEXT_TREE.md`, and `NEXT_PHASE_PROMPT.md`
 - `reports/agent/final_delivery.md` records the final delivery status, validation evidence, presentation gate outcome, open decisions, and next actions
-- When Power BI is approved, `reports/agent/powerbi_model_plan.md`, `reports/agent/dashboard_pages.md`, and `reports/agent/dax_measures.md` capture the Power BI-ready star schema handoff, semantic model plan, report page plan, and DAX measure specifications
+- When Power BI is approved, `reports/agent/10_presentation/powerbi_model_plan.md`, `reports/agent/10_presentation/dashboard_pages.md`, and `reports/agent/10_presentation/dax_measures.md` capture the Power BI-ready star schema handoff, semantic model plan, report page plan, and DAX measure specifications
 
 ## README or handoff notes
 
@@ -55,7 +55,7 @@ Update or create project handoff notes with:
 - Schema isolation status, including evaluator/seeds/snapshots schemas and whether source schema stayed clean
 - Important source tables
 - Source discovery conclusions and requirements captured before build
-- Link to `reports/agent/requirements.md` with source-derived requirements, evidence, confidence, recommended defaults, open questions, and deferred or blocked scope
+- Link to `reports/agent/00_discovery/requirements.md` with source-derived requirements, evidence, confidence, recommended defaults, open questions, and deferred or blocked scope
 - Final facts, dimensions, marts, and metrics
 - Bridge table decisions: built, not needed, deferred, or blocked
 - Key performance indicator definitions with numerator, denominator, filters, time field, source model, caveats, validation evidence, and approval status

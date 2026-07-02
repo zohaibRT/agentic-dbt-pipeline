@@ -36,7 +36,7 @@ Required context bundle before running the approved next phase:
 4. `AGENT_PLAN.md`
 5. `reports/agent/PIPELINE_STATUS.md`
 6. `reports/agent/CONTEXT_TREE.md`
-7. `reports/agent/requirements.md` when it exists
+7. `reports/agent/00_discovery/requirements.md` when it exists, falling back to legacy `reports/agent/requirements.md` only when the canonical file is absent
 8. The latest relevant phase report, such as `reports/agent/<completed_phase>_report.md`
 9. `reports/agent/NEXT_PHASE_PROMPT.md`
 10. Project knowledge files when present: `AGENT_KNOWLEDGE.md`, `docs/dbt_knowledge.md`, `docs/business_rules.md`, `.agents/project_knowledge.md`

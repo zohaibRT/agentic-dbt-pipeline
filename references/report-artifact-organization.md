@@ -24,6 +24,8 @@ reports/agent/
 
 `HUMAN_VERIFICATION_GUIDE.md` is mandatory after analytics insight reporting and final delivery. It must explain how to verify layers, key performance indicators, blocked items, presentation artifacts, and next actions.
 
+Do not write phase-specific reports, logs, codegen output, relationship reports, cardinality reports, analytics files, presentation files, or validation files directly under `reports/agent/` for new projects. Put them in the canonical phase folder below.
+
 ## Canonical Folder Layout
 
 Write new phase artifacts to these folders:
@@ -95,6 +97,8 @@ For new writes, prefer canonical paths. If an existing project already has the f
 2. Create `HUMAN_VERIFICATION_GUIDE.md` when relevant.
 3. Add a note that the project uses a legacy flat layout.
 4. Continue writing new files to canonical folders unless the user asks to preserve the old layout.
+
+If the user approves cleanup of a legacy flat layout, migrate files by phase into the canonical folders, leave root control-plane files at the root, update `REPORT_INDEX.md`, and document the migration in the next phase report. Do not delete legacy files until the migrated copies are verified.
 
 ## Human-Facing Summary Requirement
 

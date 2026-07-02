@@ -17,7 +17,7 @@ This phase is read-only. Do not create dbt projects, install packages, run codeg
 | Not allowed | dbt project creation, package installation, codegen, model files, warehouse schema changes, profile changes, or alternate source profiling without approval |
 | Commands to run | Lightweight metadata and profiling queries through the selected dbt profile adapter only |
 | Completion criteria | Source inventory, relationships, business processes, data quality signals, inferred requirements, recommended medallion direction, confidence, unknowns, and user decisions are documented |
-| Report required | `reports/agent/discovery_report.md`, `reports/agent/requirements.md`, `reports/agent/cardinality_report.md`, `reports/agent/relationship_profile.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
+| Report required | `reports/agent/00_discovery/discovery_report.md`, `reports/agent/00_discovery/requirements.md`, `reports/agent/00_discovery/cardinality_report.md`, `reports/agent/00_discovery/relationship_profile.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
 
 Do not assume the business domain. Even when the user provides a domain label, first understand the source evidence:
 
@@ -104,17 +104,17 @@ Do not lead the discovery report with profile details, `.env` handling, package 
 
 Discovery must be written to files, not only posted in chat, but only after required inputs are confirmed.
 
-If `.env` is missing, invalid, or contains placeholders, do not create or update discovery files. Do not create `reports/agent/discovery_report.md`, `reports/agent/requirements.md`, `reports/agent/PIPELINE_STATUS.md`, or `reports/agent/CONTEXT_TREE.md` for discovery until the user provides valid `DBT_DOMAIN`, `DBT_PROFILE_NAME`, and `DBT_SOURCE_SCHEMA`.
+If `.env` is missing, invalid, or contains placeholders, do not create or update discovery files. Do not create `reports/agent/00_discovery/discovery_report.md`, `reports/agent/00_discovery/requirements.md`, `reports/agent/PIPELINE_STATUS.md`, or `reports/agent/CONTEXT_TREE.md` for discovery until the user provides valid `DBT_DOMAIN`, `DBT_PROFILE_NAME`, and `DBT_SOURCE_SCHEMA`.
 
 If the configured source is empty or the agent recommends a different database, dataset, catalog, schema, table, tenant, client, domain, environment, or assumption, do not create or update discovery files for the candidate source until the user approves that replacement.
 
 Before sending the discovery summary in chat, create or update these files:
 
 ```text
-reports/agent/discovery_report.md
-reports/agent/requirements.md
-reports/agent/cardinality_report.md
-reports/agent/relationship_profile.md
+reports/agent/00_discovery/discovery_report.md
+reports/agent/00_discovery/requirements.md
+reports/agent/00_discovery/cardinality_report.md
+reports/agent/00_discovery/relationship_profile.md
 reports/agent/PIPELINE_STATUS.md
 reports/agent/CONTEXT_TREE.md
 ```
@@ -125,7 +125,7 @@ The chat response should be a concise summary plus links/paths to these files. D
 
 ## Requirements file
 
-Create `reports/agent/requirements.md` during discovery. This file is the project-facing requirements checkpoint extracted from the source schema, source data, domain label, and any user-provided rules. It must be easy for a data engineer to review before build planning.
+Create `reports/agent/00_discovery/requirements.md` during discovery. This file is the project-facing requirements checkpoint extracted from the source schema, source data, domain label, and any user-provided rules. It must be easy for a data engineer to review before build planning.
 
 Use this structure:
 
@@ -172,7 +172,7 @@ Do not put environment setup instructions, package installation, git details, or
 
 ## Required discovery diagrams
 
-Add a `Diagrams` section to `reports/agent/discovery_report.md`.
+Add a `Diagrams` section to `reports/agent/00_discovery/discovery_report.md`.
 
 Required:
 
@@ -190,12 +190,12 @@ For every discovery diagram:
 - Use Mermaid only.
 - Use full wording in titles and notes.
 - Verify visibility or parse status with [mermaid-diagrams.md](mermaid-diagrams.md).
-- Record the verification result in `reports/agent/discovery_report.md` and `reports/agent/CONTEXT_TREE.md`.
+- Record the verification result in `reports/agent/00_discovery/discovery_report.md` and `reports/agent/CONTEXT_TREE.md`.
 - Mark uncertain relationships as notes outside the diagram instead of drawing them as confirmed edges.
 
 ## Recommended medallion direction
 
-Add a `Recommended Medallion Direction` section to `reports/agent/discovery_report.md`.
+Add a `Recommended Medallion Direction` section to `reports/agent/00_discovery/discovery_report.md`.
 
 This section must cover the full path:
 
@@ -271,4 +271,4 @@ If the user provides requirements, add them to the plan as `project_rules` and u
 - Switch to a different database, dataset, catalog, schema, table, tenant, client, domain, environment, or assumption because it "looks likely" without user approval.
 - Profile candidate tables or write discovery reports for a guessed replacement source before approval.
 
-After discovery is summarized, confirm that `reports/agent/discovery_report.md`, `reports/agent/requirements.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` were created or updated. Do not defer discovery files to project setup and initialization.
+After discovery is summarized, confirm that `reports/agent/00_discovery/discovery_report.md`, `reports/agent/00_discovery/requirements.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` were created or updated. Do not defer discovery files to project setup and initialization.

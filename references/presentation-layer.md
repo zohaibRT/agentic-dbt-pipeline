@@ -8,20 +8,20 @@ Read [analytics-insight-reporting.md](analytics-insight-reporting.md) first. The
 
 | Analytics insight output | Presentation use |
 |---|---|
-| `reports/agent/dashboard_spec.md` | Page plan |
-| `reports/agent/kpi_discovery_matrix.md` | Key performance indicator candidate evidence, confidence, and blocked/deferred reasoning |
-| `reports/agent/kpi_reconciliation_report.md` | Source-to-final metric proof, variance, and pass/fail evidence |
+| `reports/agent/09_analytics_insights/dashboard_spec.md` | Page plan |
+| `reports/agent/09_analytics_insights/kpis/kpi_discovery_matrix.md` | Key performance indicator candidate evidence, confidence, and blocked/deferred reasoning |
+| `reports/agent/09_analytics_insights/kpis/kpi_reconciliation_report.md` | Source-to-final metric proof, variance, and pass/fail evidence |
 | `reports/agent/kpi_lineage_proofs.md` | First failing layer and lineage summary for trusted or blocked metrics |
 | `reports/agent/kpi_variance_report.md` | Variance evidence for report caveats and blocked visuals |
-| `reports/agent/kpi_catalog.md` | Measure and key performance indicator source |
-| `reports/agent/reporting_catalog.md` | Report/page scope |
+| `reports/agent/09_analytics_insights/kpis/kpi_catalog.md` | Measure and key performance indicator source |
+| `reports/agent/09_analytics_insights/reporting_catalog.md` | Report/page scope |
 | `reports/agent/insight_backlog.md` | Blocked or deferred visuals |
 | `reports/agent/reporting_readiness_scorecard.md` | Validation gate before artifact build |
-| `reports/agent/analytics_insight_report.md` | Business-facing rationale |
+| `reports/agent/09_analytics_insights/analytics_insight_report.md` | Business-facing rationale |
 
 The presentation layer must not invent pages, key performance indicators, visuals, measures, denominators, filters, or business scope that contradict or bypass analytics insight reporting outputs unless the user explicitly overrides them.
 
-Power BI measures must be generated only from `reports/agent/kpi_catalog.md`, validated dbt semantic metrics, or explicit user-approved requirements. Each generated DAX measure must map back to the key performance indicator name, source dbt model, formula, time field, grain, allowed dimensions, confidence, caveats, cardinality proof, and verification evidence. Do not generate DAX for `LOW`, `BLOCKED`, or unreconciled key performance indicators from `kpi_discovery_matrix.md` and `kpi_reconciliation_report.md`.
+Power BI measures must be generated only from `reports/agent/09_analytics_insights/kpis/kpi_catalog.md`, validated dbt semantic metrics, or explicit user-approved requirements. Each generated DAX measure must map back to the key performance indicator name, source dbt model, formula, time field, grain, allowed dimensions, confidence, caveats, cardinality proof, and verification evidence. Do not generate DAX for `LOW`, `BLOCKED`, or unreconciled key performance indicators from `kpi_discovery_matrix.md` and `kpi_reconciliation_report.md`.
 
 ## Purpose
 
@@ -78,8 +78,8 @@ If the user approves a presentation layer, treat it as a separate `presentation_
 2. Confirm the inferred output format in the plan, source models, metrics, privacy rules, and validation method.
 3. Build only the approved artifact.
 4. Validate the artifact.
-5. Write or update `reports/agent/presentation_report.md`, `reports/agent/presentation_layer_report.md` when the project uses the friendlier filename, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md`.
-6. For approved Power BI work, also write or update `reports/agent/powerbi_model_plan.md`, `reports/agent/dashboard_pages.md`, and `reports/agent/dax_measures.md` with the model plan, page plan, DAX specifications, and validation evidence.
+5. Write or update `reports/agent/10_presentation/presentation_report.md`, `reports/agent/10_presentation/presentation_layer_report.md` when the project uses the friendlier filename, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md`.
+6. For approved Power BI work, also write or update `reports/agent/10_presentation/powerbi_model_plan.md`, `reports/agent/10_presentation/dashboard_pages.md`, and `reports/agent/10_presentation/dax_measures.md` with the model plan, page plan, DAX specifications, and validation evidence.
 7. Only then continue to final delivery.
 
 ## Phase contract
@@ -91,11 +91,11 @@ If the user approves a presentation layer, treat it as a separate `presentation_
 | Not allowed | Dashboards, reports, slides, notebooks, Power BI projects, guessed measures, or sensitive-field exposure without approval |
 | Commands to run | Read-only model/metadata checks and artifact-specific validation only after the user approves artifact creation |
 | Completion criteria | Best presentation option is recommended with evidence, possible key performance indicators are listed, caveats are clear, and the user is asked whether to create an artifact |
-| Report required | Final report or `reports/agent/presentation_report.md`; optional friendlier alias `reports/agent/presentation_layer_report.md`; `reports/agent/PIPELINE_STATUS.md`; `reports/agent/CONTEXT_TREE.md`; and Power BI planning files when Power BI is approved |
+| Report required | Final report or `reports/agent/10_presentation/presentation_report.md`; optional friendlier alias `reports/agent/10_presentation/presentation_layer_report.md`; `reports/agent/PIPELINE_STATUS.md`; `reports/agent/CONTEXT_TREE.md`; and Power BI planning files when Power BI is approved |
 
 ## What to recommend
 
-Review `reports/agent/analytics_insight_report.md`, `reports/agent/dashboard_spec.md`, `reports/agent/kpi_catalog.md`, `reports/agent/reporting_catalog.md`, final gold/marts models, semantic metrics, source data limitations, documented business rules, and [kpi-definitions.md](kpi-definitions.md). Then recommend presentation options with evidence:
+Review `reports/agent/09_analytics_insights/analytics_insight_report.md`, `reports/agent/09_analytics_insights/dashboard_spec.md`, `reports/agent/09_analytics_insights/kpis/kpi_catalog.md`, `reports/agent/09_analytics_insights/reporting_catalog.md`, final gold/marts models, semantic metrics, source data limitations, documented business rules, and [kpi-definitions.md](kpi-definitions.md). Then recommend presentation options with evidence:
 
 | Option | When to recommend | What to include |
 |---|---|---|
@@ -160,7 +160,7 @@ Enterprise design rules:
 - Exclude, mask, or aggregate sensitive fields by default unless the user has approved exposure.
 - Choose Import, DirectQuery, or Composite mode based on data volume, refresh need, and warehouse cost; default to Import for moderate curated marts.
 - Keep pages information-dense but scannable. Avoid decorative, marketing-style, or column-dump layouts.
-- Record the page rationale, source models, measures, filters, sensitive-field handling, and blocked visuals in `AGENT_PLAN.md` and `reports/agent/presentation_report.md`.
+- Record the page rationale, source models, measures, filters, sensitive-field handling, and blocked visuals in `AGENT_PLAN.md` and `reports/agent/10_presentation/presentation_report.md`.
 - Ask the user only for decisions that affect business meaning, privacy, cost, refresh behavior, or downstream usability.
 
 ## Standard time showcase
@@ -188,7 +188,7 @@ Use governed measures and reportable filters first. If a measure such as `is_rep
 
 Relate fact date columns to the governed date table or `time_spine_daily` for time intelligence whenever that relationship is safe and does not create ambiguous active paths. Disable Power BI automatic local date tables for generated models. Use inactive role-playing date relationships only when the measure pattern is documented. If a safe date-table relationship cannot be created, the report may use fact-date grouping, but the limitation must be documented.
 
-Before delivery, validate every time showcase visual number with SQL against the final gold/mart schema. `reports/agent/presentation_report.md` must include the exact verification query, expected result, Power BI measure or visual checked, and pass/fail result for every card or chart aggregate. Do not trust a Power BI visual until its source aggregate has been checked.
+Before delivery, validate every time showcase visual number with SQL against the final gold/mart schema. `reports/agent/10_presentation/presentation_report.md` must include the exact verification query, expected result, Power BI measure or visual checked, and pass/fail result for every card or chart aggregate. Do not trust a Power BI visual until its source aggregate has been checked.
 
 When data history is shorter than the visual window, keep the reusable visual pattern but explain the data reality. For example, if facts only span 14 months, a 10-year by-year chart may show empty years; monthly and last-12-month views should be emphasized.
 
@@ -343,7 +343,7 @@ Required behavior:
 2. If the Power BI Modeling Model Context Protocol tools are installed or exposed, use them. Running only static validation while available Model Context Protocol tools are skipped is a failed presentation phase.
 3. If the tools are not exposed but a tool/plugin/connector installation mechanism is available, request or recommend installing the exact Power BI Modeling Model Context Protocol connector/plugin before final presentation validation. Prefer `@microsoft/powerbi-modeling-mcp` from the official Microsoft repository.
 4. If installation is not possible in the current environment, mark Model Context Protocol validation as `NOT RUN` with the exact reason and mark the presentation phase `BLOCKED` when the user required open/load validation through Model Context Protocol.
-5. Record the availability check, tool names found or missing, install attempt or instruction, and validation result in `reports/agent/presentation_report.md`.
+5. Record the availability check, tool names found or missing, install attempt or instruction, and validation result in `reports/agent/10_presentation/presentation_report.md`.
 
 The expected Model Context Protocol validation path is:
 
@@ -366,7 +366,7 @@ Required loop:
    - DAX query operation with a smoke query such as `EVALUATE ROW("test", 1)`.
 5. If Power BI Desktop is available, open or launch the `.pbip` and confirm it loads without project definition or relationship-path errors.
 6. If any step fails, fix the PBIP/TMDL files and repeat the validation loop.
-7. Only after passing validation, update `reports/agent/presentation_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` with `PASS`.
+7. Only after passing validation, update `reports/agent/10_presentation/presentation_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` with `PASS`.
 
 Do not mark the presentation phase complete if the user would see an error when opening the `.pbip`.
 
@@ -376,7 +376,7 @@ If Power BI Modeling Model Context Protocol tools are available but were not use
 
 ## Power BI self-test checklist
 
-Before handoff, paste the validation results into the chat result summary and `reports/agent/presentation_report.md`:
+Before handoff, paste the validation results into the chat result summary and `reports/agent/10_presentation/presentation_report.md`:
 
 | Check | What to verify |
 |---|---|
@@ -393,7 +393,7 @@ Before handoff, paste the validation results into the chat result summary and `r
 | Power BI Modeling Model Context Protocol availability | Tool search/connector check is recorded; if available, Model Context Protocol validation was run |
 | Power BI Desktop open | `.pbip` opens without load errors when Desktop is available |
 
-If Power BI Desktop open fails after handoff, the agent must use the pasted error message as a blocker, fix the artifact, rerun static validation, rerun the relationship ambiguity audit, rerun the Power BI Modeling Model Context Protocol `ConnectFolder` test, rerun Desktop open validation when available, and update `reports/agent/presentation_report.md` with the fix and retest results.
+If Power BI Desktop open fails after handoff, the agent must use the pasted error message as a blocker, fix the artifact, rerun static validation, rerun the relationship ambiguity audit, rerun the Power BI Modeling Model Context Protocol `ConnectFolder` test, rerun Desktop open validation when available, and update `reports/agent/10_presentation/presentation_report.md` with the fix and retest results.
 
 Before creating files:
 
@@ -420,7 +420,7 @@ When creating PBIP:
 - Apply the professional visual theme and color rules from [reporting-standards.md](reporting-standards.md). Do not leave report pages on default Power BI colors, default white-only styling, or unformatted placeholder visuals. Use a consistent palette, header treatment, card styling, chart series colors, slicer styling, detail-table formatting, and conditional colors for positive, warning, and failure states. If a brand palette is unavailable, use the skill's neutral enterprise palette and document the theme choices in the presentation report.
 - Analyze the maximum useful supported key performance indicators from the validated model. Put the highest-priority three to five on the executive canvas row for readability, and place additional supported key performance indicators on a scorecard/details page, tooltip, drill-through, or Report Information page. List blocked or deferred key performance indicators with reasons.
 - Create a Report Information, Report Settings, or About This Report page with report purpose, audience, data source, refresh details, page guide, key performance indicator definitions, slicer/filter definitions, metric caveats, data quality notes, privacy handling, grain/relationship summary, validation summary, and open decisions.
-- Include report title, page title, last refreshed timestamp, reset filters button, and native page navigation when the chosen PBIP/report format supports them. If any element cannot be generated safely, document the reason in `reports/agent/presentation_report.md`.
+- Include report title, page title, last refreshed timestamp, reset filters button, and native page navigation when the chosen PBIP/report format supports them. If any element cannot be generated safely, document the reason in `reports/agent/10_presentation/presentation_report.md`.
 - Use line or area charts for time series; use bar or column charts for category comparisons; use matrix visuals with conditional formatting for operational details where useful.
 - Add report page tooltips and drill-through pages for important entities when safe, supported by the model, and useful for investigation.
 - Ensure the `.pbip` file points to a Report artifact when a report is requested, not only to a semantic model.
@@ -441,7 +441,7 @@ When creating PBIP:
 - Use inactive relationships only for approved role-playing dates or alternate analysis paths, and document the measure pattern needed to activate them.
 - Include approved bridge tables and their relationship directions when the gold layer contains bridge models or the approved presentation scope requires many-to-many analysis.
 - Put reusable business calculations in a measures table or equivalent semantic model construct.
-- For every Power BI/DAX measure, reconcile the result to the approved gold or semantic key performance indicator definition. Rates, ratios, percentages, and averages must show expected numerator, actual numerator, expected denominator, actual denominator, expected result, and actual result in `reports/agent/presentation_report.md`.
+- For every Power BI/DAX measure, reconcile the result to the approved gold or semantic key performance indicator definition. Rates, ratios, percentages, and averages must show expected numerator, actual numerator, expected denominator, actual denominator, expected result, and actual result in `reports/agent/10_presentation/presentation_report.md`.
 - Add the standard `Trends` page when fact date columns are available. Include last calendar year, year-to-date, last 12 months, by-year, and by-month visuals for each primary fact where the measure/date pairing is validated.
 - In the Power BI semantic model, each table may have at most one column with `IsKey` set to `True`. If a dbt table has a composite business key, keep only one technical key column marked as the Power BI key or leave key metadata unset and document the composite grain in descriptions and relationships.
 - Use dbt surrogate keys for composite business keys before exposing dimensions to Power BI. Any column used as a Power BI one-side relationship key must have `unique` and `not_null` tests in dbt. Do not use partial natural keys as one-side Power BI keys when they repeat in the dimension.
@@ -468,13 +468,13 @@ When creating PBIP:
 Validation before handoff:
 
 - Verify every required PBIP, report, semantic model, definition, relationship, table, partition, and measure file exists.
-- If the bundled template was used, record the template path, generator command, regenerated IDs, and static validation result in `reports/agent/presentation_report.md`.
+- If the bundled template was used, record the template path, generator command, regenerated IDs, and static validation result in `reports/agent/10_presentation/presentation_report.md`.
 - If a local reference PBIP was used, record the exact path, user approval, inspected structural files, reused patterns, and explicitly state that business content, IDs, lineage tags, and source connections were not copied.
 - Parse JSON files with a real parser.
 - Validate the root `.pbip` shortcut schema: artifact entries for report deliverables must contain the required `report` property and must not contain unsupported properties such as `dataset`. Treat `artifacts[0].dataset` or a missing `artifacts[0].report` as a failed presentation phase.
 - Resolve every `.pbip` report artifact path and verify the referenced `.Report` folder exists. Then verify root-level `definition.pbir` exists, is non-empty, parses as JSON, contains `datasetReference.byPath.path`, and points to an existing `.SemanticModel` folder. Treat a missing, empty, unresolved, or legacy nested `definition/definition.pbir` as a failed presentation phase even if other report files exist.
 - Verify enhanced PBIR report metadata exists at `definition/report.json`, `definition/version.json`, and `definition/pages/pages.json`; reject legacy root-level `report.json` for enhanced PBIR.
-- Verify every page in `definition/pages/pages.json` has real visuals by counting `visual.json` files under each page folder. Record the visual inventory in `reports/agent/presentation_report.md`.
+- Verify every page in `definition/pages/pages.json` has real visuals by counting `visual.json` files under each page folder. Record the visual inventory in `reports/agent/10_presentation/presentation_report.md`.
 - Validate every `.platform` file with JSON parsing, schema-pattern check, and required artifact details check. The `$schema` value must match the supported Fabric git integration platform properties pattern for the target Desktop version, and `config` must be present as a non-empty object. Do not allow stale, guessed, missing, unsupported, or schema-stub-only `.platform` files.
 - For `report.json`, explicitly assert `themeCollection.baseTheme.reportVersionAtImport` exists and has the correct type and value for the target Power BI Desktop schema. Run `python scripts/validate_powerbi_pbip.py <pbip_project_folder>` to enforce the default `"5.55"` value, or pass `--expected-report-version-at-import <value>` only when a known-good project reference proves another version. If this metadata check fails, repair with `python scripts/validate_powerbi_pbip.py <pbip_project_folder> --fix-report-version-at-import`, then rerun validation without the fix flag. Treat missing, empty, incorrectly typed, or wrong-valued `reportVersionAtImport` as a failed presentation phase.
 - Verify all `report.json` `resourcePackages.items[].path` references resolve to existing files. Re-run `python scripts/validate_powerbi_pbip.py <pbip_project_folder>` after adding or removing theme/resource files.
@@ -491,9 +491,9 @@ Validation before handoff:
 - Verify the measures or metrics table has a calculated partition.
 - Verify approved report pages exist as Power BI report definition artifacts with actual `visual.json` files, not only Markdown page descriptions or empty page shells.
 - Verify user-provided technical requirements exactly, including output path, artifact folder names, schema strings, compatibility level, parameter names, import partition source, relationship direction/activity, measure labels, report page names, and expected visuals.
-- Verify every standard time showcase visual with SQL against the final gold/mart schema. Record exact verification queries and results in `reports/agent/presentation_report.md`.
+- Verify every standard time showcase visual with SQL against the final gold/mart schema. Record exact verification queries and results in `reports/agent/10_presentation/presentation_report.md`.
 - Verify every key performance indicator visual and DAX measure with [metric-verification.md](metric-verification.md). Treat mismatched numerator, denominator, filter, or final result as a failed presentation phase.
-- For Power BI PBIP/TMDL artifacts, run a relationship ambiguity audit before handoff. Build a simple graph of active relationships and confirm there is no pair of tables connected by more than one active path through facts, bridge tables, or snowflaked dimensions. Record the checked paths and result in `reports/agent/presentation_report.md`. Treat `PFE_XL_USERELATIONSHIP_AMBIGUOUS_PATH` and Desktop errors that say "There are ambiguous paths between" as failed validation.
+- For Power BI PBIP/TMDL artifacts, run a relationship ambiguity audit before handoff. Build a simple graph of active relationships and confirm there is no pair of tables connected by more than one active path through facts, bridge tables, or snowflaked dimensions. Record the checked paths and result in `reports/agent/10_presentation/presentation_report.md`. Treat `PFE_XL_USERELATIONSHIP_AMBIGUOUS_PATH` and Desktop errors that say "There are ambiguous paths between" as failed validation.
 - For Power BI PBIP/TMDL artifacts, run Power BI Modeling Model Context Protocol self-tests when tools are available: `ConnectFolder`, connection inspection, table inspection, relationship inspection, and a simple DAX smoke query. Treat `ConnectFolder` failure as a failed presentation phase and fix the artifact before handoff.
 - Compare key metadata paths and schema fields against a known-good local reference when one is available.
 - Re-run a file-tree check after edits and include the result in the phase report.
@@ -511,7 +511,7 @@ File validation: PASS
 Relationship audit: PASS (no ambiguous paths)
 Power BI Modeling Model Context Protocol model load: PASS
 Power BI Desktop open test: PASS
-Report: reports/agent/presentation_report.md
+Report: reports/agent/10_presentation/presentation_report.md
 Pipeline status: reports/agent/PIPELINE_STATUS.md
 ```
 

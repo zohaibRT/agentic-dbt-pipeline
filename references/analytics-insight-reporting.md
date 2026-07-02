@@ -60,12 +60,12 @@ These rules apply to every domain, source schema, and warehouse adapter:
 
 | Area | Contract |
 |---|---|
-| Inputs required | Completed and validated gold/marts, semantic layer status, evaluator results, documentation artifacts, key performance indicator definitions, metric verification results, layer validation evidence, privacy decisions, and `reports/agent/docs_report.md` |
+| Inputs required | Completed and validated gold/marts, semantic layer status, evaluator results, documentation artifacts, key performance indicator definitions, metric verification results, layer validation evidence, privacy decisions, and `reports/agent/08_documentation/docs_report.md` |
 | Allowed changes | Analytics insight reporting files under `reports/agent/09_analytics_insights/`, key performance indicator files under `reports/agent/09_analytics_insights/kpis/`, root `REPORT_INDEX.md`, root `HUMAN_VERIFICATION_GUIDE.md`, and read-only warehouse queries for validation and evidence |
 | Not allowed | dbt model SQL/YAML changes, semantic file changes, Power BI/PBIP/TMDL files, dashboards, slides, notebooks, guessed measures, or sensitive-field exposure without approval |
 | Commands to run | Read-only `dbt ls`, manifest/catalog review, approved warehouse aggregate queries, and metric reconciliation checks from [metric-verification.md](metric-verification.md) |
 | Completion criteria | All required reporting deliverables exist, trusted vs deferred outputs are separated, readiness scorecard is recorded, and presentation-layer gate is ready |
-| Report required | `reports/agent/analytics_insight_reporting_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
+| Report required | `reports/agent/09_analytics_insights/analytics_insight_reporting_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
 
 ## Approval gate
 
@@ -301,7 +301,7 @@ Do not duplicate the full Power BI canvas standard here. Reference [reporting-st
 
 After all deliverables exist:
 
-1. Write `reports/agent/analytics_insight_reporting_report.md` using [phase-completion-report.md](phase-completion-report.md).
+1. Write `reports/agent/09_analytics_insights/analytics_insight_reporting_report.md` using [phase-completion-report.md](phase-completion-report.md).
 2. Update `reports/agent/PIPELINE_STATUS.md` with phase status PASS, WARN, FAIL, or BLOCKED.
 3. Update `reports/agent/CONTEXT_TREE.md` with trusted metrics, deferred insights, and links to reporting files.
 4. Summarize trusted vs deferred outputs in chat.

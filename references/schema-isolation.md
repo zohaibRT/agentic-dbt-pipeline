@@ -95,7 +95,7 @@ Prefer option 1 for new projects.
 
 If the profile target schema is generic, such as `public`, `default`, `raw`, `source`, or `analytics`, it is not automatically unsafe, but the agent must document why explicit model, package, seed, snapshot, and evaluator routing prevents accidental writes. If that routing is incomplete, stop before builds.
 
-Add this to `reports/agent/setup_report.md` and `reports/agent/PIPELINE_STATUS.md`:
+Add this to `reports/agent/01_setup/setup_report.md` and `reports/agent/PIPELINE_STATUS.md`:
 
 ```markdown
 ## Profile Target Schema Hygiene

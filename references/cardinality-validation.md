@@ -13,8 +13,8 @@ Incorrect cardinality can cause row loss, row multiplication, duplicate dimensio
 Create or update these files when relationships, joins, final models, key performance indicators, or Power BI relationships are designed or validated:
 
 ```text
-reports/agent/cardinality_report.md
-reports/agent/relationship_profile.md
+reports/agent/00_discovery/cardinality_report.md
+reports/agent/00_discovery/relationship_profile.md
 reports/agent/join_safety_report.md
 reports/agent/grain_validation_report.md
 ```
@@ -22,10 +22,10 @@ reports/agent/grain_validation_report.md
 Include relevant cardinality results in:
 
 ```text
-reports/agent/kpi_reconciliation_report.md
+reports/agent/09_analytics_insights/kpis/kpi_reconciliation_report.md
 reports/agent/kpi_lineage_proofs.md
 reports/agent/reporting_readiness_scorecard.md
-reports/agent/powerbi_model_plan.md
+reports/agent/10_presentation/powerbi_model_plan.md
 ```
 
 ## Discovery Checks

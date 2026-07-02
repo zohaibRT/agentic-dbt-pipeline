@@ -56,9 +56,11 @@ reports/agent/NEXT_PHASE_PROMPT.md
 
 For existing projects that already use a flat `reports/agent/` layout, do not move files without user approval. Create `REPORT_INDEX.md`, keep reading legacy files when canonical files are absent, and write new artifacts to the canonical folders unless the user asks to preserve the old layout.
 
+For new projects, do not create phase-specific files directly under `reports/agent/`. If a phase-specific file is accidentally written at the root, copy or move it to the canonical phase folder before reporting completion, then update `REPORT_INDEX.md` with the canonical path. Keep only the root control-plane files at the root.
+
 ## Discovery report exception
 
-`reports/agent/discovery_report.md` must be project-oriented, not setup-oriented. Use discovery sections such as:
+`reports/agent/00_discovery/discovery_report.md` must be project-oriented, not setup-oriented. Use discovery sections such as:
 
 - Project/domain summary
 - Source tables and row counts
@@ -80,7 +82,7 @@ Do not lead discovery reports with setup details such as `.env` creation, profil
 
 Discovery reports are mandatory even before dbt project initialization. Write the file first, then summarize it in chat with the file path.
 
-`reports/agent/requirements.md` is also mandatory for initial discovery. It must capture source-derived requirements, evidence, confidence, recommended defaults, open questions, user-provided requirements, and deferred or blocked scope. Do not hide requirements only in chat.
+`reports/agent/00_discovery/requirements.md` is also mandatory for initial discovery. It must capture source-derived requirements, evidence, confidence, recommended defaults, open questions, user-provided requirements, and deferred or blocked scope. Do not hide requirements only in chat.
 
 ## Chat result summary
 
@@ -93,7 +95,7 @@ Use this format for discovery, project setup and configuration, sources, bronze/
 
 Current checkpoint: <checkpoint name>
 Status: <PASS / WARN / FAIL / BLOCKED / awaiting approval>
-Report: `<reports/agent/<phase>_report.md>`
+Report: `<reports/agent/<phase_folder>/<phase>_report.md>`
 
 Goal:
 <one sentence describing the phase goal>
@@ -351,8 +353,8 @@ Update `reports/agent/PIPELINE_STATUS.md` after every phase:
 
 | Phase | Status | Report | Commit |
 |---|---|---|---|
-| Discovery | PASS | reports/agent/discovery_report.md; reports/agent/requirements.md | n/a |
-| Project setup and configuration | PASS | reports/agent/setup_report.md | <hash or pending> |
+| Discovery | PASS | reports/agent/00_discovery/discovery_report.md; reports/agent/00_discovery/requirements.md | n/a |
+| Project setup and configuration | PASS | reports/agent/01_setup/setup_report.md | <hash or pending> |
 ```
 
 ## Context tree

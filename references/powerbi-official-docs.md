@@ -41,7 +41,7 @@ The bundled template and validator encode a safe subset of the documented PBIP/P
 
 ## Report In Presentation Report
 
-When Power BI is generated, `reports/agent/presentation_report.md` must record:
+When Power BI is generated, `reports/agent/10_presentation/presentation_report.md` must record:
 
 - Whether official Microsoft docs were checked or not checked.
 - Which official doc URLs were used when checked.

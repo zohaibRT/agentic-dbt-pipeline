@@ -19,7 +19,7 @@ If a value changes, identify the first layer where the unexpected variance appea
 Create or update these files when key performance indicators are implemented or handed off:
 
 ```text
-reports/agent/kpi_reconciliation_report.md
+reports/agent/09_analytics_insights/kpis/kpi_reconciliation_report.md
 reports/agent/kpi_lineage_proofs.md
 reports/agent/kpi_variance_report.md
 reports/agent/kpi_sql_proofs/

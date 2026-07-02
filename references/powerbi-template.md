@@ -66,10 +66,10 @@ The template should only provide:
 1. If no approved Desktop-created template exists, use `scripts/generate_powerbi_pbip.py`.
 2. Generate into the project, usually under `reports/powerbi/<project_name>/`.
 3. Read [powerbi-kpi-dax-tooling.md](powerbi-kpi-dax-tooling.md), then read and use these planning inputs when available:
-   - `reports/agent/dashboard_spec.md`
-   - `reports/agent/kpi_catalog.md`
-   - `reports/agent/reporting_catalog.md`
-   - `reports/agent/analytics_insight_report.md`
+   - `reports/agent/09_analytics_insights/dashboard_spec.md`
+   - `reports/agent/09_analytics_insights/kpis/kpi_catalog.md`
+   - `reports/agent/09_analytics_insights/reporting_catalog.md`
+   - `reports/agent/09_analytics_insights/analytics_insight_report.md`
    - `reports/agent/reporting_readiness_scorecard.md`
    - `reports/agent/insight_backlog.md`
    - `target/manifest.json`
@@ -130,4 +130,4 @@ Before presentation delivery, verify:
 - Optional Power BI Modeling Model Context Protocol tools and `pbi-cli` availability were checked when measure/model validation is needed, and the presentation report records whether they were used, unavailable, skipped with reason, or blocked.
 - Blocked or deferred visuals from `insight_backlog.md` were not generated.
 
-Record the results in `reports/agent/presentation_report.md`.
+Record the results in `reports/agent/10_presentation/presentation_report.md`.

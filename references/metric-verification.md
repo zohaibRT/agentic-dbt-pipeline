@@ -11,7 +11,7 @@ No key performance indicator is trusted until its value, grain, and cardinality 
 For each key performance indicator, verify:
 
 1. Business definition: numerator, denominator, filters, time field, grain, and caveats are documented.
-2. Discovery evidence: the candidate appears in `reports/agent/kpi_discovery_matrix.md` with source model, grain, archetype, confidence, caveats, and approval status.
+2. Discovery evidence: the candidate appears in `reports/agent/09_analytics_insights/kpis/kpi_discovery_matrix.md` with source model, grain, archetype, confidence, caveats, and approval status.
 3. Cardinality evidence: row counts, distinct business keys, duplicate keys, null keys, row loss, and row multiplication are understood for the metric grain.
 4. Source evidence: the source or upstream layer contains the records/flags/amounts required by the definition.
 5. Transformation lineage: silver/intermediate logic creates the required flags/measures correctly.

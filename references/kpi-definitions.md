@@ -2,7 +2,7 @@
 
 Use this before gold/marts, semantic layer, analytics insight reporting, presentation layer, and final delivery. Also read [metric-verification.md](metric-verification.md) before implementing or handing off any key performance indicator.
 
-Approved and implemented key performance indicators must also appear in `reports/agent/kpi_catalog.md` during analytics insight reporting. Candidate key performance indicators, including deferred and blocked candidates, must appear in `reports/agent/kpi_discovery_matrix.md`. See [analytics-insight-reporting.md](analytics-insight-reporting.md) and [kpi-discovery-framework.md](kpi-discovery-framework.md).
+Approved and implemented key performance indicators must also appear in `reports/agent/09_analytics_insights/kpis/kpi_catalog.md` during analytics insight reporting. Candidate key performance indicators, including deferred and blocked candidates, must appear in `reports/agent/09_analytics_insights/kpis/kpi_discovery_matrix.md`. See [analytics-insight-reporting.md](analytics-insight-reporting.md) and [kpi-discovery-framework.md](kpi-discovery-framework.md).
 
 ## Core rule
 
