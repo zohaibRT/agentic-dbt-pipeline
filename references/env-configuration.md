@@ -219,3 +219,13 @@ Optional: add project rules in chat if you have mappings, metrics, privacy rules
 If the user provides the three values in chat, update the local `.env`, summarize only those user-provided values, and ask for approval before discovery. Do not add extra inferred values.
 
 Never commit `.env`. Commit `.env.example` only if it contains placeholders and comments, not real project credentials or private connection details.
+
+## Anti-patterns to avoid
+
+| Do not | Do instead |
+|---|---|
+| Tell the user `.env` should already exist right after skill install | Explain that install creates the skill folder and `.env.example`, while workspace `.env` is created on first run |
+| Ask the user to manually copy `.env.example` before the first prompt | Create workspace `.env` from the resolved `.env.example` template when missing |
+| Point users to `project.config.yml` for normal domain/profile/schema settings | Use workspace `.env` unless advanced overrides are needed |
+| Run discovery or dbt commands with missing or placeholder `.env` | Stop and collect `DBT_DOMAIN`, `DBT_PROFILE_NAME`, and `DBT_SOURCE_SCHEMA` first |
+| Search only the workspace for `.env.example` when the skill folder has it | Resolve `.env.example` from workspace, project root, then installed skill folder |

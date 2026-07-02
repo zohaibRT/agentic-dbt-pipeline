@@ -13,6 +13,24 @@ Before editing dbt project files:
 4. Explain the phase plan when approval is required.
 5. Make only the required changes for the current phase.
 
-Do not edit `target/`, `dbt_packages/`, `logs/`, `.venv/`, `.env`, or `profiles.yml`.
+## Environment setup (first run)
+
+`npx skills add` does **not** create workspace `.env`. On first run, if workspace `.env` is missing, read `references/env-configuration.md` and:
+
+1. Resolve `.env.example` from workspace root, dbt project root, or `.agents/skills/agentic-dbt-pipeline/.env.example`.
+2. Create workspace `.env` from that template with placeholder values only.
+3. Stop and ask for `DBT_DOMAIN`, `DBT_PROFILE_NAME`, and `DBT_SOURCE_SCHEMA` before discovery or dbt commands.
+
+Do **not**:
+
+- Tell the user to create `.env` manually before the first prompt.
+- Expect `.env` to exist immediately after skill install.
+- Edit `.agents/skills/agentic-dbt-pipeline/project.config.yml` for normal project settings when workspace `.env` is enough.
+- Run discovery, `dbt debug`, `dbt deps`, codegen, or builds while `.env` is missing or placeholder-only.
+- Fill `.env` from profiles, warehouse schemas, guesses, or previous runs.
+
+Creating or updating workspace `.env` from user-provided values on first run is allowed. Do not commit `.env`.
+
+Do not edit `target/`, `dbt_packages/`, `logs/`, `.venv/`, or `profiles.yml`.
 
 Do not hardcode credentials or create/change business metrics without clear definitions and approval.

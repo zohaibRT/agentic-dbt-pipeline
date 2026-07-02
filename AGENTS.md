@@ -25,12 +25,16 @@ Semantic layer, project evaluator, analytics insight reporting, presentation lay
 - Explain the plan before non-setup build changes.
 - Keep changes limited to the approved phase.
 
+Creating or updating workspace `.env` from user-provided values on first run is allowed per `references/env-configuration.md`. Do not commit `.env`.
+
 ## Safety Rules
 
 Do not:
 
-- Edit `target/`, `dbt_packages/`, `logs/`, `.venv/`, `.env`, or `profiles.yml`.
-- Commit secrets, passwords, tokens, or warehouse credentials.
+- Edit `target/`, `dbt_packages/`, `logs/`, `.venv/`, or `profiles.yml`.
+- Commit workspace `.env`, secrets, passwords, tokens, or warehouse credentials.
+- Tell users to create workspace `.env` manually before the first prompt when the skill can create it on first run per `references/env-configuration.md`.
+- Run discovery or dbt commands while workspace `.env` is missing or placeholder-only.
 - Hardcode credentials in SQL, YAML, Markdown, workflows, or scripts.
 - Update, insert, delete, truncate, merge into, create, drop, alter, or repair rows or objects in the configured source schema or source tables.
 - Write dbt outputs into the configured source schema.

@@ -66,6 +66,19 @@ rm -rf "$tmp"
 
 After hydration, read references and scripts from local disk only. If hydration fails because `git` or network access is unavailable, stop and tell the user the skill resources are missing instead of pretending the referenced files were read.
 
+## Install and environment anti-patterns
+
+Avoid these common first-run mistakes:
+
+| Anti-pattern | Correct behavior |
+|---|---|
+| Expecting workspace `.env` immediately after `npx skills add` | `.env` is created on first agent run in the workspace, not during skill install |
+| Telling the user to copy `.env.example` manually before the first prompt | Agent resolves `.env.example` and creates workspace `.env` when missing |
+| Editing `.agents/skills/agentic-dbt-pipeline/project.config.yml` for normal project settings | Use workspace `.env` for `DBT_DOMAIN`, `DBT_PROFILE_NAME`, and `DBT_SOURCE_SCHEMA` |
+| Running discovery or dbt while `.env` is missing or placeholder-only | Hard stop; ask for required values first |
+| Looking for `.env.example` only in the workspace when the skill folder already has it | Also check `.agents/skills/agentic-dbt-pipeline/.env.example` |
+| Filling `.env` from `profiles.yml`, warehouse schemas, or guesses | Only use values the user provides in chat or explicitly approves |
+
 ## Discovery first, then project setup and configuration
 
 Read and execute [references/discovery-requirements.md](references/discovery-requirements.md) before project setup, project initialization, or full pipeline runs.

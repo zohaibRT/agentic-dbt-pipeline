@@ -74,6 +74,13 @@ You should **not** expect `.env` in the workspace immediately after install.
 4. Fill `DBT_DOMAIN`, `DBT_PROFILE_NAME`, and `DBT_SOURCE_SCHEMA` in workspace `.env`.
 5. Approve the agent to continue with discovery.
 
+### Anti-patterns to avoid
+
+- Do not tell users to create workspace `.env` before the first prompt.
+- Do not expect workspace `.env` immediately after `npx skills add`.
+- Do not use skill-folder `project.config.yml` for normal domain/profile/schema settings.
+- Do not run discovery or dbt while workspace `.env` is missing or placeholder-only.
+
 ### Optional advanced overrides
 
 Edit `.agents/skills/agentic-dbt-pipeline/project.config.yml` only when you need non-default skill behavior. Most users should configure the workspace `.env` instead.
