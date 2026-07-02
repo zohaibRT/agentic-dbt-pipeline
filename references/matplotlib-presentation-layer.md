@@ -2,7 +2,7 @@
 
 Use this when the user approves a presentation layer and chooses **Matplotlib** as the presentation technology, or when the user approves the default presentation layer without naming another technology.
 
-Also read [presentation-layer.md](presentation-layer.md), [analytics-insight-reporting.md](analytics-insight-reporting.md), [report-artifact-organization.md](report-artifact-organization.md), [reporting-standards.md](reporting-standards.md), [kpi-definitions.md](kpi-definitions.md), and [metric-verification.md](metric-verification.md).
+Also read [presentation-layer.md](presentation-layer.md), [analytics-insight-reporting.md](analytics-insight-reporting.md), [report-artifact-organization.md](report-artifact-organization.md), [reporting-standards.md](reporting-standards.md), [kpi-definitions.md](kpi-definitions.md), [metric-verification.md](metric-verification.md), and [mapping-seeds.md](mapping-seeds.md) when code-to-label mappings are needed.
 
 Official documentation: [Matplotlib User Guide](https://matplotlib.org/stable/users/index)
 
@@ -14,8 +14,57 @@ Generate validated, business-facing static analytics outputs from approved gold/
 - Runnable without Power BI Desktop or proprietary report project files
 - Easy to validate with SQL-backed Python scripts
 - Suitable for executive summaries, trend pages, breakdown charts, and operational detail views
+- Viewable in a browser through a generated HTML report with classified tabs/pages, plus optional Windows batch launcher
 
 Matplotlib outputs are not a replacement for governed semantic models. They consume the same trusted key performance indicators and page scope defined during analytics insight reporting.
+
+## Browser-viewable report pack
+
+Matplotlib delivery is not complete with PNG files alone. The agent must also produce a **browser-openable HTML report** so a data engineer or business user can review all charts without hunting through loose image files.
+
+### Primary review experience
+
+| Artifact | Purpose |
+|---|---|
+| `report.html` | Main browser report with tabbed or sectioned navigation, chart grouping, key performance indicator summaries, blocked/deferred notes, and report metadata |
+| `open_report.bat` | Windows launcher that opens `report.html` in the default browser |
+| `open_report.sh` | Optional Unix launcher for the same behavior |
+| `generate_report.py` | Regenerates figures, rebuilds `report.html`, and may open the browser when run with `--open` |
+
+Expected user flow on Windows:
+
+1. Run `python reports/agent/10_presentation/matplotlib/generate_report.py`
+2. Double-click `reports/agent/10_presentation/matplotlib/open_report.bat`
+3. Review classified tabs/pages in the browser
+
+Do not require Power BI, Jupyter, or a notebook server for normal review.
+
+### HTML report structure
+
+`report.html` must use a clear multi-page or multi-tab layout aligned to `dashboard_spec.md` and the five reporting pillars when supported.
+
+Default tab or section order:
+
+| Tab / section | Content |
+|---|---|
+| Overview | Report purpose, audience, data source, refresh time, caveats, and navigation |
+| Executive key performance indicators | Trusted strategic key performance indicators from `kpi_catalog.md` |
+| Trends and variance | Time showcase, period comparisons, and variance views |
+| Operations and activity | Volumes, statuses, workflow movement, and operational metrics |
+| Segmentation and performance | Department, product, provider, location, channel, or other approved dimensions |
+| Financial or value | Amount, revenue, payment, cost, or value views when supported |
+| Exceptions and data quality | Coverage gaps, blocked visuals, mapping gaps, and validation notes |
+| Blocked and deferred | Items from `insight_backlog.md` and unreconciled metrics |
+| Report information | Metric definitions, filters, privacy handling, SQL verification summary |
+
+Each tab or section must:
+
+- Show business-facing titles, not technical file names
+- Embed or link the related PNG figures from `figures/`
+- List the metrics included on that page
+- Mark unsupported or blocked content visibly instead of hiding it
+
+`generate_report.py` must rebuild `report.html` every time figures are regenerated so the browser view stays in sync with `kpi_figure_coverage.md`.
 
 ## When to recommend Matplotlib
 
@@ -130,20 +179,103 @@ reports/agent/10_presentation/matplotlib/
   requirements-matplotlib.txt
   report_spec.md
   kpi_figure_coverage.md
+  label_dictionary.md
   generate_report.py
+  report_builder.py
+  report_pages/
+  report.html
+  open_report.bat
+  open_report.sh
   figures/
   sql_verification/
 ```
 
 | File | Purpose |
 |---|---|
-| `README.md` | How to regenerate figures, required Python packages, install commands used, data source notes, and privacy caveats |
+| `README.md` | How to regenerate figures, open the browser report, install packages, data source notes, and privacy caveats |
 | `requirements-matplotlib.txt` | Exact Python packages required for this report pack, including Matplotlib prerequisites and any warehouse client used |
-| `report_spec.md` | Page list, chart list, metrics per chart, filters, dimensions, blocked visuals, and coverage summary |
+| `report_spec.md` | Page list, chart list, metrics per chart, filters, dimensions, blocked visuals, tab mapping, and coverage summary |
 | `kpi_figure_coverage.md` | Row-by-row mapping from `measure_catalog.md`, `metric_catalog.md`, `kpi_discovery_matrix.md`, and `kpi_catalog.md` to figure files and status |
-| `generate_report.py` | Reproducible script that queries validated data and writes figure files for all mapped recommended measures and key performance indicators |
-| `figures/` | Exported PNG or PDF charts aligned to `dashboard_spec.md` |
+| `label_dictionary.md` | Approved code-to-business-label mappings used on charts, tables, legends, and HTML report text |
+| `generate_report.py` | Entry script: query data, render figures, build `report.html`, optional `--open` browser launch |
+| `report_builder.py` | HTML assembly, tab/section layout, and figure embedding logic |
+| `report_pages/` | One Python module per classified report page/tab, for example `executive.py`, `trends.py`, `segmentation.py`, `exceptions.py` |
+| `report.html` | Browser-viewable multi-tab report for business review |
+| `open_report.bat` | Windows launcher for `report.html` |
+| `open_report.sh` | Optional launcher for macOS/Linux |
+| `figures/` | Exported PNG charts aligned to `dashboard_spec.md` |
 | `sql_verification/` | Exact queries and expected values used to validate each chart aggregate |
+
+### Python file organization
+
+Organize generation code by report page classification instead of one unstructured script.
+
+Recommended pattern:
+
+```text
+generate_report.py          # orchestrates query -> figure -> html
+report_builder.py           # shared HTML shell, nav tabs, styles
+report_pages/
+  overview.py
+  executive_kpis.py
+  trends.py
+  operations.py
+  segmentation.py
+  financial.py
+  exceptions.py
+  blocked.py
+  report_info.py
+```
+
+Each `report_pages/*.py` module should:
+
+- Own one tab or section in `report.html`
+- Declare the business-facing page title and included metrics
+- Call shared helpers for SQL load, label mapping, figure save, and verification logging
+- Return the HTML fragment for that section
+
+Use one `Figure` or figure group per chart, but group related charts under the same page module when they belong to the same business tab.
+
+## Business-friendly labels (no raw codes on charts)
+
+Charts must use **business-facing names**, not raw warehouse codes, unless the code itself is the approved business label.
+
+Do not plot axis labels, legends, bar categories, or table rows using:
+
+- Status codes such as `A`, `P`, `C`, `1`, `2`
+- Type codes, reason codes, department codes, or plan codes
+- Surrogate keys, hash keys, or technical column names
+- Abbreviations that only engineers understand
+
+Instead, resolve labels from approved sources in this order:
+
+| Label source | Use for |
+|---|---|
+| `kpi_catalog.md` and `metric_catalog.md` | Metric titles, card labels, and chart titles |
+| Gold dimension name/description columns | Entity, product, provider, department, location, and status names |
+| Mapping seeds and reference tables from dbt | Code-to-label translations |
+| `label_dictionary.md` | Explicit code-to-business-label mappings used by the report pack |
+| User-approved requirements or business rules | Company names, brand names, and approved terminology |
+
+Maintain `label_dictionary.md` with columns such as:
+
+| field_name | raw_code | business_label | source | confidence |
+|---|---|---|---|---|
+| status_code | A | Active | seed `status_mapping` | HIGH |
+
+Hard label rules:
+
+- If a code has no approved business label, do not render that category on a business-facing chart. Move it to Blocked/Deferred with the reason `Missing business label mapping`.
+- If only some codes are mapped, show mapped categories only and list unmapped codes in the Exceptions tab.
+- Chart titles, axis labels, legends, HTML tab names, and KPI cards must use the same business label wording.
+- Company, client, department, product, provider, and status names must come from governed dimension fields or approved mappings, not from raw code values.
+- Technical field names may appear only in `sql_verification/` or Report Information, not on business-facing chart axes.
+
+Before saving a figure or HTML section, run a label check:
+
+1. Every categorical axis value has a mapped business label or the chart is deferred.
+2. Every metric name matches `kpi_catalog.md`, `metric_catalog.md`, or an approved alias in `report_spec.md`.
+3. `label_dictionary.md` documents any code translation used in the report pack.
 
 ## Matplotlib implementation knowledge
 
@@ -180,6 +312,7 @@ Every chart must answer one business question from `reporting_catalog.md` or `da
 - Do not fabricate data, targets, benchmarks, or trend lines without evidence.
 - Reconcile every plotted aggregate to SQL before marking the chart trusted.
 - Do not expose direct identifiers, personally identifiable information, or protected health information in chart labels, tables, or annotations unless approved.
+- Do not put raw codes, surrogate keys, or technical column names on business-facing chart axes, legends, or HTML tab content.
 - Prefer a small set of high-value charts over many weak charts.
 - Maximum means maximum useful business insight supported by validated data, not maximum number of figures.
 - Use full wording in titles, labels, and report text.
@@ -192,10 +325,13 @@ Before marking Matplotlib presentation work complete:
 2. Verify `requirements-matplotlib.txt` exists and matches the installed packages.
 3. Verify `kpi_figure_coverage.md` includes every recommended measure, metric, and key performance indicator from analytics insight catalogs, with `RENDERED`, `BLOCKED`, or `DEFERRED` status for each row.
 4. Verify `generate_report.py` runs without error in the project environment or document the exact blocker.
-5. Verify every `RENDERED` row in `kpi_figure_coverage.md` has a matching figure file under `figures/`.
-6. Verify every plotted aggregate has a matching SQL proof in `sql_verification/`.
-7. Verify chart scope matches `dashboard_spec.md` and does not include deferred items from `insight_backlog.md` without a visible blocked note.
-8. Record pass/fail evidence in `reports/agent/10_presentation/presentation_report.md`.
+5. Verify `report.html` exists, opens in a browser, and contains the classified tabs/sections defined in `report_spec.md`.
+6. Verify `open_report.bat` exists on Windows-focused projects or document the equivalent open command.
+7. Verify every `RENDERED` row in `kpi_figure_coverage.md` has a matching figure file under `figures/` and appears in the correct HTML tab/section.
+8. Verify `label_dictionary.md` exists and every categorical chart uses mapped business labels, not raw codes.
+9. Verify every plotted aggregate has a matching SQL proof in `sql_verification/`.
+10. Verify chart scope matches `dashboard_spec.md` and does not include deferred items from `insight_backlog.md` without a visible blocked note.
+11. Record pass/fail evidence in `reports/agent/10_presentation/presentation_report.md`.
 
 ## Done gate
 
@@ -203,7 +339,10 @@ Before marking Matplotlib presentation work complete:
 Presentation layer: COMPLETE
 
 Presentation technology: Matplotlib
+Browser report: reports/agent/10_presentation/matplotlib/report.html
+Launcher: reports/agent/10_presentation/matplotlib/open_report.bat or documented equivalent
 Coverage map: reports/agent/10_presentation/matplotlib/kpi_figure_coverage.md
+Label dictionary: reports/agent/10_presentation/matplotlib/label_dictionary.md
 Python prerequisites: PASS or BLOCKED with install commands attempted
 Report spec: reports/agent/10_presentation/matplotlib/report_spec.md
 Figure generation: PASS or BLOCKED with reason

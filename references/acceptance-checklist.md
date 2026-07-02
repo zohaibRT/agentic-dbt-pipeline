@@ -209,7 +209,10 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] If the user approved a presentation layer and did not specify another technology, the agent used the Matplotlib workflow by default and created `reports/agent/10_presentation/matplotlib/` artifacts with SQL verification
 - [ ] If Matplotlib figures were created, missing `matplotlib`, `numpy`, or `pandas` packages were installed or the install blocker was documented with exact commands attempted
 - [ ] If Matplotlib figures were created, `kpi_figure_coverage.md` maps every recommended measure, metric, and key performance indicator from `measure_catalog.md`, `metric_catalog.md`, `kpi_discovery_matrix.md`, and `kpi_catalog.md` to `RENDERED`, `BLOCKED`, or `DEFERRED` status
-- [ ] If Matplotlib figures were created, `generate_report.py` ran or the blocker was documented, every `RENDERED` row has a matching figure and SQL proof, and chart scope matches `dashboard_spec.md`
+- [ ] If Matplotlib figures were created, `report.html` exists with classified tabs/sections and `open_report.bat` or an equivalent browser launcher is documented
+- [ ] If Matplotlib figures were created, chart axes, legends, and HTML section titles use business labels from dimensions/mappings/`label_dictionary.md`, not raw codes
+- [ ] If Matplotlib figures were created, `label_dictionary.md` documents code-to-label mappings used in the report pack
+- [ ] If Matplotlib figures were created, `generate_report.py` ran or the blocker was documented, every `RENDERED` row has a matching figure and SQL proof, appears in the correct HTML tab/section, and chart scope matches `dashboard_spec.md`
 - [ ] If the user explicitly chose Power BI, the agent used the Power BI Desktop human-connected template workflow instead of generating a full PBIP automatically
 - [ ] The human-connected Power BI checkpoint created the output folder and provided the exact PBIP path/name, approved table list, relationship checklist, storage-mode recommendation, measures table requirement, and confirmation request
 - [ ] The agent stopped before injecting measures, visuals, or editing PBIP files until the user confirmed the PBIP was saved and data was attached

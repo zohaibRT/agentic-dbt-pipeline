@@ -46,8 +46,11 @@ reports/agent/
       sql_proofs/
   10_presentation/
     matplotlib/
-      figures/
-      sql_verification/
+    report_pages/
+    figures/
+    sql_verification/
+    report.html
+    open_report.bat
   11_operations/
 ```
 
@@ -88,6 +91,10 @@ Use the folder that matches the current phase. Do not put phase-specific files a
 | Matplotlib requirements | `reports/agent/10_presentation/matplotlib/requirements-matplotlib.txt` |
 | Matplotlib report spec | `reports/agent/10_presentation/matplotlib/report_spec.md` |
 | Matplotlib KPI figure coverage | `reports/agent/10_presentation/matplotlib/kpi_figure_coverage.md` |
+| Matplotlib label dictionary | `reports/agent/10_presentation/matplotlib/label_dictionary.md` |
+| Matplotlib browser report | `reports/agent/10_presentation/matplotlib/report.html` |
+| Matplotlib report launcher | `reports/agent/10_presentation/matplotlib/open_report.bat` |
+| Matplotlib page modules | `reports/agent/10_presentation/matplotlib/report_pages/` |
 | Matplotlib generation script | `reports/agent/10_presentation/matplotlib/generate_report.py` |
 | Matplotlib figures | `reports/agent/10_presentation/matplotlib/figures/` |
 | Matplotlib SQL verification | `reports/agent/10_presentation/matplotlib/sql_verification/` |

@@ -64,13 +64,16 @@ Every Matplotlib figure must be readable, business-facing, and SQL-verified:
 | Colors | Consistent accessible palette across all figures; document color meaning in `report_spec.md` |
 | Dates | Explicit date parsing and readable time-axis formatting for trend visuals |
 | Legends | Clear series meaning; avoid duplicate or unreadable legends |
-| Static output | Save PNG or PDF files under `reports/agent/10_presentation/matplotlib/figures/` |
+| Static output | Save PNG files under `figures/` and embed them in `report.html` |
+| Browser review | Build `report.html` with classified tabs/sections and provide `open_report.bat` or `generate_report.py --open` |
+| Page modules | Organize generation code in `report_pages/` by business tab, not one unstructured script |
+| Labels | Use business names from dimensions, mappings, and `label_dictionary.md`; never raw codes on chart axes or legends |
 | Validation | Every plotted aggregate must reconcile to SQL in `sql_verification/` before the figure is marked trusted |
 | Coverage | Every recommended measure, metric, and key performance indicator from analytics insight catalogs must appear in `kpi_figure_coverage.md` as `RENDERED`, `BLOCKED`, or `DEFERRED` |
 | Prerequisites | Install missing `matplotlib`, `numpy`, and `pandas` before figure generation; record commands in `requirements-matplotlib.txt` |
 | Style | Use one project style via rcParams or a style sheet so outputs look like one report system |
 
-Do not use decorative chart junk, unlabeled axes, or synthetic trend lines without evidence.
+Do not use decorative chart junk, unlabeled axes, raw warehouse codes on business-facing charts, or synthetic trend lines without evidence.
 
 ## Power BI canvas standard
 
