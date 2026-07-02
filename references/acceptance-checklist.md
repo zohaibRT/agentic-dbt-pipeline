@@ -212,6 +212,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] If Matplotlib figures were created, `report.html` exists with classified tabs/sections and `open_report.bat` or an equivalent browser launcher is documented
 - [ ] If Matplotlib figures were created, chart axes, legends, and HTML section titles use business labels from dimensions/mappings/`label_dictionary.md`, not raw codes
 - [ ] If Matplotlib figures were created, `label_dictionary.md` documents code-to-label mappings used in the report pack
+- [ ] If Matplotlib figures were created, `report_theme.md` and colorful styling were applied for eye-comfortable charts and HTML tabs, not default gray matplotlib output
 - [ ] If Matplotlib figures were created, `generate_report.py` ran or the blocker was documented, every `RENDERED` row has a matching figure and SQL proof, appears in the correct HTML tab/section, and chart scope matches `dashboard_spec.md`
 - [ ] If the user explicitly chose Power BI, the agent used the Power BI Desktop human-connected template workflow instead of generating a full PBIP automatically
 - [ ] The human-connected Power BI checkpoint created the output folder and provided the exact PBIP path/name, approved table list, relationship checklist, storage-mode recommendation, measures table requirement, and confirmation request

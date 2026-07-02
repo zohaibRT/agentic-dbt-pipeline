@@ -180,6 +180,8 @@ reports/agent/10_presentation/matplotlib/
   report_spec.md
   kpi_figure_coverage.md
   label_dictionary.md
+  report_theme.md
+  report_theme.py
   generate_report.py
   report_builder.py
   report_pages/
@@ -197,6 +199,8 @@ reports/agent/10_presentation/matplotlib/
 | `report_spec.md` | Page list, chart list, metrics per chart, filters, dimensions, blocked visuals, tab mapping, and coverage summary |
 | `kpi_figure_coverage.md` | Row-by-row mapping from `measure_catalog.md`, `metric_catalog.md`, `kpi_discovery_matrix.md`, and `kpi_catalog.md` to figure files and status |
 | `label_dictionary.md` | Approved code-to-business-label mappings used on charts, tables, legends, and HTML report text |
+| `report_theme.md` | Color palette, typography, spacing, optional logo/image usage, and eye-comfort design notes |
+| `report_theme.py` | Shared theme constants for chart colors, fonts, figure size, and export DPI |
 | `generate_report.py` | Entry script: query data, render figures, build `report.html`, optional `--open` browser launch |
 | `report_builder.py` | HTML assembly, tab/section layout, and figure embedding logic |
 | `report_pages/` | One Python module per classified report page/tab, for example `executive.py`, `trends.py`, `segmentation.py`, `exceptions.py` |
@@ -277,6 +281,75 @@ Before saving a figure or HTML section, run a label check:
 2. Every metric name matches `kpi_catalog.md`, `metric_catalog.md`, or an approved alias in `report_spec.md`.
 3. `label_dictionary.md` documents any code translation used in the report pack.
 
+## Visual comfort and colorful design
+
+Matplotlib reports must be **visually comfortable and engaging**, not dull gray defaults. Business users should be able to review charts for longer periods without eye strain.
+
+Design goals:
+
+- Colorful enough to distinguish categories, trends, and key performance indicator states quickly
+- Calm enough for executive review: no neon overload, no harsh black-on-white glare
+- Consistent across figures, HTML tabs, and key performance indicator cards
+- Accessible: readable contrast, color plus label meaning, and no color-only critical signals
+
+### Required visual treatment
+
+| Area | Requirement |
+|---|---|
+| Chart colors | Use a deliberate multi-color categorical palette for bars, lines, and areas; avoid leaving charts in default gray |
+| Trend visuals | Use colored lines or soft gradient area fills with readable markers sparingly |
+| Key performance indicator cards | Use color accents for status: positive, warning, negative, and neutral |
+| HTML report | Use a soft page background, white content cards, colorful tab accents, and comfortable spacing |
+| Typography | Use readable font sizes; titles larger than axis labels; avoid tiny text |
+| Figure export | Save PNG figures at least `dpi=150`; prefer `dpi=200` for crisp browser viewing |
+| Whitespace | Leave padding around titles, legends, and chart edges; do not crowd labels |
+| Gridlines | Use light, muted gridlines only when they improve reading |
+| Images | Optional approved logo, icon, or header image in `report.html` when the user provides brand assets; do not invent branding |
+
+Document the chosen theme in `report_theme.md` and apply it from shared helpers in `report_builder.py` or `report_theme.py`.
+
+### Recommended comfortable palette
+
+Use this palette unless the user supplies approved brand colors:
+
+| Purpose | Color | Use |
+|---|---|---|
+| Page background | `#F4F7FB` | HTML report background |
+| Card surface | `#FFFFFF` | KPI cards and figure containers |
+| Primary text | `#1F2937` | Titles and main labels |
+| Secondary text | `#6B7280` | Notes and captions |
+| Primary accent | `#2563EB` | Main series and active tab |
+| Secondary accent | `#7C3AED` | Secondary series |
+| Teal | `#0D9488` | Supporting trend or comparison series |
+| Amber | `#D97706` | Warning or attention |
+| Green | `#16A34A` | Positive movement or success |
+| Red | `#DC2626` | Negative movement or risk |
+| Coral | `#F97316` | Additional categorical series |
+| Sky | `#0EA5E9` | Additional categorical series |
+| Rose | `#E11D48` | Additional categorical series |
+
+Recommended categorical series order for multi-series charts:
+
+`#2563EB`, `#0D9488`, `#7C3AED`, `#F97316`, `#0EA5E9`, `#16A34A`, `#E11D48`, `#D97706`
+
+### Eye-comfort rules
+
+- Do not use matplotlib default styling as the final design.
+- Do not make every chart a different random palette; keep one theme across the report pack.
+- Do not use fully saturated neon colors across the whole page.
+- Do not rely on color alone for meaning; pair color with labels, values, or icons in HTML cards.
+- Use soft backgrounds and colored accents instead of large solid bright blocks.
+- For dense category charts, prefer horizontal bars with alternating subtle fills or distinct series colors.
+- Add short chart subtitles or callout text when a figure needs context.
+- If company logo or approved imagery exists, place it in the HTML header only; do not embed sensitive or unapproved images.
+
+### Optional theme files
+
+| File | Purpose |
+|---|---|
+| `report_theme.md` | Human-readable theme notes: palette, typography, spacing, logo/image usage, and accessibility caveats |
+| `report_theme.py` | Shared constants for colors, fonts, figure size, and DPI used by `report_pages/` modules |
+
 ## Matplotlib implementation knowledge
 
 Use the official [Matplotlib User Guide](https://matplotlib.org/stable/users/index) when structure or API behavior is uncertain.
@@ -288,11 +361,12 @@ Use the official [Matplotlib User Guide](https://matplotlib.org/stable/users/ind
 | Figures and backends | Create one `Figure` per page or logical chart group; save static outputs with a non-interactive backend such as `Agg` for reproducible files |
 | Axes and subplots | Use `subplots` or subplot mosaics for executive summary pages with multiple key performance indicator and trend panels |
 | Artists | Keep line, bar, area, and table artists explicit; avoid unnecessary chart decoration |
-| Colors | Use a consistent accessible palette; document color meaning in `report_spec.md` |
+| Colors | Use the comfortable colorful palette from `report_theme.md`; distinguish series and key performance indicator states with intentional color |
 | Text and annotations | Add titles, axis labels, units, caveats, and source notes on every chart |
 | Plotting dates | Use explicit date parsing and time-axis formatting for trend visuals |
 | Legends | Show series meaning clearly; avoid duplicate or unreadable legends |
-| rcParams and style sheets | Use one project style for all figures so outputs look like one report system |
+| rcParams and style sheets | Use one shared theme via `report_theme.py`, rcParams, or a style sheet so all figures and HTML cards match |
+| Figure quality | Export PNG at `dpi=150` or higher for crisp browser viewing |
 
 ### Chart selection rules
 
@@ -329,9 +403,10 @@ Before marking Matplotlib presentation work complete:
 6. Verify `open_report.bat` exists on Windows-focused projects or document the equivalent open command.
 7. Verify every `RENDERED` row in `kpi_figure_coverage.md` has a matching figure file under `figures/` and appears in the correct HTML tab/section.
 8. Verify `label_dictionary.md` exists and every categorical chart uses mapped business labels, not raw codes.
-9. Verify every plotted aggregate has a matching SQL proof in `sql_verification/`.
-10. Verify chart scope matches `dashboard_spec.md` and does not include deferred items from `insight_backlog.md` without a visible blocked note.
-11. Record pass/fail evidence in `reports/agent/10_presentation/presentation_report.md`.
+9. Verify `report_theme.md` exists and charts/HTML use the comfortable colorful theme, not default gray matplotlib styling.
+10. Verify every plotted aggregate has a matching SQL proof in `sql_verification/`.
+11. Verify chart scope matches `dashboard_spec.md` and does not include deferred items from `insight_backlog.md` without a visible blocked note.
+12. Record pass/fail evidence in `reports/agent/10_presentation/presentation_report.md`.
 
 ## Done gate
 

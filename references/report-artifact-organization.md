@@ -92,6 +92,8 @@ Use the folder that matches the current phase. Do not put phase-specific files a
 | Matplotlib report spec | `reports/agent/10_presentation/matplotlib/report_spec.md` |
 | Matplotlib KPI figure coverage | `reports/agent/10_presentation/matplotlib/kpi_figure_coverage.md` |
 | Matplotlib label dictionary | `reports/agent/10_presentation/matplotlib/label_dictionary.md` |
+| Matplotlib report theme | `reports/agent/10_presentation/matplotlib/report_theme.md` |
+| Matplotlib theme constants | `reports/agent/10_presentation/matplotlib/report_theme.py` |
 | Matplotlib browser report | `reports/agent/10_presentation/matplotlib/report.html` |
 | Matplotlib report launcher | `reports/agent/10_presentation/matplotlib/open_report.bat` |
 | Matplotlib page modules | `reports/agent/10_presentation/matplotlib/report_pages/` |

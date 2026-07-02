@@ -61,7 +61,10 @@ Every Matplotlib figure must be readable, business-facing, and SQL-verified:
 |---|---|
 | Figure structure | One clear business question per figure; use `subplots` or subplot mosaics for multi-panel pages |
 | Labels | Title, axis labels, units, and source/caveat notes on every chart |
-| Colors | Consistent accessible palette across all figures; document color meaning in `report_spec.md` |
+| Colors | Use a comfortable colorful palette across charts, KPI cards, and HTML tabs; distinguish categories and states with intentional color while keeping readable contrast |
+| Visual comfort | Soft backgrounds, white content cards, readable font sizes, generous spacing, light gridlines, and PNG export at `dpi=150` or higher |
+| Theme files | Document palette and styling in `report_theme.md`; apply shared constants from `report_theme.py` |
+| Images | Optional approved logo or header image in `report.html` when brand assets are provided |
 | Dates | Explicit date parsing and readable time-axis formatting for trend visuals |
 | Legends | Clear series meaning; avoid duplicate or unreadable legends |
 | Static output | Save PNG files under `figures/` and embed them in `report.html` |
@@ -71,9 +74,9 @@ Every Matplotlib figure must be readable, business-facing, and SQL-verified:
 | Validation | Every plotted aggregate must reconcile to SQL in `sql_verification/` before the figure is marked trusted |
 | Coverage | Every recommended measure, metric, and key performance indicator from analytics insight catalogs must appear in `kpi_figure_coverage.md` as `RENDERED`, `BLOCKED`, or `DEFERRED` |
 | Prerequisites | Install missing `matplotlib`, `numpy`, and `pandas` before figure generation; record commands in `requirements-matplotlib.txt` |
-| Style | Use one project style via rcParams or a style sheet so outputs look like one report system |
+| Style | Use one shared colorful theme via `report_theme.py`, rcParams, or a style sheet so outputs look like one comfortable report system |
 
-Do not use decorative chart junk, unlabeled axes, raw warehouse codes on business-facing charts, or synthetic trend lines without evidence.
+Do not use decorative chart junk, unlabeled axes, raw warehouse codes on business-facing charts, default gray-only matplotlib styling, or synthetic trend lines without evidence.
 
 ## Power BI canvas standard
 
