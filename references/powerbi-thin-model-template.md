@@ -1,6 +1,6 @@
 # Power BI Thin Model Template Workflow
 
-Use this as the default Power BI workflow when the user approves a Power BI presentation layer.
+Use this as the preferred Power BI workflow when the user explicitly chooses Power BI at the presentation decision gate.
 
 This is the preferred Power BI path. The human uses Power BI Desktop to create the physical model and attach data. The agent creates the handoff folder/checklist, waits for the saved PBIP path, and then only injects approved reporting semantics such as DAX measures, descriptions, display folders, and harmless annotations.
 

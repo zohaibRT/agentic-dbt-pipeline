@@ -70,7 +70,8 @@ Update or create project handoff notes with:
 - Report Information page summary when Power BI is created: purpose, audience, data source, refresh details, page guide, key performance indicator definitions, filter definitions, caveats, privacy handling, validation summary, and open decisions
 - Standard time showcase status for presentation artifacts: fact date columns discovered, time visuals included or blocked, and SQL verification evidence
 - Project knowledge used, including `project_rules`, `AGENT_KNOWLEDGE.md`, `docs/dbt_knowledge.md`, `docs/business_rules.md`, `.agents/project_knowledge.md`, or context tree decisions when present
-- Power BI PBIP/TMDL status when used as the default or requested presentation technology, including PBIP structure validation and open/refresh notes
+- Matplotlib presentation status when used as the default or requested presentation technology, including prerequisite install status, `kpi_figure_coverage.md` completeness, figure generation, SQL verification, and blocked visuals
+- Power BI PBIP/TMDL status when explicitly chosen as the presentation technology, including PBIP structure validation and open/refresh notes
 - Power BI template status when used: bundled template path or generator fallback, generator command, planning inputs consumed, regenerated logical IDs/lineage tags, local reference PBIP approval if any, and proof that no credentials or local business content were copied
 - Power BI Modeling Model Context Protocol status when Power BI is created: availability check, install attempt or install recommendation, tools used, `ConnectFolder` result, inspection result, DAX smoke test result, and any reason validation was blocked or not run
 - Known empty tables or data quality limitations
@@ -144,7 +145,7 @@ Use a compact table when helpful:
 - Important models created by layer
 - Semantic models and metrics added
 - Presentation layer recommendation and whether the user approved any follow-up artifact
-- Presentation artifact type: Power BI PBIP/TMDL project, dashboard design guide, presentation report, or query handoff
+- Presentation artifact type: Matplotlib report figures, Power BI PBIP/TMDL project, dashboard design guide, presentation report, or query handoff
 - Five report pillars covered or deferred: context and strategy, key performance indicators, trend analysis and variance, insights and attribution, and recommendations and next steps
 - Power BI canvas standard coverage when Power BI is created: navigation/header, refresh timestamp, reset filters, prioritized executive key performance indicator cards, supporting key performance indicator coverage, slicers, trend/comparison visuals, matrix/detail layer, tooltips, drill-through pages, and Report Information page
 - Standard time showcase pages or visuals created, including last calendar year, year to date, last 12 months, by-year, and by-month coverage where supported

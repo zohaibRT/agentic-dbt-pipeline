@@ -273,6 +273,8 @@ Read [presentation-layer.md](presentation-layer.md) and [powerbi-template.md](po
 For Power BI PBIP/TMDL, these files are the scope contract for the generator and must be used or explicitly marked missing/blocking:
 
 - `dashboard_spec.md`
+- `measure_catalog.md`
+- `metric_catalog.md`
 - `kpi_discovery_matrix.md`
 - `kpi_reconciliation_report.md`
 - `kpi_lineage_proofs.md`
@@ -282,6 +284,8 @@ For Power BI PBIP/TMDL, these files are the scope contract for the generator and
 - `analytics_insight_report.md`
 - `reporting_readiness_scorecard.md`
 - `insight_backlog.md`
+
+For Matplotlib report figures, use the same scope contract. Read [matplotlib-presentation-layer.md](matplotlib-presentation-layer.md) and map every recommended measure, metric, and key performance indicator into `kpi_figure_coverage.md` or an explicit blocked/deferred note.
 
 Blocked or deferred visuals from `insight_backlog.md` must not be generated silently.
 

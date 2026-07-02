@@ -62,7 +62,7 @@ The template should only provide:
 
 ## Generation Flow
 
-0. Generated PBIP mode is not the default. If the user approves a presentation layer without explicitly asking the agent to generate the full PBIP, use [powerbi-thin-model-template.md](powerbi-thin-model-template.md): create the handoff folder/checklist, ask the human to connect data in Power BI Desktop, save the PBIP at the requested path, and wait for confirmation.
+0. Generated PBIP mode is not the default presentation technology. If the user approves a presentation layer without naming a technology, use [matplotlib-presentation-layer.md](matplotlib-presentation-layer.md). If the user explicitly chooses Power BI without asking the agent to generate the full PBIP, use [powerbi-thin-model-template.md](powerbi-thin-model-template.md): create the handoff folder/checklist, ask the human to connect data in Power BI Desktop, save the PBIP at the requested path, and wait for confirmation.
 1. Use `scripts/generate_powerbi_pbip.py` only after the user explicitly approves generated PBIP mode or when validating the bundled template itself.
 2. Generate into the project, usually under `reports/powerbi/<project_name>/`.
 3. Read [powerbi-kpi-dax-tooling.md](powerbi-kpi-dax-tooling.md), then read and use these planning inputs when available:
@@ -88,7 +88,7 @@ The template should only provide:
 
 Use this priority order:
 
-1. Use the human-connected Power BI Desktop template workflow by default. The agent creates the handoff folder and exact PBIP path, then waits while the human connects data and saves the PBIP.
+1. Use the human-connected Power BI Desktop template workflow when the user explicitly chooses Power BI. The agent creates the handoff folder and exact PBIP path, then waits while the human connects data and saves the PBIP.
 2. Use a user-approved existing Power BI Desktop-created PBIP template through the thin model workflow.
 3. Use the bundled neutral PBIP template from `assets/powerbi/pbip_template/` only when generated PBIP mode is explicitly approved.
 4. If generated PBIP mode is approved and the bundled template is missing, use `scripts/generate_powerbi_pbip.py` or the current generator logic to create a minimal PBIP/PBIR/TMDL skeleton, then validate it.

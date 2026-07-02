@@ -76,7 +76,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] `metric_catalog.md` was created or updated with contextual metrics derived from validated measures
 - [ ] `kpi_catalog.md` contains only decision-relevant metrics tied to business goals, thresholds, targets, risks, operating review, or user-approved strategic use
 - [ ] After analytics insight reporting, the agent asked the presentation-layer decision with a concise evidence summary, recommended technology/page set, key caveats, and native clickable options when available
-- [ ] Presentation decision options included the equivalent of `Yes - prepare Power BI Desktop template handoff`, `No presentation layer - complete final delivery now`, and `Tell me what to change first`
+- [ ] Presentation decision options included the equivalent of `Yes - build Matplotlib report figures (recommended)`, `Yes - prepare Power BI Desktop template handoff`, `No presentation layer - complete final delivery now`, and `Tell me what to change first`
 - [ ] `reports/agent/09_analytics_insights/analytics_insight_report.md`, `kpi_discovery_matrix.md`, `reporting_catalog.md`, `kpi_catalog.md`, `dashboard_spec.md`, `insight_backlog.md`, and `reporting_readiness_scorecard.md` exist when analytics insight reporting ran
 - [ ] `reports/agent/09_analytics_insights/kpis/kpi_reconciliation_report.md`, `kpi_lineage_proofs.md`, `kpi_variance_report.md`, and `sql_proofs/` exist when approved or implemented key performance indicators exist
 - [ ] Analytics insight reporting separated trusted outputs from uncertain or deferred outputs
@@ -205,7 +205,11 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] `dbt docs generate` -> manifest + catalog exist
 - [ ] Documentation serve command or local documentation URL provided when user wants to view documentation
 - [ ] Presentation options were recommended after analytics insight reporting: documentation only, business-facing report, dashboard design, semantic layer refinement, or query handoff
-- [ ] If the user approved a presentation layer and did not specify another technology, the agent used the Power BI Desktop human-connected template workflow by default instead of generating a full PBIP automatically
+- [ ] If the user approved a presentation layer and did not specify another technology, the agent used the Matplotlib workflow by default and created `reports/agent/10_presentation/matplotlib/` artifacts with SQL verification
+- [ ] If Matplotlib figures were created, missing `matplotlib`, `numpy`, or `pandas` packages were installed or the install blocker was documented with exact commands attempted
+- [ ] If Matplotlib figures were created, `kpi_figure_coverage.md` maps every recommended measure, metric, and key performance indicator from `measure_catalog.md`, `metric_catalog.md`, `kpi_discovery_matrix.md`, and `kpi_catalog.md` to `RENDERED`, `BLOCKED`, or `DEFERRED` status
+- [ ] If Matplotlib figures were created, `generate_report.py` ran or the blocker was documented, every `RENDERED` row has a matching figure and SQL proof, and chart scope matches `dashboard_spec.md`
+- [ ] If the user explicitly chose Power BI, the agent used the Power BI Desktop human-connected template workflow instead of generating a full PBIP automatically
 - [ ] The human-connected Power BI checkpoint created the output folder and provided the exact PBIP path/name, approved table list, relationship checklist, storage-mode recommendation, measures table requirement, and confirmation request
 - [ ] The agent stopped before injecting measures, visuals, or editing PBIP files until the user confirmed the PBIP was saved and data was attached
 - [ ] Generated PBIP mode was not used unless the user explicitly approved generated PBIP/TMDL creation

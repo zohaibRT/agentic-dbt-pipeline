@@ -2,7 +2,7 @@
 
 Use this after marts, semantic layer, project evaluator, documentation, and **analytics insight reporting** have completed.
 
-For approved Power BI PBIP/TMDL artifacts, also read [powerbi-template.md](powerbi-template.md), [powerbi-thin-model-template.md](powerbi-thin-model-template.md), [powerbi-kpi-dax-tooling.md](powerbi-kpi-dax-tooling.md), [powerbi-official-docs.md](powerbi-official-docs.md), and [powerbi-pbip-desktop-requirements.md](powerbi-pbip-desktop-requirements.md). Those references contain the bundled template flow, thin model template workflow, key performance indicator and DAX ownership rules, optional Power BI tooling guidance, official Microsoft documentation links, Desktop-load guardrails for enhanced PBIR layout, `.platform` metadata, TMDL syntax, page visual inventory, and validation gates.
+For approved Power BI PBIP/TMDL artifacts, also read [powerbi-template.md](powerbi-template.md), [powerbi-thin-model-template.md](powerbi-thin-model-template.md), [powerbi-kpi-dax-tooling.md](powerbi-kpi-dax-tooling.md), [powerbi-official-docs.md](powerbi-official-docs.md), and [powerbi-pbip-desktop-requirements.md](powerbi-pbip-desktop-requirements.md). For approved Matplotlib artifacts or when Matplotlib is the default presentation technology, read [matplotlib-presentation-layer.md](matplotlib-presentation-layer.md).
 
 Read [analytics-insight-reporting.md](analytics-insight-reporting.md) first. The presentation layer consumes analytics insight outputs:
 
@@ -27,9 +27,22 @@ Power BI measures must be generated only from `reports/agent/09_analytics_insigh
 
 Help the data engineer decide whether the completed dbt project should expose a user-facing presentation layer beyond dbt models and documentation.
 
-The presentation artifact is optional, but the recommendation is required for full pipeline final delivery. Ask the user in simple terms whether they want a presentation layer. Do not ask them to choose "Power BI as code" unless they already used that wording.
+The presentation artifact is optional, but the recommendation is required for full pipeline final delivery. Ask the user in simple terms whether they want a presentation layer, and which presentation technology they want.
 
-Default artifact: if the user approves a presentation layer and does not specify another tool or artifact type, use the Power BI Desktop human-connected template workflow by default. Create the Power BI handoff folder and checklist, then wait for the user to save and confirm the PBIP path before injecting measures. Do not create dashboards, reports, slides, notebooks, generated PBIP semantic models, or other business intelligence artifacts unless the user approves that specific presentation-layer scope.
+## Two supported presentation technologies
+
+The agent must offer exactly these two presentation paths unless the user explicitly names another technology:
+
+| Technology | Role | Default |
+|---|---|---|
+| **Matplotlib** | Python-based static charts and report figures generated from validated warehouse data | **Recommended default** |
+| **Power BI** | Interactive PBIP/TMDL or Desktop-connected semantic model and report handoff | Optional alternative |
+
+Default artifact: if the user approves a presentation layer and does not specify another tool or artifact type, use the **Matplotlib** presentation workflow by default. Read [matplotlib-presentation-layer.md](matplotlib-presentation-layer.md), build reproducible figure assets from validated data, and write artifacts under `reports/agent/10_presentation/matplotlib/`.
+
+If the user chooses Power BI, use the Power BI Desktop human-connected template workflow by default unless they explicitly approve generated PBIP mode. Read [powerbi-thin-model-template.md](powerbi-thin-model-template.md) and the Power BI references listed at the top of this file.
+
+Do not create dashboards, reports, slides, notebooks, or other business intelligence artifacts unless the user approves that specific presentation-layer scope and technology.
 
 ## Presentation decision gate
 
@@ -48,18 +61,19 @@ Before asking, summarize the evidence in one concise paragraph:
 Use this interactive question shape:
 
 ```text
-Analytics insight reporting is complete. Validated key performance indicators: <short KPI/value summary>. <Recommended technology> is recommended with <page list>. <Important caveat if any>.
+Analytics insight reporting is complete. Validated key performance indicators: <short KPI/value summary>. Matplotlib static report figures are recommended by default because they are reproducible, version-controlled, and easy to validate with SQL-backed Python scripts. Power BI is available when you need an interactive Desktop semantic model and report handoff. Recommended page set: <page list>. <Important caveat if any>.
 
-Do you want a presentation layer?
+Do you want a presentation layer, and which technology should I use?
 ```
 
 Recommended options:
 
-- `Yes - prepare Power BI Desktop template handoff` - approves only the separate presentation-layer phase using the Power BI Desktop human-connected template workflow by default.
+- `Yes - build Matplotlib report figures (recommended)` - approves the separate `presentation_layer` phase using the Matplotlib workflow by default.
+- `Yes - prepare Power BI Desktop template handoff` - approves only the separate presentation-layer phase using the Power BI Desktop human-connected template workflow.
 - `No presentation layer - complete final delivery now` - records that the artifact was declined and moves to final delivery with dbt documentation and analytics insight outputs only.
 - `Tell me what to change first` - pauses so the user can change scope, metrics, pages, privacy rules, technology, validation, or report design.
 
-If another technology is clearly better than Power BI, replace the first option with that recommended technology and explain why. If the user already requested a specific technology, use that technology in the first option. If native interactive questions are unavailable, use the same wording as a text fallback and ask the user to choose one option.
+If the user says yes without naming a technology, infer **Matplotlib** as the approved default. If the user already requested Power BI explicitly, use Power BI in the approved option and explain why Matplotlib was not chosen. If native interactive questions are unavailable, use the same wording as a text fallback and ask the user to choose one option.
 
 Use these statuses:
 
@@ -72,15 +86,16 @@ Use these statuses:
 | Artifact completed | `Presentation artifact complete` |
 | Artifact blocked | `Presentation artifact blocked` |
 
-If the user approves a presentation layer, treat it as a separate `presentation_layer` phase. Use Power BI PBIP/TMDL as the default artifact unless the user specifies another technology or asks for a Markdown-only guide/report:
+If the user approves a presentation layer, treat it as a separate `presentation_layer` phase. Use **Matplotlib** as the default artifact unless the user explicitly chooses Power BI or another technology:
 
-1. Write or update `AGENT_PLAN.md` with the exact artifact scope.
+1. Write or update `AGENT_PLAN.md` with the exact artifact scope and chosen technology.
 2. Confirm the inferred output format in the plan, source models, metrics, privacy rules, and validation method.
 3. Build only the approved artifact.
 4. Validate the artifact.
 5. Write or update `reports/agent/10_presentation/presentation_report.md`, `reports/agent/10_presentation/presentation_layer_report.md` when the project uses the friendlier filename, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md`.
-6. For approved Power BI work, also write or update `reports/agent/10_presentation/powerbi_model_plan.md`, `reports/agent/10_presentation/dashboard_pages.md`, and `reports/agent/10_presentation/dax_measures.md` with the model plan, page plan, DAX specifications, and validation evidence.
-7. Only then continue to final delivery.
+6. For approved Matplotlib work, also write or update `reports/agent/10_presentation/matplotlib/README.md`, `requirements-matplotlib.txt`, `report_spec.md`, `kpi_figure_coverage.md`, `generate_report.py`, `figures/`, and `sql_verification/` per [matplotlib-presentation-layer.md](matplotlib-presentation-layer.md). Map every recommended measure, metric, and key performance indicator from `measure_catalog.md`, `metric_catalog.md`, `kpi_discovery_matrix.md`, and `kpi_catalog.md` into the figure pack or an explicit blocked/deferred note. Install missing Matplotlib prerequisites before running `generate_report.py`.
+7. For approved Power BI work, also write or update `reports/agent/10_presentation/powerbi_model_plan.md`, `reports/agent/10_presentation/dashboard_pages.md`, and `reports/agent/10_presentation/dax_measures.md` with the model plan, page plan, DAX specifications, and validation evidence.
+8. Only then continue to final delivery.
 
 ## Phase contract
 
@@ -91,7 +106,7 @@ If the user approves a presentation layer, treat it as a separate `presentation_
 | Not allowed | Dashboards, reports, slides, notebooks, Power BI projects, guessed measures, or sensitive-field exposure without approval |
 | Commands to run | Read-only model/metadata checks and artifact-specific validation only after the user approves artifact creation |
 | Completion criteria | Best presentation option is recommended with evidence, possible key performance indicators are listed, caveats are clear, and the user is asked whether to create an artifact |
-| Report required | Final report or `reports/agent/10_presentation/presentation_report.md`; optional friendlier alias `reports/agent/10_presentation/presentation_layer_report.md`; `reports/agent/PIPELINE_STATUS.md`; `reports/agent/CONTEXT_TREE.md`; and Power BI planning files when Power BI is approved |
+| Report required | Final report or `reports/agent/10_presentation/presentation_report.md`; optional friendlier alias `reports/agent/10_presentation/presentation_layer_report.md`; `reports/agent/PIPELINE_STATUS.md`; `reports/agent/CONTEXT_TREE.md`; Matplotlib artifacts when Matplotlib is approved; and Power BI planning files when Power BI is approved |
 
 ## What to recommend
 
@@ -102,7 +117,8 @@ Review `reports/agent/09_analytics_insights/analytics_insight_report.md`, `repor
 | dbt documentation only | The user only needs technical lineage and model docs | `dbt docs generate`, optional `dbt docs serve`, final model list |
 | Presentation layer report | The user wants a concise business-facing summary | Key performance indicators, metrics, model grains, suggested analysis pages, limitations |
 | Dashboard design | The user wants interactive consumption in a business intelligence tool | Suggested pages, filters, metrics, facts/dimensions, privacy notes |
-| Power BI Desktop template handoff | Default when the user says yes to presentation layer and does not specify another technology | Handoff folder, table/relationship/storage-mode checklist, required PBIP path/name, measures table instructions, and post-confirmation measure injection |
+| Matplotlib report figures | **Default when the user says yes to presentation layer and does not specify another technology** | Python script, PNG/PDF figures, SQL verification, and report spec from validated gold/marts data |
+| Power BI Desktop template handoff | When the user explicitly chooses Power BI or needs interactive Desktop reporting | Handoff folder, table/relationship/storage-mode checklist, required PBIP path/name, measures table instructions, and post-confirmation measure injection |
 | Generated Power BI PBIP/TMDL project | Only when the user explicitly approves generated PBIP mode | Complete generated PBIP project, semantic model, report artifact, relationships, measures, parameters, report pages, and validation evidence |
 | Semantic layer first | Metrics need governed definitions before dashboards | MetricFlow metrics, entities, dimensions, time dimensions, safe denominators |
 | Export/query handoff | The user wants to query marts manually | Final schemas, sample SQL, model grains, recommended joins |
@@ -210,13 +226,15 @@ These are different deliverables:
 
 | User asks for | Required deliverable |
 |---|---|
-| Presentation layer, with no technology specified | Power BI Desktop human-connected template workflow by default |
-| Power BI, PBIP, TMDL, or a Power BI Desktop file/project | A complete PBIP project that Power BI Desktop can open, with report and semantic model artifacts |
+| Presentation layer, with no technology specified | Matplotlib report figures by default |
+| Power BI presentation layer | Power BI Desktop human-connected template workflow |
 | Dashboard design | Markdown design/specification only, unless the user later approves PBIP creation |
 | Presentation layer report | Markdown report only |
 | Query handoff | SQL examples and model-grain guide only |
 
-If the user approves the default presentation layer, the agent must create the Power BI handoff folder/checklist and ask the human to save the Desktop-connected PBIP at the specified path. Do not mark the phase complete with only advice; the phase is pending until the human confirms the PBIP path or declines Power BI.
+If the user approves the default presentation layer, the agent must build the Matplotlib report pack under `reports/agent/10_presentation/matplotlib/` per [matplotlib-presentation-layer.md](matplotlib-presentation-layer.md). Do not mark the phase complete with only advice; the phase is pending until figure generation and SQL verification are recorded or the work is explicitly blocked.
+
+If the user approves Power BI instead, the agent must create the Power BI handoff folder/checklist and ask the human to save the Desktop-connected PBIP at the specified path. Do not mark the Power BI phase complete with only advice; the phase is pending until the human confirms the PBIP path or declines Power BI.
 
 ## Required recommendation section
 
@@ -225,7 +243,7 @@ Add this section to the final handoff and final report:
 ```markdown
 ## Presentation Layer Recommendation
 
-Recommended option: <Power BI PBIP/TMDL project / dbt documentation only / presentation layer report / dashboard design / semantic layer first / export or query handoff>
+Recommended option: <Matplotlib report figures / Power BI PBIP/TMDL project / dbt documentation only / presentation layer report / dashboard design / semantic layer first / export or query handoff>
 
 Why:
 - <evidence from final marts, metrics, data quality, and user goals>
@@ -249,18 +267,24 @@ Decision needed:
 Ask clearly after final validation:
 
 ```text
-Documentation and dbt validation are complete. Before I close delivery, do you want me to create a presentation layer artifact?
+Documentation and dbt validation are complete. Before I close delivery, do you want me to create a presentation layer artifact, and which technology should I use?
 
-Recommended default: Power BI Desktop human-connected template workflow. The human creates and saves the PBIP with data attached; the agent injects approved measures after confirmation.
+Recommended default: Matplotlib report figures. They are reproducible, version-controlled, and easy to validate with SQL-backed Python scripts.
 
-Reply "yes" to use the default Power BI Desktop template workflow, "no" to stop at dbt documentation, or name another option such as generated PBIP, Markdown report, dashboard design only, semantic layer refinement, or query handoff.
+Power BI is available when you need an interactive Desktop semantic model and report handoff.
+
+Reply with one of these choices:
+- `Yes - build Matplotlib report figures (recommended)`
+- `Yes - prepare Power BI Desktop template handoff`
+- `No presentation layer - complete final delivery now`
+- `Tell me what to change first`
 ```
 
 Do not force the user to choose all options. Recommend the best next option based on the project evidence.
 
 For full-pipeline runs, prefer the interactive presentation decision gate above over a plain text-only question. The user should see the recommendation, understand the key evidence, and click the desired path.
 
-If the user says yes without specifying a technology, infer the Power BI Desktop human-connected template workflow as the approved default, create the presentation-layer phase plan, and wait for approval when required by [phase-plan-approval.md](phase-plan-approval.md). Do not ask the user to say "Power BI as code" explicitly. Do not generate a full PBIP unless the user explicitly approves generated PBIP mode.
+If the user says yes without specifying a technology, infer the **Matplotlib** workflow as the approved default, create the presentation-layer phase plan, and wait for approval when required by [phase-plan-approval.md](phase-plan-approval.md). If the user explicitly chooses Power BI, use the Power BI Desktop human-connected template workflow. Do not ask the user to say "Power BI as code" explicitly. Do not generate a full PBIP unless the user explicitly approves generated PBIP mode.
 
 If the recommendation cannot be produced, mark it `BLOCKED` or `SKIPPED` with the exact reason in the final report, pipeline status, context tree, and final response. Do not silently omit the presentation-layer section.
 
@@ -288,9 +312,9 @@ If the recommendation cannot be produced, mark it `BLOCKED` or `SKIPPED` with th
 
 ## Power BI as code guardrails
 
-Use this section when the user explicitly asks for a Power BI project, PBIP, TMDL, or Power BI presentation layer as code, or when the user says yes to the default presentation layer without specifying another technology.
+Use this section when the user explicitly asks for a Power BI project, PBIP, TMDL, or Power BI presentation layer as code, or when the user explicitly chooses Power BI at the presentation decision gate.
 
-Power BI completion in the default workflow means the user-created PBIP exists, data is attached, and the agent has injected approved measures/metadata and validated the result. A folder containing only `import_guide.md`, `relationships.md`, `kpi_measures.dax`, and `dashboard_pages.md` is a useful dashboard design handoff, but it is not a completed Power BI presentation layer.
+Power BI completion means the user-created PBIP exists, data is attached, and the agent has injected approved measures/metadata and validated the result. A folder containing only `import_guide.md`, `relationships.md`, `kpi_measures.dax`, and `dashboard_pages.md` is a useful dashboard design handoff, but it is not a completed Power BI presentation layer.
 
 When the user provides a detailed Power BI contract, copy the contract into the presentation phase plan and validate against every item. Do not generalize away user-provided table names, relationship rules, measure labels, report page names, output paths, schema versions, or known technical fixes.
 
@@ -403,8 +427,9 @@ Before creating files:
 - Confirm output location, model name, connection source, consultant-grade page plan, measures, verification queries, blocked visuals, and privacy rules.
 - Confirm metric verification queries for every key performance indicator measure, including numerator, denominator, filter logic, and expected versus actual result.
 - Discover fact date columns and planned time showcase visuals before writing report pages.
-- In the plan, state that the Power BI Desktop human-connected template workflow is the default because no other presentation technology was specified. Ask for changes only if the user wants a different technology, generated PBIP mode, report-page editing, or a Markdown-only guide.
-- Create the Power BI handoff folder, table/relationship checklist, required PBIP path/name, storage-mode recommendation, and measures table instructions. Stop until the user confirms the PBIP was saved and data is attached.
+- In the plan, state the approved presentation technology. If the user approved presentation work without naming a technology, state that the **Matplotlib** workflow is the default. Ask for changes only if the user wants Power BI, generated PBIP mode, report-page editing, or a Markdown-only guide.
+- For approved Matplotlib work, create `reports/agent/10_presentation/matplotlib/` artifacts per [matplotlib-presentation-layer.md](matplotlib-presentation-layer.md), map all recommended measures and key performance indicators into `kpi_figure_coverage.md`, install missing `matplotlib`, `numpy`, and `pandas` prerequisites when needed, and record SQL verification for every rendered chart aggregate.
+- For approved Power BI work, create the Power BI handoff folder, table/relationship checklist, required PBIP path/name, storage-mode recommendation, and measures table instructions. Stop until the user confirms the PBIP was saved and data is attached.
 - Detect the local Power BI Desktop version before final PBIP handoff. If Desktop cannot be detected, record that fact and do not claim version compatibility.
 - If a known-good PBIP project exists in the workspace, do not silently adapt it. Show the exact `.pbip` path, state which structural files would be inspected, explain what would and would not be reused, and get user approval before using it as a reference.
 - When the user names required source schemas or gold tables, verify those tables exist before wiring import queries or partitions.

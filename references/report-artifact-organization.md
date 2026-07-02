@@ -45,6 +45,9 @@ reports/agent/
     kpis/
       sql_proofs/
   10_presentation/
+    matplotlib/
+      figures/
+      sql_verification/
   11_operations/
 ```
 
@@ -81,6 +84,13 @@ Use the folder that matches the current phase. Do not put phase-specific files a
 | KPI variance report | `reports/agent/09_analytics_insights/kpis/kpi_variance_report.md` |
 | KPI SQL proofs | `reports/agent/09_analytics_insights/kpis/sql_proofs/` |
 | Presentation report | `reports/agent/10_presentation/presentation_report.md` |
+| Matplotlib README | `reports/agent/10_presentation/matplotlib/README.md` |
+| Matplotlib requirements | `reports/agent/10_presentation/matplotlib/requirements-matplotlib.txt` |
+| Matplotlib report spec | `reports/agent/10_presentation/matplotlib/report_spec.md` |
+| Matplotlib KPI figure coverage | `reports/agent/10_presentation/matplotlib/kpi_figure_coverage.md` |
+| Matplotlib generation script | `reports/agent/10_presentation/matplotlib/generate_report.py` |
+| Matplotlib figures | `reports/agent/10_presentation/matplotlib/figures/` |
+| Matplotlib SQL verification | `reports/agent/10_presentation/matplotlib/sql_verification/` |
 | Power BI model plan | `reports/agent/10_presentation/powerbi_model_plan.md` |
 | Dashboard pages | `reports/agent/10_presentation/dashboard_pages.md` |
 | DAX measures | `reports/agent/10_presentation/dax_measures.md` |

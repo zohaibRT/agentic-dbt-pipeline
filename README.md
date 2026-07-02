@@ -99,8 +99,9 @@ Keep passwords, tokens, and private keys in local profiles or GitHub Secrets.
 | Quality | Runs `dbt_project_evaluator` and uses `audit_helper` where useful |
 | Documentation | Runs `dbt docs generate`, verifies manifest/catalog output, and can serve documentation locally for viewing |
 | Analytics insight reporting | After documentation, discovers and documents trusted business outputs, a domain-neutral key performance indicator discovery matrix, source-to-final key performance indicator reconciliation, key performance indicator catalog, dashboard spec, readiness scorecard, and deferred insights before presentation work |
-| Presentation layer | After analytics insight reporting, recommends business-facing presentation options using the reporting design files as scope. If approved and no other technology is specified, defaults to a Power BI PBIP/TMDL handoff |
-| Power BI handoff | Optional after approval. Produces a Power BI-ready star schema plan, semantic model plan, DAX measure specifications, dashboard page plan, static validation results, Microsoft Power BI Modeling Model Context Protocol validation when available, and Desktop open validation when available |
+| Presentation layer | After analytics insight reporting, recommends business-facing presentation options using the reporting design files as scope. If approved and no other technology is specified, defaults to Matplotlib report figures with SQL-backed validation |
+| Matplotlib report figures | Optional after approval. Produces reproducible Python figure generation, full measure/key performance indicator coverage from analytics insight catalogs, PNG/PDF outputs, SQL verification, prerequisites install when needed, and report spec under `reports/agent/10_presentation/matplotlib/` |
+| Power BI handoff | Optional after explicit Power BI approval. Produces a Power BI-ready star schema plan, semantic model plan, DAX measure specifications, dashboard page plan, static validation results, Microsoft Power BI Modeling Model Context Protocol validation when available, and Desktop open validation when available |
 | Human review | Summarizes assumptions, data quality notes, mappings, metrics, and open decisions |
 | Git | Commits initialization, sources, each model layer, documentation, continuous integration, and Agents Schema separately |
 | Agents Schema | Publishes dbt metadata into `AGENTS.*` so agents can query project context from the warehouse |
@@ -142,6 +143,7 @@ The skill keeps a reviewable audit trail in `reports/agent/`:
 - `analytics_insight_report.md`, `kpi_discovery_matrix.md`, `kpi_reconciliation_report.md`, `kpi_lineage_proofs.md`, `kpi_variance_report.md`, `reporting_catalog.md`, `kpi_catalog.md`, `dashboard_spec.md`, `insight_backlog.md`, and `reporting_readiness_scorecard.md` after analytics insight reporting
 - `cardinality_report.md`, `relationship_profile.md`, `join_safety_report.md`, and `grain_validation_report.md` when relationships, joins, final models, or Power BI relationships are in scope
 - `presentation_report.md` or `presentation_layer_report.md` when the presentation layer is recommended or created
+- `matplotlib/README.md`, `matplotlib/requirements-matplotlib.txt`, `matplotlib/report_spec.md`, `matplotlib/kpi_figure_coverage.md`, `matplotlib/generate_report.py`, `matplotlib/figures/`, and `matplotlib/sql_verification/` when Matplotlib is approved
 - `powerbi_model_plan.md`, `dashboard_pages.md`, and `dax_measures.md` when Power BI is approved
 - `final_delivery.md` for the final handoff
 
@@ -226,3 +228,4 @@ The skill can add and install these dbt packages:
 | [references/project-evaluator.md](references/project-evaluator.md) | Project evaluator setup for bronze/silver/gold |
 | [references/data-engineering-best-practices.md](references/data-engineering-best-practices.md) | Data-engineering guardrails |
 | [references/analytics-insight-reporting.md](references/analytics-insight-reporting.md) | Business reporting design before presentation layer |
+| [references/matplotlib-presentation-layer.md](references/matplotlib-presentation-layer.md) | Default Matplotlib static report figures workflow |

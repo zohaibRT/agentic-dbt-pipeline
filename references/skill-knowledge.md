@@ -32,6 +32,7 @@ Read these skill references as needed:
 | Big data, modern table formats, partitioning, clustering, compaction, and warehouse optimization | [principal-data-engineering-standards.md](principal-data-engineering-standards.md) |
 | Data quality and per-layer validation | [layer-data-validation.md](layer-data-validation.md), [data-engineering-best-practices.md](data-engineering-best-practices.md) |
 | Key performance indicators and semantic metrics | [kpi-definitions.md](kpi-definitions.md), [metric-verification.md](metric-verification.md), [semantic-layer-spec.md](semantic-layer-spec.md) |
+| Matplotlib presentation layer | [matplotlib-presentation-layer.md](matplotlib-presentation-layer.md), [presentation-layer.md](presentation-layer.md), [analytics-insight-reporting.md](analytics-insight-reporting.md), [reporting-standards.md](reporting-standards.md) |
 | Power BI and presentation layer design | [presentation-layer.md](presentation-layer.md), [analytics-insight-reporting.md](analytics-insight-reporting.md), [principal-data-engineering-standards.md](principal-data-engineering-standards.md) |
 | Privacy, sensitive fields, and unclear fields | [privacy-and-unknown-fields.md](privacy-and-unknown-fields.md) |
 | Source safety and warehouse routing | [source-confirmation.md](source-confirmation.md), [warehouse-adapter-routing.md](warehouse-adapter-routing.md), [schema-isolation.md](schema-isolation.md) |
@@ -44,6 +45,7 @@ Use official documentation when the task depends on current behavior, adapter-sp
 - Package documentation or package source repositories for dbt packages
 - Warehouse documentation for PostgreSQL, Redshift, Snowflake, BigQuery, Databricks, Spark, Iceberg, Delta Lake, or Hudi behavior
 - Microsoft documentation for Power BI, PBIP, TMDL, and Tabular model behavior
+- Matplotlib official documentation for figures, axes, artists, colors, text, and static report rendering at https://matplotlib.org/stable/users/index
 
 Do not paste large external documentation into the project. Summarize the relevant rule in the phase plan or report, cite the source when browsing was used, and keep implementation grounded in the current project.
 

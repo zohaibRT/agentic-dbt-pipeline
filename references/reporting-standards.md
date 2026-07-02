@@ -2,7 +2,7 @@
 
 Use this before writing discovery reports, phase reports, analytics insight reporting files, presentation reports, final handoffs, dashboard designs, and Power BI report plans.
 
-For analytics insight reporting design rules and deliverables, read [analytics-insight-reporting.md](analytics-insight-reporting.md). This file defines the five report pillars and Power BI canvas standards; analytics insight reporting decides what is useful to show, and the presentation layer implements the approved design.
+For analytics insight reporting design rules and deliverables, read [analytics-insight-reporting.md](analytics-insight-reporting.md). This file defines the five report pillars, Matplotlib visual standards, and Power BI canvas standards; analytics insight reporting decides what is useful to show, and the presentation layer implements the approved design.
 
 ## Core rule
 
@@ -50,6 +50,27 @@ For business-facing presentation layers, the report design must show more than k
 - Recommendations and next steps page or section.
 
 If targets, benchmarks, attribution dimensions, or next-step owners are missing, include a visible `Needs business input` note instead of leaving the pillar out silently.
+
+## Matplotlib visual standard
+
+Use this standard for every generated Matplotlib report pack unless the user provides a stronger company template. Official reference: [Matplotlib User Guide](https://matplotlib.org/stable/users/index).
+
+Every Matplotlib figure must be readable, business-facing, and SQL-verified:
+
+| Rule | Requirement |
+|---|---|
+| Figure structure | One clear business question per figure; use `subplots` or subplot mosaics for multi-panel pages |
+| Labels | Title, axis labels, units, and source/caveat notes on every chart |
+| Colors | Consistent accessible palette across all figures; document color meaning in `report_spec.md` |
+| Dates | Explicit date parsing and readable time-axis formatting for trend visuals |
+| Legends | Clear series meaning; avoid duplicate or unreadable legends |
+| Static output | Save PNG or PDF files under `reports/agent/10_presentation/matplotlib/figures/` |
+| Validation | Every plotted aggregate must reconcile to SQL in `sql_verification/` before the figure is marked trusted |
+| Coverage | Every recommended measure, metric, and key performance indicator from analytics insight catalogs must appear in `kpi_figure_coverage.md` as `RENDERED`, `BLOCKED`, or `DEFERRED` |
+| Prerequisites | Install missing `matplotlib`, `numpy`, and `pandas` before figure generation; record commands in `requirements-matplotlib.txt` |
+| Style | Use one project style via rcParams or a style sheet so outputs look like one report system |
+
+Do not use decorative chart junk, unlabeled axes, or synthetic trend lines without evidence.
 
 ## Power BI canvas standard
 
