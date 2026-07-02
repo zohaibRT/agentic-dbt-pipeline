@@ -11,6 +11,7 @@ Measure generation must be driven by:
 1. `reports/agent/kpi_catalog.md`
 2. Validated dbt semantic metrics
 3. Explicit user-approved requirements
+4. Reconciled key performance indicator proof from `reports/agent/kpi_reconciliation_report.md`
 
 Do not invent Power BI-only key performance indicators, denominators, filters, business flags, or relationship shortcuts just to make a report look complete.
 
@@ -41,8 +42,9 @@ For every generated DAX measure, record the source mapping in `reports/agent/dax
 | Confidence | High, approved, warning, low, blocked, or deferred |
 | Caveats | Data quality, empty facts, privacy, mapping, or definition limitations |
 | Verification | SQL or semantic query result that reconciles to the DAX result |
+| Cardinality proof | Grain, distinct key, duplicate key, null key, row loss, and row multiplier evidence |
 
-Only create measures whose confidence is `HIGH` or user-approved `MEDIUM`. For `LOW`, `BLOCKED`, or `Deferred` key performance indicators, document them as blocked or deferred unless the user explicitly approves further discovery and the metric is rescored.
+Only create measures whose confidence is `HIGH` or user-approved `MEDIUM` and whose reconciliation status is `PASS` or explicitly accepted `WARN`. For `LOW`, `BLOCKED`, `Deferred`, or unreconciled key performance indicators, document them as blocked or deferred unless the user explicitly approves further discovery and the metric is rescored and reconciled.
 
 ## Optional Tooling Priority
 
@@ -66,6 +68,7 @@ Do not:
 - Create missing surrogate keys, composite keys, business flags, or denominator logic inside Power BI M or DAX when they should be modeled in dbt.
 - Add Power Query M steps such as `AddedKey = Table.AddColumn(...)` as a shortcut for missing dbt model logic.
 - Create a DAX measure when the numerator, denominator, filter, grain, or time field is not documented.
+- Create a DAX measure when source-to-final reconciliation or cardinality proof is missing.
 - Create direct active relationships that bypass the approved star schema or introduce ambiguous filter paths.
 - Use Power BI measures to hide an upstream dbt logic bug.
 - Mark presentation complete when DAX results do not reconcile to gold or semantic SQL.
@@ -77,7 +80,7 @@ Before marking a Power BI phase complete:
 1. Confirm every DAX measure maps to `kpi_catalog.md`, a validated semantic metric, or approved user requirement.
 2. Recalculate every key performance indicator with SQL against gold/marts or with an approved semantic query.
 3. Compare expected versus actual numerator, denominator, and final result for rates, ratios, averages, and percentages.
-4. Validate relationship paths for ambiguity.
+4. Validate relationship paths, one-side uniqueness, not-nullness, grain, and cardinality.
 5. Run `scripts/validate_powerbi_pbip.py` for PBIP/TMDL artifacts when available.
 6. Run Power BI Modeling Model Context Protocol validation when available.
 7. Run Power BI Desktop open validation when available.

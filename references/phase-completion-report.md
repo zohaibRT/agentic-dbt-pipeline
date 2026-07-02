@@ -157,6 +157,7 @@ Every phase report must include:
 - Commands run
 - Validation results: pass, warn, fail, skipped
 - Data verification results after bronze/staging, silver/intermediate, and gold/marts builds
+- Cardinality and grain validation results when joins, relationships, final models, or Power BI relationships are in scope
 - Agent recommendation followed, changed, or deferred
 - Project knowledge used and whether it was applied, deferred, or conflicted
 - What looks correct
@@ -171,6 +172,7 @@ Every phase report must include:
 - Analytics insight reporting files: `analytics_insight_report.md`, `reporting_catalog.md`, `kpi_catalog.md`, `dashboard_spec.md`, `insight_backlog.md`, `reporting_readiness_scorecard.md`
 - Presentation-layer artifacts when approved, such as `presentation_layer_report.md`, `powerbi_model_plan.md`, `dashboard_pages.md`, `dax_measures.md`, and `final_delivery.md`
 - Metric verification results for any implemented key performance indicator, including expected versus actual numerator, denominator, and final result
+- Key performance indicator reconciliation results for any approved or implemented key performance indicator, including proof files, source-to-final variance, first failing layer, and cardinality/grain proof
 - Trend analysis and variance when supported, such as row-count movement, period movement, target variance, baseline variance, or validation deltas
 - Insights and attribution: what the evidence suggests, likely drivers, anomalies, outliers, blockers, and confidence
 - Recommendations and next steps: actionable next phase, data engineer decision, risk, resource need, or approval checkpoint
@@ -247,6 +249,16 @@ Overall: <PASS | WARN | FAIL | SKIPPED | BLOCKED>
 | Key Performance Indicator | Layer Checked | Expected Numerator | Actual Numerator | Expected Denominator | Actual Denominator | Expected Result | Actual Result | Status | Evidence |
 |---|---|---:|---:|---:|---:|---:|---:|---|---|
 | <metric> | <gold/semantic/presentation> | <value> | <value> | <value or not applicable> | <value or not applicable> | <value> | <value> | <PASS/WARN/FAIL/BLOCKED> | <query, command, or report reference> |
+
+## Key Performance Indicator Reconciliation Results
+| Key Performance Indicator | First Layer Result | Final Layer Result | Variance | Variance Percentage | First Failing Layer | Proof Files | Status |
+|---|---:|---:|---:|---:|---|---|---|
+| <name> | <value> | <value> | <difference> | <percent> | <layer or Not applicable> | <paths> | <PASS/WARN/FAIL/BLOCKED> |
+
+## Cardinality And Grain Validation Results
+| Model Or Join | Expected Grain/Cardinality | Observed Result | Row Multiplier | Row Loss | Status | Evidence |
+|---|---|---|---:|---:|---|---|
+| <model/join> | <expected> | <observed> | <value> | <value> | <PASS/WARN/FAIL/BLOCKED> | <query/report> |
 
 ## Trend Analysis and Variance
 | Item | Current Result | Comparison / Target | Variance | Evidence | Status |

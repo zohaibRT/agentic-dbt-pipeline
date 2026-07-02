@@ -10,6 +10,9 @@ Read [analytics-insight-reporting.md](analytics-insight-reporting.md) first. The
 |---|---|
 | `reports/agent/dashboard_spec.md` | Page plan |
 | `reports/agent/kpi_discovery_matrix.md` | Key performance indicator candidate evidence, confidence, and blocked/deferred reasoning |
+| `reports/agent/kpi_reconciliation_report.md` | Source-to-final metric proof, variance, and pass/fail evidence |
+| `reports/agent/kpi_lineage_proofs.md` | First failing layer and lineage summary for trusted or blocked metrics |
+| `reports/agent/kpi_variance_report.md` | Variance evidence for report caveats and blocked visuals |
 | `reports/agent/kpi_catalog.md` | Measure and key performance indicator source |
 | `reports/agent/reporting_catalog.md` | Report/page scope |
 | `reports/agent/insight_backlog.md` | Blocked or deferred visuals |
@@ -18,7 +21,7 @@ Read [analytics-insight-reporting.md](analytics-insight-reporting.md) first. The
 
 The presentation layer must not invent pages, key performance indicators, visuals, measures, denominators, filters, or business scope that contradict or bypass analytics insight reporting outputs unless the user explicitly overrides them.
 
-Power BI measures must be generated only from `reports/agent/kpi_catalog.md`, validated dbt semantic metrics, or explicit user-approved requirements. Each generated DAX measure must map back to the key performance indicator name, source dbt model, formula, time field, grain, allowed dimensions, confidence, caveats, and verification evidence. Do not generate DAX for `LOW` or `BLOCKED` key performance indicators from `kpi_discovery_matrix.md`.
+Power BI measures must be generated only from `reports/agent/kpi_catalog.md`, validated dbt semantic metrics, or explicit user-approved requirements. Each generated DAX measure must map back to the key performance indicator name, source dbt model, formula, time field, grain, allowed dimensions, confidence, caveats, cardinality proof, and verification evidence. Do not generate DAX for `LOW`, `BLOCKED`, or unreconciled key performance indicators from `kpi_discovery_matrix.md` and `kpi_reconciliation_report.md`.
 
 ## Purpose
 
@@ -239,6 +242,7 @@ If the recommendation cannot be produced, mark it `BLOCKED` or `SKIPPED` with th
 - Do not put a key performance indicator into Power BI until [metric-verification.md](metric-verification.md) reconciles expected versus actual numerator, denominator, and result from gold or semantic logic.
 - Do not create Power BI-only key performance indicators or DAX measures that bypass `kpi_catalog.md`, validated semantic metrics, or user-approved requirements.
 - Do not create missing keys, business flags, denominator logic, or relationship shortcuts in Power BI when they belong in dbt.
+- Do not create Power BI measures when source-to-final reconciliation, grain proof, or cardinality proof is missing or failed.
 - Do not ask the user to design every page. Recommend a consultant-grade default design from validated data and ask only for decisions that affect business meaning, privacy, cost, refresh behavior, or downstream usability.
 - Do not maximize information by exposing every field. Maximize validated business insight.
 - Do not skip the standard time showcase when validated facts have usable date columns. If no fact date columns exist, document that trend visuals are blocked.

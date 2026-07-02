@@ -6,7 +6,7 @@ Create or update **only** the marts star-schema layer from staging + intermediat
 
 Read [human-review.md](human-review.md) before marking marts complete if metrics, grain, mappings, or sensitive fields require business approval.
 Read [privacy-and-unknown-fields.md](privacy-and-unknown-fields.md) before exposing direct identifiers, sensitive fields, protected health information, personally identifiable information, or unclear coded fields in marts.
-Read [layer-data-validation.md](layer-data-validation.md) before marking marts complete.
+Read [layer-data-validation.md](layer-data-validation.md), [cardinality-validation.md](cardinality-validation.md), and [kpi-reconciliation.md](kpi-reconciliation.md) before marking marts complete.
 Read [kpi-definitions.md](kpi-definitions.md) before adding reporting marts or metric-ready fields.
 Before creating or changing marts files, follow [phase-plan-approval.md](phase-plan-approval.md).
 
@@ -18,7 +18,7 @@ Before creating or changing marts files, follow [phase-plan-approval.md](phase-p
 | Allowed changes | Fact models, dimension models, reporting mart models, marts YAML, marts tests, semantic-ready fields, and key performance indicator documentation |
 | Not allowed | Semantic layer files, dashboards, reports, unclear metric implementation, direct source reads, or unapproved sensitive-field exposure |
 | Commands to run | `dbt parse --no-partial-parse`, `dbt build --select +path:models/{layer_3_name}/{project_slug}`, and marts data validation queries |
-| Completion criteria | Facts and dimensions have documented grains, tests pass, non-empty expectations are verified, metric sanity checks pass, and privacy exposure is reviewed |
+| Completion criteria | Facts and dimensions have documented grains, cardinality and relationship proof exists, tests pass, non-empty expectations are verified, metric reconciliation checks pass, and privacy exposure is reviewed |
 | Report required | `reports/agent/marts_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
 
 ## Folder and naming
@@ -45,6 +45,8 @@ Create as many credible dimensions, facts, bridge tables, reporting marts, and m
 Each final model must have a documented grain.
 
 Final model documentation must include business purpose, lineage, assumptions, caveats, and tests where applicable.
+
+Every final fact, dimension, bridge, and reporting mart must appear in `reports/agent/grain_validation_report.md`. Any Power BI one-side relationship candidate must have a unique and not-null key proven in dbt before presentation work.
 
 Fact models must define grain, measures, additive/semi-additive/non-additive behavior, primary date field, dimension keys, privacy notes, and validation evidence.
 
@@ -167,7 +169,7 @@ dbt build --select +path:models/{layer_3_name}/{project_slug}
 
 `+path` builds marts models, their tests, and required upstream (staging + intermediate) dependencies.
 
-After the build, run [layer-data-validation.md](layer-data-validation.md). For marts, the report must show row counts for every fact, dimension, and reporting mart; expected-empty evidence for zero-row models; fact and dimension grain checks; fact-to-dimension or fact-to-parent-fact relationship checks; key performance indicator measure sanity checks; date coverage; and privacy exposure checks. Also include the `Key Performance Indicator Definitions` section from [kpi-definitions.md](kpi-definitions.md). If supporting upstream data exists but a gold model is empty, mark the phase `FAIL` or `BLOCKED`, share the evidence with the user, and do not continue to semantic layer, documentation, presentation layer, or final delivery until the issue is fixed or explicitly accepted.
+After the build, run [layer-data-validation.md](layer-data-validation.md), [cardinality-validation.md](cardinality-validation.md), and [kpi-reconciliation.md](kpi-reconciliation.md). For marts, the report must show row counts for every fact, dimension, and reporting mart; expected-empty evidence for zero-row models; fact and dimension grain checks; fact-to-dimension or fact-to-parent-fact relationship checks; cardinality and join safety checks; key performance indicator reconciliation checks; date coverage; and privacy exposure checks. Also include the `Key Performance Indicator Definitions` section from [kpi-definitions.md](kpi-definitions.md). If supporting upstream data exists but a gold model is empty, mark the phase `FAIL` or `BLOCKED`, share the evidence with the user, and do not continue to semantic layer, documentation, presentation layer, or final delivery until the issue is fixed or explicitly accepted.
 
 ## Do not create
 

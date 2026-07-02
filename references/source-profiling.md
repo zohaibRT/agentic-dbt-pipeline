@@ -1,6 +1,6 @@
 # Source Profiling Checklist
 
-Run lightweight project discovery before any build planning with [discovery-requirements.md](discovery-requirements.md). Then use [phased-discovery.md](phased-discovery.md) to profile only what is needed for the current phase. Run this deeper source profiling after source YAML is generated and before staging models are designed.
+Run lightweight project discovery before any build planning with [discovery-requirements.md](discovery-requirements.md). Then use [phased-discovery.md](phased-discovery.md) to profile only what is needed for the current phase. Run this deeper source profiling after source YAML is generated and before staging models are designed. Read [cardinality-validation.md](cardinality-validation.md) before deciding joins, grains, facts, dimensions, bridge tables, or downstream Power BI relationships.
 
 ## Goal
 
@@ -10,6 +10,7 @@ Before proposing models, summarize:
 
 - Source tables and row counts
 - Table relationships and cardinality
+- Grain, candidate keys, duplicate keys, null keys, match rates, and many-to-many risks
 - Business processes supported by the data
 - Metrics that appear supported and metrics that need user definitions
 - Data quality rules needed
@@ -31,6 +32,7 @@ For each source table, capture:
 - Nullable columns that look important
 - Duplicate keys
 - Empty tables
+- Observed relationship cardinality, match rate, row multiplication risk, and bridge/link table candidates
 
 Use warehouse SQL, dbt source metadata, or codegen output through the adapter selected by the active dbt profile. Follow [warehouse-adapter-routing.md](warehouse-adapter-routing.md) before profiling. Keep queries lightweight and avoid full table scans when tables are large.
 
@@ -45,6 +47,8 @@ Add short notes to source YAML descriptions or a project note when helpful:
 - Table grain
 - Primary key assumption
 - Known relationships
+- Observed or expected cardinality
+- Tables that must be aggregated before joining
 - Important date column
 - Important status/code values
 - Data quality concerns

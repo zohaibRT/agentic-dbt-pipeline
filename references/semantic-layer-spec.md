@@ -1,6 +1,6 @@
 ﻿# Semantic Layer Spec
 
-Before creating or changing semantic layer files, follow [phase-plan-approval.md](phase-plan-approval.md), [kpi-definitions.md](kpi-definitions.md), and [metric-verification.md](metric-verification.md).
+Before creating or changing semantic layer files, follow [phase-plan-approval.md](phase-plan-approval.md), [kpi-definitions.md](kpi-definitions.md), [metric-verification.md](metric-verification.md), [kpi-reconciliation.md](kpi-reconciliation.md), and [cardinality-validation.md](cardinality-validation.md).
 
 **When:** after marts layer builds successfully.
 **Skill:** compose with `building-dbt-semantic-layer`.
@@ -14,7 +14,7 @@ Before creating or changing semantic layer files, follow [phase-plan-approval.md
 | Allowed changes | Semantic model YAML, metric YAML, semantic documentation, and semantic phase report |
 | Not allowed | New marts, dashboards, guessed metrics, metrics from empty facts, or unapproved sensitive dimensions |
 | Commands to run | `dbt parse --no-partial-parse` and any available semantic validation command supported by the installed dbt version |
-| Completion criteria | Every semantic metric traces to a documented and reconciled key performance indicator, parse succeeds, and semantic metric results match gold SQL checks |
+| Completion criteria | Every semantic metric traces to a documented and reconciled key performance indicator, parse succeeds, semantic metric results match gold SQL checks, and metric grain/cardinality is proven |
 | Report required | `reports/agent/semantic_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
 
 ## Folder
@@ -34,7 +34,7 @@ Minimum expectations:
 - Ratio metrics use safe denominators
 - Metric names are business-friendly and documented
 
-Every semantic metric must trace to a key performance indicator definition. Include the key performance indicator's business meaning, grain, numerator, denominator, filters, time field, source model, caveats, approval status, and metric verification status in the semantic phase report.
+Every semantic metric must trace to a key performance indicator definition. Include the key performance indicator's business meaning, grain, numerator, denominator, filters, time field, source model, caveats, approval status, cardinality proof, and metric verification status in the semantic phase report.
 
 If the key performance indicator is not approved, has ambiguous numerator, denominator, filters, or time field, or fails expected-versus-actual reconciliation, do not implement it as a semantic metric. Mark it deferred or blocked and ask for the missing business definition or fix the upstream logic.
 
@@ -118,7 +118,7 @@ Use **actual column names** from final fact models. Do not invent fields.
 dbt parse --no-partial-parse
 ```
 
-Also run metric verification SQL from [metric-verification.md](metric-verification.md) for each semantic metric and record expected versus actual results in `reports/agent/semantic_report.md`.
+Also run metric verification SQL from [metric-verification.md](metric-verification.md) and source-to-gold reconciliation from [kpi-reconciliation.md](kpi-reconciliation.md) for each semantic metric. Record expected versus actual results in `reports/agent/semantic_report.md`. If a semantic metric differs from gold SQL, mark semantic delivery `BLOCKED`.
 
 ## Do not
 

@@ -27,6 +27,7 @@ Every report should include these pillars when relevant:
 - Start with a short executive summary before details.
 - Separate evidence from interpretation.
 - Use validated metrics and source-backed findings first.
+- Treat key performance indicator reconciliation, first failing layer, and cardinality/grain proof as part of the metric evidence.
 - State targets and benchmarks only when provided, discovered, or safely derived from approved baseline logic.
 - When no target exists, recommend that the data engineer or business owner define one.
 - Include both leading and lagging indicators when the data supports them.
@@ -85,7 +86,7 @@ Use this split:
 
 For every proposed or implemented key performance indicator, keep the definition visible somewhere in the report experience or companion report: business meaning, source model, grain, numerator, denominator, filters, time field, caveat, and validation status.
 
-Key performance indicator coverage must come from the domain-neutral discovery framework, not from hardcoded domain templates. Prioritize `HIGH` confidence and approved `MEDIUM` confidence metrics. Put `LOW` and `BLOCKED` metrics in the deferred key performance indicator list with the exact missing business rule, mapping, grain, source data, or privacy decision.
+Key performance indicator coverage must come from the domain-neutral discovery framework, not from hardcoded domain templates. Prioritize `HIGH` confidence and approved `MEDIUM` confidence metrics only when reconciliation and cardinality proof are available. Put `LOW`, `BLOCKED`, and unreconciled metrics in the deferred key performance indicator list with the exact missing business rule, mapping, grain, source data, cardinality proof, reconciliation proof, or privacy decision.
 
 ## Report Information page
 

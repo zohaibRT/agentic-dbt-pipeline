@@ -2,7 +2,7 @@
 
 Use this after marts/gold, semantic layer, `dbt_project_evaluator`, and documentation are complete and validated. Run this before the presentation-layer recommendation or any Power BI / business intelligence handoff.
 
-Also read [kpi-discovery-framework.md](kpi-discovery-framework.md), [reporting-standards.md](reporting-standards.md), [kpi-definitions.md](kpi-definitions.md), [metric-verification.md](metric-verification.md), [privacy-and-unknown-fields.md](privacy-and-unknown-fields.md), and [writing-style.md](writing-style.md).
+Also read [kpi-discovery-framework.md](kpi-discovery-framework.md), [kpi-reconciliation.md](kpi-reconciliation.md), [cardinality-validation.md](cardinality-validation.md), [reporting-standards.md](reporting-standards.md), [kpi-definitions.md](kpi-definitions.md), [metric-verification.md](metric-verification.md), [privacy-and-unknown-fields.md](privacy-and-unknown-fields.md), and [writing-style.md](writing-style.md).
 
 ## Phase purpose
 
@@ -45,6 +45,7 @@ These rules apply to every domain, source schema, and warehouse adapter:
 - Do not suggest charts just because data exists.
 - Every key performance indicator and report candidate must map to validated marts or semantic metrics.
 - Key performance indicator discovery must be schema-driven, grain-aware, and confidence-scored; do not hardcode domain-specific metrics.
+- Trusted key performance indicators must have source-to-current-layer reconciliation and grain/cardinality proof.
 - Every visual must answer a real business question.
 - Do not expose sensitive fields without approval.
 - Clearly separate trusted outputs from uncertain or deferred outputs.
@@ -99,6 +100,7 @@ Before drafting catalogs and specs, verify:
 | Documentation readiness | `dbt docs generate` completed; model purpose and grain documented |
 | Business questions | Real questions the validated data can answer, not generic dashboard filler |
 | Key performance indicator discovery | Table classification, grain, candidate measures, archetypes, confidence score, and targeted questions documented |
+| Key performance indicator reconciliation | Proof SQL files, layer results, variance, first failing layer, and cardinality assumptions documented for trusted metrics |
 | Time analysis | Usable date/time columns for trends and comparisons |
 | Segmentation | Safe dimensions for filters, slicers, and breakdowns |
 | Executive vs operational use | Which outputs serve leadership summary vs operational investigation |
@@ -111,6 +113,10 @@ After phase completion, create or update these files under `reports/agent/`:
 |---|---|
 | `analytics_insight_report.md` | Executive summary of what the business can meaningfully see; trusted facts, dimensions, metrics; useful questions; recommended dashboards; visuals; filters; drill-downs; caveats; sensitive fields; missing/deferred insights |
 | `kpi_discovery_matrix.md` | Domain-neutral key performance indicator candidate matrix with table classification, grain, formula, confidence, caveats, validation query, and approval status |
+| `kpi_reconciliation_report.md` | Layer-by-layer key performance indicator proof table with result, expected result, variance, status, and notes |
+| `kpi_lineage_proofs.md` | Source-to-final key performance indicator lineage summary showing where values changed |
+| `kpi_variance_report.md` | First-layer versus final-layer variance and likely cause for each reconciled key performance indicator |
+| `kpi_sql_proofs/` | SQL and DAX proof files for each key performance indicator and layer where applicable |
 | `reporting_catalog.md` | Catalog of report/page candidates |
 | `kpi_catalog.md` | Catalog of trusted and deferred key performance indicators with definitions, confidence, and caveats |
 | `dashboard_spec.md` | Full dashboard/report design spec for the presentation phase |
@@ -174,7 +180,7 @@ Populate from [kpi-discovery-framework.md](kpi-discovery-framework.md). Include 
 
 ### `kpi_catalog.md`
 
-Generate from `kpi_discovery_matrix.md`, approved definitions in [kpi-definitions.md](kpi-definitions.md), and reconciliation in [metric-verification.md](metric-verification.md). Promote only `HIGH` confidence and user-approved `MEDIUM` confidence key performance indicators into implemented metrics. Keep `LOW` and `BLOCKED` candidates as deferred or blocked with reasons.
+Generate from `kpi_discovery_matrix.md`, reconciliation files from [kpi-reconciliation.md](kpi-reconciliation.md), approved definitions in [kpi-definitions.md](kpi-definitions.md), and reconciliation in [metric-verification.md](metric-verification.md). Promote only `HIGH` confidence and user-approved `MEDIUM` confidence key performance indicators into implemented metrics when grain, cardinality, and source-to-current-layer reconciliation are proven. Keep `LOW`, `BLOCKED`, and unreconciled candidates as deferred or blocked with reasons.
 
 | Key Performance Indicator | Definition | Source Model | Formula/Measure | Time Field | Grain | Allowed Dimensions | Business Use | Confidence | Caveats |
 |---|---|---|---|---|---|---|---|---|---|
@@ -228,6 +234,9 @@ The presentation layer must consume these outputs:
 |---|---|
 | `dashboard_spec.md` | Page plan and scope |
 | `kpi_discovery_matrix.md` | Candidate metric evidence, confidence, and deferred/blocked reasoning |
+| `kpi_reconciliation_report.md` | Proof that trusted key performance indicators reconcile across layers |
+| `kpi_lineage_proofs.md` | First failing layer and lineage summary for presentation caveats |
+| `kpi_variance_report.md` | Variance evidence and blocked metric reasons |
 | `kpi_catalog.md` | Measure and key performance indicator source |
 | `reporting_catalog.md` | Report/page scope |
 | `insight_backlog.md` | Blocked or deferred visuals |
@@ -240,6 +249,9 @@ For Power BI PBIP/TMDL, these files are the scope contract for the generator and
 
 - `dashboard_spec.md`
 - `kpi_discovery_matrix.md`
+- `kpi_reconciliation_report.md`
+- `kpi_lineage_proofs.md`
+- `kpi_variance_report.md`
 - `kpi_catalog.md`
 - `reporting_catalog.md`
 - `analytics_insight_report.md`

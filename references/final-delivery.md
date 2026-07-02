@@ -32,6 +32,8 @@ If the presentation decision has not been asked or answered, set status to `Anal
 - Semantic layer or metrics added on final mart models when requested
 - dbt documentation generated
 - Analytics insight reporting outputs created under `reports/agent/`: `analytics_insight_report.md`, `kpi_discovery_matrix.md`, `reporting_catalog.md`, `kpi_catalog.md`, `dashboard_spec.md`, `insight_backlog.md`, `reporting_readiness_scorecard.md`, and `analytics_insight_reporting_report.md`
+- Key performance indicator reconciliation outputs created when key performance indicators are approved or implemented: `kpi_reconciliation_report.md`, `kpi_lineage_proofs.md`, `kpi_variance_report.md`, and `kpi_sql_proofs/`
+- Cardinality and grain outputs created when relationships, joins, final models, or Power BI relationships exist: `cardinality_report.md`, `relationship_profile.md`, `join_safety_report.md`, and `grain_validation_report.md`
 - Project evaluator run and warnings summarized
 - Presentation layer recommendation produced after final validation, with user-facing options and suggested metrics
 - Advanced data-engineering review completed before final delivery
@@ -58,6 +60,8 @@ Update or create project handoff notes with:
 - Bridge table decisions: built, not needed, deferred, or blocked
 - Key performance indicator definitions with numerator, denominator, filters, time field, source model, caveats, validation evidence, and approval status
 - Key performance indicator discovery matrix status: table classification, grain, archetype, confidence score, targeted questions, trusted metrics, and deferred or blocked metrics
+- Key performance indicator reconciliation proof status: source, bronze, silver, gold, semantic, and Power BI proof files where applicable; first failing layer; variance; and recommended debugging action
+- Cardinality and relationship-grain status: duplicate keys, null keys, row multiplication, row loss, join safety, bridge table decisions, and Power BI one-side key readiness
 - Metric verification results for every implemented key performance indicator: expected numerator, actual numerator, expected denominator, actual denominator, expected result, actual result, status, and evidence
 - Presentation layer recommendation, including possible key performance indicators, semantic metrics, suggested report or dashboard pages, and query handoff options
 - Consultant-grade presentation design summary when a presentation artifact was approved: pages created, pages deferred or blocked, source models, measures, slicers, filters, privacy handling, and why the selected visuals are useful for business review
@@ -158,6 +162,8 @@ Use a compact table when helpful:
 - Key performance indicator definition status
 - Key performance indicator discovery status: `kpi_discovery_matrix.md` exists, includes confidence scoring, and only `HIGH` or approved `MEDIUM` metrics were promoted
 - Metric verification status: expected versus actual numerator, denominator, filter logic, semantic result, presentation result, and unreconciled metrics
+- Key performance indicator reconciliation status: source-to-final proof chain, first failing layer, variance percentage, proof file paths, and blocked metrics
+- Cardinality validation status: grain validation, relationship cardinality, join safety, row multiplier, row loss, and Power BI one-side key uniqueness/not-nullness
 - Bridge table review status
 - Key pass/warn/fail counts when available
 - Phase plan approval status

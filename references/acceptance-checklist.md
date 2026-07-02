@@ -47,6 +47,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] `AGENT_PLAN.md` created or updated with automatic setup-only project setup status and approved plans for each implemented non-setup phase
 - [ ] After valid required inputs were confirmed, discovery created `reports/agent/discovery_report.md` before the chat summary, even if the dbt project root did not exist yet
 - [ ] Discovery inspected schemas, tables, columns, row counts, candidate keys, date fields, status fields, amount fields, relationships, grain evidence, possible facts, possible dimensions, possible marts, and possible metrics where supported by the adapter and source evidence
+- [ ] Discovery created or updated `reports/agent/cardinality_report.md` and `reports/agent/relationship_profile.md` when relationships or candidate joins existed
 - [ ] Discovery created `reports/agent/requirements.md` before the chat summary with source-derived requirements, evidence, confidence, recommended defaults, open questions, and deferred or blocked scope
 - [ ] Discovery report includes recommended medallion direction for sources, bronze/staging, silver/intermediate, and gold/marts
 - [ ] Discovery report includes a Mermaid entity relationship diagram when credible relationships exist
@@ -66,6 +67,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Before executing an approved `NEXT_PHASE_PROMPT.md`, the agent reloaded the approved next-phase context bundle and did not run the next prompt in isolation
 - [ ] Final delivery included analytics insight reporting outputs before the presentation-layer recommendation
 - [ ] `reports/agent/analytics_insight_report.md`, `kpi_discovery_matrix.md`, `reporting_catalog.md`, `kpi_catalog.md`, `dashboard_spec.md`, `insight_backlog.md`, and `reporting_readiness_scorecard.md` exist when analytics insight reporting ran
+- [ ] `reports/agent/kpi_reconciliation_report.md`, `kpi_lineage_proofs.md`, `kpi_variance_report.md`, and `kpi_sql_proofs/` exist when approved or implemented key performance indicators exist
 - [ ] Analytics insight reporting separated trusted outputs from uncertain or deferred outputs
 - [ ] Analytics insight reporting classified tables, detected grain, mapped candidate metrics to generic archetypes, scored confidence, and asked only targeted business questions for uncertain key performance indicators
 - [ ] `kpi_catalog.md`, semantic metrics, and Power BI DAX measures promoted only `HIGH` confidence or user-approved `MEDIUM` confidence key performance indicators
@@ -139,6 +141,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Each layer: `dbt parse` + `dbt build --select +path:...` PASS
 - [ ] Each bronze/staging, silver/intermediate, and gold/marts layer ran warehouse data validation queries after `dbt build`
 - [ ] Each layer report includes `Data Verification Results` with row counts, expected-empty evidence, grain checks, relationship checks, measure checks, result, and notes
+- [ ] `grain_validation_report.md`, `join_safety_report.md`, `cardinality_report.md`, and `relationship_profile.md` were created or updated when joins, relationships, final models, or Power BI relationships were in scope
 - [ ] The user-facing summary after each layer shared the important data validation results, not only the dbt command result
 - [ ] Bronze/staging row counts were compared to source tables where one-to-one staging was expected
 - [ ] Silver/intermediate models were checked for row presence, grain preservation, row loss, row multiplication, relationship integrity, and mapping coverage when mappings were used
@@ -154,12 +157,16 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Business grain and key assumptions documented in model YAML or handoff notes
 - [ ] Key performance indicators include business meaning, source model, grain, numerator, denominator, filters, time field, caveats, validation evidence, and approval status
 - [ ] Key performance indicators include expected versus actual reconciliation from upstream logic to gold, semantic, and presentation layers where implemented
+- [ ] Key performance indicators include source-to-final proof, first failing layer when variance exists, variance percentage, proof file paths, and cardinality/grain proof
+- [ ] Final delivery did not mark any approved key performance indicator as trusted when source-to-final variance was unexplained
 - [ ] Metrics define numerator, denominator where applicable, filters, time field, allowed dimensions, caveats, approval status, and validation evidence
 - [ ] Ambiguous key performance indicators were deferred or sent for user approval instead of silently implemented
 
 ## Data engineering guardrails
 
 - [ ] Each model has one documented grain
+- [ ] Each final model has grain validation with row count, distinct grain key count, duplicate grain keys, null grain keys, status, and notes
+- [ ] Joins that can change grain have row multiplier, row loss, and safe/unsafe status documented
 - [ ] Each phase plan includes a data-engineering decision check with evidence
 - [ ] Recommendations are recorded in `CONTEXT_TREE.md` with approved/changed/deferred status
 - [ ] Confidence notes are recorded in `CONTEXT_TREE.md` with proven facts separated from uncertain business assumptions
@@ -211,6 +218,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] If a presentation artifact was created, the agent produced a consultant-grade page plan from validated facts, dimensions, semantic metrics, source profiling, and data quality evidence instead of asking the user to design every visual
 - [ ] If a presentation artifact was created, every key performance indicator visual or measure was reconciled to gold or semantic SQL, including numerator, denominator, filters, and final result
 - [ ] If a Power BI artifact was created, every DAX measure maps to `reports/agent/kpi_catalog.md`, a validated semantic metric, or an explicit user-approved requirement
+- [ ] If a Power BI artifact was created, every DAX measure maps to source-to-final key performance indicator reconciliation and cardinality proof
 - [ ] If a Power BI artifact was created, no Power BI-only key performance indicator, denominator, business flag, surrogate key, or relationship shortcut was invented to compensate for missing dbt logic
 - [ ] If a presentation artifact or business-facing report was created, it includes the five report pillars: context and strategy, key performance indicators, trend analysis and variance, insights and attribution, and recommendations and next steps; unsupported pillars are visibly deferred with reasons
 - [ ] If a Power BI report was created, each main page follows the fixed canvas standard when supported: header/navigation, last refreshed timestamp, reset filters, prioritized key performance indicator cards, primary slicers, trend/comparison visuals, detail layer, and tooltip or drill-through behavior
@@ -245,6 +253,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] If Power BI PBIP/TMDL was created, TMDL column metadata was checked so no table has more than one column with `IsKey` set to `True`
 - [ ] If Power BI PBIP/TMDL was created, the generator did not mark every `*_id` column as `IsKey`; foreign keys stayed unmarked unless explicitly required by a validated Power BI pattern
 - [ ] If Power BI PBIP/TMDL was created, every one-side relationship key is unique and not null in dbt, and composite business keys use a surrogate key instead of a repeated partial natural key
+- [ ] If Power BI PBIP/TMDL was created, many-to-many relationships were not created unless explicitly approved and backed by a tested bridge table
 - [ ] If Power BI PBIP/TMDL was created, all TMDL `lineageTag` values are unique across the semantic model
 - [ ] If Power BI PBIP/TMDL was created, the measures or metrics table has a calculated partition such as `ROW("MetricKey", 1)`
 - [ ] If Power BI PBIP/TMDL was created, active relationships were audited for ambiguous filter paths, including multiple active paths between dimensions through facts or bridge tables
@@ -294,3 +303,4 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Final response includes possible key performance indicators, semantic metrics, and presentation pages when enough final mart evidence exists
 - [ ] Final response lists deferred or blocked key performance indicator definitions when definitions or data are missing
 - [ ] Final response summarizes metric verification status and names any unreconciled key performance indicators
+- [ ] Final response summarizes key performance indicator reconciliation, first failing layers, cardinality/grain validation, and any unexplained variance

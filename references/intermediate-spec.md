@@ -5,7 +5,7 @@
 Create or update **only** the intermediate layer from completed staging models.
 
 If `project_rules` include manual mappings or code translations, read [mapping-seeds.md](mapping-seeds.md) before modeling.
-Read [layer-data-validation.md](layer-data-validation.md) before marking intermediate complete.
+Read [layer-data-validation.md](layer-data-validation.md) and [cardinality-validation.md](cardinality-validation.md) before marking intermediate complete.
 Before creating or changing intermediate files, follow [phase-plan-approval.md](phase-plan-approval.md).
 
 ## Phase contract
@@ -16,7 +16,7 @@ Before creating or changing intermediate files, follow [phase-plan-approval.md](
 | Allowed changes | Intermediate SQL models, intermediate YAML, intermediate tests, mapping seeds when approved, and intermediate documentation |
 | Not allowed | Marts, semantic metrics, dashboards, direct source reads, joins with unproven cardinality, or final reporting calculations |
 | Commands to run | `dbt parse --no-partial-parse`, `dbt build --select +path:models/{layer_2_name}/{project_slug}`, and intermediate data validation queries |
-| Completion criteria | Reusable business logic has clear grain, joins do not unexpectedly lose or multiply rows, mappings are covered, and validation results are documented |
+| Completion criteria | Reusable business logic has clear grain, joins do not unexpectedly lose or multiply rows, cardinality proof exists, mappings are covered, and validation results are documented |
 | Report required | `reports/agent/intermediate_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
 
 ## Folder and naming
@@ -83,6 +83,7 @@ Only apply this ecommerce example when the source data actually contains these c
 - If a required column is missing, **stop and explain**
 - Do not join tables with different grains until duplicates and cardinality are understood
 - If a join can multiply rows, aggregate first or ask the user for the correct grain
+- Record join safety, row multiplier, row loss, and first unexpected cardinality change in `reports/agent/join_safety_report.md`
 
 ## Tests
 

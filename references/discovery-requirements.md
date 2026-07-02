@@ -17,7 +17,7 @@ This phase is read-only. Do not create dbt projects, install packages, run codeg
 | Not allowed | dbt project creation, package installation, codegen, model files, warehouse schema changes, profile changes, or alternate source profiling without approval |
 | Commands to run | Lightweight metadata and profiling queries through the selected dbt profile adapter only |
 | Completion criteria | Source inventory, relationships, business processes, data quality signals, inferred requirements, recommended medallion direction, confidence, unknowns, and user decisions are documented |
-| Report required | `reports/agent/discovery_report.md`, `reports/agent/requirements.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
+| Report required | `reports/agent/discovery_report.md`, `reports/agent/requirements.md`, `reports/agent/cardinality_report.md`, `reports/agent/relationship_profile.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
 
 Do not assume the business domain. Even when the user provides a domain label, first understand the source evidence:
 
@@ -59,6 +59,7 @@ When discovery finds sensitive fields or ambiguous, placeholder, abbreviated, ge
 - Inspect source schemas, tables, columns, and row counts
 - List candidate databases, datasets, catalogs, schemas, tables, tenants, clients, domains, environments, or table counts as metadata only when the confirmed source is missing, empty, or mismatched, then stop for user approval before profiling any candidate
 - Check candidate primary keys, foreign keys, date columns, measures, status/code columns, and empty tables
+- Check relationship cardinality, likely table grain, duplicate keys, null keys, match rates, many-to-many risks, and tables that should not be joined directly without aggregation
 - Inspect existing project files if the project already exists
 
 ## Discovery summary
@@ -68,6 +69,7 @@ After discovery, explain in Markdown:
 - Project/domain being analyzed
 - Source schemas/tables found and row counts
 - Important entities and likely relationships
+- Cardinality, relationship profile, likely grains, duplicate/null key risks, and many-to-many or bridge-table candidates
 - Entity relationship diagram in Mermaid `erDiagram` when credible relationships are found
 - Other necessary Mermaid diagrams, such as source inventory, business process flow, or high-level medallion direction, when they help the data engineer review the source
 - Candidate business processes, such as appointments, encounters, claims, orders, tickets, or events
@@ -111,6 +113,8 @@ Before sending the discovery summary in chat, create or update these files:
 ```text
 reports/agent/discovery_report.md
 reports/agent/requirements.md
+reports/agent/cardinality_report.md
+reports/agent/relationship_profile.md
 reports/agent/PIPELINE_STATUS.md
 reports/agent/CONTEXT_TREE.md
 ```
