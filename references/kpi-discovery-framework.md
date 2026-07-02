@@ -11,9 +11,11 @@ Use this order for every schema:
 ```text
 Data structure first
 Business process second
-Key performance indicator candidate third
-Confidence score fourth
-User approval fifth
+Measure candidate third
+Contextual metric fourth
+Key performance indicator promotion fifth
+Confidence score sixth
+User approval seventh
 Semantic metrics and Power BI measures last
 ```
 
@@ -22,11 +24,13 @@ Semantic metrics and Power BI measures last
 1. Classify source and gold tables.
 2. Detect grain for every possible fact.
 3. Detect candidate measures.
-4. Map candidates to generic key performance indicator archetypes.
-5. Score confidence.
-6. Ask targeted business questions only where needed.
-7. Promote safe candidates to `kpi_catalog.md`.
-8. Send approved metrics to semantic layer and presentation tooling.
+4. Create a broad `measure_catalog.md`.
+5. Promote supported measures into contextual metrics in `metric_catalog.md`.
+6. Map metrics to generic archetypes.
+7. Promote only strategic, decision-relevant metrics into `kpi_catalog.md`.
+8. Score confidence.
+9. Ask targeted business questions only where needed.
+10. Send approved metrics to semantic layer and presentation tooling.
 
 ## Table Classification
 
@@ -71,6 +75,33 @@ Look for generic evidence, not hardcoded domain names:
 | Date or time | Created, updated, booked, settled, payment, appointment, closed, cancelled, completed dates | Daily trend, monthly trend, year to date, cycle time |
 | Ranking | Fact measure plus safe dimensions | Top customers, top products, top locations, top providers |
 
+Create `measure_catalog.md` before deciding key performance indicators. Include broad raw measures even when they are not strategic key performance indicators yet.
+
+Recommended measure categories:
+
+- Counts: row counts, distinct entity counts, event counts, completed counts, failed counts, open counts.
+- Amounts: gross, net, paid, collected, billed, cost, fee, discount, tax, balance, outstanding.
+- Quantities: units, area, capacity, duration, days, hours, visits, items.
+- Dates: first event date, latest event date, completion date, settlement date, freshness date.
+- Status distributions: counts or amounts by status, stage, category, type, channel, source system.
+- Quality measures: null counts, duplicate counts, orphan counts, invalid code counts, stale record counts.
+
+## Metric Promotion
+
+Promote validated measures into contextual metrics when the context is clear:
+
+| Metric Type | Pattern |
+|---|---|
+| Time-context metric | Measure by day, week, month, quarter, year, year to date, last 12 months, or period-over-period |
+| Dimensional metric | Measure by safe dimension such as customer segment, product, provider, department, location, vendor, region, or status |
+| Ratio or rate | Numerator divided by denominator, with inclusion/exclusion rules and safe division |
+| Average metric | Sum or count divided by entity/event count |
+| Ranking metric | Top or bottom entities by value, count, rate, or exception volume |
+| Aging metric | Open or pending records grouped by age buckets |
+| Quality metric | Error, missing, duplicate, orphan, stale, or invalid rates |
+
+Only promote a metric to a key performance indicator when it is tied to a decision, target, threshold, operating review, risk, cost, revenue, service level, quality goal, or explicit user-approved business objective.
+
 ## Generic Archetypes
 
 Map candidates to one of these reusable archetypes:
@@ -108,14 +139,26 @@ Only promote `HIGH` and user-approved `MEDIUM` metrics into semantic metrics or 
 
 ## Required Matrix
 
-Create or update `reports/agent/kpi_discovery_matrix.md` during analytics insight reporting.
+Create or update `reports/agent/09_analytics_insights/kpis/measure_catalog.md`, `reports/agent/09_analytics_insights/kpis/metric_catalog.md`, and `reports/agent/09_analytics_insights/kpis/kpi_discovery_matrix.md` during analytics insight reporting. For older flat-layout projects, use the legacy `reports/agent/<file>` path only when canonical folders are absent.
 
 Required columns:
 
-| KPI Name | Business Question | KPI Type | Source Model | Grain | Formula | Numerator | Denominator | Time Field | Allowed Dimensions | Filters | Validation Query | Confidence | Caveats | Approval Status |
+`measure_catalog.md`:
+
+| Measure | Measure Type | Source Model | Grain | Formula | Time Field | Allowed Dimensions | Validation Query | Status | Caveats |
+|---|---|---|---|---|---|---|---|---|---|
+
+`metric_catalog.md`:
+
+| Metric | Metric Type | Business Question | Source Measures | Source Model | Grain | Formula | Time Field | Allowed Dimensions | Filters | Validation Query | Confidence | Caveats | Promotion Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+
+`kpi_discovery_matrix.md`:
+
+| Key Performance Indicator | Business Question | Metric Type | Source Metric | Source Model | Grain | Formula | Numerator | Denominator | Time Field | Allowed Dimensions | Filters | Validation Query | Confidence | Caveats | Approval Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 
-Generate `reports/agent/kpi_catalog.md` from this matrix. The catalog should contain trusted, approved, deferred, and blocked key performance indicators with the reason for each status.
+Generate `reports/agent/09_analytics_insights/kpis/kpi_catalog.md` from the discovery matrix. The catalog should contain trusted, approved, deferred, and blocked key performance indicators with the reason for each status.
 
 ## Targeted Questions
 

@@ -69,6 +69,10 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] If the user requested changes to scope, models, key performance indicators, privacy, schemas, validation, materialization, or files, `AGENT_PLAN.md` and `NEXT_PHASE_PROMPT.md` were revised before proceeding
 - [ ] Before executing an approved `NEXT_PHASE_PROMPT.md`, the agent reloaded the approved next-phase context bundle and did not run the next prompt in isolation
 - [ ] Final delivery included analytics insight reporting outputs before the presentation-layer recommendation
+- [ ] Analytics insight reporting separated raw measures, contextual metrics, and strategic key performance indicators instead of treating all measures as key performance indicators
+- [ ] `measure_catalog.md` was created or updated with broad validated raw measures from supported facts, dimensions, and marts
+- [ ] `metric_catalog.md` was created or updated with contextual metrics derived from validated measures
+- [ ] `kpi_catalog.md` contains only decision-relevant metrics tied to business goals, thresholds, targets, risks, operating review, or user-approved strategic use
 - [ ] After analytics insight reporting, the agent asked the presentation-layer decision with a concise evidence summary, recommended technology/page set, key caveats, and native clickable options when available
 - [ ] Presentation decision options included the equivalent of `Yes - build Power BI PBIP presentation layer`, `No presentation layer - complete final delivery now`, and `Tell me what to change first`
 - [ ] `reports/agent/analytics_insight_report.md`, `kpi_discovery_matrix.md`, `reporting_catalog.md`, `kpi_catalog.md`, `dashboard_spec.md`, `insight_backlog.md`, and `reporting_readiness_scorecard.md` exist when analytics insight reporting ran

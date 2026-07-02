@@ -8,9 +8,19 @@ Approved and implemented key performance indicators must also appear in `reports
 
 Key performance indicators are business definitions, not just SQL expressions. The agent must propose supported key performance indicators from the final marts evidence, but must not silently invent business meaning.
 
+Use a three-level hierarchy:
+
+| Level | Meaning | Examples | Promotion rule |
+|---|---|---|---|
+| Measure | A raw quantitative data point with little business context | Total revenue, total visits, total tickets, minimum date, maximum amount | Keep in `measure_catalog.md`; safe to list broadly when source model and grain are validated |
+| Metric | A measure with context, such as time, dimension, ratio, rate, average, or comparison | Revenue per customer, monthly orders, conversion rate, average resolution time | Keep in `metric_catalog.md`; promote when formula, time field, dimensions, and validation are clear |
+| Key performance indicator | A metric tied to a strategic business goal, target, threshold, or management decision | Retention rate versus target, payment success rate, margin goal, service level achievement | Keep in `kpi_catalog.md`; promote only when business meaning, decision use, and validation are strong or user-approved |
+
+Do not collapse these levels. The agent should discover many useful measures, a smaller set of contextual metrics, and only the most decision-relevant metrics as key performance indicators. A metric without a target can still be useful, but it is not automatically a key performance indicator.
+
 When a key performance indicator can be defined more than one reasonable way, recommend the safest option with evidence and ask for approval before building semantic metrics, reporting marts, dashboards, or presentation artifacts.
 
-Do not invent key performance indicators from column names alone. First classify tables, validate grain, detect candidate measures, map them to generic archetypes, score confidence, and ask targeted business questions only where business meaning is uncertain.
+Do not invent key performance indicators from column names alone. First classify tables, validate grain, detect candidate measures, promote supported measures into contextual metrics, map metrics to generic archetypes, score confidence, and ask targeted business questions only where business meaning is uncertain.
 
 If required metrics or reporting needs are not understood, mark the affected key performance indicators as deferred or blocked. Do not implement semantic metrics, presentation calculations, or dashboard measures that depend on guessed business definitions.
 

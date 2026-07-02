@@ -70,6 +70,8 @@ Use the folder that matches the current phase. Do not put phase-specific files a
 | Dashboard specification | `reports/agent/09_analytics_insights/dashboard_spec.md` |
 | Insight backlog | `reports/agent/09_analytics_insights/insight_backlog.md` |
 | Reporting readiness scorecard | `reports/agent/09_analytics_insights/reporting_readiness_scorecard.md` |
+| Measure catalog | `reports/agent/09_analytics_insights/kpis/measure_catalog.md` |
+| Metric catalog | `reports/agent/09_analytics_insights/kpis/metric_catalog.md` |
 | KPI catalog | `reports/agent/09_analytics_insights/kpis/kpi_catalog.md` |
 | KPI discovery matrix | `reports/agent/09_analytics_insights/kpis/kpi_discovery_matrix.md` |
 | KPI reconciliation | `reports/agent/09_analytics_insights/kpis/kpi_reconciliation_report.md` |

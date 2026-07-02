@@ -353,7 +353,9 @@ Read [analytics-insight-reporting.md](references/analytics-insight-reporting.md)
 
 - Do not create fake insights.
 - Do not suggest charts just because data exists.
-- Every key performance indicator and report candidate must map to validated marts or semantic metrics.
+- Every measure, metric, key performance indicator, and report candidate must map to validated marts or semantic metrics.
+- Keep the hierarchy clear: measures are raw counts/sums/averages, metrics add time/dimension/ratio context, and key performance indicators are decision-relevant metrics tied to goals, thresholds, targets, risks, or management review.
+- Generate broad measure and metric catalogs before narrowing to strategic key performance indicators.
 - Every visual must answer a real business question.
 - Do not expose sensitive fields without approval.
 - Clearly separate trusted outputs from uncertain or deferred outputs.

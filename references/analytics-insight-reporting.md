@@ -6,7 +6,7 @@ Also read [report-artifact-organization.md](report-artifact-organization.md), [k
 
 ## Phase purpose
 
-Discover, design, and document the most useful business-facing outputs from validated data. This phase answers what the business can meaningfully see, which key performance indicators are trusted, which reports or dashboard pages are worth building, and what must stay deferred.
+Discover, design, and document the most useful business-facing outputs from validated data. This phase answers what the business can meaningfully see, which measures are available, which contextual metrics are useful, which key performance indicators are trusted, which reports or dashboard pages are worth building, and what must stay deferred.
 
 This phase does **not** create Power BI projects, dashboards, slide decks, notebooks, or other presentation artifacts. It produces reporting design contracts that the presentation layer must consume.
 
@@ -47,6 +47,7 @@ These rules apply to every domain, source schema, and warehouse adapter:
 - Key performance indicator discovery must be schema-driven, grain-aware, and confidence-scored; do not hardcode domain-specific metrics.
 - Trusted key performance indicators must have source-to-current-layer reconciliation and grain/cardinality proof.
 - Every visual must answer a real business question.
+- Keep measures, metrics, and key performance indicators separate. Do not promote every useful metric to a key performance indicator.
 - Do not expose sensitive fields without approval.
 - Clearly separate trusted outputs from uncertain or deferred outputs.
 - Prefer useful, simple, business-friendly reporting over too many technical tables.
@@ -112,6 +113,8 @@ After phase completion, create or update these files. Use canonical paths for ne
 | File | Purpose |
 |---|---|
 | `reports/agent/09_analytics_insights/analytics_insight_report.md` | Executive summary of what the business can meaningfully see; trusted facts, dimensions, metrics; useful questions; recommended dashboards; visuals; filters; drill-downs; caveats; sensitive fields; missing/deferred insights |
+| `reports/agent/09_analytics_insights/kpis/measure_catalog.md` | Broad raw measure catalog with counts, amounts, quantities, dates, status distributions, and quality measures that are supported by validated models |
+| `reports/agent/09_analytics_insights/kpis/metric_catalog.md` | Contextual metric catalog built from measures with time, dimension, ratio, average, ranking, aging, or quality context |
 | `reports/agent/09_analytics_insights/kpis/kpi_discovery_matrix.md` | Domain-neutral key performance indicator candidate matrix with table classification, grain, formula, confidence, caveats, validation query, and approval status |
 | `reports/agent/09_analytics_insights/kpis/kpi_reconciliation_report.md` | Layer-by-layer key performance indicator proof table with result, expected result, variance, status, and notes |
 | `reports/agent/09_analytics_insights/kpis/kpi_lineage_proofs.md` | Source-to-final key performance indicator lineage summary showing where values changed |
@@ -143,6 +146,10 @@ After phase completion, create or update these files. Use canonical paths for ne
 
 ## Trusted Metrics
 
+## Available Measures
+
+## Useful Metrics
+
 ## Useful Business Questions
 
 ## Suggested Reports and Dashboards
@@ -172,17 +179,33 @@ After phase completion, create or update these files. Use canonical paths for ne
 |---|---|---|---|---|---|---|---|---|
 | `<page_or_report_name>` | `<question>` | `<ref() model>` | `<dimensions>` | `<metrics>` | `<filters>` | `<visual_types>` | `<HIGH/MEDIUM/LOW/DEFERRED>` | `<caveats>` |
 
+### `measure_catalog.md`
+
+Populate from [kpi-discovery-framework.md](kpi-discovery-framework.md). Include broad, validated raw measures even when they are not strategic key performance indicators.
+
+| Measure | Measure Type | Source Model | Grain | Formula | Time Field | Allowed Dimensions | Validation Query | Status | Caveats |
+|---|---|---|---|---|---|---|---|---|---|
+| `<measure_name>` | `<count/amount/quantity/date/status/quality>` | `<model>` | `<grain>` | `<formula>` | `<time_field_or_not_applicable>` | `<dimensions>` | `<query_or_not_ready>` | `<ready/deferred/blocked>` | `<caveats>` |
+
+### `metric_catalog.md`
+
+Promote supported measures into contextual metrics. A metric may be useful for reports even when it is not a strategic key performance indicator.
+
+| Metric | Metric Type | Business Question | Source Measures | Source Model | Grain | Formula | Time Field | Allowed Dimensions | Filters | Validation Query | Confidence | Caveats | Promotion Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `<metric_name>` | `<time/dimension/ratio/average/ranking/aging/quality>` | `<question>` | `<measures>` | `<model>` | `<grain>` | `<formula>` | `<time_field>` | `<dimensions>` | `<filters>` | `<query_or_not_ready>` | `<HIGH/MEDIUM/LOW/BLOCKED>` | `<caveats>` | `<report_metric/kpi_candidate/deferred/blocked>` |
+
 ### `kpi_discovery_matrix.md`
 
 Populate from [kpi-discovery-framework.md](kpi-discovery-framework.md). Include all trusted, uncertain, deferred, and blocked candidates.
 
-| KPI Name | Business Question | KPI Type | Source Model | Grain | Formula | Numerator | Denominator | Time Field | Allowed Dimensions | Filters | Validation Query | Confidence | Caveats | Approval Status |
+| Key Performance Indicator | Business Question | Metric Type | Source Metric | Source Model | Grain | Formula | Numerator | Denominator | Time Field | Allowed Dimensions | Filters | Validation Query | Confidence | Caveats | Approval Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `<kpi_name>` | `<question>` | `<volume/value/ratio/funnel/trend/etc>` | `<model>` | `<grain>` | `<formula>` | `<numerator>` | `<denominator>` | `<time_field>` | `<dimensions>` | `<filters>` | `<query_or_not_ready>` | `<HIGH/MEDIUM/LOW/BLOCKED>` | `<caveats>` | `<approved/pending/deferred/blocked>` |
+| `<kpi_name>` | `<question>` | `<volume/value/ratio/funnel/trend/etc>` | `<metric_name>` | `<model>` | `<grain>` | `<formula>` | `<numerator>` | `<denominator>` | `<time_field>` | `<dimensions>` | `<filters>` | `<query_or_not_ready>` | `<HIGH/MEDIUM/LOW/BLOCKED>` | `<caveats>` | `<approved/pending/deferred/blocked>` |
 
 ### `kpi_catalog.md`
 
-Generate from `kpi_discovery_matrix.md`, reconciliation files from [kpi-reconciliation.md](kpi-reconciliation.md), approved definitions in [kpi-definitions.md](kpi-definitions.md), and reconciliation in [metric-verification.md](metric-verification.md). Promote only `HIGH` confidence and user-approved `MEDIUM` confidence key performance indicators into implemented metrics when grain, cardinality, and source-to-current-layer reconciliation are proven. Keep `LOW`, `BLOCKED`, and unreconciled candidates as deferred or blocked with reasons.
+Generate from `metric_catalog.md`, `kpi_discovery_matrix.md`, reconciliation files from [kpi-reconciliation.md](kpi-reconciliation.md), approved definitions in [kpi-definitions.md](kpi-definitions.md), and reconciliation in [metric-verification.md](metric-verification.md). Promote only `HIGH` confidence and user-approved `MEDIUM` confidence key performance indicators into implemented metrics when grain, cardinality, and source-to-current-layer reconciliation are proven. Keep useful non-strategic metrics in `metric_catalog.md`. Keep `LOW`, `BLOCKED`, and unreconciled candidates as deferred or blocked with reasons.
 
 | Key Performance Indicator | Definition | Source Model | Formula/Measure | Time Field | Grain | Allowed Dimensions | Business Use | Confidence | Caveats |
 |---|---|---|---|---|---|---|---|---|---|
