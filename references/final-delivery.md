@@ -31,7 +31,7 @@ If the presentation decision has not been asked or answered, set status to `Anal
 - Tests added for primary keys, relationships, accepted values, and mapping coverage where applicable
 - Semantic layer or metrics added on final mart models when requested
 - dbt documentation generated
-- Analytics insight reporting outputs created under `reports/agent/`: `analytics_insight_report.md`, `reporting_catalog.md`, `kpi_catalog.md`, `dashboard_spec.md`, `insight_backlog.md`, `reporting_readiness_scorecard.md`, and `analytics_insight_reporting_report.md`
+- Analytics insight reporting outputs created under `reports/agent/`: `analytics_insight_report.md`, `kpi_discovery_matrix.md`, `reporting_catalog.md`, `kpi_catalog.md`, `dashboard_spec.md`, `insight_backlog.md`, `reporting_readiness_scorecard.md`, and `analytics_insight_reporting_report.md`
 - Project evaluator run and warnings summarized
 - Presentation layer recommendation produced after final validation, with user-facing options and suggested metrics
 - Advanced data-engineering review completed before final delivery
@@ -57,6 +57,7 @@ Update or create project handoff notes with:
 - Final facts, dimensions, marts, and metrics
 - Bridge table decisions: built, not needed, deferred, or blocked
 - Key performance indicator definitions with numerator, denominator, filters, time field, source model, caveats, validation evidence, and approval status
+- Key performance indicator discovery matrix status: table classification, grain, archetype, confidence score, targeted questions, trusted metrics, and deferred or blocked metrics
 - Metric verification results for every implemented key performance indicator: expected numerator, actual numerator, expected denominator, actual denominator, expected result, actual result, status, and evidence
 - Presentation layer recommendation, including possible key performance indicators, semantic metrics, suggested report or dashboard pages, and query handoff options
 - Consultant-grade presentation design summary when a presentation artifact was approved: pages created, pages deferred or blocked, source models, measures, slicers, filters, privacy handling, and why the selected visuals are useful for business review
@@ -155,6 +156,7 @@ Use a compact table when helpful:
 - Schema isolation check result
 - Profile target schema hygiene result
 - Key performance indicator definition status
+- Key performance indicator discovery status: `kpi_discovery_matrix.md` exists, includes confidence scoring, and only `HIGH` or approved `MEDIUM` metrics were promoted
 - Metric verification status: expected versus actual numerator, denominator, filter logic, semantic result, presentation result, and unreconciled metrics
 - Bridge table review status
 - Key pass/warn/fail counts when available

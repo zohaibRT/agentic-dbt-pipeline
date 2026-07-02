@@ -143,7 +143,7 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 | **7b Semantic** | Metrics on marts | [semantic-layer-spec.md](references/semantic-layer-spec.md) |
 | **7c Evaluator** | Best-practice audit | [project-evaluator.md](references/project-evaluator.md), [dbt-packages-and-skills.md](references/dbt-packages-and-skills.md) |
 | **8 Docs** | After layers | [documentation.md](references/documentation.md) |
-| **8a Analytics insight reporting** | Business reporting design before presentation | [analytics-insight-reporting.md](references/analytics-insight-reporting.md) |
+| **8a Analytics insight reporting** | Business reporting design before presentation | [analytics-insight-reporting.md](references/analytics-insight-reporting.md), [kpi-discovery-framework.md](references/kpi-discovery-framework.md) |
 | **8b Presentation layer** | Optional final user-facing layer after analytics insight reporting | [presentation-layer.md](references/presentation-layer.md), [powerbi-template.md](references/powerbi-template.md), [powerbi-kpi-dax-tooling.md](references/powerbi-kpi-dax-tooling.md), [powerbi-official-docs.md](references/powerbi-official-docs.md), [powerbi-pbip-desktop-requirements.md](references/powerbi-pbip-desktop-requirements.md) when Power BI is approved |
 | **9 Git** | After each stage | [github-repo-resolution.md](references/github-repo-resolution.md), [git-workflow.md](references/git-workflow.md) |
 | **10 Agents Schema / continuous integration** | Metadata + automation | [agents-schema-setup.md](references/agents-schema-setup.md), [cicd-setup.md](references/cicd-setup.md) |
@@ -213,7 +213,7 @@ Read [mermaid-diagrams.md](references/mermaid-diagrams.md) before creating or ch
 
 Read [layer-data-validation.md](references/layer-data-validation.md) before building bronze/staging, silver/intermediate, or gold/marts. After each layer build, run warehouse validation queries for row presence, expected emptiness, grain, keys, relationships, row-count movement, date coverage, status/category distributions, measures, mapping coverage, and privacy exposure. Add a `Data Verification Results` section to the layer report, share the important results with the user, and stop before the next layer when a model that should contain data is empty or any validation issue is unexplained.
 
-Read [kpi-definitions.md](references/kpi-definitions.md) and [metric-verification.md](references/metric-verification.md) before gold/marts, semantic layer, presentation layer, and final delivery. The agent must propose supported key performance indicators with business meaning, source model, grain, numerator, denominator, filters, time field, caveats, validation evidence, approval status, and expected versus actual reconciliation. Do not create semantic metrics or presentation calculations from ambiguous or unreconciled key performance indicators.
+Read [kpi-discovery-framework.md](references/kpi-discovery-framework.md), [kpi-definitions.md](references/kpi-definitions.md), and [metric-verification.md](references/metric-verification.md) before analytics insight reporting, semantic layer, presentation layer, and final delivery. The agent must propose supported key performance indicators with business meaning, source model, grain, numerator, denominator, filters, time field, caveats, validation evidence, approval status, and expected versus actual reconciliation. Do not create semantic metrics or presentation calculations from ambiguous or unreconciled key performance indicators.
 
 Read [advanced-data-engineering-review.md](references/advanced-data-engineering-review.md) before final delivery. The pipeline is not complete until advanced review areas are reported, including source lock, schema hygiene, layer validation, grain, tests, data quality, privacy, key performance indicators, semantic layer, evaluator, documentation, analytics insight reporting, presentation-layer recommendation, and operations.
 
@@ -347,7 +347,7 @@ Read [documentation.md](references/documentation.md). Run `dbt docs generate`. U
 
 ## Step 6a - Analytics insight reporting
 
-Read [analytics-insight-reporting.md](references/analytics-insight-reporting.md), [reporting-standards.md](references/reporting-standards.md), [kpi-definitions.md](references/kpi-definitions.md), and [metric-verification.md](references/metric-verification.md). Before this phase, write/update `AGENT_PLAN.md` and wait for approval. Discover and document the most useful business-facing outputs from validated marts and semantic metrics. Produce `analytics_insight_report.md`, `reporting_catalog.md`, `kpi_catalog.md`, `dashboard_spec.md`, `insight_backlog.md`, `reporting_readiness_scorecard.md`, and `analytics_insight_reporting_report.md` under `reports/agent/`. Do not create presentation artifacts in this phase.
+Read [analytics-insight-reporting.md](references/analytics-insight-reporting.md), [kpi-discovery-framework.md](references/kpi-discovery-framework.md), [reporting-standards.md](references/reporting-standards.md), [kpi-definitions.md](references/kpi-definitions.md), and [metric-verification.md](references/metric-verification.md). Before this phase, write/update `AGENT_PLAN.md` and wait for approval. Discover and document the most useful business-facing outputs from validated marts and semantic metrics. Produce `analytics_insight_report.md`, `kpi_discovery_matrix.md`, `reporting_catalog.md`, `kpi_catalog.md`, `dashboard_spec.md`, `insight_backlog.md`, `reporting_readiness_scorecard.md`, and `analytics_insight_reporting_report.md` under `reports/agent/`. Do not create presentation artifacts in this phase.
 
 ### Analytics insight reporting hard rules
 
@@ -532,6 +532,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 | [marts-spec.md](references/marts-spec.md) | Star schema |
 | [documentation.md](references/documentation.md) | Docs generate |
 | [analytics-insight-reporting.md](references/analytics-insight-reporting.md) | Business reporting design before presentation |
+| [kpi-discovery-framework.md](references/kpi-discovery-framework.md) | Domain-neutral key performance indicator discovery, table classification, grain detection, archetypes, and confidence scoring |
 | [presentation-layer.md](references/presentation-layer.md) | Optional presentation-layer recommendation after analytics insight reporting |
 | [powerbi-template.md](references/powerbi-template.md) | Bundled neutral PBIP template location, generator behavior, fallback rules, and validation language |
 | [powerbi-kpi-dax-tooling.md](references/powerbi-kpi-dax-tooling.md) | Power BI key performance indicator, DAX, optional Model Context Protocol, optional `pbi-cli`, and validation ownership rules |

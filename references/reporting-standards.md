@@ -30,6 +30,7 @@ Every report should include these pillars when relevant:
 - State targets and benchmarks only when provided, discovered, or safely derived from approved baseline logic.
 - When no target exists, recommend that the data engineer or business owner define one.
 - Include both leading and lagging indicators when the data supports them.
+- Use `kpi_discovery_matrix.md` to separate supported, uncertain, and blocked metrics before selecting report content.
 - Include variance from target or baseline when a target or baseline exists.
 - Include anomaly and outlier notes when distributions, trends, or data validation show unusual values.
 - Include limitations and confidence notes so users can trust what is proven and see what is still uncertain.
@@ -83,6 +84,8 @@ Use this split:
 - Deferred key performance indicators: list metrics that are useful but blocked by missing definitions, missing targets, empty facts, ambiguous grain, or privacy concerns.
 
 For every proposed or implemented key performance indicator, keep the definition visible somewhere in the report experience or companion report: business meaning, source model, grain, numerator, denominator, filters, time field, caveat, and validation status.
+
+Key performance indicator coverage must come from the domain-neutral discovery framework, not from hardcoded domain templates. Prioritize `HIGH` confidence and approved `MEDIUM` confidence metrics. Put `LOW` and `BLOCKED` metrics in the deferred key performance indicator list with the exact missing business rule, mapping, grain, source data, or privacy decision.
 
 ## Report Information page
 

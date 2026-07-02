@@ -9,12 +9,13 @@ Every implemented key performance indicator must be reconciled from its business
 For each key performance indicator, verify:
 
 1. Business definition: numerator, denominator, filters, time field, grain, and caveats are documented.
-2. Source evidence: the source or upstream layer contains the records/flags/amounts required by the definition.
-3. Transformation lineage: silver/intermediate logic creates the required flags/measures correctly.
-4. Gold/marts logic: final facts or marts combine numerator, denominator, filters, and flags exactly as defined.
-5. Semantic logic: semantic metrics or measures reference the approved gold/mart columns and use safe denominators.
-6. Presentation logic: Power BI/DAX/report measures match the semantic or gold definition.
-7. Reconciliation: SQL expected values equal semantic/presentation actual values, or differences are explained.
+2. Discovery evidence: the candidate appears in `reports/agent/kpi_discovery_matrix.md` with source model, grain, archetype, confidence, caveats, and approval status.
+3. Source evidence: the source or upstream layer contains the records/flags/amounts required by the definition.
+4. Transformation lineage: silver/intermediate logic creates the required flags/measures correctly.
+5. Gold/marts logic: final facts or marts combine numerator, denominator, filters, and flags exactly as defined.
+6. Semantic logic: semantic metrics or measures reference the approved gold/mart columns and use safe denominators.
+7. Presentation logic: Power BI/DAX/report measures match the semantic or gold definition.
+8. Reconciliation: SQL expected values equal semantic/presentation actual values, or differences are explained.
 
 Do not continue to analytics insight reporting or presentation delivery when a metric denominator, numerator, filter, time field, or status inclusion is wrong, incomplete, or not reconciled.
 
@@ -94,5 +95,6 @@ Stop before semantic layer, analytics insight reporting, presentation layer, fin
 - A rate, ratio, percentage, or average cannot be recalculated from the documented components.
 - The Power BI/DAX result differs from the gold/semantic SQL result.
 - The metric depends on an unapproved assumption, ambiguous flag, or missing business definition.
+- The metric is `LOW` or `BLOCKED` in `kpi_discovery_matrix.md` and the user has not explicitly approved further work.
 
 When stopped, write the root cause, expected versus actual values, affected layer, safest fix, and retest command into the phase report and `reports/agent/PIPELINE_STATUS.md`.

@@ -42,7 +42,7 @@ For every generated DAX measure, record the source mapping in `reports/agent/dax
 | Caveats | Data quality, empty facts, privacy, mapping, or definition limitations |
 | Verification | SQL or semantic query result that reconciles to the DAX result |
 
-Only create measures whose confidence is `High` or `Approved`. For `Warning`, `Low`, `Blocked`, or `Deferred` key performance indicators, document them as blocked or deferred unless the user explicitly approves the risk.
+Only create measures whose confidence is `HIGH` or user-approved `MEDIUM`. For `LOW`, `BLOCKED`, or `Deferred` key performance indicators, document them as blocked or deferred unless the user explicitly approves further discovery and the metric is rescored.
 
 ## Optional Tooling Priority
 

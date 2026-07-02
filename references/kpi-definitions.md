@@ -2,13 +2,15 @@
 
 Use this before gold/marts, semantic layer, analytics insight reporting, presentation layer, and final delivery. Also read [metric-verification.md](metric-verification.md) before implementing or handing off any key performance indicator.
 
-Approved and implemented key performance indicators must also appear in `reports/agent/kpi_catalog.md` during analytics insight reporting. See [analytics-insight-reporting.md](analytics-insight-reporting.md).
+Approved and implemented key performance indicators must also appear in `reports/agent/kpi_catalog.md` during analytics insight reporting. Candidate key performance indicators, including deferred and blocked candidates, must appear in `reports/agent/kpi_discovery_matrix.md`. See [analytics-insight-reporting.md](analytics-insight-reporting.md) and [kpi-discovery-framework.md](kpi-discovery-framework.md).
 
 ## Core rule
 
 Key performance indicators are business definitions, not just SQL expressions. The agent must propose supported key performance indicators from the final marts evidence, but must not silently invent business meaning.
 
 When a key performance indicator can be defined more than one reasonable way, recommend the safest option with evidence and ask for approval before building semantic metrics, reporting marts, dashboards, or presentation artifacts.
+
+Do not invent key performance indicators from column names alone. First classify tables, validate grain, detect candidate measures, map them to generic archetypes, score confidence, and ask targeted business questions only where business meaning is uncertain.
 
 If required metrics or reporting needs are not understood, mark the affected key performance indicators as deferred or blocked. Do not implement semantic metrics, presentation calculations, or dashboard measures that depend on guessed business definitions.
 
@@ -30,6 +32,7 @@ Every proposed or implemented key performance indicator must include:
 | Caveats | Empty upstream data, approximations, privacy limits, or missing definitions |
 | Approval status | Agent-recommended, user-approved, deferred, or blocked |
 | Verification status | Expected versus actual numerator, denominator, and result reconciliation status |
+| Discovery confidence | High, medium, low, or blocked from `kpi_discovery_matrix.md` |
 
 ## Advanced metric checks
 
@@ -88,6 +91,8 @@ If no key performance indicators are ready, write `No key performance indicators
 Stop before semantic layer, analytics insight reporting, presentation layer, or final metric handoff when:
 
 - A key performance indicator depends on a missing or empty fact table.
+- The key performance indicator has not been classified and scored in `kpi_discovery_matrix.md`.
+- The table grain or counting key is unknown.
 - The numerator or denominator is ambiguous.
 - The time field is ambiguous and changes the metric meaning.
 - The metric would expose sensitive or direct identifier data without approval.

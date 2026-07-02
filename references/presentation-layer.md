@@ -9,6 +9,7 @@ Read [analytics-insight-reporting.md](analytics-insight-reporting.md) first. The
 | Analytics insight output | Presentation use |
 |---|---|
 | `reports/agent/dashboard_spec.md` | Page plan |
+| `reports/agent/kpi_discovery_matrix.md` | Key performance indicator candidate evidence, confidence, and blocked/deferred reasoning |
 | `reports/agent/kpi_catalog.md` | Measure and key performance indicator source |
 | `reports/agent/reporting_catalog.md` | Report/page scope |
 | `reports/agent/insight_backlog.md` | Blocked or deferred visuals |
@@ -17,7 +18,7 @@ Read [analytics-insight-reporting.md](analytics-insight-reporting.md) first. The
 
 The presentation layer must not invent pages, key performance indicators, visuals, measures, denominators, filters, or business scope that contradict or bypass analytics insight reporting outputs unless the user explicitly overrides them.
 
-Power BI measures must be generated only from `reports/agent/kpi_catalog.md`, validated dbt semantic metrics, or explicit user-approved requirements. Each generated DAX measure must map back to the key performance indicator name, source dbt model, formula, time field, grain, allowed dimensions, confidence, caveats, and verification evidence.
+Power BI measures must be generated only from `reports/agent/kpi_catalog.md`, validated dbt semantic metrics, or explicit user-approved requirements. Each generated DAX measure must map back to the key performance indicator name, source dbt model, formula, time field, grain, allowed dimensions, confidence, caveats, and verification evidence. Do not generate DAX for `LOW` or `BLOCKED` key performance indicators from `kpi_discovery_matrix.md`.
 
 ## Purpose
 

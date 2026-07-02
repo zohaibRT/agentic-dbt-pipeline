@@ -65,8 +65,11 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] If the user requested changes to scope, models, key performance indicators, privacy, schemas, validation, materialization, or files, `AGENT_PLAN.md` and `NEXT_PHASE_PROMPT.md` were revised before proceeding
 - [ ] Before executing an approved `NEXT_PHASE_PROMPT.md`, the agent reloaded the approved next-phase context bundle and did not run the next prompt in isolation
 - [ ] Final delivery included analytics insight reporting outputs before the presentation-layer recommendation
-- [ ] `reports/agent/analytics_insight_report.md`, `reporting_catalog.md`, `kpi_catalog.md`, `dashboard_spec.md`, `insight_backlog.md`, and `reporting_readiness_scorecard.md` exist when analytics insight reporting ran
+- [ ] `reports/agent/analytics_insight_report.md`, `kpi_discovery_matrix.md`, `reporting_catalog.md`, `kpi_catalog.md`, `dashboard_spec.md`, `insight_backlog.md`, and `reporting_readiness_scorecard.md` exist when analytics insight reporting ran
 - [ ] Analytics insight reporting separated trusted outputs from uncertain or deferred outputs
+- [ ] Analytics insight reporting classified tables, detected grain, mapped candidate metrics to generic archetypes, scored confidence, and asked only targeted business questions for uncertain key performance indicators
+- [ ] `kpi_catalog.md`, semantic metrics, and Power BI DAX measures promoted only `HIGH` confidence or user-approved `MEDIUM` confidence key performance indicators
+- [ ] `LOW` and `BLOCKED` key performance indicators were deferred to `insight_backlog.md` with the missing grain, mapping, formula, relationship, privacy, or business-rule reason
 - [ ] Every cataloged key performance indicator and report/page maps to validated marts or semantic metrics
 - [ ] Presentation layer used analytics insight outputs as scope and did not invent contradictory pages, key performance indicators, or visuals without explicit user override
 - [ ] Final delivery included a presentation layer recommendation and asked whether the user wants a presentation layer
