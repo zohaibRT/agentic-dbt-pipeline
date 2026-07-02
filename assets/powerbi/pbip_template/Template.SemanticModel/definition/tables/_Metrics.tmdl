@@ -13,5 +13,4 @@ table _Metrics
 		mode: import
 		source = ROW("MetricKey", 1)
 
-annotation PBI_ResultType = Table
-
+	annotation PBI_ResultType = Table

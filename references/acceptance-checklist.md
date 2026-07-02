@@ -270,6 +270,8 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] If Power BI PBIP/TMDL was created, every `report.json` `resourcePackages.items[].path` reference resolves to an existing file under the Report definition folder, including base theme JSON files
 - [ ] If Power BI PBIP/TMDL was created, TMDL table files were checked for Markdown code fences and invalid unindented loose Power Query keywords outside a valid partition/source expression block
 - [ ] If Power BI PBIP/TMDL was created, TMDL files were checked for bare Power Query M steps such as `AddedKey = Table.AddColumn(...)` outside valid partition source expression blocks
+- [ ] If Power BI PBIP/TMDL was created, table `.tmdl` files do not contain root-level annotations such as unindented `annotation PBI_ResultType = Table`
+- [ ] If Power BI Desktop reports duplicate annotation merge errors such as `TMDL objects cannot be merged because both declare the same property: value`, the presentation phase is marked failed and fixed before handoff
 - [ ] If Power BI PBIP/TMDL was created, linguistic metadata content type and actual content format were checked; XML-typed metadata does not contain JSON and JSON-typed metadata does not contain XML
 - [ ] If Power BI PBIP/TMDL was created, JSON such as `{ "Version": "1.0.0" }` was not written into XML-typed linguistic metadata
 - [ ] If Power BI PBIP/TMDL was created, SemanticModel `definition/cultures/` files, `ref cultureInfo`, and report linguistic schema artifacts were omitted unless exact target-version Desktop-generated support was approved and validated

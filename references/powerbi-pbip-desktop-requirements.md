@@ -66,7 +66,7 @@ When a user reports "blank pages", "no visuals", or "only key performance indica
 - Do not put bare Power Query M steps such as `AddedKey = Table.AddColumn(...)` at the root of `.tmdl` files.
 - Indented `let ... in ...` partition expressions are allowed when they follow a known-good TMDL pattern.
 - Unindented loose `let` or `in` lines are not allowed.
-- For PostgreSQL imports, quote server and database parameters, hardcode the approved gold/mart schema in the source record, select only modeled columns, transform important types, and include the `PBI_ResultType = Table` annotation.
+- For PostgreSQL imports, quote server and database parameters, hardcode the approved gold/mart schema in the source record, select only modeled columns, transform important types, and include the `PBI_ResultType = Table` annotation indented under the table object. Do not emit root-level table annotations.
 
 ## Linguistic metadata content type
 

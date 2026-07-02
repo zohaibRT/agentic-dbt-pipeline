@@ -328,13 +328,23 @@ def validate_tmdl_keywords_and_keys(root: Path, errors: list[str]) -> None:
         re.compile(r"^\s*let\s*$", re.IGNORECASE),
         re.compile(r"^\s*in\s*$", re.IGNORECASE),
     ]
+    root_table_annotation_pattern = re.compile(r"^annotation\s+\S+\s*=", re.IGNORECASE)
 
     for path in root.rglob("*.tmdl"):
         text = path.read_text(encoding="utf-8-sig", errors="replace")
         key_count = 0
+        is_table_file = "tables" in {part.lower() for part in path.parts}
         for line_number, line in enumerate(text.splitlines(), start=1):
             if "```" in line:
                 fail(errors, path, f"Markdown code fence is not valid TMDL at line {line_number}")
+            if is_table_file and root_table_annotation_pattern.match(line):
+                fail(
+                    errors,
+                    path,
+                    f"Root-level table annotation at line {line_number}: {line.strip()}. "
+                    "Indent table annotations under the table object; otherwise Power BI Desktop can fail "
+                    "with duplicate annotation merge errors such as PBI_ResultType/value.",
+                )
             if line and not line[0].isspace() and any(pattern.match(line) for pattern in unindented_m_patterns):
                 fail(errors, path, f"Unindented loose Power Query keyword at line {line_number}: {line.strip()}")
             if line and not line[0].isspace() and BARE_M_STEP_RE.match(line):
