@@ -31,9 +31,10 @@ Read these skill references as needed:
 | Materialization and performance defaults | [materialization-rules.md](materialization-rules.md), [principal-data-engineering-standards.md](principal-data-engineering-standards.md) |
 | Big data, modern table formats, partitioning, clustering, compaction, and warehouse optimization | [principal-data-engineering-standards.md](principal-data-engineering-standards.md) |
 | Data quality and per-layer validation | [layer-data-validation.md](layer-data-validation.md), [data-engineering-best-practices.md](data-engineering-best-practices.md) |
+| Universal analytics and dashboard coverage | [universal-analytics-framework.md](universal-analytics-framework.md), [analytics-insight-reporting.md](analytics-insight-reporting.md), [reporting-standards.md](reporting-standards.md) |
 | Key performance indicators and semantic metrics | [kpi-definitions.md](kpi-definitions.md), [metric-verification.md](metric-verification.md), [semantic-layer-spec.md](semantic-layer-spec.md) |
-| Matplotlib presentation layer | [matplotlib-presentation-layer.md](matplotlib-presentation-layer.md), [presentation-layer.md](presentation-layer.md), [analytics-insight-reporting.md](analytics-insight-reporting.md), [reporting-standards.md](reporting-standards.md) |
-| Power BI and presentation layer design | [presentation-layer.md](presentation-layer.md), [analytics-insight-reporting.md](analytics-insight-reporting.md), [principal-data-engineering-standards.md](principal-data-engineering-standards.md) |
+| Matplotlib presentation layer | [matplotlib-presentation-layer.md](matplotlib-presentation-layer.md), [presentation-layer.md](presentation-layer.md), [universal-analytics-framework.md](universal-analytics-framework.md), [analytics-insight-reporting.md](analytics-insight-reporting.md), [reporting-standards.md](reporting-standards.md) |
+| Power BI and presentation layer design | [presentation-layer.md](presentation-layer.md), [universal-analytics-framework.md](universal-analytics-framework.md), [analytics-insight-reporting.md](analytics-insight-reporting.md), [principal-data-engineering-standards.md](principal-data-engineering-standards.md) |
 | Privacy, sensitive fields, and unclear fields | [privacy-and-unknown-fields.md](privacy-and-unknown-fields.md) |
 | Source safety and warehouse routing | [source-confirmation.md](source-confirmation.md), [warehouse-adapter-routing.md](warehouse-adapter-routing.md), [schema-isolation.md](schema-isolation.md) |
 

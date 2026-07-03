@@ -31,7 +31,7 @@ If the presentation decision has not been asked or answered, set status to `Anal
 - Tests added for primary keys, relationships, accepted values, and mapping coverage where applicable
 - Semantic layer or metrics added on final mart models when requested
 - dbt documentation generated
-- Analytics insight reporting outputs created under `reports/agent/`: `analytics_insight_report.md`, `kpi_discovery_matrix.md`, `reporting_catalog.md`, `kpi_catalog.md`, `dashboard_spec.md`, `insight_backlog.md`, `reporting_readiness_scorecard.md`, and `analytics_insight_reporting_report.md`
+- Analytics insight reporting outputs created under `reports/agent/09_analytics_insights/`: `analytics_insight_report.md`, `business_process_catalog.md`, `fact_catalog.md`, `dimension_catalog.md`, `reporting_catalog.md`, `dashboard_spec.md`, `insight_backlog.md`, `reporting_readiness_scorecard.md`, and `analytics_insight_reporting_report.md`, plus key performance indicator files under `reports/agent/09_analytics_insights/kpis/`
 - Key performance indicator reconciliation outputs created when key performance indicators are approved or implemented: `reports/agent/09_analytics_insights/kpis/kpi_reconciliation_report.md`, `reports/agent/09_analytics_insights/kpis/kpi_lineage_proofs.md`, `reports/agent/09_analytics_insights/kpis/kpi_variance_report.md`, and `reports/agent/09_analytics_insights/kpis/sql_proofs/`
 - Cardinality and grain outputs created when relationships, joins, final models, or Power BI relationships exist: `cardinality_report.md`, `relationship_profile.md`, `join_safety_report.md`, and `grain_validation_report.md`
 - Project evaluator run and warnings summarized
@@ -64,6 +64,7 @@ Update or create project handoff notes with:
 - Cardinality and relationship-grain status: duplicate keys, null keys, row multiplication, row loss, join safety, bridge table decisions, and Power BI one-side key readiness
 - Metric verification results for every implemented key performance indicator: expected numerator, actual numerator, expected denominator, actual denominator, expected result, actual result, status, and evidence
 - Presentation layer recommendation, including possible key performance indicators, semantic metrics, suggested report or dashboard pages, and query handoff options
+- Business process, fact, and dimension catalog status, including what reporting coverage is trusted, deferred, or blocked
 - Consultant-grade presentation design summary when a presentation artifact was approved: pages created, pages deferred or blocked, source models, measures, slicers, filters, privacy handling, and why the selected visuals are useful for business review
 - Five report pillars status for business-facing reports and presentation artifacts: context and strategy, key performance indicators, trend analysis and variance, insights and attribution, and recommendations and next steps
 - Power BI canvas standard status when Power BI is created: header/navigation, last refreshed timestamp, reset filters, prioritized executive key performance indicator cards, supporting key performance indicator coverage, slicers, trends/comparisons, detail layer, tooltips, drill-throughs, Report Information page, and any unsupported elements with reasons

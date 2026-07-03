@@ -1,6 +1,6 @@
 # Key Performance Indicator Discovery Framework
 
-Use this during analytics insight reporting before finalizing `kpi_catalog.md`, semantic metrics, Power BI measures, or dashboard specifications.
+Use this during analytics insight reporting before finalizing `kpi_catalog.md`, semantic metrics, Power BI measures, or dashboard specifications. Also read [universal-analytics-framework.md](universal-analytics-framework.md) for business-area, process, measure, metric, dimension, and report-page coverage.
 
 ## Core Rule
 
@@ -22,15 +22,16 @@ Semantic metrics and Power BI measures last
 ## Discovery Sequence
 
 1. Classify source and gold tables.
-2. Detect grain for every possible fact.
-3. Detect candidate measures.
-4. Create a broad `measure_catalog.md`.
-5. Promote supported measures into contextual metrics in `metric_catalog.md`.
-6. Map metrics to generic archetypes.
-7. Promote only strategic, decision-relevant metrics into `kpi_catalog.md`.
-8. Score confidence.
-9. Ask targeted business questions only where needed.
-10. Send approved metrics to semantic layer and presentation tooling.
+2. Infer safe business areas, departments, processes, events, entities, and reporting opportunities.
+3. Detect grain for every possible fact.
+4. Detect candidate measures.
+5. Create a broad `measure_catalog.md`.
+6. Promote supported measures into contextual metrics in `metric_catalog.md`.
+7. Map metrics to generic archetypes.
+8. Promote only strategic, decision-relevant metrics into `kpi_catalog.md`.
+9. Score confidence.
+10. Ask targeted business questions only where needed.
+11. Send approved metrics to semantic layer and presentation tooling.
 
 ## Table Classification
 

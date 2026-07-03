@@ -2,7 +2,7 @@
 
 Use this before writing discovery reports, phase reports, analytics insight reporting files, presentation reports, final handoffs, dashboard designs, and Power BI report plans.
 
-For analytics insight reporting design rules and deliverables, read [analytics-insight-reporting.md](analytics-insight-reporting.md). This file defines the five report pillars, Matplotlib visual standards, and Power BI canvas standards; analytics insight reporting decides what is useful to show, and the presentation layer implements the approved design.
+For analytics insight reporting design rules and deliverables, read [analytics-insight-reporting.md](analytics-insight-reporting.md) and [universal-analytics-framework.md](universal-analytics-framework.md). This file defines the five report pillars, Matplotlib visual standards, and Power BI canvas standards; analytics insight reporting decides what is useful to show, and the presentation layer implements the approved design.
 
 ## Core rule
 
@@ -50,6 +50,22 @@ For business-facing presentation layers, the report design must show more than k
 - Recommendations and next steps page or section.
 
 If targets, benchmarks, attribution dimensions, or next-step owners are missing, include a visible `Needs business input` note instead of leaving the pillar out silently.
+
+## Rich dashboard design standard
+
+Every generated dashboard or browser report must look intentional, polished, and useful for business review. Beautiful does not mean decorative; it means clear hierarchy, readable spacing, strong information scent, and visual confidence.
+
+Use these rules for Matplotlib web reports, Power BI handoffs, and any future presentation technology:
+
+- Create a high-quality first screen with report title, business context, validation status, refresh timestamp, and the most important executive key performance indicators.
+- Use a professional palette with neutral surfaces, one primary accent, one secondary accent, and consistent positive, warning, failure, and muted colors.
+- Use dashboard pages/tabs organized by business purpose, not by technical table name.
+- Include metric cards, trend panels, comparison charts, exception callouts, and detail tables where supported by validated data.
+- Use captions and short insight statements so each visual explains what to look at.
+- Use whitespace, consistent card sizing, readable fonts, and responsive layouts; avoid dense unstyled tables as the main experience.
+- Put raw proof, caveats, definitions, and deferred items in Report Information or validation sections so the main pages stay clean.
+- Prefer fewer high-value visuals per page over many weak visuals, but cover all trusted measures and metrics somewhere in the report pack or scorecard.
+- Document theme choices, page rationale, and any unsupported design elements in `reports/agent/10_presentation/presentation_report.md`.
 
 ## Matplotlib visual standard
 

@@ -4,7 +4,7 @@ Use this after marts, semantic layer, project evaluator, documentation, and **an
 
 For approved Power BI PBIP/TMDL artifacts, also read [powerbi-template.md](powerbi-template.md), [powerbi-thin-model-template.md](powerbi-thin-model-template.md), [powerbi-kpi-dax-tooling.md](powerbi-kpi-dax-tooling.md), [powerbi-official-docs.md](powerbi-official-docs.md), and [powerbi-pbip-desktop-requirements.md](powerbi-pbip-desktop-requirements.md). For approved Matplotlib artifacts or when Matplotlib is the default presentation technology, read [matplotlib-presentation-layer.md](matplotlib-presentation-layer.md).
 
-Read [analytics-insight-reporting.md](analytics-insight-reporting.md) first. The presentation layer consumes analytics insight outputs:
+Read [analytics-insight-reporting.md](analytics-insight-reporting.md), [universal-analytics-framework.md](universal-analytics-framework.md), and [reporting-standards.md](reporting-standards.md) first. The presentation layer consumes analytics insight outputs:
 
 | Analytics insight output | Presentation use |
 |---|---|
@@ -18,6 +18,9 @@ Read [analytics-insight-reporting.md](analytics-insight-reporting.md) first. The
 | `reports/agent/09_analytics_insights/insight_backlog.md` | Blocked or deferred visuals |
 | `reports/agent/09_analytics_insights/reporting_readiness_scorecard.md` | Validation gate before artifact build |
 | `reports/agent/09_analytics_insights/analytics_insight_report.md` | Business-facing rationale |
+| `reports/agent/09_analytics_insights/business_process_catalog.md` | Business areas, process grouping, events, entities, and report opportunities |
+| `reports/agent/09_analytics_insights/dimension_catalog.md` | Safe slicers, labels, drill-downs, and segmentation fields |
+| `reports/agent/09_analytics_insights/fact_catalog.md` | Fact grains, measures, date fields, status fields, and report usage |
 
 The presentation layer must not invent pages, key performance indicators, visuals, measures, denominators, filters, or business scope that contradict or bypass analytics insight reporting outputs unless the user explicitly overrides them.
 
@@ -136,7 +139,9 @@ The presentation layer is incomplete if it includes only domain key performance 
 
 ## Consultant-grade report design
 
-The agent owns the first professional report design. Do not wait for the user to list every page, visual, slicer, or measure. Use validated gold facts, dimensions, semantic metrics, source profiling, data quality findings, and approved requirements to propose the richest useful presentation layer the data can support.
+The agent owns the first professional report design. Do not wait for the user to list every page, visual, slicer, or measure. Use validated gold facts, dimensions, semantic metrics, source profiling, data quality findings, analytics catalogs, and approved requirements to propose the richest useful presentation layer the data can support.
+
+The default design must maximize useful report results across executive, trend, financial/value, operations/activity, entity performance, segmentation/driver, quality/exception, detail, and Report Information pages when the data supports them. Omit a page only when unsupported, and document the reason in `dashboard_spec.md` and `presentation_report.md`.
 
 Maximum information means maximum validated, decision-useful information, not every available column. Prefer visuals and pages that answer business questions, expose trends, explain drivers, and show exceptions. Do not invent unsupported metrics or business meanings just to make the report look fuller.
 

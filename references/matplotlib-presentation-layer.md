@@ -2,7 +2,7 @@
 
 Use this when the user approves a presentation layer and chooses **Matplotlib** as the presentation technology, or when the user approves the default presentation layer without naming another technology.
 
-Also read [presentation-layer.md](presentation-layer.md), [analytics-insight-reporting.md](analytics-insight-reporting.md), [report-artifact-organization.md](report-artifact-organization.md), [reporting-standards.md](reporting-standards.md), [kpi-definitions.md](kpi-definitions.md), [metric-verification.md](metric-verification.md), and [mapping-seeds.md](mapping-seeds.md) when code-to-label mappings are needed.
+Also read [presentation-layer.md](presentation-layer.md), [analytics-insight-reporting.md](analytics-insight-reporting.md), [universal-analytics-framework.md](universal-analytics-framework.md), [report-artifact-organization.md](report-artifact-organization.md), [reporting-standards.md](reporting-standards.md), [kpi-definitions.md](kpi-definitions.md), [metric-verification.md](metric-verification.md), and [mapping-seeds.md](mapping-seeds.md) when code-to-label mappings are needed.
 
 Official documentation: [Matplotlib User Guide](https://matplotlib.org/stable/users/index)
 
@@ -137,12 +137,15 @@ Recommend Power BI instead when the user explicitly needs interactive slicers, d
 | `reports/agent/09_analytics_insights/kpis/kpi_discovery_matrix.md` | Recommended key performance indicator candidates, confidence, and blocked/deferred reasoning |
 | `reports/agent/09_analytics_insights/kpis/kpi_reconciliation_report.md` | Proof that trusted key performance indicators reconcile across layers |
 | `reports/agent/09_analytics_insights/kpis/kpi_catalog.md` | Trusted strategic key performance indicators and formulas |
+| `reports/agent/09_analytics_insights/business_process_catalog.md` | Business areas, business processes, source evidence, facts, entities, and recommended report pages |
+| `reports/agent/09_analytics_insights/fact_catalog.md` | Fact/event models, grains, row counts, date/status/amount fields, supported measures, and relationship safety |
+| `reports/agent/09_analytics_insights/dimension_catalog.md` | Safe slicers, labels, drill-down fields, related facts, and privacy status |
 | `reports/agent/09_analytics_insights/reporting_catalog.md` | Report/page scope |
 | `reports/agent/09_analytics_insights/insight_backlog.md` | Deferred or blocked visuals |
 | `reports/agent/09_analytics_insights/reporting_readiness_scorecard.md` | Readiness gate |
 | `reports/agent/09_analytics_insights/analytics_insight_report.md` | Business rationale |
 
-Do not invent pages, metrics, or chart types that bypass analytics insight outputs unless the user explicitly overrides them.
+Do not invent pages, metrics, or chart types that bypass analytics insight outputs unless the user explicitly overrides them. Use the business process, fact, and dimension catalogs to choose page tabs, slicers, drill-downs, captions, and detail sections.
 
 ## Key performance indicator and measure coverage
 

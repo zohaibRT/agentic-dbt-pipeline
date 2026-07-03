@@ -96,6 +96,9 @@ This creates the managed folders and `_proof_index.md` files before the first pr
 | Evaluator SQL proofs | `reports/agent/07_evaluator/sql_proofs/` |
 | Documentation report | `reports/agent/08_documentation/docs_report.md` |
 | Analytics insight report | `reports/agent/09_analytics_insights/analytics_insight_report.md` |
+| Business process catalog | `reports/agent/09_analytics_insights/business_process_catalog.md` |
+| Dimension catalog | `reports/agent/09_analytics_insights/dimension_catalog.md` |
+| Fact catalog | `reports/agent/09_analytics_insights/fact_catalog.md` |
 | Reporting catalog | `reports/agent/09_analytics_insights/reporting_catalog.md` |
 | Dashboard specification | `reports/agent/09_analytics_insights/dashboard_spec.md` |
 | Insight backlog | `reports/agent/09_analytics_insights/insight_backlog.md` |

@@ -80,6 +80,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Analytics insight reporting separated raw measures, contextual metrics, and strategic key performance indicators instead of treating all measures as key performance indicators
 - [ ] `measure_catalog.md` was created or updated with broad validated raw measures from supported facts, dimensions, and marts
 - [ ] `metric_catalog.md` was created or updated with contextual metrics derived from validated measures
+- [ ] `business_process_catalog.md`, `fact_catalog.md`, and `dimension_catalog.md` were created or updated so reporting is organized by business areas, processes, facts, and safe dimensions
 - [ ] `kpi_catalog.md` contains only decision-relevant metrics tied to business goals, thresholds, targets, risks, operating review, or user-approved strategic use
 - [ ] After analytics insight reporting, the agent asked the presentation-layer decision with a concise evidence summary, recommended technology/page set, key caveats, and native clickable options when available
 - [ ] Presentation decision options included the equivalent of `Yes - build Matplotlib refreshable web report (recommended)`, `Yes - prepare Power BI Desktop template handoff`, `No presentation layer - complete final delivery now`, and `Tell me what to change first`
@@ -218,6 +219,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] If Matplotlib artifacts were created, missing `matplotlib`, `numpy`, or `pandas` packages were installed or the install blocker was documented with exact commands attempted
 - [ ] If Matplotlib artifacts were created, `kpi_figure_coverage.md` maps every recommended measure, metric, and key performance indicator from `measure_catalog.md`, `metric_catalog.md`, `kpi_discovery_matrix.md`, and `kpi_catalog.md` to `RENDERED`, `BLOCKED`, or `DEFERRED` status
 - [ ] If Matplotlib presentation artifacts were created, `serve_report.py` and `report.html` are the primary deliverable, with rich colorful classified tabs, summary cards, chart cards, captions, caveats, validation status, refresh timestamp/control, and `open_report.bat` or an equivalent browser launcher documented
+- [ ] If a presentation artifact was created, the dashboard/report uses a polished professional design with clear page hierarchy, intentional color palette, cards, captions, exception callouts, detail sections, and Report Information content rather than default or plain styling
 - [ ] If Matplotlib presentation artifacts were created, charts render through live Matplotlib SVG/HTML endpoints or approved browser-native charts from refreshed JSON; PNG is not the primary rendering path
 - [ ] If Matplotlib presentation artifacts were created, PNG/SVG files are optional exports or snapshots only and are clearly labeled as not automatically updating
 - [ ] If Matplotlib artifacts were created, chart axes, legends, and HTML section titles use business labels from dimensions/mappings/`label_dictionary.md`, not raw codes

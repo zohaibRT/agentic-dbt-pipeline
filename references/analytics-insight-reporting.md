@@ -2,7 +2,7 @@
 
 Use this after marts/gold, semantic layer, `dbt_project_evaluator`, and documentation are complete and validated. Run this before the presentation-layer recommendation or any Power BI / business intelligence handoff.
 
-Also read [report-artifact-organization.md](report-artifact-organization.md), [kpi-discovery-framework.md](kpi-discovery-framework.md), [kpi-reconciliation.md](kpi-reconciliation.md), [cardinality-validation.md](cardinality-validation.md), [reporting-standards.md](reporting-standards.md), [kpi-definitions.md](kpi-definitions.md), [metric-verification.md](metric-verification.md), [privacy-and-unknown-fields.md](privacy-and-unknown-fields.md), and [writing-style.md](writing-style.md).
+Also read [report-artifact-organization.md](report-artifact-organization.md), [universal-analytics-framework.md](universal-analytics-framework.md), [kpi-discovery-framework.md](kpi-discovery-framework.md), [kpi-reconciliation.md](kpi-reconciliation.md), [cardinality-validation.md](cardinality-validation.md), [reporting-standards.md](reporting-standards.md), [kpi-definitions.md](kpi-definitions.md), [metric-verification.md](metric-verification.md), [privacy-and-unknown-fields.md](privacy-and-unknown-fields.md), and [writing-style.md](writing-style.md).
 
 ## Phase purpose
 
@@ -54,6 +54,7 @@ These rules apply to every domain, source schema, and warehouse adapter:
 - Do not hardcode one domain's key performance indicators, page names, or sample values.
 - Do not invent targets, benchmarks, attribution, or recommendations without evidence.
 - Construct as many useful supported measures and contextual metrics as the validated data safely allows, then promote only the strategic decision-relevant subset to key performance indicators.
+- Use the business -> department/business area -> process -> key performance indicator -> metric -> measure -> dimension -> fact hierarchy from [universal-analytics-framework.md](universal-analytics-framework.md) to maximize useful report coverage.
 - Maximum means maximum useful business insight supported by validated data, not maximum number of dashboards.
 - Do not build presentation artifacts in this phase.
 
@@ -101,6 +102,7 @@ Before drafting catalogs and specs, verify:
 | Evaluator readiness | Evaluator warnings fixed, accepted, or documented |
 | Documentation readiness | `dbt docs generate` completed; model purpose and grain documented |
 | Business questions | Real questions the validated data can answer, not generic dashboard filler |
+| Business areas and processes | Business hierarchy, departments or areas, events, entities, and workflows inferred from validated data |
 | Key performance indicator discovery | Table classification, grain, candidate measures, archetypes, confidence score, and targeted questions documented |
 | Key performance indicator reconciliation | Proof SQL files, layer results, variance, first failing layer, and cardinality assumptions documented for trusted metrics |
 | Time analysis | Usable date/time columns for trends and comparisons |
@@ -122,6 +124,9 @@ After phase completion, create or update these files. Use canonical paths for ne
 | `reports/agent/09_analytics_insights/kpis/kpi_variance_report.md` | First-layer versus final-layer variance and likely cause for each reconciled key performance indicator |
 | `reports/agent/09_analytics_insights/kpis/sql_proofs/` | SQL proof files with captured results for measures, metrics, key performance indicators, and layer reconciliation where applicable |
 | `reports/agent/09_analytics_insights/reporting_catalog.md` | Catalog of report/page candidates |
+| `reports/agent/09_analytics_insights/business_process_catalog.md` | Business areas, departments, processes, events, facts, dimensions, and report opportunities inferred from evidence |
+| `reports/agent/09_analytics_insights/dimension_catalog.md` | Safe reporting dimensions, labels, slicers, drill-down candidates, relationship safety, and privacy status |
+| `reports/agent/09_analytics_insights/fact_catalog.md` | Fact/event models, grain, dates, measures, status fields, relationship safety, and report usage |
 | `reports/agent/09_analytics_insights/kpis/kpi_catalog.md` | Catalog of trusted and deferred key performance indicators with definitions, confidence, and caveats |
 | `reports/agent/09_analytics_insights/dashboard_spec.md` | Full dashboard/report design spec for the presentation phase |
 | `reports/agent/09_analytics_insights/insight_backlog.md` | Useful insights not ready yet and what unlocks them |
@@ -140,6 +145,8 @@ After phase completion, create or update these files. Use canonical paths for ne
 ## Executive Summary
 
 ## Available Business Domains
+
+## Business Areas and Processes
 
 ## Trusted Facts
 
@@ -179,6 +186,30 @@ After phase completion, create or update these files. Use canonical paths for ne
 | Report/Page | Business Question | Fact Model | Dimensions | Metrics | Filters | Suggested Visuals | Confidence | Caveats |
 |---|---|---|---|---|---|---|---|---|
 | `<page_or_report_name>` | `<question>` | `<ref() model>` | `<dimensions>` | `<metrics>` | `<filters>` | `<visual_types>` | `<HIGH/MEDIUM/LOW/DEFERRED>` | `<caveats>` |
+
+### `business_process_catalog.md`
+
+Organize report opportunities by business area and process before creating dashboard pages.
+
+| Business Area | Business Process | Source Evidence | Primary Events/Facts | Primary Entities/Dimensions | Supported Measures | Candidate Metrics | Recommended Report Pages | Confidence | Open Questions |
+|---|---|---|---|---|---|---|---|---|---|
+| `<area>` | `<process>` | `<tables/models/evidence>` | `<facts>` | `<dimensions>` | `<measures>` | `<metrics>` | `<pages>` | `<HIGH/MEDIUM/LOW/BLOCKED>` | `<questions>` |
+
+### `fact_catalog.md`
+
+Document every validated fact/event model that can support report results.
+
+| Fact Model | Business Event | Grain | Row Count | Date Fields | Status/Stage Fields | Amount/Quantity/Duration Fields | Relationship Safety | Supported Measures | Report Usage | SQL Proof File | Status |
+|---|---|---|---:|---|---|---|---|---|---|---|---|
+| `<fact_model>` | `<event>` | `<grain>` | `<count>` | `<dates>` | `<statuses>` | `<measures>` | `<safe/warn/blocked>` | `<measures>` | `<pages>` | `<path>` | `<PASS/WARN/BLOCKED>` |
+
+### `dimension_catalog.md`
+
+Document safe slicers, labels, drill-downs, and segmentation fields.
+
+| Dimension Model | Business Entity | Grain Key | Row Count | Label Field | Safe Slicer Fields | Drill-Down Fields | Related Facts | Privacy Status | SQL Proof File | Status |
+|---|---|---|---:|---|---|---|---|---|---|---|
+| `<dimension_model>` | `<entity>` | `<key>` | `<count>` | `<label>` | `<fields>` | `<fields>` | `<facts>` | `<safe/masked/blocked>` | `<path>` | `<PASS/WARN/BLOCKED>` |
 
 ### `measure_catalog.md`
 
