@@ -11,12 +11,12 @@ Read [analytics-insight-reporting.md](analytics-insight-reporting.md) first. The
 | `reports/agent/09_analytics_insights/dashboard_spec.md` | Page plan |
 | `reports/agent/09_analytics_insights/kpis/kpi_discovery_matrix.md` | Key performance indicator candidate evidence, confidence, and blocked/deferred reasoning |
 | `reports/agent/09_analytics_insights/kpis/kpi_reconciliation_report.md` | Source-to-final metric proof, variance, and pass/fail evidence |
-| `reports/agent/kpi_lineage_proofs.md` | First failing layer and lineage summary for trusted or blocked metrics |
-| `reports/agent/kpi_variance_report.md` | Variance evidence for report caveats and blocked visuals |
+| `reports/agent/09_analytics_insights/kpis/kpi_lineage_proofs.md` | First failing layer and lineage summary for trusted or blocked metrics |
+| `reports/agent/09_analytics_insights/kpis/kpi_variance_report.md` | Variance evidence for report caveats and blocked visuals |
 | `reports/agent/09_analytics_insights/kpis/kpi_catalog.md` | Measure and key performance indicator source |
 | `reports/agent/09_analytics_insights/reporting_catalog.md` | Report/page scope |
-| `reports/agent/insight_backlog.md` | Blocked or deferred visuals |
-| `reports/agent/reporting_readiness_scorecard.md` | Validation gate before artifact build |
+| `reports/agent/09_analytics_insights/insight_backlog.md` | Blocked or deferred visuals |
+| `reports/agent/09_analytics_insights/reporting_readiness_scorecard.md` | Validation gate before artifact build |
 | `reports/agent/09_analytics_insights/analytics_insight_report.md` | Business-facing rationale |
 
 The presentation layer must not invent pages, key performance indicators, visuals, measures, denominators, filters, or business scope that contradict or bypass analytics insight reporting outputs unless the user explicitly overrides them.

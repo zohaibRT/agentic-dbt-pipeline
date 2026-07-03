@@ -50,6 +50,8 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Discovery inspected schemas, tables, columns, row counts, candidate keys, date fields, status fields, amount fields, relationships, grain evidence, possible facts, possible dimensions, possible marts, and possible metrics where supported by the adapter and source evidence
 - [ ] Discovery created or updated `reports/agent/00_discovery/cardinality_report.md` and `reports/agent/00_discovery/relationship_profile.md` when relationships or candidate joins existed
 - [ ] Discovery created `reports/agent/00_discovery/requirements.md` before the chat summary with source-derived requirements, evidence, confidence, recommended defaults, open questions, and deferred or blocked scope
+- [ ] Discovery created reusable SQL proof files under `reports/agent/00_discovery/sql_proofs/` for table inventory, row counts, candidate keys, important status or business-state counts, date coverage, numeric summaries, and relationship/cardinality checks where supported
+- [ ] Every discovery SQL proof file includes purpose, expected result, captured result, status, and runnable SQL
 - [ ] Discovery report includes recommended medallion direction for sources, bronze/staging, silver/intermediate, and gold/marts
 - [ ] Discovery report includes a Mermaid entity relationship diagram when credible relationships exist
 - [ ] Discovery report includes other necessary Mermaid diagrams, such as source inventory, business process flow, or high-level medallion direction, when they help review the project
@@ -80,6 +82,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Presentation decision options included the equivalent of `Yes - build Matplotlib refreshable web report (recommended)`, `Yes - prepare Power BI Desktop template handoff`, `No presentation layer - complete final delivery now`, and `Tell me what to change first`
 - [ ] `reports/agent/09_analytics_insights/analytics_insight_report.md`, `kpi_discovery_matrix.md`, `reporting_catalog.md`, `kpi_catalog.md`, `dashboard_spec.md`, `insight_backlog.md`, and `reporting_readiness_scorecard.md` exist when analytics insight reporting ran
 - [ ] `reports/agent/09_analytics_insights/kpis/kpi_reconciliation_report.md`, `kpi_lineage_proofs.md`, `kpi_variance_report.md`, and `sql_proofs/` exist when approved or implemented key performance indicators exist
+- [ ] Measure, metric, key performance indicator, reconciliation, and presentation verification proofs are written as reusable SQL proof files with captured results, not only pasted into Markdown tables
 - [ ] Analytics insight reporting separated trusted outputs from uncertain or deferred outputs
 - [ ] Analytics insight reporting classified tables, detected grain, mapped candidate metrics to generic archetypes, scored confidence, and asked only targeted business questions for uncertain key performance indicators
 - [ ] `kpi_catalog.md`, semantic metrics, and Power BI DAX measures promoted only `HIGH` confidence or user-approved `MEDIUM` confidence key performance indicators
@@ -153,6 +156,8 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Each layer: `dbt parse` + `dbt build --select +path:...` PASS
 - [ ] Each bronze/staging, silver/intermediate, and gold/marts layer ran warehouse data validation queries after `dbt build`
 - [ ] Each layer report includes `Data Verification Results` with row counts, expected-empty evidence, grain checks, relationship checks, measure checks, result, and notes
+- [ ] Each bronze/staging, silver/intermediate, and gold/marts layer wrote reusable SQL proof files under that phase's `sql_proofs/` folder for row counts, upstream comparisons, grain/key checks, relationships, status distributions, date coverage, numeric measure summaries, and privacy checks where applicable
+- [ ] Each layer report includes a `SQL Proof Files` section linking proof paths to the captured result summary and status
 - [ ] `grain_validation_report.md`, `join_safety_report.md`, `cardinality_report.md`, and `relationship_profile.md` were created or updated when joins, relationships, final models, or Power BI relationships were in scope
 - [ ] The user-facing summary after each layer shared the important data validation results, not only the dbt command result
 - [ ] Bronze/staging row counts were compared to source tables where one-to-one staging was expected

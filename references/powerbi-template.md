@@ -70,8 +70,8 @@ The template should only provide:
    - `reports/agent/09_analytics_insights/kpis/kpi_catalog.md`
    - `reports/agent/09_analytics_insights/reporting_catalog.md`
    - `reports/agent/09_analytics_insights/analytics_insight_report.md`
-   - `reports/agent/reporting_readiness_scorecard.md`
-   - `reports/agent/insight_backlog.md`
+   - `reports/agent/09_analytics_insights/reporting_readiness_scorecard.md`
+   - `reports/agent/09_analytics_insights/insight_backlog.md`
    - `target/manifest.json`
    - `target/catalog.json`
    - `target/semantic_manifest.json`

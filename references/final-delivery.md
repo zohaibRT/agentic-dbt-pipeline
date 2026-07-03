@@ -32,7 +32,7 @@ If the presentation decision has not been asked or answered, set status to `Anal
 - Semantic layer or metrics added on final mart models when requested
 - dbt documentation generated
 - Analytics insight reporting outputs created under `reports/agent/`: `analytics_insight_report.md`, `kpi_discovery_matrix.md`, `reporting_catalog.md`, `kpi_catalog.md`, `dashboard_spec.md`, `insight_backlog.md`, `reporting_readiness_scorecard.md`, and `analytics_insight_reporting_report.md`
-- Key performance indicator reconciliation outputs created when key performance indicators are approved or implemented: `kpi_reconciliation_report.md`, `kpi_lineage_proofs.md`, `kpi_variance_report.md`, and `kpi_sql_proofs/`
+- Key performance indicator reconciliation outputs created when key performance indicators are approved or implemented: `reports/agent/09_analytics_insights/kpis/kpi_reconciliation_report.md`, `reports/agent/09_analytics_insights/kpis/kpi_lineage_proofs.md`, `reports/agent/09_analytics_insights/kpis/kpi_variance_report.md`, and `reports/agent/09_analytics_insights/kpis/sql_proofs/`
 - Cardinality and grain outputs created when relationships, joins, final models, or Power BI relationships exist: `cardinality_report.md`, `relationship_profile.md`, `join_safety_report.md`, and `grain_validation_report.md`
 - Project evaluator run and warnings summarized
 - Presentation layer recommendation produced after final validation, with user-facing options and suggested metrics

@@ -36,6 +36,8 @@ For each source table, capture:
 
 Use warehouse SQL, dbt source metadata, or codegen output through the adapter selected by the active dbt profile. Follow [warehouse-adapter-routing.md](warehouse-adapter-routing.md) before profiling. Keep queries lightweight and avoid full table scans when tables are large.
 
+Write each profiling query that supports a modeling decision as a reusable SQL proof file. Use `reports/agent/00_discovery/sql_proofs/` during initial discovery and `reports/agent/02_sources/sql_proofs/` during the Sources phase. Each proof file must include purpose, expected result, captured result, status, and runnable SQL. Link the proof files from the discovery or sources report.
+
 Do not use another warehouse connector as a profiling fallback. If the selected profile is PostgreSQL, profile PostgreSQL only. If the selected profile is Redshift, profile Redshift only. If the selected profile fails, stop and ask whether to fix the profile or switch profiles.
 
 If the configured source is missing, empty, inaccessible, ambiguous, mismatched, or clearly not the intended data source, stop profiling and read [source-confirmation.md](source-confirmation.md). You may list candidate databases, datasets, catalogs, schemas, tables, tenants, clients, domains, environments, or table counts through the selected adapter as metadata only, but do not inspect candidate table columns, row samples, keys, relationships, or business entities before the user approves the exact replacement source. Do not update `.env`, change `profiles.yml`, write discovery reports, or continue into candidate discovery without that approval.

@@ -12,8 +12,8 @@ Before changing evaluator config, seeds, or exceptions, follow [phase-plan-appro
 | Allowed changes | Evaluator configuration, reviewed exceptions seed, evaluator report, and pipeline status updates |
 | Not allowed | Moving source YAML into layer folders to satisfy warnings, hiding failed tests, building evaluator objects in source schema, or structural fixes based on failed diagnostic queries |
 | Commands to run | `dbt build --select package:dbt_project_evaluator`, evaluator table shape inspection, and targeted evaluator findings queries |
-| Completion criteria | Errors are fixed or blocked, warnings are fixed or documented as accepted, and evaluator outputs are isolated outside source schema |
-| Report required | `reports/agent/evaluator_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
+| Completion criteria | Errors are fixed or blocked, warnings are fixed or documented as accepted, evaluator outputs are isolated outside source schema, and evaluator SQL proof files capture inspected findings |
+| Report required | `reports/agent/07_evaluator/evaluator_report.md`, `reports/agent/07_evaluator/sql_proofs/`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
 
 ## Recommended path
 
@@ -88,6 +88,8 @@ Then query only columns that exist:
 ```
 
 If a diagnostic query fails because a column does not exist, do not apply structural fixes. Inspect the evaluator table columns first, then summarize the actual findings.
+
+Save the table-shape query and each targeted evaluator findings query as SQL proof files under `reports/agent/07_evaluator/sql_proofs/`. Each file must include the captured result and status so the data engineer can re-run the exact evaluator evidence.
 
 If an exceptions seed exists, run it with the package:
 

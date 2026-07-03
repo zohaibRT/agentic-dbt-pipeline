@@ -16,7 +16,7 @@ This phase is read-only. Do not create dbt projects, install packages, run codeg
 | Allowed changes | Discovery report, requirements file, pipeline status, and context tree only after required inputs are valid |
 | Not allowed | dbt project creation, package installation, codegen, model files, warehouse schema changes, profile changes, or alternate source profiling without approval |
 | Commands to run | Lightweight metadata and profiling queries through the selected dbt profile adapter only |
-| Completion criteria | Source inventory, relationships, business processes, data quality signals, inferred requirements, recommended medallion direction, confidence, unknowns, and user decisions are documented |
+| Completion criteria | Source inventory, relationships, business processes, data quality signals, inferred requirements, recommended medallion direction, confidence, unknowns, user decisions, and reusable SQL proof files are documented |
 | Report required | `reports/agent/00_discovery/discovery_report.md`, `reports/agent/00_discovery/requirements.md`, `reports/agent/00_discovery/cardinality_report.md`, `reports/agent/00_discovery/relationship_profile.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
 
 Do not assume the business domain. Even when the user provides a domain label, first understand the source evidence:
@@ -49,6 +49,8 @@ Discovery is also phased. Initial discovery should be lightweight and should not
 
 Discovery must include Mermaid diagrams when the source data has enough evidence to support them. Create an entity relationship diagram during discovery when any credible table relationships exist. Create other necessary Mermaid diagrams when they make the project easier to review, such as source inventory, candidate business process flow, or high-level medallion direction. Do not draw relationships or flows that are only guesses; list uncertain items as notes outside the diagram.
 
+Discovery must also create reusable SQL proof files under `reports/agent/00_discovery/sql_proofs/` for the source-level evidence used in the discovery report. Follow the SQL proof standard in [report-artifact-organization.md](report-artifact-organization.md).
+
 When discovery finds sensitive fields or ambiguous, placeholder, abbreviated, generic, or poorly named fields, read [privacy-and-unknown-fields.md](privacy-and-unknown-fields.md). Recommend a safe default in the discovery report instead of only asking what to do. For example, recommend excluding or masking direct identifiers from gold/marts by default, and recommend passing unclear source fields through bronze/staging as raw unmapped fields while excluding them from gold/marts until definitions are provided.
 
 ## Allowed read-only actions
@@ -61,6 +63,29 @@ When discovery finds sensitive fields or ambiguous, placeholder, abbreviated, ge
 - Check candidate primary keys, foreign keys, date columns, measures, status/code columns, and empty tables
 - Check relationship cardinality, likely table grain, duplicate keys, null keys, match rates, many-to-many risks, and tables that should not be joined directly without aggregation
 - Inspect existing project files if the project already exists
+
+## Discovery SQL proofs
+
+Create source proof queries for as much safe evidence as the source supports. Do not only capture row counts in prose.
+
+At minimum, create:
+
+| Proof type | Required when | Example filename |
+|---|---|---|
+| Source table inventory | Always after source schema is confirmed | `001_source_table_inventory.sql` |
+| Per-table row count | Every included source table | `010_<source_table>_row_count.sql` |
+| Candidate key check | A likely primary key or unique business key exists | `020_<source_table>_<key>_key_check.sql` |
+| Status/category distribution | Status, stage, type, category, channel, source system, active flag, or similar fields exist | `030_<source_table>_<column>_distribution.sql` |
+| Active/open/closed count | Any active, current, open, closed, completed, cancelled, deleted, status, or lifecycle field exists | `035_<source_table>_<business_state>_count.sql` |
+| Date coverage | Date/time columns exist | `040_<source_table>_<date_column>_date_coverage.sql` |
+| Amount/quantity summary | Amount, balance, cost, price, fee, quantity, duration, count, area, capacity, or similar numeric fields exist | `050_<source_table>_<measure>_summary.sql` |
+| Relationship candidate proof | Candidate foreign key relationship exists | `060_<child_table>_<parent_table>_relationship_check.sql` |
+| Bridge or many-to-many check | Link/bridge-like tables or many-to-many risk exists | `070_<table>_bridge_or_cardinality_check.sql` |
+| Data quality signal | Nulls, duplicates, invalid codes, stale data, or empty tables matter | `080_<source_table>_data_quality_check.sql` |
+
+Each proof file must include the captured result in the comment header above the runnable SQL. For example, if the source has an account table with status or active columns, write the query that proves active account counts and include the captured active count in the file header.
+
+The discovery report must include a `SQL Proof Files` section with links/paths and one-line explanations. The chat summary should mention the most important source proofs, such as table counts, active/open counts, date coverage, and relationship evidence.
 
 ## Discovery summary
 
@@ -115,6 +140,7 @@ reports/agent/00_discovery/discovery_report.md
 reports/agent/00_discovery/requirements.md
 reports/agent/00_discovery/cardinality_report.md
 reports/agent/00_discovery/relationship_profile.md
+reports/agent/00_discovery/sql_proofs/
 reports/agent/PIPELINE_STATUS.md
 reports/agent/CONTEXT_TREE.md
 ```

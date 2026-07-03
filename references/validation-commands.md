@@ -60,6 +60,8 @@ Required validation evidence:
 
 Write the results into `reports/agent/<layer>_report.md` under `Data Verification Results`, share the important findings in chat, and stop before the next layer if a model expected to contain data is empty or any validation issue is unexplained.
 
+For every validation query, also write a reusable SQL proof file in the current phase's canonical `sql_proofs/` folder from [report-artifact-organization.md](report-artifact-organization.md). Include purpose, expected result, captured result, status, and runnable SQL in the file. Link those files from the phase report under `SQL Proof Files` so the data engineer can re-run the exact checks later.
+
 ## Project evaluator *(after marts)*
 
 Before running, confirm `dbt_project.yml`:
@@ -80,6 +82,8 @@ Before querying evaluator result tables, inspect available columns because packa
 ```
 
 Do not assume columns such as `issue` exist. If the diagnostic query fails because a column is missing, inspect the table shape first and do not apply structural fixes until the actual evaluator finding is understood.
+
+Save evaluator table-shape and finding queries as SQL proof files under `reports/agent/07_evaluator/sql_proofs/`, including captured results and status. Link them from `evaluator_report.md`.
 
 If using an exceptions seed:
 

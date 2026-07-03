@@ -33,13 +33,20 @@ Write new phase artifacts to these folders:
 ```text
 reports/agent/
   00_discovery/
+    sql_proofs/
   01_setup/
   02_sources/
+    sql_proofs/
   03_bronze/
+    sql_proofs/
   04_silver/
+    sql_proofs/
   05_gold/
+    sql_proofs/
   06_semantic/
+    sql_proofs/
   07_evaluator/
+    sql_proofs/
   08_documentation/
   09_analytics_insights/
     kpis/
@@ -64,14 +71,21 @@ Use the folder that matches the current phase. Do not put phase-specific files a
 | Requirements | `reports/agent/00_discovery/requirements.md` |
 | Relationship profile | `reports/agent/00_discovery/relationship_profile.md` |
 | Cardinality report | `reports/agent/00_discovery/cardinality_report.md` or the phase folder where the check was run |
+| Discovery SQL proofs | `reports/agent/00_discovery/sql_proofs/` |
 | Setup report | `reports/agent/01_setup/setup_report.md` |
 | Sources report | `reports/agent/02_sources/sources_report.md` |
+| Sources SQL proofs | `reports/agent/02_sources/sql_proofs/` |
 | Codegen logs | `reports/agent/02_sources/codegen_stdout.txt` and `reports/agent/02_sources/codegen_stderr.txt` |
 | Bronze report | `reports/agent/03_bronze/bronze_report.md` |
+| Bronze SQL proofs | `reports/agent/03_bronze/sql_proofs/` |
 | Silver report | `reports/agent/04_silver/silver_report.md` |
+| Silver SQL proofs | `reports/agent/04_silver/sql_proofs/` |
 | Gold report | `reports/agent/05_gold/gold_report.md` |
+| Gold SQL proofs | `reports/agent/05_gold/sql_proofs/` |
 | Semantic report | `reports/agent/06_semantic/semantic_report.md` |
+| Semantic SQL proofs | `reports/agent/06_semantic/sql_proofs/` |
 | Evaluator report | `reports/agent/07_evaluator/evaluator_report.md` |
+| Evaluator SQL proofs | `reports/agent/07_evaluator/sql_proofs/` |
 | Documentation report | `reports/agent/08_documentation/docs_report.md` |
 | Analytics insight report | `reports/agent/09_analytics_insights/analytics_insight_report.md` |
 | Reporting catalog | `reports/agent/09_analytics_insights/reporting_catalog.md` |
@@ -132,3 +146,44 @@ Every phase report and index entry must answer:
 ## Chat Summary Requirement
 
 After each phase, the chat response must summarize the result directly. Do not rely only on files. Include the completed work, validation results, important warnings or blockers, the next phase, and the exact approval question.
+
+## SQL Proof File Standard
+
+Every phase that runs warehouse discovery, validation, metric verification, or reporting verification must write reusable proof files under that phase's `sql_proofs/` folder, or the more specific canonical verification folder such as `reports/agent/09_analytics_insights/kpis/sql_proofs/` or `reports/agent/10_presentation/matplotlib/sql_verification/`.
+
+Use one file per logical proof so a data engineer can re-run it later. Prefer descriptive, sortable filenames:
+
+```text
+reports/agent/<phase>/sql_proofs/
+  001_source_table_inventory.sql
+  010_<table>_row_count.sql
+  020_<table>_primary_key_check.sql
+  030_<relationship>_orphan_check.sql
+  040_<model>_measure_summary.sql
+```
+
+Each `.sql` proof file must contain:
+
+```sql
+/*
+Proof name: <business friendly name>
+Phase: <discovery | sources | bronze | silver | gold | semantic | evaluator | analytics_insight | presentation>
+Purpose: <what this proves and why it matters>
+Source objects: <schema.table or ref/model names>
+Expected result: <expected row count, zero duplicates, allowed statuses, non-negative amount, etc.>
+Captured result at run time:
+<small markdown-style or plain-text result table from the command output>
+Status: PASS | WARN | FAIL | BLOCKED | SKIPPED
+Re-run notes: <profile/target/schema assumptions and any safe filters>
+*/
+
+<runnable SQL query>;
+```
+
+Rules:
+
+- Store aggregate results only. Do not write sensitive row-level samples, direct identifiers, credentials, or secrets into proof files.
+- Keep queries runnable through the selected dbt profile/adapter. Use adapter-appropriate quoting and schema names.
+- Include captured results as comments above the query, not as a replacement for the query.
+- Link proof files from the phase report `Data Verification Results` section and from `REPORT_INDEX.md`.
+- If a query was not run, still create a blocked/skipped proof note only when the missing proof affects phase acceptance.

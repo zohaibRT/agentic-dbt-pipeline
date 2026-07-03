@@ -20,12 +20,12 @@ Create or update these files when key performance indicators are implemented or 
 
 ```text
 reports/agent/09_analytics_insights/kpis/kpi_reconciliation_report.md
-reports/agent/kpi_lineage_proofs.md
-reports/agent/kpi_variance_report.md
-reports/agent/kpi_sql_proofs/
+reports/agent/09_analytics_insights/kpis/kpi_lineage_proofs.md
+reports/agent/09_analytics_insights/kpis/kpi_variance_report.md
+reports/agent/09_analytics_insights/kpis/sql_proofs/
 ```
 
-Inside `reports/agent/kpi_sql_proofs/`, write one proof file per key performance indicator and layer where applicable:
+Inside `reports/agent/09_analytics_insights/kpis/sql_proofs/`, write one proof file per key performance indicator and layer where applicable:
 
 ```text
 <safe_kpi_name>_source.sql

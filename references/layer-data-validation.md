@@ -8,6 +8,16 @@ Use this after each layer build and before marking the layer phase complete. Als
 
 Do not defer layer data validation to the final handoff. If a layer has an unexpected empty model, row-count mismatch, broken relationship, duplicate grain, or suspicious metric result, stop before the next layer and report the issue.
 
+Every validation query must be saved as a reusable SQL proof file under the current phase folder:
+
+| Layer | Proof folder |
+|---|---|
+| Bronze / staging | `reports/agent/03_bronze/sql_proofs/` |
+| Silver / intermediate | `reports/agent/04_silver/sql_proofs/` |
+| Gold / marts | `reports/agent/05_gold/sql_proofs/` |
+
+Each proof file must include a comment header with purpose, expected result, captured result, pass/warn/fail status, and the runnable SQL query. Follow the SQL proof standard in [report-artifact-organization.md](report-artifact-organization.md).
+
 ## What to validate
 
 For every model created or changed in the current layer:
@@ -31,6 +41,25 @@ For every model created or changed in the current layer:
 | Privacy | Confirm sensitive or direct identifier fields did not reach gold unless approved |
 
 Use lightweight aggregate queries. Avoid full samples and never include sensitive record-level values in reports.
+
+## Required proof files
+
+Create proof files for as many validations as the data supports, not only the checks that passed. At minimum, each layer must include:
+
+| Proof type | Required when | Example filename |
+|---|---|---|
+| Model row count | Every model in the layer | `010_<model>_row_count.sql` |
+| Source/upstream comparison | One-to-one staging models and grain-preserving transformations | `020_<model>_upstream_row_count_compare.sql` |
+| Grain or primary key check | A grain key or candidate key exists | `030_<model>_grain_check.sql` |
+| Null key check | Required relationship or business keys exist | `040_<model>_null_key_check.sql` |
+| Relationship or orphan check | The model joins or references another model | `050_<model>_<parent>_orphan_check.sql` |
+| Status/category distribution | Status, stage, type, category, channel, or source columns exist | `060_<model>_<column>_distribution.sql` |
+| Date coverage | Important date/time columns exist | `070_<model>_<date_column>_date_coverage.sql` |
+| Numeric measure summary | Amount, quantity, duration, balance, or count columns exist | `080_<model>_<measure>_summary.sql` |
+| Metric component proof | A model feeds a metric or key performance indicator | `090_<metric>_component_check.sql` |
+| Privacy exposure check | Gold/marts or presentation-facing models | `095_<model>_privacy_columns_check.sql` |
+
+If there are many similar tables, still create one row-count proof per table/model and combine similar status/date/measure checks only when the combined query remains easy to re-run and read.
 
 ## Layer expectations
 
@@ -127,6 +156,8 @@ When key performance indicators are present, also include the `Metric Verificati
 When joins, facts, dimensions, bridge tables, or key performance indicators are present, also update the cardinality files from [cardinality-validation.md](cardinality-validation.md).
 
 After writing the report, share the important validation results in the chat summary before asking for commit or the next phase.
+
+The phase report must include a `SQL Proof Files` section listing the proof path, what it proves, captured result summary, and status. Do not make the user search the folder to understand which proof supports which validation result.
 
 ## Stop conditions
 

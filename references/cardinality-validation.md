@@ -15,16 +15,16 @@ Create or update these files when relationships, joins, final models, key perfor
 ```text
 reports/agent/00_discovery/cardinality_report.md
 reports/agent/00_discovery/relationship_profile.md
-reports/agent/join_safety_report.md
-reports/agent/grain_validation_report.md
+reports/agent/05_gold/join_safety_report.md
+reports/agent/05_gold/grain_validation_report.md
 ```
 
 Include relevant cardinality results in:
 
 ```text
 reports/agent/09_analytics_insights/kpis/kpi_reconciliation_report.md
-reports/agent/kpi_lineage_proofs.md
-reports/agent/reporting_readiness_scorecard.md
+reports/agent/09_analytics_insights/kpis/kpi_lineage_proofs.md
+reports/agent/09_analytics_insights/reporting_readiness_scorecard.md
 reports/agent/10_presentation/powerbi_model_plan.md
 ```
 
@@ -110,7 +110,7 @@ Before creating Power BI relationships:
 - If many-to-many is required, require a tested bridge table.
 - Composite business keys must use tested dbt surrogate keys.
 - Do not create relationship keys in Power BI M by default.
-- If a relationship key is missing, block Power BI delivery and add the issue to `reports/agent/insight_backlog.md`.
+- If a relationship key is missing, block Power BI delivery and add the issue to `reports/agent/09_analytics_insights/insight_backlog.md`.
 
 ## DAX Safety
 

@@ -12,8 +12,8 @@ Before writing `packages.yml`, running codegen, or creating source YAML, follow 
 | Allowed changes | `packages.yml`, `package-lock.yml`, `models/sources/**`, source descriptions, source tests, and source freshness only when supported |
 | Not allowed | Staging/intermediate/marts models, source YAML inside layer folders, source schema writes, alternate source profiling without approval, or invented columns |
 | Commands to run | `dbt deps`, `dbt run-operation generate_source`, `dbt parse --no-partial-parse`, and source profiling queries |
-| Completion criteria | Source YAML exists under `models/sources/`, schema is explicit, columns match the warehouse, parse passes, and source profiling findings are documented |
-| Report required | `reports/agent/sources_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
+| Completion criteria | Source YAML exists under `models/sources/`, schema is explicit, columns match the warehouse, parse passes, source profiling findings are documented, and source SQL proof files capture profiling evidence |
+| Report required | `reports/agent/02_sources/sources_report.md`, `reports/agent/02_sources/sql_proofs/`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
 
 ## `packages.yml` - standard packages
 

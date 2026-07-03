@@ -75,7 +75,7 @@ Look for generic evidence, not hardcoded domain names:
 | Date or time | Created, updated, booked, settled, payment, appointment, closed, cancelled, completed dates | Daily trend, monthly trend, year to date, cycle time |
 | Ranking | Fact measure plus safe dimensions | Top customers, top products, top locations, top providers |
 
-Create `measure_catalog.md` before deciding key performance indicators. Include broad raw measures even when they are not strategic key performance indicators yet.
+Create `measure_catalog.md` before deciding key performance indicators. Include broad raw measures even when they are not strategic key performance indicators yet. The goal is maximum useful metric coverage from validated data, not a tiny executive-only list.
 
 Recommended measure categories:
 
@@ -101,6 +101,29 @@ Promote validated measures into contextual metrics when the context is clear:
 | Quality metric | Error, missing, duplicate, orphan, stale, or invalid rates |
 
 Only promote a metric to a key performance indicator when it is tied to a decision, target, threshold, operating review, risk, cost, revenue, service level, quality goal, or explicit user-approved business objective.
+
+## Coverage Expectation
+
+The analytics insight phase must analyze and construct as many **supported** measures, metrics, and key performance indicator candidates as the validated data can safely justify.
+
+Do not stop after three to five executive key performance indicators. Instead:
+
+1. Inventory every fact-like, event-like, entity-like, finance-like, status-like, date-like, and bridge-like model available in gold/marts and validated upstream layers.
+2. Generate broad raw measures for every safe count, distinct count, amount, quantity, date coverage, status distribution, and data quality signal.
+3. Promote those measures into contextual metrics wherever a time field, dimension, ratio denominator, status grouping, ranking dimension, aging field, or quality rule is clear.
+4. Promote only the decision-relevant, strategic subset into `kpi_catalog.md`.
+5. Keep non-strategic but useful measures and metrics in `measure_catalog.md` and `metric_catalog.md` so presentation and human review can still use them.
+6. Put unclear, unreconciled, sensitive, or unsupported candidates into `insight_backlog.md` with the exact missing proof or business rule.
+
+Use this broad-but-safe rule:
+
+```text
+Create many candidate measures and metrics.
+Trust only the candidates that have grain, formula, allowed dimensions, time field when needed, and SQL proof.
+Promote only strategic candidates to key performance indicators.
+```
+
+This lets the project expose a rich analysis surface without pretending every metric is a management key performance indicator.
 
 ## Generic Archetypes
 
@@ -145,20 +168,50 @@ Required columns:
 
 `measure_catalog.md`:
 
-| Measure | Measure Type | Source Model | Grain | Formula | Time Field | Allowed Dimensions | Validation Query | Status | Caveats |
-|---|---|---|---|---|---|---|---|---|---|
+| Measure | Measure Type | Source Model | Grain | Formula | Time Field | Allowed Dimensions | SQL Proof File | Captured Result | Status | Caveats |
+|---|---|---|---|---|---|---|---|---|---|---|
 
 `metric_catalog.md`:
 
-| Metric | Metric Type | Business Question | Source Measures | Source Model | Grain | Formula | Time Field | Allowed Dimensions | Filters | Validation Query | Confidence | Caveats | Promotion Status |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Metric | Metric Type | Business Question | Source Measures | Source Model | Grain | Formula | Time Field | Allowed Dimensions | Filters | SQL Proof File | Captured Result | Confidence | Caveats | Promotion Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 
 `kpi_discovery_matrix.md`:
 
-| Key Performance Indicator | Business Question | Metric Type | Source Metric | Source Model | Grain | Formula | Numerator | Denominator | Time Field | Allowed Dimensions | Filters | Validation Query | Confidence | Caveats | Approval Status |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Key Performance Indicator | Business Question | Metric Type | Source Metric | Source Model | Grain | Formula | Numerator | Denominator | Time Field | Allowed Dimensions | Filters | SQL Proof File | Captured Result | Confidence | Caveats | Approval Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 
 Generate `reports/agent/09_analytics_insights/kpis/kpi_catalog.md` from the discovery matrix. The catalog should contain trusted, approved, deferred, and blocked key performance indicators with the reason for each status.
+
+## SQL proof requirements
+
+For every `HIGH` confidence measure, metric, and key performance indicator candidate, write a runnable proof query under:
+
+```text
+reports/agent/09_analytics_insights/kpis/sql_proofs/
+```
+
+Use proof filenames that map back to the catalog row:
+
+```text
+010_measure_<measure_slug>.sql
+110_metric_<metric_slug>.sql
+210_kpi_<kpi_slug>.sql
+```
+
+Each proof file must include:
+
+- Business meaning
+- Source model and grain
+- Formula
+- Expected result or acceptance rule
+- Captured result at run time
+- Pass/warn/fail status
+- Runnable SQL
+
+For `MEDIUM`, `LOW`, or `BLOCKED` candidates, create proof files when a query was actually run or when the proof explains why the candidate is blocked. Do not fabricate a proof query for a metric whose business meaning or source field is unknown.
+
+The catalogs must link to the proof file path, not only paste SQL text into a table cell.
 
 ## Targeted Questions
 
@@ -185,4 +238,4 @@ Do not create:
 - Financial metrics without clear amount columns and inclusion/exclusion rules.
 - Presentation or DAX measures for `LOW`, `BLOCKED`, unvalidated, or sensitive metrics.
 
-If a key performance indicator needs a missing key, mapping, relationship, source data, privacy decision, or business rule, defer it to `reports/agent/insight_backlog.md`.
+If a key performance indicator needs a missing key, mapping, relationship, source data, privacy decision, or business rule, defer it to `reports/agent/09_analytics_insights/insight_backlog.md`.

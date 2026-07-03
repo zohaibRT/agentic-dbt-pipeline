@@ -43,7 +43,7 @@ These rules apply to every domain, source schema, and warehouse adapter:
 
 - Do not create fake insights.
 - Do not suggest charts just because data exists.
-- Every key performance indicator and report candidate must map to validated marts or semantic metrics.
+- Every measure, metric, key performance indicator, and report candidate must map to validated marts or semantic metrics.
 - Key performance indicator discovery must be schema-driven, grain-aware, and confidence-scored; do not hardcode domain-specific metrics.
 - Trusted key performance indicators must have source-to-current-layer reconciliation and grain/cardinality proof.
 - Every visual must answer a real business question.
@@ -53,6 +53,7 @@ These rules apply to every domain, source schema, and warehouse adapter:
 - Prefer useful, simple, business-friendly reporting over too many technical tables.
 - Do not hardcode one domain's key performance indicators, page names, or sample values.
 - Do not invent targets, benchmarks, attribution, or recommendations without evidence.
+- Construct as many useful supported measures and contextual metrics as the validated data safely allows, then promote only the strategic decision-relevant subset to key performance indicators.
 - Maximum means maximum useful business insight supported by validated data, not maximum number of dashboards.
 - Do not build presentation artifacts in this phase.
 
@@ -64,7 +65,7 @@ These rules apply to every domain, source schema, and warehouse adapter:
 | Allowed changes | Analytics insight reporting files under `reports/agent/09_analytics_insights/`, key performance indicator files under `reports/agent/09_analytics_insights/kpis/`, root `REPORT_INDEX.md`, root `HUMAN_VERIFICATION_GUIDE.md`, and read-only warehouse queries for validation and evidence |
 | Not allowed | dbt model SQL/YAML changes, semantic file changes, Power BI/PBIP/TMDL files, dashboards, slides, notebooks, guessed measures, or sensitive-field exposure without approval |
 | Commands to run | Read-only `dbt ls`, manifest/catalog review, approved warehouse aggregate queries, and metric reconciliation checks from [metric-verification.md](metric-verification.md) |
-| Completion criteria | All required reporting deliverables exist, trusted vs deferred outputs are separated, readiness scorecard is recorded, and presentation-layer gate is ready |
+| Completion criteria | All required reporting deliverables exist, broad measure and metric catalogs are created, SQL proof files and captured results support trusted outputs, trusted vs deferred outputs are separated, readiness scorecard is recorded, and presentation-layer gate is ready |
 | Report required | `reports/agent/09_analytics_insights/analytics_insight_reporting_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
 
 ## Approval gate
@@ -119,7 +120,7 @@ After phase completion, create or update these files. Use canonical paths for ne
 | `reports/agent/09_analytics_insights/kpis/kpi_reconciliation_report.md` | Layer-by-layer key performance indicator proof table with result, expected result, variance, status, and notes |
 | `reports/agent/09_analytics_insights/kpis/kpi_lineage_proofs.md` | Source-to-final key performance indicator lineage summary showing where values changed |
 | `reports/agent/09_analytics_insights/kpis/kpi_variance_report.md` | First-layer versus final-layer variance and likely cause for each reconciled key performance indicator |
-| `reports/agent/09_analytics_insights/kpis/sql_proofs/` | SQL and DAX proof files for each key performance indicator and layer where applicable |
+| `reports/agent/09_analytics_insights/kpis/sql_proofs/` | SQL proof files with captured results for measures, metrics, key performance indicators, and layer reconciliation where applicable |
 | `reports/agent/09_analytics_insights/reporting_catalog.md` | Catalog of report/page candidates |
 | `reports/agent/09_analytics_insights/kpis/kpi_catalog.md` | Catalog of trusted and deferred key performance indicators with definitions, confidence, and caveats |
 | `reports/agent/09_analytics_insights/dashboard_spec.md` | Full dashboard/report design spec for the presentation phase |
@@ -183,25 +184,25 @@ After phase completion, create or update these files. Use canonical paths for ne
 
 Populate from [kpi-discovery-framework.md](kpi-discovery-framework.md). Include broad, validated raw measures even when they are not strategic key performance indicators.
 
-| Measure | Measure Type | Source Model | Grain | Formula | Time Field | Allowed Dimensions | Validation Query | Status | Caveats |
-|---|---|---|---|---|---|---|---|---|---|
-| `<measure_name>` | `<count/amount/quantity/date/status/quality>` | `<model>` | `<grain>` | `<formula>` | `<time_field_or_not_applicable>` | `<dimensions>` | `<query_or_not_ready>` | `<ready/deferred/blocked>` | `<caveats>` |
+| Measure | Measure Type | Source Model | Grain | Formula | Time Field | Allowed Dimensions | SQL Proof File | Captured Result | Status | Caveats |
+|---|---|---|---|---|---|---|---|---|---|---|
+| `<measure_name>` | `<count/amount/quantity/date/status/quality>` | `<model>` | `<grain>` | `<formula>` | `<time_field_or_not_applicable>` | `<dimensions>` | `<path_or_not_ready>` | `<captured_result_or_reason>` | `<ready/deferred/blocked>` | `<caveats>` |
 
 ### `metric_catalog.md`
 
 Promote supported measures into contextual metrics. A metric may be useful for reports even when it is not a strategic key performance indicator.
 
-| Metric | Metric Type | Business Question | Source Measures | Source Model | Grain | Formula | Time Field | Allowed Dimensions | Filters | Validation Query | Confidence | Caveats | Promotion Status |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `<metric_name>` | `<time/dimension/ratio/average/ranking/aging/quality>` | `<question>` | `<measures>` | `<model>` | `<grain>` | `<formula>` | `<time_field>` | `<dimensions>` | `<filters>` | `<query_or_not_ready>` | `<HIGH/MEDIUM/LOW/BLOCKED>` | `<caveats>` | `<report_metric/kpi_candidate/deferred/blocked>` |
+| Metric | Metric Type | Business Question | Source Measures | Source Model | Grain | Formula | Time Field | Allowed Dimensions | Filters | SQL Proof File | Captured Result | Confidence | Caveats | Promotion Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `<metric_name>` | `<time/dimension/ratio/average/ranking/aging/quality>` | `<question>` | `<measures>` | `<model>` | `<grain>` | `<formula>` | `<time_field>` | `<dimensions>` | `<filters>` | `<path_or_not_ready>` | `<captured_result_or_reason>` | `<HIGH/MEDIUM/LOW/BLOCKED>` | `<caveats>` | `<report_metric/kpi_candidate/deferred/blocked>` |
 
 ### `kpi_discovery_matrix.md`
 
 Populate from [kpi-discovery-framework.md](kpi-discovery-framework.md). Include all trusted, uncertain, deferred, and blocked candidates.
 
-| Key Performance Indicator | Business Question | Metric Type | Source Metric | Source Model | Grain | Formula | Numerator | Denominator | Time Field | Allowed Dimensions | Filters | Validation Query | Confidence | Caveats | Approval Status |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `<kpi_name>` | `<question>` | `<volume/value/ratio/funnel/trend/etc>` | `<metric_name>` | `<model>` | `<grain>` | `<formula>` | `<numerator>` | `<denominator>` | `<time_field>` | `<dimensions>` | `<filters>` | `<query_or_not_ready>` | `<HIGH/MEDIUM/LOW/BLOCKED>` | `<caveats>` | `<approved/pending/deferred/blocked>` |
+| Key Performance Indicator | Business Question | Metric Type | Source Metric | Source Model | Grain | Formula | Numerator | Denominator | Time Field | Allowed Dimensions | Filters | SQL Proof File | Captured Result | Confidence | Caveats | Approval Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `<kpi_name>` | `<question>` | `<volume/value/ratio/funnel/trend/etc>` | `<metric_name>` | `<model>` | `<grain>` | `<formula>` | `<numerator>` | `<denominator>` | `<time_field>` | `<dimensions>` | `<filters>` | `<path_or_not_ready>` | `<captured_result_or_reason>` | `<HIGH/MEDIUM/LOW/BLOCKED>` | `<caveats>` | `<approved/pending/deferred/blocked>` |
 
 ### `kpi_catalog.md`
 
@@ -210,6 +211,18 @@ Generate from `metric_catalog.md`, `kpi_discovery_matrix.md`, reconciliation fil
 | Key Performance Indicator | Definition | Source Model | Formula/Measure | Time Field | Grain | Allowed Dimensions | Business Use | Confidence | Caveats |
 |---|---|---|---|---|---|---|---|---|---|
 | `<kpi_name>` | `<business_meaning>` | `<model>` | `<formula_or_semantic_metric>` | `<time_field>` | `<grain>` | `<dimensions>` | `<use_case>` | `<HIGH/MEDIUM/LOW/DEFERRED/BLOCKED>` | `<caveats>` |
+
+### `sql_proofs/`
+
+Create one runnable SQL file per trusted measure, contextual metric, key performance indicator, and reconciliation check where practical. Include the captured result in the file header using the SQL proof standard from [report-artifact-organization.md](report-artifact-organization.md).
+
+The analytics insight report must include a `SQL Proof Coverage` section:
+
+| Catalog | Total candidates | Proof files created | Trusted | Deferred | Blocked | Notes |
+|---|---:|---:|---:|---:|---:|---|
+| Measures | | | | | | |
+| Metrics | | | | | | |
+| Key Performance Indicators | | | | | | |
 
 ### `dashboard_spec.md`
 

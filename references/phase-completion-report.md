@@ -164,6 +164,7 @@ Every phase report must include:
 - Commands run
 - Validation results: pass, warn, fail, skipped
 - Data verification results after bronze/staging, silver/intermediate, and gold/marts builds
+- SQL proof files for every phase that ran warehouse discovery, source profiling, model validation, metric verification, evaluator checks, or reporting verification
 - Cardinality and grain validation results when joins, relationships, final models, or Power BI relationships are in scope
 - Agent recommendation followed, changed, or deferred
 - Project knowledge used and whether it was applied, deferred, or conflicted
@@ -241,6 +242,11 @@ Overall: <PASS | WARN | FAIL | SKIPPED | BLOCKED>
 | Layer | Model | Row Count | Expected Evidence | Grain Check | Relationship Check | Measure Check | Result | Notes |
 |---|---:|---:|---|---|---|---|---|---|
 | <layer> | <model> | <row_count> | <source/upstream comparison> | <PASS/WARN/FAIL/SKIPPED> | <PASS/WARN/FAIL/SKIPPED> | <PASS/WARN/FAIL/SKIPPED> | <PASS/WARN/FAIL/BLOCKED> | <important finding> |
+
+## SQL Proof Files
+| Proof File | What It Proves | Captured Result Summary | Status |
+|---|---|---|---|
+| `reports/agent/<phase>/sql_proofs/<proof>.sql` | <row count, grain, relationship, metric, or quality proof> | <small result summary captured in the file header> | <PASS/WARN/FAIL/BLOCKED/SKIPPED> |
 
 ## Profile Target Schema Hygiene
 | Profile | Adapter | Database | Target Schema | Source Schema | Safe? | Evidence / Action |
