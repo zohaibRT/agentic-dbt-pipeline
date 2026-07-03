@@ -98,7 +98,7 @@ Use the folder that matches the current phase. Do not put phase-specific files a
 | Matplotlib report launcher | `reports/agent/10_presentation/matplotlib/open_report.bat` |
 | Matplotlib page modules | `reports/agent/10_presentation/matplotlib/report_pages/` |
 | Matplotlib generation script | `reports/agent/10_presentation/matplotlib/generate_report.py` |
-| Matplotlib figures | `reports/agent/10_presentation/matplotlib/figures/` |
+| Matplotlib web report | `reports/agent/10_presentation/matplotlib/` |
 | Matplotlib SQL verification | `reports/agent/10_presentation/matplotlib/sql_verification/` |
 | Power BI model plan | `reports/agent/10_presentation/powerbi_model_plan.md` |
 | Dashboard pages | `reports/agent/10_presentation/dashboard_pages.md` |

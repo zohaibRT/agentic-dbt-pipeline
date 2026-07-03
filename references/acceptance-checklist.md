@@ -77,7 +77,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] `metric_catalog.md` was created or updated with contextual metrics derived from validated measures
 - [ ] `kpi_catalog.md` contains only decision-relevant metrics tied to business goals, thresholds, targets, risks, operating review, or user-approved strategic use
 - [ ] After analytics insight reporting, the agent asked the presentation-layer decision with a concise evidence summary, recommended technology/page set, key caveats, and native clickable options when available
-- [ ] Presentation decision options included the equivalent of `Yes - build Matplotlib rich tabbed web report (recommended)`, `Yes - prepare Power BI Desktop template handoff`, `No presentation layer - complete final delivery now`, and `Tell me what to change first`
+- [ ] Presentation decision options included the equivalent of `Yes - build Matplotlib refreshable web report (recommended)`, `Yes - prepare Power BI Desktop template handoff`, `No presentation layer - complete final delivery now`, and `Tell me what to change first`
 - [ ] `reports/agent/09_analytics_insights/analytics_insight_report.md`, `kpi_discovery_matrix.md`, `reporting_catalog.md`, `kpi_catalog.md`, `dashboard_spec.md`, `insight_backlog.md`, and `reporting_readiness_scorecard.md` exist when analytics insight reporting ran
 - [ ] `reports/agent/09_analytics_insights/kpis/kpi_reconciliation_report.md`, `kpi_lineage_proofs.md`, `kpi_variance_report.md`, and `sql_proofs/` exist when approved or implemented key performance indicators exist
 - [ ] Analytics insight reporting separated trusted outputs from uncertain or deferred outputs
@@ -206,15 +206,16 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] `dbt docs generate` -> manifest + catalog exist
 - [ ] Documentation serve command or local documentation URL provided when user wants to view documentation
 - [ ] Presentation options were recommended after analytics insight reporting: documentation only, business-facing report, dashboard design, semantic layer refinement, or query handoff
-- [ ] If the user approved a presentation layer and did not specify another technology, the agent used the Matplotlib rich tabbed web report workflow by default and created `reports/agent/10_presentation/matplotlib/` artifacts with SQL verification
-- [ ] If Matplotlib figures were created, missing `matplotlib`, `numpy`, or `pandas` packages were installed or the install blocker was documented with exact commands attempted
-- [ ] If Matplotlib figures were created, `kpi_figure_coverage.md` maps every recommended measure, metric, and key performance indicator from `measure_catalog.md`, `metric_catalog.md`, `kpi_discovery_matrix.md`, and `kpi_catalog.md` to `RENDERED`, `BLOCKED`, or `DEFERRED` status
-- [ ] If Matplotlib presentation artifacts were created, `report.html` is the primary deliverable, exists with rich colorful classified tabs, summary cards, chart cards, captions, caveats, validation status, and `open_report.bat` or an equivalent browser launcher is documented
-- [ ] If Matplotlib presentation artifacts were created, PNG/SVG figures are embedded visual assets inside `report.html`, not the only deliverable
-- [ ] If Matplotlib figures were created, chart axes, legends, and HTML section titles use business labels from dimensions/mappings/`label_dictionary.md`, not raw codes
-- [ ] If Matplotlib figures were created, `label_dictionary.md` documents code-to-label mappings used in the report pack
+- [ ] If the user approved a presentation layer and did not specify another technology, the agent used the Matplotlib refreshable web report workflow by default and created `reports/agent/10_presentation/matplotlib/` artifacts with SQL verification
+- [ ] If Matplotlib artifacts were created, missing `matplotlib`, `numpy`, or `pandas` packages were installed or the install blocker was documented with exact commands attempted
+- [ ] If Matplotlib artifacts were created, `kpi_figure_coverage.md` maps every recommended measure, metric, and key performance indicator from `measure_catalog.md`, `metric_catalog.md`, `kpi_discovery_matrix.md`, and `kpi_catalog.md` to `RENDERED`, `BLOCKED`, or `DEFERRED` status
+- [ ] If Matplotlib presentation artifacts were created, `serve_report.py` and `report.html` are the primary deliverable, with rich colorful classified tabs, summary cards, chart cards, captions, caveats, validation status, refresh timestamp/control, and `open_report.bat` or an equivalent browser launcher documented
+- [ ] If Matplotlib presentation artifacts were created, charts render through live Matplotlib SVG/HTML endpoints or approved browser-native charts from refreshed JSON; PNG is not the primary rendering path
+- [ ] If Matplotlib presentation artifacts were created, PNG/SVG files are optional exports or snapshots only and are clearly labeled as not automatically updating
+- [ ] If Matplotlib artifacts were created, chart axes, legends, and HTML section titles use business labels from dimensions/mappings/`label_dictionary.md`, not raw codes
+- [ ] If Matplotlib artifacts were created, `label_dictionary.md` documents code-to-label mappings used in the report pack
 - [ ] If Matplotlib presentation artifacts were created, `report_theme.md`, `report_theme.py`, and custom CSS were applied for eye-comfortable charts and colorful HTML tabs/cards, not default gray matplotlib output or unstyled browser-default HTML
-- [ ] If Matplotlib figures were created, `generate_report.py` ran or the blocker was documented, every `RENDERED` row has a matching figure and SQL proof, appears in the correct HTML tab/section, and chart scope matches `dashboard_spec.md`
+- [ ] If Matplotlib presentation artifacts were created, `serve_report.py --smoke-test` or the documented server smoke test ran or the blocker was documented, every `RENDERED` row appears in the correct HTML tab/section with SQL proof, and chart scope matches `dashboard_spec.md`
 - [ ] If the user explicitly chose Power BI, the agent used the Power BI Desktop human-connected template workflow instead of generating a full PBIP automatically
 - [ ] The human-connected Power BI checkpoint created the output folder and provided the exact PBIP path/name, approved table list, relationship checklist, storage-mode recommendation, measures table requirement, and confirmation request
 - [ ] The agent stopped before injecting measures, visuals, or editing PBIP files until the user confirmed the PBIP was saved and data was attached

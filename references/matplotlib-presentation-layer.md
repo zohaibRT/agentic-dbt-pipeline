@@ -8,34 +8,45 @@ Official documentation: [Matplotlib User Guide](https://matplotlib.org/stable/us
 
 ## Purpose
 
-Generate a validated, business-facing, browser-viewable analytics report from approved gold/marts data and analytics insight reporting files. Matplotlib is the **visual rendering engine**, but the final default presentation deliverable is a rich tabbed `report.html`, not a folder of loose images. Matplotlib is the **recommended default** presentation technology because it is:
+Generate a validated, business-facing, browser-viewable analytics report from approved gold/marts data and analytics insight reporting files. Matplotlib is the **Python visual rendering engine**, but the final default presentation deliverable is a refreshable rich tabbed web report, not a folder of loose images. Matplotlib is the **recommended default** presentation technology because it is:
 
 - Version-controlled and reproducible in the dbt project repository
 - Runnable without Power BI Desktop or proprietary report project files
 - Easy to validate with SQL-backed Python scripts
 - Suitable for executive summaries, trend pages, breakdown charts, operational detail views, and tabbed web report pages
-- Viewable in a browser through a generated HTML report with classified tabs/pages, plus optional Windows batch launcher
+- Viewable in a browser through a local refreshable web report with classified tabs/pages, plus optional static export and Windows launchers
 
 Matplotlib outputs are not a replacement for governed semantic models. They consume the same trusted key performance indicators and page scope defined during analytics insight reporting.
 
-## Browser-viewable report pack
+## Refreshable browser report
 
-Matplotlib delivery is not complete with PNG files alone. The agent must produce a **browser-openable, richly styled HTML report** so a data engineer or business user can review all charts without hunting through loose image files. Treat `report.html` as the primary artifact; treat PNG/SVG files as embedded chart assets.
+Matplotlib delivery is not complete with PNG files alone, and PNGs embedded in HTML are not the default. The agent must produce a **refreshable, richly styled web report** so a data engineer or business user can review current values from the validated data layer.
+
+Default behavior:
+
+- `serve_report.py` starts a local web server and queries or reloads validated data on page load, browser refresh, or an approved auto-refresh interval.
+- Charts are rendered as inline SVG/HTML fragments from Python/Matplotlib, or as browser-native charts from refreshed JSON data when another approved charting library is used.
+- PNG files are optional exports for download, documentation, or offline snapshots only. Do not use PNG as the only chart rendering path.
+- `report.html` is the web shell and can be served by `serve_report.py`; a fully static `report.html` is acceptable only as an explicit export/snapshot mode.
+
+Why this matters: Matplotlib does not execute inside the browser. To reflect changed values automatically, the browser must either call a Python-backed endpoint that re-runs the queries and renders fresh SVG/HTML, or use a browser chart library that redraws from refreshed JSON data.
 
 ### Primary review experience
 
 | Artifact | Purpose |
 |---|---|
-| `report.html` | Main browser report with tabbed navigation, chart grouping, key performance indicator summaries, blocked/deferred notes, and report metadata |
-| `open_report.bat` | Windows launcher that opens `report.html` in the default browser |
+| `serve_report.py` | Starts the local refreshable web report server, runs read-only data refresh, and serves chart endpoints or refreshed HTML |
+| `report.html` | Main browser shell with tabbed navigation, chart grouping, key performance indicator summaries, blocked/deferred notes, and report metadata |
+| `open_report.bat` | Windows launcher that starts `serve_report.py` and opens the local report URL |
 | `open_report.sh` | Optional Unix launcher for the same behavior |
-| `generate_report.py` | Regenerates figures, rebuilds `report.html`, and may open the browser when run with `--open` |
+| `generate_report.py` | Optional static export command that can create offline HTML/SVG/PNG snapshots, never the only live path |
+| `data_cache/` | Optional local cache of query results used only when live warehouse access is unavailable or explicitly requested |
 
 Expected user flow on Windows:
 
-1. Run `python reports/agent/10_presentation/matplotlib/generate_report.py`
-2. Double-click `reports/agent/10_presentation/matplotlib/open_report.bat`
-3. Review classified tabs/pages in the browser
+1. Double-click `reports/agent/10_presentation/matplotlib/open_report.bat`, or run `python reports/agent/10_presentation/matplotlib/serve_report.py`.
+2. The browser opens the local report URL, usually `http://127.0.0.1:<port>/`.
+3. Refresh the browser, click the refresh control, or wait for the approved auto-refresh interval to see changed values after the underlying data changes.
 
 Do not require Power BI, Jupyter, or a notebook server for normal review.
 
@@ -60,12 +71,12 @@ Default tab or section order:
 Each tab or section must:
 
 - Show business-facing titles, not technical file names
-- Embed or link the related PNG figures from `figures/`
+- Render current chart output from live endpoints, inline SVG, or approved browser-native chart components
 - Include rich HTML context: short page purpose, key questions answered, key metric cards where relevant, figure captions, caveats, and validation status
 - List the metrics included on that page
 - Mark unsupported or blocked content visibly instead of hiding it
 
-`generate_report.py` must rebuild `report.html` every time figures are regenerated so the browser view stays in sync with `kpi_figure_coverage.md`.
+`serve_report.py` must keep the browser view in sync with current query results and `kpi_figure_coverage.md`. If `generate_report.py` is provided for static exports, it must be clearly labeled as snapshot/export mode.
 
 ### Rich web report requirements
 
@@ -77,17 +88,40 @@ Required `report.html` behavior:
 - Use clickable tabs for multiple report pages. A sectioned layout is acceptable only when there is one page.
 - Use colorful active/inactive tab styling from `report_theme.py`; do not use browser default tab/button styling.
 - Use key performance indicator cards, chart cards, callout panels, and blocked/deferred panels with consistent spacing and rounded corners.
-- Embed figures inside chart cards with readable captions and SQL proof links or references.
+- Render current charts inside chart cards with readable captions and SQL proof links or references.
+- Include a visible refresh timestamp and a refresh control when the report is served locally.
 - Include a Report Information tab with purpose, audience, data source, refresh details, key performance indicator definitions, caveats, privacy handling, and validation summary.
 - Use responsive CSS so the report remains readable on laptop and wide desktop screens.
 - Avoid plain unstyled HTML tables as the main experience; use tables only for definitions, coverage, or detail sections where useful.
+
+### Chart rendering modes
+
+Use this priority order:
+
+1. **Live Matplotlib SVG**: Query current data in Python, render Matplotlib figures to inline SVG with `FigureCanvasSVG` or equivalent, and serve the SVG/HTML fragment to the browser.
+2. **Browser-native charts from refreshed JSON**: Use Plotly, Chart.js, Vega-Lite, or another approved library only when the project needs richer browser interactivity. Data must still come from validated SQL queries or approved cached results.
+3. **Static export**: Generate SVG/PNG/PDF snapshots only for offline handoff or documentation. Static exports must not be presented as automatically updating.
+
+Do not use base64 PNGs or direct PNG files as the primary web report rendering path. PNG is acceptable only as a download/export fallback, an email/report snapshot, or when SVG/browser-native rendering is blocked and the blocker is documented.
+
+### Refresh behavior
+
+The report must document and implement one refresh mode:
+
+| Mode | Behavior |
+|---|---|
+| Manual refresh | Browser refresh button or in-page refresh control re-runs read-only queries and redraws charts |
+| Timed refresh | Approved interval refreshes JSON/SVG endpoints and updates the page |
+| Snapshot export | Static `report.html` and image files generated at a point in time; clearly labeled as not live |
+
+Default to manual refresh. Use timed refresh only when the data engineer approves the interval and warehouse cost is acceptable.
 
 ## When to recommend Matplotlib
 
 Recommend Matplotlib as the default when:
 
 - Analytics insight reporting is complete and trusted metrics exist
-- The user wants portable charts, PDFs, or PNGs checked into the repository
+- The user wants a portable Python-backed web report with optional static exports checked into the repository
 - The team prefers Python-based reporting over a business intelligence desktop workflow
 - The project needs fast, testable visualization without PBIP/TMDL complexity
 
@@ -147,9 +181,11 @@ Required packages:
 
 | Package | Role |
 |---|---|
-| `matplotlib` | Static chart rendering |
+| `matplotlib` | Python chart rendering to inline SVG/HTML and optional static exports |
 | `numpy` | Numeric arrays used by Matplotlib |
 | `pandas` | Tabular query results and chart-ready data frames |
+| `flask` or standard library HTTP server | Local refreshable report server when live browser refresh is approved; prefer the standard library for simple projects, Flask for route/API clarity |
+| Optional browser chart library | Plotly, Chart.js, Vega-Lite, or similar only when explicitly useful for interactivity; document why it was added |
 | Warehouse/query helper | Use the project's existing dbt profile adapter client when available, such as `psycopg2` or `psycopg2-binary` for PostgreSQL/Redshift, `snowflake-connector-python` for Snowflake, `google-cloud-bigquery` for BigQuery, or `databricks-sql-connector` for Databricks |
 
 Install workflow:
@@ -170,9 +206,9 @@ python -m pip install matplotlib numpy pandas
 
 4. If warehouse query execution from Python is required and the adapter package is missing, install only the package that matches the active dbt profile adapter. Do not install every warehouse client by default.
 5. Write or update `requirements-matplotlib.txt` under `reports/agent/10_presentation/matplotlib/` with the exact packages installed for this project.
-6. Re-run the import check and `python reports/agent/10_presentation/matplotlib/generate_report.py` before marking the phase complete.
+6. Re-run the import check and `python reports/agent/10_presentation/matplotlib/serve_report.py --smoke-test` or the documented server smoke-test command before marking the phase complete.
 
-Do not mark Matplotlib presentation work complete if `matplotlib`, `numpy`, or `pandas` are still missing and figure generation was skipped without documenting the blocker.
+Do not mark Matplotlib presentation work complete if `matplotlib`, `numpy`, or `pandas` are still missing and chart rendering or server smoke testing was skipped without documenting the blocker.
 
 ## Phase contract
 
@@ -181,8 +217,8 @@ Do not mark Matplotlib presentation work complete if `matplotlib`, `numpy`, or `
 | Inputs required | Completed analytics insight reporting outputs, validated gold/marts access, reconciled key performance indicators, privacy decisions |
 | Allowed changes | Python visualization scripts, figure assets, Matplotlib report spec, README, validation evidence under `reports/agent/10_presentation/matplotlib/` |
 | Not allowed | Guessed metrics, synthetic chart data, sensitive-field exposure without approval, Power BI files unless Power BI was separately approved |
-| Commands to run | Environment import check; install missing Matplotlib prerequisites when needed; read-only warehouse queries or approved export queries; Python script execution to render figures; optional `python -m py_compile` on generated scripts |
-| Completion criteria | All recommended measures and key performance indicators from analytics insight catalogs are mapped in `kpi_figure_coverage.md`, approved page set rendered or explicitly blocked with evidence, SQL reconciliation recorded, prerequisites installed or blocker documented, presentation report updated |
+| Commands to run | Environment import check; install missing Matplotlib prerequisites when needed; read-only warehouse queries or approved cache/export queries; server smoke test; Python script execution to render live SVG/HTML or browser-native charts; optional static export; optional `python -m py_compile` on generated scripts |
+| Completion criteria | All recommended measures and key performance indicators from analytics insight catalogs are mapped in `kpi_figure_coverage.md`, approved page set renders through the local web report or is explicitly blocked with evidence, SQL reconciliation recorded, refresh mode documented, prerequisites installed or blocker documented, presentation report updated |
 | Report required | `reports/agent/10_presentation/presentation_report.md`, Matplotlib artifacts under `reports/agent/10_presentation/matplotlib/`, updated `PIPELINE_STATUS.md` and `CONTEXT_TREE.md` |
 
 ## Required deliverables
@@ -198,12 +234,15 @@ reports/agent/10_presentation/matplotlib/
   label_dictionary.md
   report_theme.md
   report_theme.py
+  serve_report.py
   generate_report.py
   report_builder.py
+  data_access.py
   report_pages/
   report.html
   open_report.bat
   open_report.sh
+  data_cache/
   figures/
   sql_verification/
 ```
@@ -217,13 +256,16 @@ reports/agent/10_presentation/matplotlib/
 | `label_dictionary.md` | Approved code-to-business-label mappings used on charts, tables, legends, and HTML report text |
 | `report_theme.md` | Color palette, typography, spacing, optional logo/image usage, and eye-comfort design notes |
 | `report_theme.py` | Shared theme constants for chart colors, fonts, figure size, and export DPI |
-| `generate_report.py` | Entry script: query data, render figures, build `report.html`, optional `--open` browser launch |
-| `report_builder.py` | HTML assembly, tab/section layout, and figure embedding logic |
+| `serve_report.py` | Primary entry script: starts the local web report, refreshes data, serves chart/API routes, supports smoke testing |
+| `generate_report.py` | Optional snapshot/export script: query data, render static exports, build static `report.html` only when snapshot mode is requested |
+| `report_builder.py` | HTML assembly, tab/section layout, chart card layout, and live endpoint wiring |
+| `data_access.py` | Read-only warehouse query helpers, cache helpers, and SQL verification utilities |
 | `report_pages/` | One Python module per classified report page/tab, for example `executive.py`, `trends.py`, `segmentation.py`, `exceptions.py` |
 | `report.html` | Browser-viewable multi-tab report for business review |
 | `open_report.bat` | Windows launcher for `report.html` |
 | `open_report.sh` | Optional launcher for macOS/Linux |
-| `figures/` | Exported PNG charts aligned to `dashboard_spec.md` |
+| `data_cache/` | Optional cached query results for offline review or static export; must be clearly labeled with generated timestamp |
+| `figures/` | Optional exported SVG/PNG charts aligned to `dashboard_spec.md`; not the primary live rendering path |
 | `sql_verification/` | Exact queries and expected values used to validate each chart aggregate |
 
 ### Python file organization
@@ -233,8 +275,10 @@ Organize generation code by report page classification instead of one unstructur
 Recommended pattern:
 
 ```text
-generate_report.py          # orchestrates query -> figure -> html
-report_builder.py           # shared HTML shell, nav tabs, styles
+serve_report.py             # starts local server and live refresh routes
+generate_report.py          # optional static export/snapshot command
+data_access.py              # read-only queries and optional cache
+report_builder.py           # shared HTML shell, nav tabs, styles, chart route wiring
 report_pages/
   overview.py
   executive_kpis.py
@@ -252,9 +296,9 @@ Each `report_pages/*.py` module should:
 - Own one tab or section in `report.html`
 - Declare the business-facing page title and included metrics
 - Call shared helpers for SQL load, label mapping, figure save, and verification logging
-- Return the HTML fragment for that section
+- Return the HTML fragment or chart route definitions for that section
 
-Use one `Figure` or figure group per chart, but group related charts under the same page module when they belong to the same business tab.
+Use one `Figure` or figure group per chart, but group related charts under the same page module when they belong to the same business tab. Prefer returning SVG/HTML strings or JSON chart specs for the browser over writing PNG files.
 
 ## Business-friendly labels (no raw codes on charts)
 
@@ -317,7 +361,7 @@ Design goals:
 | Key performance indicator cards | Use color accents for status: positive, warning, negative, and neutral |
 | HTML report | Use a soft page background, white content cards, colorful tab accents, and comfortable spacing |
 | Typography | Use readable font sizes; titles larger than axis labels; avoid tiny text |
-| Figure export | Save PNG figures at least `dpi=150`; prefer `dpi=200` for crisp browser viewing |
+| Figure export | Optional only; save SVG first and PNG second when static export is requested |
 | Whitespace | Leave padding around titles, legends, and chart edges; do not crowd labels |
 | Gridlines | Use light, muted gridlines only when they improve reading |
 | Images | Optional approved logo, icon, or header image in `report.html` when the user provides brand assets; do not invent branding |
@@ -374,7 +418,7 @@ Use the official [Matplotlib User Guide](https://matplotlib.org/stable/users/ind
 
 | Topic | Use in this skill |
 |---|---|
-| Figures and backends | Create one `Figure` per page or logical chart group; save static outputs with a non-interactive backend such as `Agg` for reproducible files |
+| Figures and backends | Create one `Figure` per page or logical chart group; render live chart output as SVG/HTML through the local server; use `Agg` only for static export fallback |
 | Axes and subplots | Use `subplots` or subplot mosaics for executive summary pages with multiple key performance indicator and trend panels |
 | Artists | Keep line, bar, area, and table artists explicit; avoid unnecessary chart decoration |
 | Colors | Use the comfortable colorful palette from `report_theme.md`; distinguish series and key performance indicator states with intentional color |
@@ -382,7 +426,7 @@ Use the official [Matplotlib User Guide](https://matplotlib.org/stable/users/ind
 | Plotting dates | Use explicit date parsing and time-axis formatting for trend visuals |
 | Legends | Show series meaning clearly; avoid duplicate or unreadable legends |
 | rcParams and style sheets | Use one shared theme via `report_theme.py`, rcParams, or a style sheet so all figures and HTML cards match |
-| Figure quality | Export PNG at `dpi=150` or higher for crisp browser viewing |
+| Figure quality | Prefer inline SVG for crisp browser viewing; export PNG at `dpi=150` or higher only for snapshots |
 
 ### Chart selection rules
 
@@ -414,15 +458,16 @@ Before marking Matplotlib presentation work complete:
 1. Verify `matplotlib`, `numpy`, and `pandas` import successfully or document the exact install blocker and commands attempted.
 2. Verify `requirements-matplotlib.txt` exists and matches the installed packages.
 3. Verify `kpi_figure_coverage.md` includes every recommended measure, metric, and key performance indicator from analytics insight catalogs, with `RENDERED`, `BLOCKED`, or `DEFERRED` status for each row.
-4. Verify `generate_report.py` runs without error in the project environment or document the exact blocker.
-5. Verify `report.html` exists, opens in a browser, and contains the classified tabs/sections defined in `report_spec.md`.
-6. Verify `open_report.bat` exists on Windows-focused projects or document the equivalent open command.
-7. Verify every `RENDERED` row in `kpi_figure_coverage.md` has a matching figure file under `figures/` and appears in the correct HTML tab/section.
-8. Verify `label_dictionary.md` exists and every categorical chart uses mapped business labels, not raw codes.
-9. Verify `report_theme.md` exists and charts/HTML use the comfortable colorful theme, not default gray matplotlib styling.
-10. Verify every plotted aggregate has a matching SQL proof in `sql_verification/`.
-11. Verify chart scope matches `dashboard_spec.md` and does not include deferred items from `insight_backlog.md` without a visible blocked note.
-12. Record pass/fail evidence in `reports/agent/10_presentation/presentation_report.md`.
+4. Verify `serve_report.py --smoke-test` or the documented server smoke test runs without error.
+5. If `generate_report.py` exists for snapshot export, verify it runs without error or document the exact blocker.
+6. Verify the local web report opens in a browser and contains the classified tabs/sections defined in `report_spec.md`.
+7. Verify `open_report.bat` exists on Windows-focused projects or document the equivalent open command.
+8. Verify every `RENDERED` row in `kpi_figure_coverage.md` appears in the correct HTML tab/section through SVG/HTML/JSON chart output or has a documented static export fallback.
+9. Verify `label_dictionary.md` exists and every categorical chart uses mapped business labels, not raw codes.
+10. Verify `report_theme.md` exists and charts/HTML use the comfortable colorful theme, not default gray matplotlib styling.
+11. Verify every plotted aggregate has a matching SQL proof in `sql_verification/`.
+12. Verify chart scope matches `dashboard_spec.md` and does not include deferred items from `insight_backlog.md` without a visible blocked note.
+13. Record pass/fail evidence in `reports/agent/10_presentation/presentation_report.md`.
 
 ## Done gate
 
@@ -430,8 +475,10 @@ Before marking Matplotlib presentation work complete:
 Presentation layer: COMPLETE
 
 Presentation technology: Matplotlib
-Browser report: reports/agent/10_presentation/matplotlib/report.html
+Browser report server: reports/agent/10_presentation/matplotlib/serve_report.py
+Browser report shell: reports/agent/10_presentation/matplotlib/report.html
 Launcher: reports/agent/10_presentation/matplotlib/open_report.bat or documented equivalent
+Refresh mode: manual / timed / snapshot export
 Coverage map: reports/agent/10_presentation/matplotlib/kpi_figure_coverage.md
 Label dictionary: reports/agent/10_presentation/matplotlib/label_dictionary.md
 Python prerequisites: PASS or BLOCKED with install commands attempted
