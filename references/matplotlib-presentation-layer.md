@@ -206,7 +206,7 @@ python -m pip install matplotlib numpy pandas
 
 4. If warehouse query execution from Python is required and the adapter package is missing, install only the package that matches the active dbt profile adapter. Do not install every warehouse client by default.
 5. Write or update `requirements-matplotlib.txt` under `reports/agent/10_presentation/matplotlib/` with the exact packages installed for this project.
-6. Re-run the import check and `python reports/agent/10_presentation/matplotlib/serve_report.py --smoke-test` or the documented server smoke-test command before marking the phase complete.
+6. Re-run the import check, `python reports/agent/10_presentation/matplotlib/serve_report.py --smoke-test` when implemented, and the local browser page validation command before marking the phase complete.
 
 Do not mark Matplotlib presentation work complete if `matplotlib`, `numpy`, or `pandas` are still missing and chart rendering or server smoke testing was skipped without documenting the blocker.
 
@@ -217,8 +217,8 @@ Do not mark Matplotlib presentation work complete if `matplotlib`, `numpy`, or `
 | Inputs required | Completed analytics insight reporting outputs, validated gold/marts access, reconciled key performance indicators, privacy decisions |
 | Allowed changes | Python visualization scripts, figure assets, Matplotlib report spec, README, validation evidence under `reports/agent/10_presentation/matplotlib/` |
 | Not allowed | Guessed metrics, synthetic chart data, sensitive-field exposure without approval, Power BI files unless Power BI was separately approved |
-| Commands to run | Environment import check; install missing Matplotlib prerequisites when needed; read-only warehouse queries or approved cache/export queries; server smoke test; Python script execution to render live SVG/HTML or browser-native charts; optional static export; optional `python -m py_compile` on generated scripts |
-| Completion criteria | All recommended measures and key performance indicators from analytics insight catalogs are mapped in `kpi_figure_coverage.md`, approved page set renders through the local web report or is explicitly blocked with evidence, SQL reconciliation recorded, refresh mode documented, prerequisites installed or blocker documented, presentation report updated |
+| Commands to run | Environment import check; install missing Matplotlib prerequisites when needed; read-only warehouse queries or approved cache/export queries; server smoke test; local browser page HTTP validation; Python script execution to render live SVG/HTML or browser-native charts; optional static export; optional `python -m py_compile` on generated scripts |
+| Completion criteria | All recommended measures and key performance indicators from analytics insight catalogs are mapped in `kpi_figure_coverage.md`, approved page set renders through the local web report or is explicitly blocked with evidence, the report URL returns HTTP 200 with non-empty HTML in validation, SQL reconciliation recorded, refresh mode documented, prerequisites installed or blocker documented, presentation report updated |
 | Report required | `reports/agent/10_presentation/presentation_report.md`, Matplotlib artifacts under `reports/agent/10_presentation/matplotlib/`, updated `PIPELINE_STATUS.md` and `CONTEXT_TREE.md` |
 
 ## Required deliverables
@@ -267,6 +267,35 @@ reports/agent/10_presentation/matplotlib/
 | `data_cache/` | Optional cached query results for offline review or static export; must be clearly labeled with generated timestamp |
 | `figures/` | Optional exported SVG/PNG charts aligned to `dashboard_spec.md`; not the primary live rendering path |
 | `sql_verification/` | Exact queries and expected values used to validate each chart aggregate |
+
+### Local browser page validation
+
+Do not rely on `open_report.bat` existing, and do not treat `serve_report.py --smoke-test` as enough by itself. Before marking Matplotlib presentation complete, prove that the browser page itself responds.
+
+Preferred validation command:
+
+```powershell
+python <path-to-installed-skill-or-workspace>\scripts\validate_local_web_report.py `
+  --report-dir reports\agent\10_presentation\matplotlib `
+  --expected-text "<report title or known page heading>"
+```
+
+The generated `serve_report.py` should support `--host 127.0.0.1` and `--port <port>`. If it does not, fix it before delivery or run the validator with a custom command:
+
+```powershell
+python <path-to-installed-skill-or-workspace>\scripts\validate_local_web_report.py `
+  --report-dir reports\agent\10_presentation\matplotlib `
+  --command python serve_report.py --port {port}
+```
+
+The validation must prove:
+
+- The server process stays alive long enough to serve the page.
+- `http://127.0.0.1:<port>/` returns HTTP 200.
+- The response body is not empty and looks like HTML.
+- The expected report title or known page heading appears in the response when practical.
+
+If validation fails with symptoms such as `ERR_EMPTY_RESPONSE`, empty response body, connection reset, or the server process exiting early, mark presentation as `FAIL` or `BLOCKED`, capture stdout/stderr in `presentation_report.md`, fix `serve_report.py` or `open_report.bat`, and rerun validation.
 
 ### Python file organization
 
@@ -459,15 +488,16 @@ Before marking Matplotlib presentation work complete:
 2. Verify `requirements-matplotlib.txt` exists and matches the installed packages.
 3. Verify `kpi_figure_coverage.md` includes every recommended measure, metric, and key performance indicator from analytics insight catalogs, with `RENDERED`, `BLOCKED`, or `DEFERRED` status for each row.
 4. Verify `serve_report.py --smoke-test` or the documented server smoke test runs without error.
-5. If `generate_report.py` exists for snapshot export, verify it runs without error or document the exact blocker.
-6. Verify the local web report opens in a browser and contains the classified tabs/sections defined in `report_spec.md`.
-7. Verify `open_report.bat` exists on Windows-focused projects or document the equivalent open command.
-8. Verify every `RENDERED` row in `kpi_figure_coverage.md` appears in the correct HTML tab/section through SVG/HTML/JSON chart output or has a documented static export fallback.
-9. Verify `label_dictionary.md` exists and every categorical chart uses mapped business labels, not raw codes.
-10. Verify `report_theme.md` exists and charts/HTML use the comfortable colorful theme, not default gray matplotlib styling.
-11. Verify every plotted aggregate has a matching SQL proof in `sql_verification/`.
-12. Verify chart scope matches `dashboard_spec.md` and does not include deferred items from `insight_backlog.md` without a visible blocked note.
-13. Record pass/fail evidence in `reports/agent/10_presentation/presentation_report.md`.
+5. Verify the local report page itself with `scripts/validate_local_web_report.py`, proving that `http://127.0.0.1:<port>/` returns HTTP 200 and non-empty HTML. This catches browser failures such as `ERR_EMPTY_RESPONSE`.
+6. If `generate_report.py` exists for snapshot export, verify it runs without error or document the exact blocker.
+7. Verify the local web report contains the classified tabs/sections defined in `report_spec.md`.
+8. Verify `open_report.bat` exists on Windows-focused projects or document the equivalent open command, and confirm it points to the same validated server entrypoint.
+9. Verify every `RENDERED` row in `kpi_figure_coverage.md` appears in the correct HTML tab/section through SVG/HTML/JSON chart output or has a documented static export fallback.
+10. Verify `label_dictionary.md` exists and every categorical chart uses mapped business labels, not raw codes.
+11. Verify `report_theme.md` exists and charts/HTML use the comfortable colorful theme, not default gray matplotlib styling.
+12. Verify every plotted aggregate has a matching SQL proof in `sql_verification/`.
+13. Verify chart scope matches `dashboard_spec.md` and does not include deferred items from `insight_backlog.md` without a visible blocked note.
+14. Record pass/fail evidence in `reports/agent/10_presentation/presentation_report.md`.
 
 ## Done gate
 
@@ -484,6 +514,7 @@ Label dictionary: reports/agent/10_presentation/matplotlib/label_dictionary.md
 Python prerequisites: PASS or BLOCKED with install commands attempted
 Report spec: reports/agent/10_presentation/matplotlib/report_spec.md
 Figure generation: PASS or BLOCKED with reason
+Local page validation: PASS with URL and response size, or BLOCKED with stdout/stderr
 SQL verification: PASS or BLOCKED with reason
 Report: reports/agent/10_presentation/presentation_report.md
 Pipeline status: reports/agent/PIPELINE_STATUS.md

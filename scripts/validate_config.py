@@ -47,6 +47,7 @@ REQUIRED_GITIGNORE = {
 REQUIRED_REPO_FILES = {
     "requirements.txt",
     "scripts/create_report_skeleton.py",
+    "scripts/validate_local_web_report.py",
 }
 
 FORBIDDEN_ENV_KEY_PARTS = (
