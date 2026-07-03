@@ -145,7 +145,7 @@ Use a compact table when helpful:
 - Important models created by layer
 - Semantic models and metrics added
 - Presentation layer recommendation and whether the user approved any follow-up artifact
-- Presentation artifact type: Matplotlib report figures, Power BI PBIP/TMDL project, dashboard design guide, presentation report, or query handoff
+- Presentation artifact type: Matplotlib rich tabbed web report, Power BI PBIP/TMDL project, dashboard design guide, presentation report, or query handoff
 - Five report pillars covered or deferred: context and strategy, key performance indicators, trend analysis and variance, insights and attribution, and recommendations and next steps
 - Power BI canvas standard coverage when Power BI is created: navigation/header, refresh timestamp, reset filters, prioritized executive key performance indicator cards, supporting key performance indicator coverage, slicers, trend/comparison visuals, matrix/detail layer, tooltips, drill-through pages, and Report Information page
 - Standard time showcase pages or visuals created, including last calendar year, year to date, last 12 months, by-year, and by-month coverage where supported

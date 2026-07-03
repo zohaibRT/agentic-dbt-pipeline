@@ -35,10 +35,10 @@ The agent must offer exactly these two presentation paths unless the user explic
 
 | Technology | Role | Default |
 |---|---|---|
-| **Matplotlib** | Python-based static charts and report figures generated from validated warehouse data | **Recommended default** |
+| **Matplotlib** | Python-based rich tabbed web report with SQL-verified chart assets generated from validated warehouse data | **Recommended default** |
 | **Power BI** | Interactive PBIP/TMDL or Desktop-connected semantic model and report handoff | Optional alternative |
 
-Default artifact: if the user approves a presentation layer and does not specify another tool or artifact type, use the **Matplotlib** presentation workflow by default. Read [matplotlib-presentation-layer.md](matplotlib-presentation-layer.md), build reproducible figure assets from validated data, and write artifacts under `reports/agent/10_presentation/matplotlib/`.
+Default artifact: if the user approves a presentation layer and does not specify another tool or artifact type, use the **Matplotlib rich tabbed web report** workflow by default. Read [matplotlib-presentation-layer.md](matplotlib-presentation-layer.md), build a polished browser-viewable `report.html` with embedded SQL-verified Matplotlib chart assets from validated data, and write artifacts under `reports/agent/10_presentation/matplotlib/`.
 
 If the user chooses Power BI, use the Power BI Desktop human-connected template workflow by default unless they explicitly approve generated PBIP mode. Read [powerbi-thin-model-template.md](powerbi-thin-model-template.md) and the Power BI references listed at the top of this file.
 
@@ -61,14 +61,14 @@ Before asking, summarize the evidence in one concise paragraph:
 Use this interactive question shape:
 
 ```text
-Analytics insight reporting is complete. Validated key performance indicators: <short KPI/value summary>. Matplotlib static report figures are recommended by default because they are reproducible, version-controlled, and easy to validate with SQL-backed Python scripts. Power BI is available when you need an interactive Desktop semantic model and report handoff. Recommended page set: <page list>. <Important caveat if any>.
+Analytics insight reporting is complete. Validated key performance indicators: <short KPI/value summary>. A Matplotlib rich tabbed web report is recommended by default because it is reproducible, version-controlled, browser-viewable, colorful, and easy to validate with SQL-backed Python scripts. Power BI is available when you need an interactive Desktop semantic model and report handoff. Recommended page set: <page list>. <Important caveat if any>.
 
 Do you want a presentation layer, and which technology should I use?
 ```
 
 Recommended options:
 
-- `Yes - build Matplotlib report figures (recommended)` - approves the separate `presentation_layer` phase using the Matplotlib workflow by default.
+- `Yes - build Matplotlib rich tabbed web report (recommended)` - approves the separate `presentation_layer` phase using the Matplotlib rich web report workflow by default.
 - `Yes - prepare Power BI Desktop template handoff` - approves only the separate presentation-layer phase using the Power BI Desktop human-connected template workflow.
 - `No presentation layer - complete final delivery now` - records that the artifact was declined and moves to final delivery with dbt documentation and analytics insight outputs only.
 - `Tell me what to change first` - pauses so the user can change scope, metrics, pages, privacy rules, technology, validation, or report design.
@@ -93,7 +93,7 @@ If the user approves a presentation layer, treat it as a separate `presentation_
 3. Build only the approved artifact.
 4. Validate the artifact.
 5. Write or update `reports/agent/10_presentation/presentation_report.md`, `reports/agent/10_presentation/presentation_layer_report.md` when the project uses the friendlier filename, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md`.
-6. For approved Matplotlib work, also write or update `reports/agent/10_presentation/matplotlib/README.md`, `requirements-matplotlib.txt`, `report_spec.md`, `kpi_figure_coverage.md`, `label_dictionary.md`, `report_theme.md`, `report_theme.py`, `generate_report.py`, `report_builder.py`, `report_pages/`, `report.html`, `open_report.bat`, `figures/`, and `sql_verification/` per [matplotlib-presentation-layer.md](matplotlib-presentation-layer.md). Use the comfortable colorful theme, business-friendly labels, full key performance indicator coverage, and SQL verification required by that reference.
+6. For approved Matplotlib work, also write or update `reports/agent/10_presentation/matplotlib/README.md`, `requirements-matplotlib.txt`, `report_spec.md`, `kpi_figure_coverage.md`, `label_dictionary.md`, `report_theme.md`, `report_theme.py`, `generate_report.py`, `report_builder.py`, `report_pages/`, `report.html`, `open_report.bat`, `figures/`, and `sql_verification/` per [matplotlib-presentation-layer.md](matplotlib-presentation-layer.md). Treat `report.html` as the primary deliverable and figures as embedded assets. Use the comfortable colorful theme, business-friendly labels, full key performance indicator coverage, and SQL verification required by that reference.
 7. For approved Power BI work, also write or update `reports/agent/10_presentation/powerbi_model_plan.md`, `reports/agent/10_presentation/dashboard_pages.md`, and `reports/agent/10_presentation/dax_measures.md` with the model plan, page plan, DAX specifications, and validation evidence.
 8. Only then continue to final delivery.
 
@@ -117,7 +117,7 @@ Review `reports/agent/09_analytics_insights/analytics_insight_report.md`, `repor
 | dbt documentation only | The user only needs technical lineage and model docs | `dbt docs generate`, optional `dbt docs serve`, final model list |
 | Presentation layer report | The user wants a concise business-facing summary | Key performance indicators, metrics, model grains, suggested analysis pages, limitations |
 | Dashboard design | The user wants interactive consumption in a business intelligence tool | Suggested pages, filters, metrics, facts/dimensions, privacy notes |
-| Matplotlib report figures | **Default when the user says yes to presentation layer and does not specify another technology** | Python script, PNG/PDF figures, SQL verification, and report spec from validated gold/marts data |
+| Matplotlib rich tabbed web report | **Default when the user says yes to presentation layer and does not specify another technology** | Browser-viewable `report.html` with tabs, embedded SQL-verified Matplotlib charts, Python generation scripts, theme, launcher, SQL verification, and report spec from validated gold/marts data |
 | Power BI Desktop template handoff | When the user explicitly chooses Power BI or needs interactive Desktop reporting | Handoff folder, table/relationship/storage-mode checklist, required PBIP path/name, measures table instructions, and post-confirmation measure injection |
 | Generated Power BI PBIP/TMDL project | Only when the user explicitly approves generated PBIP mode | Complete generated PBIP project, semantic model, report artifact, relationships, measures, parameters, report pages, and validation evidence |
 | Semantic layer first | Metrics need governed definitions before dashboards | MetricFlow metrics, entities, dimensions, time dimensions, safe denominators |
@@ -226,7 +226,7 @@ These are different deliverables:
 
 | User asks for | Required deliverable |
 |---|---|
-| Presentation layer, with no technology specified | Matplotlib report figures by default |
+| Presentation layer, with no technology specified | Matplotlib rich tabbed web report by default |
 | Power BI presentation layer | Power BI Desktop human-connected template workflow |
 | Dashboard design | Markdown design/specification only, unless the user later approves PBIP creation |
 | Presentation layer report | Markdown report only |
@@ -243,7 +243,7 @@ Add this section to the final handoff and final report:
 ```markdown
 ## Presentation Layer Recommendation
 
-Recommended option: <Matplotlib report figures / Power BI PBIP/TMDL project / dbt documentation only / presentation layer report / dashboard design / semantic layer first / export or query handoff>
+Recommended option: <Matplotlib rich tabbed web report / Power BI PBIP/TMDL project / dbt documentation only / presentation layer report / dashboard design / semantic layer first / export or query handoff>
 
 Why:
 - <evidence from final marts, metrics, data quality, and user goals>
@@ -269,12 +269,12 @@ Ask clearly after final validation:
 ```text
 Documentation and dbt validation are complete. Before I close delivery, do you want me to create a presentation layer artifact, and which technology should I use?
 
-Recommended default: Matplotlib report figures. They are reproducible, version-controlled, and easy to validate with SQL-backed Python scripts.
+Recommended default: Matplotlib rich tabbed web report. It is reproducible, version-controlled, browser-viewable, colorful, and easy to validate with SQL-backed Python scripts.
 
 Power BI is available when you need an interactive Desktop semantic model and report handoff.
 
 Reply with one of these choices:
-- `Yes - build Matplotlib report figures (recommended)`
+- `Yes - build Matplotlib rich tabbed web report (recommended)`
 - `Yes - prepare Power BI Desktop template handoff`
 - `No presentation layer - complete final delivery now`
 - `Tell me what to change first`
@@ -428,7 +428,7 @@ Before creating files:
 - Confirm metric verification queries for every key performance indicator measure, including numerator, denominator, filter logic, and expected versus actual result.
 - Discover fact date columns and planned time showcase visuals before writing report pages.
 - In the plan, state the approved presentation technology. If the user approved presentation work without naming a technology, state that the **Matplotlib** workflow is the default. Ask for changes only if the user wants Power BI, generated PBIP mode, report-page editing, or a Markdown-only guide.
-- For approved Matplotlib work, create `reports/agent/10_presentation/matplotlib/` artifacts per [matplotlib-presentation-layer.md](matplotlib-presentation-layer.md), map all recommended measures and key performance indicators into `kpi_figure_coverage.md`, install missing `matplotlib`, `numpy`, and `pandas` prerequisites when needed, and record SQL verification for every rendered chart aggregate.
+- For approved Matplotlib work, create `reports/agent/10_presentation/matplotlib/` artifacts per [matplotlib-presentation-layer.md](matplotlib-presentation-layer.md), build `report.html` as the primary rich web deliverable, map all recommended measures and key performance indicators into `kpi_figure_coverage.md`, install missing `matplotlib`, `numpy`, and `pandas` prerequisites when needed, and record SQL verification for every rendered chart aggregate.
 - For approved Power BI work, create the Power BI handoff folder, table/relationship checklist, required PBIP path/name, storage-mode recommendation, and measures table instructions. Stop until the user confirms the PBIP was saved and data is attached.
 - Detect the local Power BI Desktop version before final PBIP handoff. If Desktop cannot be detected, record that fact and do not claim version compatibility.
 - If a known-good PBIP project exists in the workspace, do not silently adapt it. Show the exact `.pbip` path, state which structural files would be inspected, explain what would and would not be reused, and get user approval before using it as a reference.

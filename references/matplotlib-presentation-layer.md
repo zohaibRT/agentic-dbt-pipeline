@@ -8,25 +8,25 @@ Official documentation: [Matplotlib User Guide](https://matplotlib.org/stable/us
 
 ## Purpose
 
-Generate validated, business-facing static analytics outputs from approved gold/marts data and analytics insight reporting files. Matplotlib is the **recommended default** presentation technology because it is:
+Generate a validated, business-facing, browser-viewable analytics report from approved gold/marts data and analytics insight reporting files. Matplotlib is the **visual rendering engine**, but the final default presentation deliverable is a rich tabbed `report.html`, not a folder of loose images. Matplotlib is the **recommended default** presentation technology because it is:
 
 - Version-controlled and reproducible in the dbt project repository
 - Runnable without Power BI Desktop or proprietary report project files
 - Easy to validate with SQL-backed Python scripts
-- Suitable for executive summaries, trend pages, breakdown charts, and operational detail views
+- Suitable for executive summaries, trend pages, breakdown charts, operational detail views, and tabbed web report pages
 - Viewable in a browser through a generated HTML report with classified tabs/pages, plus optional Windows batch launcher
 
 Matplotlib outputs are not a replacement for governed semantic models. They consume the same trusted key performance indicators and page scope defined during analytics insight reporting.
 
 ## Browser-viewable report pack
 
-Matplotlib delivery is not complete with PNG files alone. The agent must also produce a **browser-openable HTML report** so a data engineer or business user can review all charts without hunting through loose image files.
+Matplotlib delivery is not complete with PNG files alone. The agent must produce a **browser-openable, richly styled HTML report** so a data engineer or business user can review all charts without hunting through loose image files. Treat `report.html` as the primary artifact; treat PNG/SVG files as embedded chart assets.
 
 ### Primary review experience
 
 | Artifact | Purpose |
 |---|---|
-| `report.html` | Main browser report with tabbed or sectioned navigation, chart grouping, key performance indicator summaries, blocked/deferred notes, and report metadata |
+| `report.html` | Main browser report with tabbed navigation, chart grouping, key performance indicator summaries, blocked/deferred notes, and report metadata |
 | `open_report.bat` | Windows launcher that opens `report.html` in the default browser |
 | `open_report.sh` | Optional Unix launcher for the same behavior |
 | `generate_report.py` | Regenerates figures, rebuilds `report.html`, and may open the browser when run with `--open` |
@@ -41,7 +41,7 @@ Do not require Power BI, Jupyter, or a notebook server for normal review.
 
 ### HTML report structure
 
-`report.html` must use a clear multi-page or multi-tab layout aligned to `dashboard_spec.md` and the five reporting pillars when supported.
+`report.html` must use a clear multi-tab layout aligned to `dashboard_spec.md` and the five reporting pillars when supported. Do not deliver a single long image gallery when multiple pages or business sections exist.
 
 Default tab or section order:
 
@@ -61,10 +61,26 @@ Each tab or section must:
 
 - Show business-facing titles, not technical file names
 - Embed or link the related PNG figures from `figures/`
+- Include rich HTML context: short page purpose, key questions answered, key metric cards where relevant, figure captions, caveats, and validation status
 - List the metrics included on that page
 - Mark unsupported or blocked content visibly instead of hiding it
 
 `generate_report.py` must rebuild `report.html` every time figures are regenerated so the browser view stays in sync with `kpi_figure_coverage.md`.
+
+### Rich web report requirements
+
+The web report must feel like a polished review surface, not a plain file index.
+
+Required `report.html` behavior:
+
+- Use a sticky or prominent header with report title, generated timestamp, data source summary, and validation status.
+- Use clickable tabs for multiple report pages. A sectioned layout is acceptable only when there is one page.
+- Use colorful active/inactive tab styling from `report_theme.py`; do not use browser default tab/button styling.
+- Use key performance indicator cards, chart cards, callout panels, and blocked/deferred panels with consistent spacing and rounded corners.
+- Embed figures inside chart cards with readable captions and SQL proof links or references.
+- Include a Report Information tab with purpose, audience, data source, refresh details, key performance indicator definitions, caveats, privacy handling, and validation summary.
+- Use responsive CSS so the report remains readable on laptop and wide desktop screens.
+- Avoid plain unstyled HTML tables as the main experience; use tables only for definitions, coverage, or detail sections where useful.
 
 ## When to recommend Matplotlib
 

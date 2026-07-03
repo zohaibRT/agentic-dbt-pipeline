@@ -53,9 +53,9 @@ If targets, benchmarks, attribution dimensions, or next-step owners are missing,
 
 ## Matplotlib visual standard
 
-Use this standard for every generated Matplotlib report pack unless the user provides a stronger company template. Official reference: [Matplotlib User Guide](https://matplotlib.org/stable/users/index).
+Use this standard for every generated Matplotlib rich web report unless the user provides a stronger company template. Official reference: [Matplotlib User Guide](https://matplotlib.org/stable/users/index).
 
-Every Matplotlib figure must be readable, business-facing, and SQL-verified:
+Every Matplotlib figure must be readable, business-facing, SQL-verified, and embedded into a polished `report.html`:
 
 | Rule | Requirement |
 |---|---|
@@ -67,8 +67,8 @@ Every Matplotlib figure must be readable, business-facing, and SQL-verified:
 | Images | Optional approved logo or header image in `report.html` when brand assets are provided |
 | Dates | Explicit date parsing and readable time-axis formatting for trend visuals |
 | Legends | Clear series meaning; avoid duplicate or unreadable legends |
-| Static output | Save PNG files under `figures/` and embed them in `report.html` |
-| Browser review | Build `report.html` with classified tabs/sections and provide `open_report.bat` or `generate_report.py --open` |
+| Static output | Save PNG or SVG files under `figures/` and embed them in `report.html`; loose images alone are not the final deliverable |
+| Browser review | Build a rich `report.html` with colorful classified tabs, summary cards, chart cards, captions, caveats, validation status, and provide `open_report.bat` or `generate_report.py --open` |
 | Page modules | Organize generation code in `report_pages/` by business tab, not one unstructured script |
 | Labels | Use business names from dimensions, mappings, and `label_dictionary.md`; never raw codes on chart axes or legends |
 | Validation | Every plotted aggregate must reconcile to SQL in `sql_verification/` before the figure is marked trusted |
@@ -76,7 +76,7 @@ Every Matplotlib figure must be readable, business-facing, and SQL-verified:
 | Prerequisites | Install missing `matplotlib`, `numpy`, and `pandas` before figure generation; record commands in `requirements-matplotlib.txt` |
 | Style | Use one shared colorful theme via `report_theme.py`, rcParams, or a style sheet so outputs look like one comfortable report system |
 
-Do not use decorative chart junk, unlabeled axes, raw warehouse codes on business-facing charts, default gray-only matplotlib styling, or synthetic trend lines without evidence.
+Do not use decorative chart junk, unlabeled axes, raw warehouse codes on business-facing charts, default gray-only matplotlib styling, unstyled browser-default HTML, loose image-only delivery, or synthetic trend lines without evidence.
 
 ## Power BI canvas standard
 
