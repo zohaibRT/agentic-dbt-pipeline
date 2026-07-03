@@ -16,11 +16,14 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\activate
 python --version
 python -m pip install --upgrade pip setuptools wheel
+python -m pip install -r <path-to-installed-skill-or-workspace>\requirements.txt
 python -m pip install --force-reinstall "dbt-core==1.10.15" "<dbt-adapter-package-for-selected-profile>"
 dbt --version
 ```
 
 Choose the adapter package only after `DBT_PROFILE_NAME` is selected and the profile target `type` is known. Examples: `dbt-postgres`, `dbt-redshift`, `dbt-snowflake`, `dbt-bigquery`, or `dbt-databricks`.
+
+If `requirements.txt` is not available, continue with dbt setup and document the skip. If optional reporting packages fail to install, do not block dbt-only work; mark presentation readiness as `WARN` and retry when presentation work is approved.
 
 ## 2. Initialize dbt project
 

@@ -1,0 +1,8 @@
+# Skill utility dependencies.
+# Adapter-specific dbt packages are installed separately from the selected dbt profile.
+PyYAML>=6.0,<7.0
+
+# Default refreshable presentation-layer dependencies.
+matplotlib>=3.8,<4.0
+numpy>=1.26,<3.0
+pandas>=2.2,<3.0

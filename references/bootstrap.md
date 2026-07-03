@@ -9,10 +9,10 @@ Run this setup phase before layer work. Do not skip unless the user explicitly d
 | Area | Contract |
 |---|---|
 | Inputs required | Accepted discovery checkpoint, valid `.env` or prompt values, selected dbt profile, source schema, and project root decision |
-| Allowed changes | Local dbt scaffold, baseline config files, packages file, dependency lock file, safe schema macro, setup reports |
+| Allowed changes | Local dbt scaffold, baseline config files, packages file, dependency lock file, safe schema macro, managed report skeleton, setup reports |
 | Not allowed | Source YAML generation, model layer creation, warehouse model builds, continuous integration workflows, Agents Schema workflows, profile edits without approval, commits, or pushes |
-| Commands to run | `dbt --version`, `dbt debug`, `dbt deps`, `dbt parse --no-partial-parse`, plus skill/config validation when available |
-| Completion criteria | dbt connection works, packages install, parse succeeds or skip is documented, profile target schema hygiene is safe or blocked, and next phase is ready |
+| Commands to run | install `requirements.txt` when present, create managed report skeleton, `dbt --version`, `dbt debug`, `dbt deps`, `dbt parse --no-partial-parse`, plus skill/config validation when available |
+| Completion criteria | Python requirements install or documented skip, managed report skeleton exists, dbt connection works, packages install, parse succeeds or skip is documented, profile target schema hygiene is safe or blocked, and next phase is ready |
 | Report required | `reports/agent/01_setup/setup_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
 
 ## Automatic setup rule
@@ -25,6 +25,7 @@ Before running it, write or update `AGENT_PLAN.md` with:
 - Status: Automatic setup-only
 - Discovery report used
 - Exact setup actions to run
+- Python requirements and managed report skeleton actions
 - Validation commands
 - Safety gates checked
 - Profile target schema hygiene check from [schema-isolation.md](schema-isolation.md)
@@ -43,6 +44,8 @@ Project setup and configuration may:
 
 - Create a local dbt project scaffold when the project root is missing
 - Create baseline local files required to make dbt parse, such as `dbt_project.yml`, `packages.yml`, `.gitignore`, safe profile examples, and the schema naming macro
+- Install skill utility requirements from `requirements.txt` when that file is available from the installed skill or workspace
+- Create the managed `reports/agent/` folder skeleton, including phase folders and SQL proof index files
 - Install missing dbt Agent Skills when `auto_install_dbt_skills: true`
 - Install dbt package dependencies with `dbt deps`
 - Run `dbt debug` and `dbt parse --no-partial-parse`
@@ -97,7 +100,25 @@ Default to local commits only. Do not ask for `github_repo_name` and do not run 
 
 When GitHub is needed, use `gh api user --jq ".login"` for owner and ask only for the repo slug if missing. Do not hardcode GitHub accounts in config.
 
-## 3. Check dbt CLI
+## 3. Install skill utility requirements and create report skeleton
+
+Before dbt checks, install skill utility requirements when `requirements.txt` is available:
+
+```powershell
+python -m pip install -r <path-to-installed-skill-or-workspace>\requirements.txt
+```
+
+If the install is skipped or blocked, document the reason in `reports/agent/01_setup/setup_report.md`. Do not block dbt-only work solely because optional Matplotlib/reporting dependencies could not install, but mark presentation-layer readiness as `WARN`.
+
+Create the managed report skeleton early:
+
+```powershell
+python <path-to-installed-skill-or-workspace>\scripts\create_report_skeleton.py --root <project.root-or-workspace.root>
+```
+
+This creates `reports/agent/00_discovery/sql_proofs/`, `02_sources/sql_proofs/`, `03_bronze/sql_proofs/`, `04_silver/sql_proofs/`, `05_gold/sql_proofs/`, `06_semantic/sql_proofs/`, `07_evaluator/sql_proofs/`, `09_analytics_insights/kpis/sql_proofs/`, and presentation verification folders with `_proof_index.md` files so humans can see which proof file belongs to which check.
+
+## 4. Check dbt CLI
 
 ```powershell
 dbt --version
@@ -105,7 +126,7 @@ dbt --version
 
 If missing and `workflow_phase` includes `init` or full pipeline -> run [project-initialization.md](project-initialization.md).
 
-## 4. Check dbt connection
+## 5. Check dbt connection
 
 ```powershell
 dbt debug
@@ -115,7 +136,7 @@ If profile missing -> guide user to `~/.dbt/profiles.yml` (never commit password
 
 After `dbt debug`, perform the profile target schema hygiene check from [schema-isolation.md](schema-isolation.md). The setup report must include the active profile, adapter, database or database-equivalent, target schema, source schema, safe status, and evidence/action. Do not treat this as an optional follow-up.
 
-## 5. Sources readiness
+## 6. Sources readiness
 
 Prepare the project so the Sources phase can run next, but do not generate source YAML during automatic project setup and configuration.
 
@@ -129,7 +150,7 @@ When the **Sources** phase is approved later:
 
 See [packages-and-sources.md](packages-and-sources.md).
 
-## 6. Agents Schema readiness
+## 7. Agents Schema readiness
 
 Prepare the project so Agents Schema can be enabled later, but do not create Agents Schema workflow files during automatic project setup and configuration unless the user explicitly approved the automation phase.
 
@@ -142,7 +163,7 @@ When `auto_agents_schema: true`, the warehouse destination is supported, and the
 
 If the adapter is unsupported, skip Agents Schema and summarize that it can be enabled later for Snowflake, Databricks, or BigQuery.
 
-## 7. Skill self-check
+## 8. Skill self-check
 
 Confirm `.agents/skills/agentic-dbt-pipeline/SKILL.md` and `project.config.yml` are readable.
 
@@ -151,6 +172,8 @@ Confirm `.agents/skills/agentic-dbt-pipeline/SKILL.md` and `project.config.yml` 
 | Check | Status |
 |---|---|
 | dbt Agent Skills installed | PASS |
+| Skill `requirements.txt` installed or documented as skipped | PASS |
+| Managed `reports/agent/` skeleton and SQL proof indexes created | PASS |
 | All 5 dbt packages in `packages.yml` + `dbt deps` | PASS |
 | `dbt debug` passes | PASS |
 | Profile target schema hygiene documented and safe, or blocked for user action | PASS |

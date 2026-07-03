@@ -9,6 +9,8 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] `agents/openai.yaml` exists and matches the skill
 - [ ] Installed skill folder contains local `references/`, `scripts/`, `agents/`, `project.config.yml`, `prompt.md`, and `.env.example`, or `SKILL.md` hydrated them before reading references
 - [ ] Skill install alone did not require a pre-existing workspace `.env`; first run created workspace `.env` from `.env.example` when missing
+- [ ] `requirements.txt` exists in the installed skill or workspace and was installed during setup, or the skip/blocker was documented
+- [ ] `scripts/create_report_skeleton.py --root <project-or-workspace-root>` ran during setup, or the skip/blocker was documented
 - [ ] `python scripts/validate_config.py --root .` passes
 - [ ] No secrets or hardcoded GitHub accounts in skill files
 - [ ] `project.config.yml` has non-secret defaults
@@ -56,6 +58,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Discovery report includes a Mermaid entity relationship diagram when credible relationships exist
 - [ ] Discovery report includes other necessary Mermaid diagrams, such as source inventory, business process flow, or high-level medallion direction, when they help review the project
 - [ ] Canonical phase report paths from `references/report-artifact-organization.md` were created or updated for each implemented phase
+- [ ] Managed report skeleton exists with `_proof_index.md` files in every SQL proof folder so humans can identify what each proof folder is for
 - [ ] `reports/agent/PIPELINE_STATUS.md` updated after each phase
 - [ ] `reports/agent/CONTEXT_TREE.md` updated with user inputs, decisions, phase outputs, report links, and open items
 - [ ] `reports/agent/NEXT_PHASE_PROMPT.md` created or updated after each completed or blocked checkpoint when a next phase is recommended

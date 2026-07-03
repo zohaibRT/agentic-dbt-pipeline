@@ -44,6 +44,11 @@ REQUIRED_GITIGNORE = {
     "profiles.yml",
 }
 
+REQUIRED_REPO_FILES = {
+    "requirements.txt",
+    "scripts/create_report_skeleton.py",
+}
+
 FORBIDDEN_ENV_KEY_PARTS = (
     "PASSWORD",
     "TOKEN",
@@ -106,6 +111,10 @@ def main() -> int:
     env_example_path = root / ".env.example"
 
     errors = []
+
+    for relative_path in sorted(REQUIRED_REPO_FILES):
+        if not (root / relative_path).exists():
+            errors.append(f"Missing required repo file: {relative_path}")
 
     if not config_path.exists():
         errors.append("Missing project.config.yml")

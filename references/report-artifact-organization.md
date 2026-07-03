@@ -63,6 +63,14 @@ reports/agent/
 
 Use the folder that matches the current phase. Do not put phase-specific files at the root unless the file is one of the root control-plane files.
 
+During project setup and configuration, run:
+
+```powershell
+python <path-to-installed-skill-or-workspace>\scripts\create_report_skeleton.py --root <project.root-or-workspace.root>
+```
+
+This creates the managed folders and `_proof_index.md` files before the first proof query is written. Do not delete those index files; use them as the human-facing map for what each proof folder contains.
+
 ## Standard File Locations
 
 | Artifact | Canonical Path |
