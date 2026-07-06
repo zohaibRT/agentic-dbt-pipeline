@@ -2,7 +2,7 @@
 
 Use this after marts/gold, semantic layer, `dbt_project_evaluator`, and documentation are complete and validated. Run this before the presentation-layer recommendation or any Power BI / business intelligence handoff.
 
-Also read [report-artifact-organization.md](report-artifact-organization.md), [universal-analytics-framework.md](universal-analytics-framework.md), [kpi-discovery-framework.md](kpi-discovery-framework.md), [kpi-reconciliation.md](kpi-reconciliation.md), [cardinality-validation.md](cardinality-validation.md), [reporting-standards.md](reporting-standards.md), [kpi-definitions.md](kpi-definitions.md), [metric-verification.md](metric-verification.md), [privacy-and-unknown-fields.md](privacy-and-unknown-fields.md), and [writing-style.md](writing-style.md).
+Also read [report-artifact-organization.md](report-artifact-organization.md), [universal-analytics-framework.md](universal-analytics-framework.md), [kpi-discovery-framework.md](kpi-discovery-framework.md), [kpi-reconciliation.md](kpi-reconciliation.md), [cardinality-validation.md](cardinality-validation.md), [reporting-standards.md](reporting-standards.md), [kpi-definitions.md](kpi-definitions.md), [metric-verification.md](metric-verification.md), [../docs/kpi_proof_standards.md](../docs/kpi_proof_standards.md), [privacy-and-unknown-fields.md](privacy-and-unknown-fields.md), and [writing-style.md](writing-style.md).
 
 ## Phase purpose
 
@@ -57,6 +57,8 @@ These rules apply to every domain, source schema, and warehouse adapter:
 - Use the business -> department/business area -> process -> key performance indicator -> metric -> measure -> dimension -> fact hierarchy from [universal-analytics-framework.md](universal-analytics-framework.md) to maximize useful report coverage.
 - Maximum means maximum useful business insight supported by validated data, not maximum number of dashboards.
 - Do not build presentation artifacts in this phase.
+- Do not apply `5 key performance indicators per table` to dimensions, bridges, reference tables, or audit tables.
+- Do not publish catalog numbers without linked `sql_proofs/*.sql` files per [../docs/kpi_proof_standards.md](../docs/kpi_proof_standards.md).
 
 ## Phase contract
 
@@ -329,7 +331,7 @@ For Power BI PBIP/TMDL, these files are the scope contract for the generator and
 - `reporting_readiness_scorecard.md`
 - `insight_backlog.md`
 
-For a Matplotlib refreshable web report, use the same scope contract. Read [matplotlib-presentation-layer.md](matplotlib-presentation-layer.md), build `serve_report.py` plus `report.html` as the primary artifact, and map every recommended measure, metric, and key performance indicator into `kpi_figure_coverage.md` or an explicit blocked/deferred note.
+For a Matplotlib refreshable web report, use the same scope contract. Read [matplotlib-presentation-layer.md](matplotlib-presentation-layer.md), build `serve_report.py` plus `report.html` as the primary artifact, map **every key performance indicator in `kpi_catalog.md`** to a chart or explicit `BLOCKED` / `DEFERRED` note in `kpi_figure_coverage.md`, and include recommended measures and metrics from the broader catalogs in supporting tabs.
 
 Blocked or deferred visuals from `insight_backlog.md` must not be generated silently.
 
@@ -349,11 +351,25 @@ Do not duplicate the full Power BI canvas standard here. Reference [reporting-st
 
 After all deliverables exist:
 
-1. Write `reports/agent/09_analytics_insights/analytics_insight_reporting_report.md` using [phase-completion-report.md](phase-completion-report.md).
-2. Update `reports/agent/PIPELINE_STATUS.md` with phase status PASS, WARN, FAIL, or BLOCKED.
-3. Update `reports/agent/CONTEXT_TREE.md` with trusted metrics, deferred insights, and links to reporting files.
-4. Summarize trusted vs deferred outputs in chat.
-5. Stop at the presentation-layer gate unless presentation work was explicitly approved in the same checkpoint.
+1. Run KPI proof validation:
+
+```bash
+python scripts/validate_kpi_proofs.py --root .
+```
+
+For medium projects with broad table scope, also validate example scale targets or document each shortfall in `insight_backlog.md`:
+
+```bash
+python scripts/validate_kpi_proofs.py --root . --min-measures 60 --min-metrics 35 --min-kpis 15 --require-sql-proofs
+```
+
+2. Write `reports/agent/09_analytics_insights/analytics_insight_reporting_report.md` using [phase-completion-report.md](phase-completion-report.md).
+3. Update `reports/agent/PIPELINE_STATUS.md` with phase status PASS, WARN, FAIL, or BLOCKED.
+4. Update `reports/agent/CONTEXT_TREE.md` with trusted metrics, deferred insights, and links to reporting files.
+5. Summarize trusted vs deferred outputs in chat.
+6. Stop at the presentation-layer gate unless presentation work was explicitly approved in the same checkpoint.
+
+Do not mark analytics insight reporting `PASS` if `validate_kpi_proofs.py` failed and the phase report does not document the failure with evidence.
 
 ## Commit
 

@@ -209,6 +209,15 @@ The repository also includes a local configuration validator:
 python scripts/validate_config.py --root .
 ```
 
+After analytics insight reporting:
+
+```bash
+python scripts/validate_kpi_proofs.py --root .
+python scripts/validate_kpi_proofs.py --root . --min-measures 60 --min-metrics 35 --min-kpis 15 --require-sql-proofs
+```
+
+See [docs/kpi_proof_standards.md](docs/kpi_proof_standards.md) for measure → metric → KPI hierarchy, table-classification minimums, and SQL proof rules.
+
 When Agents Schema is enabled, verify that the GitHub workflow creates an `AGENTS` schema and queryable metadata tables such as `AGENTS.DBT_MODEL`.
 
 ## Included dbt Packages
@@ -247,4 +256,6 @@ The skill can add and install these dbt packages:
 | [references/project-evaluator.md](references/project-evaluator.md) | Project evaluator setup for bronze/silver/gold |
 | [references/data-engineering-best-practices.md](references/data-engineering-best-practices.md) | Data-engineering guardrails |
 | [references/analytics-insight-reporting.md](references/analytics-insight-reporting.md) | Business reporting design before presentation layer |
-| [references/matplotlib-presentation-layer.md](references/matplotlib-presentation-layer.md) | Default Matplotlib static report figures workflow |
+| [references/universal-analytics-framework.md](references/universal-analytics-framework.md) | Measure, metric, KPI coverage and table-classification minimums |
+| [docs/kpi_proof_standards.md](docs/kpi_proof_standards.md) | SQL proof standards and analytics PASS gate |
+| [references/matplotlib-presentation-layer.md](references/matplotlib-presentation-layer.md) | Default Matplotlib refreshable web report workflow |

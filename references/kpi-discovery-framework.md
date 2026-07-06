@@ -214,6 +214,22 @@ For `MEDIUM`, `LOW`, or `BLOCKED` candidates, create proof files when a query wa
 
 The catalogs must link to the proof file path, not only paste SQL text into a table cell.
 
+Read [../docs/kpi_proof_standards.md](../docs/kpi_proof_standards.md) for proof file content, naming, and validation rules.
+
+Before marking analytics insight reporting `PASS`, run:
+
+```bash
+python scripts/validate_kpi_proofs.py --root .
+```
+
+Use project-scale targets when the business scope is large enough to justify them:
+
+```bash
+python scripts/validate_kpi_proofs.py --root . --min-measures 60 --min-metrics 35 --min-kpis 15 --require-sql-proofs
+```
+
+If minimum counts are not met, document each shortfall in `insight_backlog.md` with evidence. Do not mark the phase `PASS` silently.
+
 ## Targeted Questions
 
 Ask only questions that affect business meaning or safety, such as:
@@ -232,6 +248,7 @@ Do not ask the user to invent the whole dashboard. Recommend the safe default wi
 Do not create:
 
 - Key performance indicators from column names alone.
+- A flat `5 key performance indicators per table` rule across dimensions, bridges, reference tables, or audit tables.
 - Key performance indicators without confirmed or validated grain.
 - Ratio metrics without a clear numerator and denominator.
 - Trend metrics without a clear time field.

@@ -134,3 +134,85 @@ No result is trusted unless it has:
 - Privacy review when presentation-facing.
 
 If a useful result cannot satisfy these requirements, keep it visible as deferred or blocked rather than deleting it silently.
+
+## Do not use
+
+- `5 key performance indicators from each table` on every table
+- Key performance indicators from column names alone
+- Numbers in catalogs or reports without `sql_proofs/*.sql`
+- Equal key performance indicator quotas on dimensions, bridges, reference tables, or audit tables
+- Promoting every useful metric into `kpi_catalog.md`
+
+Read [../docs/kpi_proof_standards.md](../docs/kpi_proof_standards.md) for the full proof standard and completion gate.
+
+## Table classification minimums
+
+Classify each included source or gold table before writing catalogs. Apply minimums by table type, not by flat `5 per table`.
+
+| Table type | Illustrative examples | Minimum measures | Minimum metrics | Key performance indicator candidates |
+|---|---|---:|---:|---:|
+| Fact / event | subscription, order, payment, order-item facts | 5–10 per fact | 3–6 per fact | 2–4 per fact when `HIGH` or approved `MEDIUM` |
+| Dimension | customer, partner, program dimensions | 2–4 | 1–3 | 0–1 only if strategic |
+| Bridge | subscription-payment bridge | 2–3 | 1–2 | 0–1 |
+| Reference / catalog | SKU, country, pricing reference | 1–2 | 0–1 | 0 unless business asks |
+| Audit / system | audit, job queue, oauth tables | 0 business measures | 0 | exclude |
+
+Practical note: for about five major facts, a realistic key performance indicator total is often **15–25**, with most analytical depth living in `measure_catalog.md` and `metric_catalog.md`.
+
+## Business-process minimums
+
+Record project-specific process names in `business_process_catalog.md`, then apply these generic minimums before analytics insight reporting can be `PASS`:
+
+| Process class | Minimum metrics | Minimum strategic key performance indicators |
+|---|---:|---:|
+| Primary lifecycle or core revenue process | 8+ | 4+ |
+| Secondary transaction or fulfillment process | 4+ | 2+ |
+| Partner, program, or segmentation process | 4+ | 2+ |
+| Data quality / reconciliation process | 4+ | 0 key performance indicators (metrics only) |
+
+### Example scale for medium projects
+
+When roughly 25–30 validated tables are in scope, use these example targets unless `insight_backlog.md` documents evidence-backed shortfalls:
+
+| Catalog | Example target |
+|---|---:|
+| `measure_catalog.md` | 60+ measures |
+| `metric_catalog.md` | 35+ metrics |
+| `kpi_catalog.md` | 15+ approved key performance indicators with SQL proofs |
+| `insight_backlog.md` | all `LOW` / `BLOCKED` candidates with reason |
+
+Validate with:
+
+```bash
+python scripts/validate_kpi_proofs.py --root . --min-measures 60 --min-metrics 35 --min-kpis 15
+```
+
+## Per fact table checklist
+
+For each gold fact in `fact_catalog.md`, verify:
+
+- Row count and distinct grain key
+- Status distribution with business labels, not raw codes
+- Amount sums where amount columns exist
+- Date coverage and monthly trend
+- At least one rate or ratio
+- At least one dimensional split
+- Source → gold reconciliation for the top three measures
+
+## Required discovery artifacts
+
+Before analytics insight reporting = `PASS`, create or update:
+
+- `kpi_discovery_matrix.md` — every fact table × measure families with confidence
+- `business_process_catalog.md`
+- `fact_catalog.md`
+- `dimension_catalog.md`
+- `measure_catalog.md`
+- `metric_catalog.md`
+- `kpi_catalog.md`
+- `insight_backlog.md`
+- `sql_proofs/` — one proof file per published measure, metric, or key performance indicator
+
+## Presentation mapping rule
+
+Map every key performance indicator in `kpi_catalog.md` to a chart, summary visual, or explicit `BLOCKED` / `DEFERRED` note in `kpi_figure_coverage.md`. Supporting measures and metrics should appear in classified report tabs when marked recommended or trusted.

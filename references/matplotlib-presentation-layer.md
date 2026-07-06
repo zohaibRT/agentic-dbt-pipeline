@@ -171,8 +171,8 @@ Required coverage artifacts:
 
 Hard coverage rules:
 
-- Do not skip a recommended measure or key performance indicator just because the figure would be repetitive; combine related items on one page when appropriate, but keep every item visible in `kpi_figure_coverage.md`.
-- Do not plot `LOW`, `BLOCKED`, or unreconciled items; show them in a blocked/deferred section of the report pack instead.
+- **Every key performance indicator in `kpi_catalog.md`** must appear in `kpi_figure_coverage.md` as `RENDERED`, `BLOCKED`, or `DEFERRED`.
+- Do not skip a recommended measure or metric just because the visual would be repetitive; combine related items on one page when appropriate, but keep every `kpi_catalog.md` row visible in `kpi_figure_coverage.md`.
 - Executive summary pages should prioritize `kpi_catalog.md` items, but supporting measures from `measure_catalog.md` and `metric_catalog.md` must still be represented somewhere in the pack when they are marked recommended or trusted.
 - Standard time showcase visuals from [presentation-layer.md](presentation-layer.md) still apply when validated date fields exist.
 
@@ -489,7 +489,7 @@ Before marking Matplotlib presentation work complete:
 
 1. Verify `matplotlib`, `numpy`, and `pandas` import successfully or document the exact install blocker and commands attempted.
 2. Verify `requirements-matplotlib.txt` exists and matches the installed packages.
-3. Verify `kpi_figure_coverage.md` includes every recommended measure, metric, and key performance indicator from analytics insight catalogs, with `RENDERED`, `BLOCKED`, or `DEFERRED` status for each row.
+3. Verify `kpi_figure_coverage.md` includes **every key performance indicator in `kpi_catalog.md`** plus recommended measures and metrics from the broader catalogs, each with `RENDERED`, `BLOCKED`, or `DEFERRED` status.
 4. Verify `serve_report.py --smoke-test` or the documented server smoke test runs without error.
 5. Verify the local report page itself with `scripts/validate_local_web_report.py`, proving that `http://127.0.0.1:<port>/` returns HTTP 200 and non-empty HTML. This catches browser failures such as `ERR_EMPTY_RESPONSE`.
 6. If `generate_report.py` exists for snapshot export, verify it runs without error or document the exact blocker.

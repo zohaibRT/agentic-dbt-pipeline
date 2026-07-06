@@ -48,6 +48,8 @@ REQUIRED_REPO_FILES = {
     "requirements.txt",
     "scripts/create_report_skeleton.py",
     "scripts/validate_local_web_report.py",
+    "scripts/validate_kpi_proofs.py",
+    "docs/kpi_proof_standards.md",
 }
 
 FORBIDDEN_ENV_KEY_PARTS = (

@@ -78,10 +78,13 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Before executing an approved `NEXT_PHASE_PROMPT.md`, the agent reloaded the approved next-phase context bundle and did not run the next prompt in isolation
 - [ ] Final delivery included analytics insight reporting outputs before the presentation-layer recommendation
 - [ ] Analytics insight reporting separated raw measures, contextual metrics, and strategic key performance indicators instead of treating all measures as key performance indicators
-- [ ] `measure_catalog.md` was created or updated with broad validated raw measures from supported facts, dimensions, and marts
-- [ ] `metric_catalog.md` was created or updated with contextual metrics derived from validated measures
-- [ ] `business_process_catalog.md`, `fact_catalog.md`, and `dimension_catalog.md` were created or updated so reporting is organized by business areas, processes, facts, and safe dimensions
-- [ ] `kpi_catalog.md` contains only decision-relevant metrics tied to business goals, thresholds, targets, risks, operating review, or user-approved strategic use
+- [ ] `business_process_catalog.md`, `fact_catalog.md`, and `dimension_catalog.md` were created or updated when analytics insight reporting ran
+- [ ] `measure_catalog.md` was created or updated with broad validated raw measures from supported facts, dimensions, and marts using table-classification minimums, not a flat `5 key performance indicators per table` rule
+- [ ] `metric_catalog.md` was created or updated with contextual metrics promoted from measures
+- [ ] `kpi_discovery_matrix.md` covers fact tables × measure families with confidence `HIGH`, `MEDIUM`, `LOW`, or `BLOCKED`
+- [ ] `kpi_catalog.md` contains only decision-relevant reconciled key performance indicators; useful non-strategic items remain in measure or metric catalogs or `insight_backlog.md`
+- [ ] Every published measure, metric, and key performance indicator in catalogs or executive outputs links to `sql_proofs/*.sql` per `docs/kpi_proof_standards.md`
+- [ ] `python scripts/validate_kpi_proofs.py --root .` passed, or the phase report documents each failure with evidence and `insight_backlog.md` explains catalog shortfalls
 - [ ] After analytics insight reporting, the agent asked the presentation-layer decision with a concise evidence summary, recommended technology/page set, key caveats, and native clickable options when available
 - [ ] Presentation decision options included the equivalent of `Yes - build Matplotlib refreshable web report (recommended)`, `Yes - prepare Power BI Desktop template handoff`, `No presentation layer - complete final delivery now`, and `Tell me what to change first`
 - [ ] `reports/agent/09_analytics_insights/analytics_insight_report.md`, `kpi_discovery_matrix.md`, `reporting_catalog.md`, `kpi_catalog.md`, `dashboard_spec.md`, `insight_backlog.md`, and `reporting_readiness_scorecard.md` exist when analytics insight reporting ran
@@ -217,7 +220,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Presentation options were recommended after analytics insight reporting: documentation only, business-facing report, dashboard design, semantic layer refinement, or query handoff
 - [ ] If the user approved a presentation layer and did not specify another technology, the agent used the Matplotlib refreshable web report workflow by default and created `reports/agent/10_presentation/matplotlib/` artifacts with SQL verification
 - [ ] If Matplotlib artifacts were created, missing `matplotlib`, `numpy`, or `pandas` packages were installed or the install blocker was documented with exact commands attempted
-- [ ] If Matplotlib artifacts were created, `kpi_figure_coverage.md` maps every recommended measure, metric, and key performance indicator from `measure_catalog.md`, `metric_catalog.md`, `kpi_discovery_matrix.md`, and `kpi_catalog.md` to `RENDERED`, `BLOCKED`, or `DEFERRED` status
+- [ ] If Matplotlib artifacts were created, `kpi_figure_coverage.md` maps **every key performance indicator in `kpi_catalog.md`** to `RENDERED`, `BLOCKED`, or `DEFERRED`, and recommended measures/metrics appear in supporting tabs
 - [ ] If Matplotlib presentation artifacts were created, `serve_report.py` and `report.html` are the primary deliverable, with rich colorful classified tabs, summary cards, chart cards, captions, caveats, validation status, refresh timestamp/control, and `open_report.bat` or an equivalent browser launcher documented
 - [ ] If a presentation artifact was created, the dashboard/report uses a polished professional design with clear page hierarchy, intentional color palette, cards, captions, exception callouts, detail sections, and Report Information content rather than default or plain styling
 - [ ] If Matplotlib presentation artifacts were created, charts render through live Matplotlib SVG/HTML endpoints or approved browser-native charts from refreshed JSON; PNG is not the primary rendering path
