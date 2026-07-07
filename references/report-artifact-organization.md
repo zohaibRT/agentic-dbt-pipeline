@@ -79,14 +79,17 @@ python <path-to-installed-skill-or-workspace>\scripts\create_report_skeleton.py 
 
 This creates the managed folders and `_proof_index.md` files before the first proof query is written. Do not delete those index files; use them as the human-facing map for what each proof folder contains.
 
-For discovery and discovery-created control files, use the canonical templates under:
+For all reports, phase folders, SQL proof folders, and root control files, use the canonical templates under:
 
 ```text
+templates/reports/
 templates/reports/00_discovery/
 templates/reports/root/
 ```
 
-These templates define the fixed report structure for discovery, requirements, cardinality, relationship profiling, discovery approval, proof index, SQL proof files, pipeline status, context tree, report index, requirements traceability, and next-phase prompt. Copy/fill them only after required discovery inputs are confirmed. The template structure should stay consistent across projects; the content should change based on the source evidence and approved user requirements.
+These templates define the fixed report structure for discovery, setup, sources, bronze/staging, silver/intermediate, gold/marts, semantic layer, project evaluator, documentation, analytics insight reporting, presentation layer, operations, proof indexes, SQL proof files, pipeline status, context tree, report index, requirements traceability, and next-phase prompt. Copy/fill templates only when the corresponding phase/checkpoint is active and allowed. The template structure should stay consistent across projects; the content should change based on the source evidence, built artifacts, validation results, and approved user requirements.
+
+Do not hand-invent a phase report structure when a template exists. Use the template as the starting shape, replace placeholders with project-specific evidence, keep sections present, and write `None`, `Not observed`, `Not applicable`, `Skipped`, or `Blocked` when a section has no evidence yet.
 
 ## Standard File Locations
 
@@ -153,6 +156,8 @@ These templates define the fixed report structure for discovery, requirements, c
 | DAX measures | `reports/agent/10_presentation/dax_measures.md` |
 | Continuous integration report | `reports/agent/11_operations/ci_report.md` |
 | Agents Schema report | `reports/agent/11_operations/agents_schema_report.md` |
+
+When a matching template exists under `templates/reports/`, the skill must use it as the starting structure for that standard report path. Add new templates before introducing new recurring report structures.
 
 ## Backward Compatibility
 

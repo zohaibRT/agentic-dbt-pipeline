@@ -63,16 +63,6 @@ ROOT_FILES = {
 """,
 }
 
-DISCOVERY_TEMPLATE_FILES = [
-    "00_discovery/discovery_report.md",
-    "00_discovery/requirements.md",
-    "00_discovery/cardinality_report.md",
-    "00_discovery/relationship_profile.md",
-    "00_discovery/DISCOVERY_APPROVAL_CHECKLIST.md",
-    "00_discovery/sql_proofs/_proof_index.md",
-]
-
-
 def write_if_missing(path: Path, content: str) -> bool:
     if path.exists():
         return False
@@ -148,11 +138,14 @@ def create_skeleton(root: Path) -> list[Path]:
         if write_if_missing(keep_path, ""):
             created.append(keep_path)
 
-    for relative_path in DISCOVERY_TEMPLATE_FILES:
-        template_path = template_root / relative_path
-        output_path = reports_root / relative_path
-        if template_path.exists() and write_if_missing(output_path, template_path.read_text(encoding="utf-8")):
-            created.append(output_path)
+    if template_root.exists():
+        for template_path in template_root.rglob("*"):
+            if not template_path.is_file() or "root" in template_path.relative_to(template_root).parts:
+                continue
+            relative_path = template_path.relative_to(template_root)
+            output_path = reports_root / relative_path
+            if write_if_missing(output_path, template_path.read_text(encoding="utf-8")):
+                created.append(output_path)
 
     return created
 
