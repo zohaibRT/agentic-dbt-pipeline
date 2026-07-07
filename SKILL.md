@@ -448,7 +448,23 @@ Read [advanced-data-engineering-review.md](references/advanced-data-engineering-
 
 Run `python scripts/run_acceptance_gate.py --root .` and record the result. When full delivery is requested, also run or delegate a fresh independent verifier per [agents/dbt-verifier-agent.md](agents/dbt-verifier-agent.md) and record `reports/agent/INDEPENDENT_VERIFICATION_REPORT.md`.
 
-After any requested task, full pipeline, phase, fix, documentation update, presentation artifact, commit, push, or verification run is complete, print a complete summary in the chat pane using [final-delivery.md](references/final-delivery.md). Do not end with only a file path, commit hash, clickable approval widget, "done", "see report", or native question card. The chat summary must state status, what was done, validation, files changed or reports written, important warnings, and next action.
+## Universal iteration summary rule
+
+After every completed or blocked iteration, print a normal user-facing Markdown summary in the chat pane before ending the turn or asking for approval. This applies to discovery, project setup and configuration, phase plans, sources, bronze/staging, silver/intermediate, gold/marts, semantic layer, project evaluator, documentation, analytics insight reporting, presentation-layer decisions, presentation artifacts, continuous integration, Agents Schema, fixes, validation-only runs, commits, pushes, rollbacks, blocked states, and final delivery.
+
+Use [phase-completion-report.md](references/phase-completion-report.md) for phase/checkpoint summaries and [final-delivery.md](references/final-delivery.md) for task/final summaries. Do not end any iteration with only a file path, commit hash, clickable approval widget, "done", "see report", native question card, or hidden report reference. A native/clickable approval question may be used, but only after the normal chat summary has already explained what happened and what the approval would allow.
+
+The chat summary must state:
+
+1. Current checkpoint and status.
+2. What was completed, built, changed, or verified.
+3. Validation/proof results, including warnings, failures, skipped checks, or blockers.
+4. Files changed or reports written.
+5. Included scope and not-included/deferred scope.
+6. Important notes, assumptions, open decisions, and risks.
+7. Recommended next action and exactly what approval would permit.
+
+After any requested task, full pipeline, phase, fix, documentation update, presentation artifact, commit, push, or verification run is complete, print a complete summary in the chat pane using [final-delivery.md](references/final-delivery.md).
 
 Always finish with a user-facing summary that starts short, then gives the useful details:
 

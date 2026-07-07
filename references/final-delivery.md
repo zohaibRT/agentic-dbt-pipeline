@@ -138,9 +138,9 @@ dbt docs serve --host 127.0.0.1 --port 8080
 
 If the agent starts docs serving, do it as a non-blocking/background process and report the URL.
 
-## Completion summary in chat
+## Universal iteration summary in chat
 
-After any requested task, full pipeline, phase, fix, documentation update, presentation artifact, commit, push, or verification run is complete, print a complete summary in the chat pane. Do this even when detailed reports were written to files.
+After every completed or blocked iteration, print a normal user-facing Markdown summary in the chat pane. Do this even when detailed reports were written to files. This rule applies to discovery, project setup and configuration, phase plans, sources, bronze/staging, silver/intermediate, gold/marts, semantic layer, project evaluator, documentation, analytics insight reporting, presentation-layer decisions, presentation artifacts, continuous integration, Agents Schema, fixes, validation-only runs, commits, pushes, rollbacks, blocked states, and final delivery.
 
 Do not end with only:
 
@@ -150,13 +150,14 @@ Do not end with only:
 - "done"
 - "see report"
 - a native question card
+- a hidden report or prompt reference
 
-The user should be able to understand from the chat pane what happened, what passed, what did not pass, and what to do next.
+The user should be able to understand from the chat pane what happened, what passed, what did not pass, what was included, what was deferred, and what to do next. A native/clickable approval question may be used, but only after this normal chat summary has already explained what the approval would allow.
 
 Use this shape for normal task completion:
 
 ```markdown
-## Task Complete
+## <Checkpoint Friendly Name> Complete
 
 Status: <PASS / WARN / FAIL / BLOCKED>
 
@@ -175,7 +176,7 @@ Important notes:
 - <warning, caveat, or "None">
 
 Next action:
-- <what the user should approve, review, run, or know next>
+- <what the user should approve, review, run, or know next, and what that approval permits>
 ```
 
 For full dbt pipeline final delivery, use the more detailed structure below.
