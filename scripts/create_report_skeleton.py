@@ -33,6 +33,9 @@ PLAIN_FOLDERS = [
 
 ROOT_FILES = {
     "REPORT_INDEX.md": "# Report Index\n\nUse this file to list each report, status, purpose, and what the data engineer should verify.\n",
+    "PIPELINE_STATUS.md": "# Pipeline Status\n\nUse this file to track the current pipeline checkpoint, status, validation, and next action.\n",
+    "CONTEXT_TREE.md": "# Context Tree\n\nUse this file to track reusable project context, decisions, open questions, and deferred scope.\n",
+    "NEXT_PHASE_PROMPT.md": "# Next Phase Prompt\n\nUse this file to store the exact next checkpoint prompt after a phase completes.\n",
     "HUMAN_VERIFICATION_GUIDE.md": "# Human Verification Guide\n\nUse this file to explain how to re-run SQL proofs, review validation results, and confirm blocked or deferred items.\n",
     "REQUIREMENTS_TRACEABILITY_MATRIX.md": """# Requirements Traceability Matrix
 
@@ -120,6 +123,9 @@ def create_skeleton(root: Path) -> list[Path]:
 
     for relative_path, content in ROOT_FILES.items():
         path = reports_root / relative_path
+        template_path = template_root / "root" / relative_path
+        if template_path.exists():
+            content = template_path.read_text(encoding="utf-8")
         if write_if_missing(path, content):
             created.append(path)
 

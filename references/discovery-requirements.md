@@ -143,6 +143,8 @@ reports/agent/00_discovery/relationship_profile.md
 reports/agent/00_discovery/sql_proofs/
 reports/agent/PIPELINE_STATUS.md
 reports/agent/CONTEXT_TREE.md
+reports/agent/REPORT_INDEX.md
+reports/agent/REQUIREMENTS_TRACEABILITY_MATRIX.md
 ```
 
 Use these canonical discovery templates when creating the discovery files:
@@ -156,6 +158,11 @@ Use these canonical discovery templates when creating the discovery files:
 | `reports/agent/00_discovery/DISCOVERY_APPROVAL_CHECKLIST.md` | `templates/reports/00_discovery/DISCOVERY_APPROVAL_CHECKLIST.md` |
 | `reports/agent/00_discovery/sql_proofs/_proof_index.md` | `templates/reports/00_discovery/sql_proofs/_proof_index.md` |
 | Individual SQL proof files | `templates/reports/00_discovery/sql_proofs/sql_proof_template.sql` |
+| `reports/agent/PIPELINE_STATUS.md` | `templates/reports/root/PIPELINE_STATUS.md` |
+| `reports/agent/CONTEXT_TREE.md` | `templates/reports/root/CONTEXT_TREE.md` |
+| `reports/agent/REPORT_INDEX.md` | `templates/reports/root/REPORT_INDEX.md` |
+| `reports/agent/REQUIREMENTS_TRACEABILITY_MATRIX.md` | `templates/reports/root/REQUIREMENTS_TRACEABILITY_MATRIX.md` |
+| `reports/agent/NEXT_PHASE_PROMPT.md` | `templates/reports/root/NEXT_PHASE_PROMPT.md` |
 
 The templates define structure only. The content must change based on the confirmed source schema, source tables, row counts, keys, relationships, data quality, privacy findings, business process evidence, and user-provided rules.
 
