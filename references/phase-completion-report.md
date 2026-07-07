@@ -86,7 +86,7 @@ Discovery reports are mandatory even before dbt project initialization. Write th
 
 ## Chat result summary
 
-After every completed or blocked checkpoint, send a short visible Markdown chat summary in a normal assistant message in addition to writing the report files. This summary is the user's quick control panel; it must show what changed, whether validation passed, exactly what the next approval would allow, and the exact next-phase prompt. Do not only say "the exact prompt is in `NEXT_PHASE_PROMPT.md`"; paste the runnable prompt or exact prompt section in chat before asking approval. Do not show only a native/clickable question card, and do not put the whole summary only inside the question widget; the summary must appear as a separate assistant message directly above the question so the user can tell the phase finished intentionally.
+After every completed or blocked checkpoint, send a short visible Markdown chat summary in a normal assistant message in addition to writing the report files. This summary is the user's quick control panel; it must show what changed, whether validation passed, exactly what the next approval would allow, and the exact next-phase prompt. Do not only say "the exact prompt is in `NEXT_PHASE_PROMPT.md`"; paste the runnable prompt or exact prompt section in chat before asking approval. Do not show only a native/clickable question card, and do not put the whole summary only inside the question widget; the summary must appear as a separate assistant message directly above the question so the user can tell the phase finished intentionally. If the runtime cannot guarantee that the normal summary is visible directly above the question, use the text fallback and do not show the native/clickable question.
 
 Use this format for discovery, project setup and configuration, sources, bronze/staging, silver/intermediate, gold/marts, semantic layer, evaluator, documentation, presentation layer, continuous integration, Agents Schema, commits, and blocked checkpoints. Omit a section only when it is truly not applicable, and write `None` for empty open decisions.
 
@@ -346,7 +346,7 @@ Summary:
 - Included: <short scope>
 - Not included: <short non-scope>
 - Known caveats: <deferred or uncertain items>
-- Approval question: Use a native interactive question when available, but only after the visible Markdown control-panel summary has already been sent as a normal assistant message. Keep the widget text short: Do you want me to run this next-phase prompt as written? Recommended option: Yes, run this prompt. Text fallback: Reply Yes to proceed, or tell me what to change.
+- Approval question: Use a native interactive question only when the visible Markdown control-panel summary is present directly above it. Keep the widget text short: Do you want me to run this next-phase prompt as written? Recommended option: Yes, run this prompt. Text fallback: Reply Yes to proceed, or tell me what to change. If the runtime cannot guarantee the visible summary directly above the widget, use the text fallback instead.
 - Context bundle before execution: `SKILL.md`, `prompt.md`, phase references, `AGENT_PLAN.md`, `PIPELINE_STATUS.md`, `CONTEXT_TREE.md`, `requirements.md` when present, latest phase report, and `NEXT_PHASE_PROMPT.md`.
 ```
 

@@ -299,7 +299,7 @@ How to approve:
 Use the clickable question below and choose **Yes, continue to setup**, or choose **Add requirements first** / **Tell me what to change**.
 ```
 
-After that visible chat message, ask a short native question when available:
+After that visible chat message, ask a short native question only when the normal Markdown summary remains visibly present directly above the question:
 
 ```text
 Do you approve this discovery scope and want automatic project setup to run next?
@@ -311,9 +311,9 @@ Recommended options:
 - `Add requirements first`
 - `Tell me what to change`
 
-Do not put long findings, table lists, Mermaid diagrams, report links, or SQL proof details only in the native question. Those belong in the normal chat message and report files.
+Do not put long findings, table lists, Mermaid diagrams, report links, or SQL proof details only in the native question. Those belong in the normal chat message and report files. Do not use the native question if the user would see only a question card, file diff, blank gap, or hidden summary above it.
 
-If native interactive questions are unavailable, use this text fallback:
+If native interactive questions are unavailable, or the runtime cannot guarantee the visible Markdown summary directly above the question, use this text fallback:
 
 ```text
 Do you approve this discovery scope and want automatic project setup to run next? Reply Yes to continue, or tell me what to change.

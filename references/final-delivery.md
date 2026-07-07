@@ -152,7 +152,7 @@ Do not end with only:
 - a native question card
 - a hidden report or prompt reference
 
-The user should be able to understand from the chat pane what happened, what passed, what did not pass, what was included, what was deferred, and what to do next. A native/clickable approval question may be used, but only after this normal chat summary has already explained what the approval would allow.
+The user should be able to understand from the chat pane what happened, what passed, what did not pass, what was included, what was deferred, and what to do next. A native/clickable approval question may be used, but only after this normal chat summary has already explained what the approval would allow and remains visibly present directly above the question. If the runtime cannot guarantee that visible ordering, use the text fallback instead of a clickable question.
 
 Use this shape for normal task completion:
 

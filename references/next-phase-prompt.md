@@ -6,14 +6,14 @@ The goal is to keep the data engineer in control without forcing exact magic phr
 
 ## Core rule
 
-After every completed phase, prepare the exact next-phase execution prompt, save it to `reports/agent/NEXT_PHASE_PROMPT.md`, print a visible Markdown control-panel summary in chat, paste the exact prompt in chat, and ask a simple approval question. When the agent runtime supports native questions, buttons, choice prompts, or approval widgets, use that interactive UI so the data engineer can click approval instead of copying, pasting, or typing a magic phrase.
+After every completed phase, prepare the exact next-phase execution prompt, save it to `reports/agent/NEXT_PHASE_PROMPT.md`, print a visible Markdown control-panel summary in chat, paste the exact prompt in chat, and ask a simple approval question. When the agent runtime supports native questions, buttons, choice prompts, or approval widgets, use that interactive UI only if the normal Markdown summary remains visibly present directly above the question so the data engineer can see what completed before clicking approval.
 
-The interactive question is **not** a replacement for the chat summary. Do not show only a native question card, approval widget, file diff, or hidden `NEXT_PHASE_PROMPT.md` reference. Do not place the whole completion summary inside the native question body. The user must see a normal assistant chat message immediately above the question that explains what completed, what passed or failed, what the next phase will do, what it will not do, and how to approve.
+The interactive question is **not** a replacement for the chat summary. Do not show only a native question card, approval widget, file diff, or hidden `NEXT_PHASE_PROMPT.md` reference. Do not place the whole completion summary inside the native question body. The user must see a normal assistant chat message immediately above the question that explains what completed, what passed or failed, what the next phase will do, what it will not do, and how to approve. If the runtime cannot guarantee this visible ordering, do not use the interactive question; use the text fallback.
 
 Required sequence:
 
 1. Send a normal assistant/chat message with the visible Markdown control-panel summary and exact next-phase prompt.
-2. Then call the native interactive question tool with only a short question and short options.
+2. Then call the native interactive question tool with only a short question and short options, but only when the summary remains visible directly above it.
 
 The native question should be a compact approval control, not the primary report.
 
@@ -56,7 +56,7 @@ If any required context file is missing, continue only when the missing file is 
 
 ## Interactive approval question
 
-Prefer a platform-native interactive question when available. In Codex, use `request_user_input` or the current native question/approval UI when that tool is available in the active mode. In other agent runtimes, use the equivalent choice, button, or approval widget.
+Prefer a platform-native interactive question only when the platform renders the normal Markdown summary visibly and directly above the question. In Codex, use `request_user_input` or the current native question/approval UI only when that visible-summary ordering is guaranteed in the active mode. In other agent runtimes, use the equivalent choice, button, or approval widget only under the same condition.
 
 Do not put the full phase summary, long findings, SQL results, report links, or exact next-phase prompt in the `request_user_input` question text. Those belong in the normal chat message immediately before the tool call.
 
@@ -79,7 +79,7 @@ If the runtime only supports two options, use:
 
 Do not set an automatic approval timeout. If the runtime requires a fallback or default result, default to not approved.
 
-If native interactive questions are unavailable, use the text fallback:
+If native interactive questions are unavailable, or the runtime would show only the question without the visible summary directly above it, use the text fallback:
 
 ```text
 Do you want me to run this next-phase prompt as written? Reply Yes to proceed, or tell me what to change.
@@ -93,6 +93,7 @@ Do you want me to run this next-phase prompt as written? Reply Yes to proceed, o
 - Do not hide the next-phase prompt.
 - Do not tell the user only that the prompt is in `NEXT_PHASE_PROMPT.md`.
 - Do not show only an interactive question without a visible Markdown completion summary directly before it.
+- Do not use an interactive question when the visible Markdown summary would be hidden, collapsed, separated by a file diff, or missing.
 - Do not put the summary only inside the question widget.
 - Do not use a long native question body as the phase report.
 - Do not ask the user to reply `Yes` when a native interactive question is available.
