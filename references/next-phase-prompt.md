@@ -6,7 +6,9 @@ The goal is to keep the data engineer in control without forcing exact magic phr
 
 ## Core rule
 
-After every completed phase, prepare the exact next-phase execution prompt, save it to `reports/agent/NEXT_PHASE_PROMPT.md`, summarize the completed phase and recommended next phase in chat, paste the exact prompt in chat, and ask a simple approval question. When the agent runtime supports native questions, buttons, choice prompts, or approval widgets, use that interactive UI so the data engineer can click approval instead of copying, pasting, or typing a magic phrase.
+After every completed phase, prepare the exact next-phase execution prompt, save it to `reports/agent/NEXT_PHASE_PROMPT.md`, print a visible Markdown control-panel summary in chat, paste the exact prompt in chat, and ask a simple approval question. When the agent runtime supports native questions, buttons, choice prompts, or approval widgets, use that interactive UI so the data engineer can click approval instead of copying, pasting, or typing a magic phrase.
+
+The interactive question is **not** a replacement for the chat summary. Do not show only a native question card, approval widget, file diff, or hidden `NEXT_PHASE_PROMPT.md` reference. The user must see a normal chat message immediately above the question that explains what completed, what passed or failed, what the next phase will do, what it will not do, and how to approve.
 
 The user may approve naturally after seeing the prompt:
 
@@ -81,6 +83,7 @@ Do you want me to run this next-phase prompt as written? Reply Yes to proceed, o
 - Do not auto-run the next phase immediately after completing a phase.
 - Do not hide the next-phase prompt.
 - Do not tell the user only that the prompt is in `NEXT_PHASE_PROMPT.md`.
+- Do not show only an interactive question without a visible Markdown completion summary directly before it.
 - Do not ask the user to reply `Yes` when a native interactive question is available.
 - Do not ask only for `approve <phase>` without showing the exact prompt.
 - Do not make the user copy/paste the generated next-phase prompt back into chat when an interactive approval question is available.
@@ -104,32 +107,51 @@ After every completed phase, the chat summary must include:
 10. Exact next-phase execution prompt pasted in chat, not only linked by path.
 11. Interactive approval question when available; text fallback when not available.
 
-Use this chat shape:
+Use this visible chat shape immediately before any interactive approval question:
 
 ````markdown
-<Completed phase friendly name> complete - <next phase friendly name> approval pending
+## Phase Complete: <completed phase friendly name>
 
-Status: <PASS / WARN / BLOCKED>
-Report: `reports/agent/<phase>_report.md`
-Next-phase prompt file: `reports/agent/NEXT_PHASE_PROMPT.md`
+Status: <PASS / WARN / FAIL / BLOCKED>
 
 What was completed:
 - <short result>
+- <short result>
 
 Validation:
-- <important pass/warn/fail evidence>
+- <command or proof summary>: <PASS / WARN / FAIL / BLOCKED>
 
-What I recommend next:
-- Next phase: <next_phase>
-- Why now: <evidence>
-- Will build/change: <short scope>
-- Will not include: <short non-scope>
+Reports written:
+- `reports/agent/<phase>/<phase>_report.md`
+- `reports/agent/PIPELINE_STATUS.md`
+- `reports/agent/CONTEXT_TREE.md`
+
+What needs review:
+- <warning, open decision, blocker, or "None">
+
+## Next Recommended Phase: <next phase friendly name>
+
+Goal:
+- <plain-language goal>
+
+Includes:
+- <included scope>
+
+Does not include:
+- <explicit excluded scope>
+
+How to approve:
+Use the clickable question below and choose **Yes, run this prompt**, or choose **Tell me what to change**.
+
+Next-phase prompt file: `reports/agent/NEXT_PHASE_PROMPT.md`
 
 The next phase prompt I will run if approved:
 ```text
 <paste exact NEXT_PHASE_PROMPT.md content or the exact runnable prompt section>
 ```
 ````
+
+If the phase status is `FAIL` or `BLOCKED`, do not ask for approval to continue as written. Show the same summary, explain the blocker, and ask what to fix or provide.
 
 Use this text fallback when interactive questions are unavailable:
 
