@@ -247,6 +247,78 @@ Use this template:
 
 Keep this section directional during initial discovery. Do not list every final model as if it is approved. The goal is to help the data engineer understand the recommended path and decide whether to add requirements before build planning.
 
+## Discovery chat summary and requirements checkpoint
+
+Before asking the requirements checkpoint question, send a normal assistant chat message with a visible Markdown summary. The native clickable question is only the approval control. It must not be the only place where the discovery results appear.
+
+Use this visible chat shape:
+
+```markdown
+## Discovery Complete
+
+Status: <PASS | WARN | BLOCKED>
+
+Source reviewed:
+- Profile: <profile name>
+- Adapter: <adapter>
+- Database or catalog: <database/catalog/project>
+- Source schema: <source schema>
+- Tables profiled: <count>
+- Non-empty tables: <count>
+
+Key findings:
+- <business process/entity finding with evidence>
+- <relationship/cardinality finding with evidence>
+- <data quality, privacy, or unknown-field finding>
+
+Validation and SQL proofs:
+- <important proof result, such as row counts, key checks, relationship checks, active/open counts, or date coverage>
+- SQL proof folder: `reports/agent/00_discovery/sql_proofs/`
+
+Reports written:
+- `reports/agent/00_discovery/discovery_report.md`
+- `reports/agent/00_discovery/requirements.md`
+- `reports/agent/00_discovery/DISCOVERY_APPROVAL_CHECKLIST.md`
+- `reports/agent/REQUIREMENTS_TRACEABILITY_MATRIX.md`
+- `reports/agent/PIPELINE_STATUS.md`
+- `reports/agent/CONTEXT_TREE.md`
+
+Open decisions:
+- <decision or "None blocking automatic setup">
+
+Recommended next step:
+- Run automatic project setup and configuration only.
+
+Next step includes:
+- dbt project scaffold or setup validation, dependencies, `dbt debug`, `dbt deps`, and `dbt parse`.
+
+Next step does not include:
+- Source YAML generation, bronze/staging, silver/intermediate, gold/marts, semantic layer, analytics insight reporting, presentation layer, commits, pushes, or source switching.
+
+How to approve:
+Use the clickable question below and choose **Yes, continue to setup**, or choose **Add requirements first** / **Tell me what to change**.
+```
+
+After that visible chat message, ask a short native question when available:
+
+```text
+Do you approve this discovery scope and want automatic project setup to run next?
+```
+
+Recommended options:
+
+- `Yes, continue to setup`
+- `Add requirements first`
+- `Tell me what to change`
+
+Do not put long findings, table lists, Mermaid diagrams, report links, or SQL proof details only in the native question. Those belong in the normal chat message and report files.
+
+If native interactive questions are unavailable, use this text fallback:
+
+```text
+Do you approve this discovery scope and want automatic project setup to run next? Reply Yes to continue, or tell me what to change.
+```
+
 ## Requirements checkpoint
 
 Before automatic project setup and configuration, ask whether the user wants to add or change requirements.

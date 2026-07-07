@@ -191,6 +191,22 @@ Decision rule: FAIL if uncertainty is hidden or the agent proceeds without appro
 
 ## 13. Final Discovery Decision
 
+Before asking for the final discovery decision, the agent must send a normal assistant message with a visible Markdown **Discovery Complete** summary. The native/clickable approval question is only the control, not the report. The summary must include status, source reviewed, key findings, validation or SQL proof highlights, reports written, open decisions, recommended next step, what setup will include, what setup will not include, and how to approve.
+
+The native question, when available, must be short:
+
+```text
+Do you approve this discovery scope and want automatic project setup to run next?
+```
+
+Use concise options:
+
+- `Yes, continue to setup`
+- `Add requirements first`
+- `Tell me what to change`
+
+Decision rule: FAIL if discovery results are shown only inside the question widget or the user cannot tell from the chat pane that discovery completed intentionally.
+
 Select one:
 
 | Decision | Meaning |
