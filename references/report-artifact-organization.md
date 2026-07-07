@@ -79,6 +79,14 @@ python <path-to-installed-skill-or-workspace>\scripts\create_report_skeleton.py 
 
 This creates the managed folders and `_proof_index.md` files before the first proof query is written. Do not delete those index files; use them as the human-facing map for what each proof folder contains.
 
+For discovery, use the canonical templates under:
+
+```text
+templates/reports/00_discovery/
+```
+
+These templates define the fixed report structure for discovery, requirements, cardinality, relationship profiling, discovery approval, proof index, and SQL proof files. Copy/fill them only after required discovery inputs are confirmed. The template structure should stay consistent across projects; the content should change based on the source evidence and approved user requirements.
+
 ## Standard File Locations
 
 | Artifact | Canonical Path |

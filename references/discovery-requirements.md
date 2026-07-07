@@ -145,6 +145,20 @@ reports/agent/PIPELINE_STATUS.md
 reports/agent/CONTEXT_TREE.md
 ```
 
+Use these canonical discovery templates when creating the discovery files:
+
+| Output | Template |
+|---|---|
+| `reports/agent/00_discovery/discovery_report.md` | `templates/reports/00_discovery/discovery_report.md` |
+| `reports/agent/00_discovery/requirements.md` | `templates/reports/00_discovery/requirements.md` |
+| `reports/agent/00_discovery/cardinality_report.md` | `templates/reports/00_discovery/cardinality_report.md` |
+| `reports/agent/00_discovery/relationship_profile.md` | `templates/reports/00_discovery/relationship_profile.md` |
+| `reports/agent/00_discovery/DISCOVERY_APPROVAL_CHECKLIST.md` | `templates/reports/00_discovery/DISCOVERY_APPROVAL_CHECKLIST.md` |
+| `reports/agent/00_discovery/sql_proofs/_proof_index.md` | `templates/reports/00_discovery/sql_proofs/_proof_index.md` |
+| Individual SQL proof files | `templates/reports/00_discovery/sql_proofs/sql_proof_template.sql` |
+
+The templates define structure only. The content must change based on the confirmed source schema, source tables, row counts, keys, relationships, data quality, privacy findings, business process evidence, and user-provided rules.
+
 If the dbt project root does not exist yet, create `reports/agent/` in the current workspace/run root. Move or preserve these files in the dbt project root later only if the project root is created elsewhere and the user approves that layout.
 
 The chat response should be a concise summary plus links/paths to these files. Do not use chat as the only discovery record.
@@ -153,7 +167,15 @@ The chat response should be a concise summary plus links/paths to these files. D
 
 Create `reports/agent/00_discovery/requirements.md` during discovery. This file is the project-facing requirements checkpoint extracted from the source schema, source data, domain label, and any user-provided rules. It must be easy for a data engineer to review before build planning.
 
-Use this structure:
+Use the canonical template:
+
+```text
+templates/reports/00_discovery/requirements.md
+```
+
+Copy or recreate that template structure after required inputs are confirmed, then replace placeholders with source-specific evidence. Do not remove sections; write `None`, `Not observed`, or `Blocked` when a section has no evidence yet.
+
+The required structure is:
 
 ```markdown
 # Project Requirements From Discovery

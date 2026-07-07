@@ -60,6 +60,15 @@ ROOT_FILES = {
 """,
 }
 
+DISCOVERY_TEMPLATE_FILES = [
+    "00_discovery/discovery_report.md",
+    "00_discovery/requirements.md",
+    "00_discovery/cardinality_report.md",
+    "00_discovery/relationship_profile.md",
+    "00_discovery/DISCOVERY_APPROVAL_CHECKLIST.md",
+    "00_discovery/sql_proofs/_proof_index.md",
+]
+
 
 def write_if_missing(path: Path, content: str) -> bool:
     if path.exists():
@@ -103,6 +112,8 @@ Use sortable filenames such as:
 
 def create_skeleton(root: Path) -> list[Path]:
     reports_root = root / "reports" / "agent"
+    skill_root = Path(__file__).resolve().parents[1]
+    template_root = skill_root / "templates" / "reports"
     created: list[Path] = []
 
     reports_root.mkdir(parents=True, exist_ok=True)
@@ -116,7 +127,12 @@ def create_skeleton(root: Path) -> list[Path]:
         folder = reports_root / relative_folder
         folder.mkdir(parents=True, exist_ok=True)
         index_path = folder / "_proof_index.md"
-        if write_if_missing(index_path, proof_index_content(relative_folder, purpose)):
+        template_path = template_root / relative_folder / "_proof_index.md"
+        if template_path.exists():
+            index_content = template_path.read_text(encoding="utf-8")
+        else:
+            index_content = proof_index_content(relative_folder, purpose)
+        if write_if_missing(index_path, index_content):
             created.append(index_path)
 
     for relative_folder in PLAIN_FOLDERS:
@@ -125,6 +141,12 @@ def create_skeleton(root: Path) -> list[Path]:
         keep_path = folder / ".gitkeep"
         if write_if_missing(keep_path, ""):
             created.append(keep_path)
+
+    for relative_path in DISCOVERY_TEMPLATE_FILES:
+        template_path = template_root / relative_path
+        output_path = reports_root / relative_path
+        if template_path.exists() and write_if_missing(output_path, template_path.read_text(encoding="utf-8")):
+            created.append(output_path)
 
     return created
 
