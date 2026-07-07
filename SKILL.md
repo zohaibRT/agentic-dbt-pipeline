@@ -446,6 +446,8 @@ Read [advanced-data-engineering-review.md](references/advanced-data-engineering-
 
 Run `python scripts/run_acceptance_gate.py --root .` and record the result. When full delivery is requested, also run or delegate a fresh independent verifier per [agents/dbt-verifier-agent.md](agents/dbt-verifier-agent.md) and record `reports/agent/INDEPENDENT_VERIFICATION_REPORT.md`.
 
+After any requested task, full pipeline, phase, fix, documentation update, presentation artifact, commit, push, or verification run is complete, print a complete summary in the chat pane using [final-delivery.md](references/final-delivery.md). Do not end with only a file path, commit hash, clickable approval widget, "done", "see report", or native question card. The chat summary must state status, what was done, validation, files changed or reports written, important warnings, and next action.
+
 Always finish with a user-facing summary that starts short, then gives the useful details:
 
 1. Short summary: what was built and whether it passed.

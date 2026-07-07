@@ -138,9 +138,51 @@ dbt docs serve --host 127.0.0.1 --port 8080
 
 If the agent starts docs serving, do it as a non-blocking/background process and report the URL.
 
+## Completion summary in chat
+
+After any requested task, full pipeline, phase, fix, documentation update, presentation artifact, commit, push, or verification run is complete, print a complete summary in the chat pane. Do this even when detailed reports were written to files.
+
+Do not end with only:
+
+- a file path
+- a commit hash
+- a clickable approval widget
+- "done"
+- "see report"
+- a native question card
+
+The user should be able to understand from the chat pane what happened, what passed, what did not pass, and what to do next.
+
+Use this shape for normal task completion:
+
+```markdown
+## Task Complete
+
+Status: <PASS / WARN / FAIL / BLOCKED>
+
+What was done:
+- <completed item>
+- <completed item>
+
+Validation:
+- <command/proof/check>: <PASS / WARN / FAIL / BLOCKED / NOT RUN>
+
+Files changed or reports written:
+- `<path>`
+- `<path>`
+
+Important notes:
+- <warning, caveat, or "None">
+
+Next action:
+- <what the user should approve, review, run, or know next>
+```
+
+For full dbt pipeline final delivery, use the more detailed structure below.
+
 ## Final response
 
-Always start with a concise user-facing summary before detailed handoff notes.
+Always start with a concise user-facing summary before detailed handoff notes. The final response must be printed in the chat pane; report files are supporting evidence, not a substitute for the chat summary.
 
 Use this order:
 
