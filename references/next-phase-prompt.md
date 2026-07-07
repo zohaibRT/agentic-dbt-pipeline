@@ -8,7 +8,14 @@ The goal is to keep the data engineer in control without forcing exact magic phr
 
 After every completed phase, prepare the exact next-phase execution prompt, save it to `reports/agent/NEXT_PHASE_PROMPT.md`, print a visible Markdown control-panel summary in chat, paste the exact prompt in chat, and ask a simple approval question. When the agent runtime supports native questions, buttons, choice prompts, or approval widgets, use that interactive UI so the data engineer can click approval instead of copying, pasting, or typing a magic phrase.
 
-The interactive question is **not** a replacement for the chat summary. Do not show only a native question card, approval widget, file diff, or hidden `NEXT_PHASE_PROMPT.md` reference. The user must see a normal chat message immediately above the question that explains what completed, what passed or failed, what the next phase will do, what it will not do, and how to approve.
+The interactive question is **not** a replacement for the chat summary. Do not show only a native question card, approval widget, file diff, or hidden `NEXT_PHASE_PROMPT.md` reference. Do not place the whole completion summary inside the native question body. The user must see a normal assistant chat message immediately above the question that explains what completed, what passed or failed, what the next phase will do, what it will not do, and how to approve.
+
+Required sequence:
+
+1. Send a normal assistant/chat message with the visible Markdown control-panel summary and exact next-phase prompt.
+2. Then call the native interactive question tool with only a short question and short options.
+
+The native question should be a compact approval control, not the primary report.
 
 The user may approve naturally after seeing the prompt:
 
@@ -51,6 +58,8 @@ If any required context file is missing, continue only when the missing file is 
 
 Prefer a platform-native interactive question when available. In Codex, use `request_user_input` or the current native question/approval UI when that tool is available in the active mode. In other agent runtimes, use the equivalent choice, button, or approval widget.
 
+Do not put the full phase summary, long findings, SQL results, report links, or exact next-phase prompt in the `request_user_input` question text. Those belong in the normal chat message immediately before the tool call.
+
 Recommended question:
 
 ```text
@@ -84,6 +93,8 @@ Do you want me to run this next-phase prompt as written? Reply Yes to proceed, o
 - Do not hide the next-phase prompt.
 - Do not tell the user only that the prompt is in `NEXT_PHASE_PROMPT.md`.
 - Do not show only an interactive question without a visible Markdown completion summary directly before it.
+- Do not put the summary only inside the question widget.
+- Do not use a long native question body as the phase report.
 - Do not ask the user to reply `Yes` when a native interactive question is available.
 - Do not ask only for `approve <phase>` without showing the exact prompt.
 - Do not make the user copy/paste the generated next-phase prompt back into chat when an interactive approval question is available.
