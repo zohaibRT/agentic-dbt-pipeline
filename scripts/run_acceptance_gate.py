@@ -31,6 +31,10 @@ REQUIRED_CONTROL_FILES = [
     "reports/agent/PIPELINE_STATUS.md",
     "reports/agent/CONTEXT_TREE.md",
     "reports/agent/REPORT_INDEX.md",
+    "reports/agent/REQUIREMENTS_TRACEABILITY_MATRIX.md",
+    "reports/agent/LAYER_VERIFICATION_LEDGER.md",
+    "reports/agent/KPI_DEFINITION_CONTRACTS.md",
+    "reports/agent/METRIC_VERIFICATION_MATRIX.md",
     "references/acceptance-checklist.md",
 ]
 
@@ -43,6 +47,9 @@ LAYER_REPORT_REQUIREMENTS = {
 VALIDATION_SCRIPTS = [
     ["python", "scripts/validate_config.py", "--root", "."],
     ["python", "scripts/validate_kpi_proofs.py", "--root", "."],
+    ["python", "scripts/check_requirement_traceability.py", "--root", "."],
+    ["python", "scripts/check_layer_proof_coverage.py", "--root", "."],
+    ["python", "scripts/verify_metric_reconciliation.py", "--root", "."],
     ["python", "scripts/validate_powerbi_pbip.py"],
     ["python", "scripts/validate_local_web_report.py"],
 ]
@@ -211,8 +218,12 @@ def check_pipeline_status(root: Path, report: GateReport) -> None:
 def check_traceability_files(root: Path, report: GateReport) -> None:
     matrix = root / "reports" / "agent" / "REQUIREMENTS_TRACEABILITY_MATRIX.md"
     ledger = root / "reports" / "agent" / "LAYER_VERIFICATION_LEDGER.md"
+    kpi_contracts = root / "reports" / "agent" / "KPI_DEFINITION_CONTRACTS.md"
+    metric_matrix = root / "reports" / "agent" / "METRIC_VERIFICATION_MATRIX.md"
     report.add(CheckResult("Requirements traceability matrix", "PASS" if matrix.exists() else "WARN", "exists" if matrix.exists() else "recommended but missing"))
     report.add(CheckResult("Layer verification ledger", "PASS" if ledger.exists() else "WARN", "exists" if ledger.exists() else "recommended but missing"))
+    report.add(CheckResult("KPI definition contracts", "PASS" if kpi_contracts.exists() else "WARN", "exists" if kpi_contracts.exists() else "recommended but missing"))
+    report.add(CheckResult("Metric verification matrix", "PASS" if metric_matrix.exists() else "WARN", "exists" if metric_matrix.exists() else "recommended but missing"))
 
 
 def check_operational_gaps(root: Path, report: GateReport) -> None:

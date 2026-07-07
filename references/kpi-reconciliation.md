@@ -23,6 +23,8 @@ reports/agent/09_analytics_insights/kpis/kpi_reconciliation_report.md
 reports/agent/09_analytics_insights/kpis/kpi_lineage_proofs.md
 reports/agent/09_analytics_insights/kpis/kpi_variance_report.md
 reports/agent/09_analytics_insights/kpis/sql_proofs/
+reports/agent/KPI_DEFINITION_CONTRACTS.md
+reports/agent/METRIC_VERIFICATION_MATRIX.md
 ```
 
 Inside `reports/agent/09_analytics_insights/kpis/sql_proofs/`, write one proof file per key performance indicator and layer where applicable:

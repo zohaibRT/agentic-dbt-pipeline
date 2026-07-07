@@ -59,7 +59,7 @@ Default tab or section order:
 | Tab / section | Content |
 |---|---|
 | Overview | Report purpose, audience, data source, refresh time, caveats, and navigation |
-| Executive key performance indicators | Trusted strategic key performance indicators from `kpi_catalog.md` |
+| Executive key performance indicators | Trusted strategic key performance indicators from `KPI_DEFINITION_CONTRACTS.md`, `METRIC_VERIFICATION_MATRIX.md`, and `kpi_catalog.md` |
 | Trends and variance | Time showcase, period comparisons, and variance views |
 | Operations and activity | Volumes, statuses, workflow movement, and operational metrics |
 | Segmentation and performance | Department, product, provider, location, channel, or other approved dimensions |
@@ -137,6 +137,8 @@ Recommend Power BI instead when the user explicitly needs interactive slicers, d
 | `reports/agent/09_analytics_insights/kpis/kpi_discovery_matrix.md` | Recommended key performance indicator candidates, confidence, and blocked/deferred reasoning |
 | `reports/agent/09_analytics_insights/kpis/kpi_reconciliation_report.md` | Proof that trusted key performance indicators reconcile across layers |
 | `reports/agent/09_analytics_insights/kpis/kpi_catalog.md` | Trusted strategic key performance indicators and formulas |
+| `reports/agent/KPI_DEFINITION_CONTRACTS.md` | Key performance indicator business contracts, approval status, expected result, actual result, and proof file |
+| `reports/agent/METRIC_VERIFICATION_MATRIX.md` | Measure, metric, and key performance indicator reconciliation from source proof to mart, semantic, and presentation proof |
 | `reports/agent/09_analytics_insights/business_process_catalog.md` | Business areas, business processes, source evidence, facts, entities, and recommended report pages |
 | `reports/agent/09_analytics_insights/fact_catalog.md` | Fact/event models, grains, row counts, date/status/amount fields, supported measures, and relationship safety |
 | `reports/agent/09_analytics_insights/dimension_catalog.md` | Safe slicers, labels, drill-down fields, related facts, and privacy status |
@@ -159,6 +161,8 @@ Build a coverage table in `report_spec.md` that maps every recommended measure a
 | `metric_catalog.md` | Include every metric marked `recommended`, `trusted`, or equivalent supported status in at least one chart, summary value, or matrix-style figure |
 | `kpi_discovery_matrix.md` | Include every row with `HIGH` confidence or user-approved `MEDIUM` confidence in the figure plan; mark `LOW`, `BLOCKED`, and unreconciled rows as deferred with the reason from the matrix |
 | `kpi_catalog.md` | Include every trusted strategic key performance indicator in the executive summary area, a dedicated key performance indicator page, or a clearly labeled supporting panel |
+| `KPI_DEFINITION_CONTRACTS.md` | Include only key performance indicators with acceptable approval and verification status; render `FAIL` or `BLOCKED` rows only as blocked/deferred notes |
+| `METRIC_VERIFICATION_MATRIX.md` | Use expected result, actual result, difference, and proof file references to validate and caption rendered values |
 | `dashboard_spec.md` | Every approved page and visual in the dashboard spec must have a matching figure group or blocked note |
 | `insight_backlog.md` | Deferred or blocked items must appear in the coverage table as `BLOCKED` or `DEFERRED`; do not omit them silently |
 
@@ -171,9 +175,9 @@ Required coverage artifacts:
 
 Hard coverage rules:
 
-- **Every key performance indicator in `kpi_catalog.md`** must appear in `kpi_figure_coverage.md` as `RENDERED`, `BLOCKED`, or `DEFERRED`.
+- **Every key performance indicator in `kpi_catalog.md` and `KPI_DEFINITION_CONTRACTS.md`** must appear in `kpi_figure_coverage.md` as `RENDERED`, `BLOCKED`, or `DEFERRED`.
 - Do not skip a recommended measure or metric just because the visual would be repetitive; combine related items on one page when appropriate, but keep every `kpi_catalog.md` row visible in `kpi_figure_coverage.md`.
-- Executive summary pages should prioritize `kpi_catalog.md` items, but supporting measures from `measure_catalog.md` and `metric_catalog.md` must still be represented somewhere in the pack when they are marked recommended or trusted.
+- Executive summary pages should prioritize `kpi_catalog.md` items that also pass `KPI_DEFINITION_CONTRACTS.md` and `METRIC_VERIFICATION_MATRIX.md`, but supporting measures from `measure_catalog.md` and `metric_catalog.md` must still be represented somewhere in the pack when they are marked recommended or trusted.
 - Standard time showcase visuals from [presentation-layer.md](presentation-layer.md) still apply when validated date fields exist.
 
 ## Python environment and dependency installation
@@ -255,7 +259,7 @@ reports/agent/10_presentation/matplotlib/
 | `README.md` | How to regenerate figures, open the browser report, install packages, data source notes, and privacy caveats |
 | `requirements-matplotlib.txt` | Exact Python packages required for this report pack, including Matplotlib prerequisites and any warehouse client used |
 | `report_spec.md` | Page list, chart list, metrics per chart, filters, dimensions, blocked visuals, tab mapping, and coverage summary |
-| `kpi_figure_coverage.md` | Row-by-row mapping from `measure_catalog.md`, `metric_catalog.md`, `kpi_discovery_matrix.md`, and `kpi_catalog.md` to figure files and status |
+| `kpi_figure_coverage.md` | Row-by-row mapping from `measure_catalog.md`, `metric_catalog.md`, `kpi_discovery_matrix.md`, `KPI_DEFINITION_CONTRACTS.md`, `METRIC_VERIFICATION_MATRIX.md`, and `kpi_catalog.md` to figure files and status |
 | `label_dictionary.md` | Approved code-to-business-label mappings used on charts, tables, legends, and HTML report text |
 | `report_theme.md` | Color palette, typography, spacing, optional logo/image usage, and eye-comfort design notes |
 | `report_theme.py` | Shared theme constants for chart colors, fonts, figure size, and export DPI |
@@ -347,7 +351,7 @@ Instead, resolve labels from approved sources in this order:
 
 | Label source | Use for |
 |---|---|
-| `kpi_catalog.md` and `metric_catalog.md` | Metric titles, card labels, and chart titles |
+| `KPI_DEFINITION_CONTRACTS.md`, `METRIC_VERIFICATION_MATRIX.md`, `kpi_catalog.md`, and `metric_catalog.md` | Metric titles, card labels, chart titles, proof status, expected result, and actual result |
 | Gold dimension name/description columns | Entity, product, provider, department, location, and status names |
 | Mapping seeds and reference tables from dbt | Code-to-label translations |
 | `label_dictionary.md` | Explicit code-to-business-label mappings used by the report pack |
@@ -489,7 +493,7 @@ Before marking Matplotlib presentation work complete:
 
 1. Verify `matplotlib`, `numpy`, and `pandas` import successfully or document the exact install blocker and commands attempted.
 2. Verify `requirements-matplotlib.txt` exists and matches the installed packages.
-3. Verify `kpi_figure_coverage.md` includes **every key performance indicator in `kpi_catalog.md`** plus recommended measures and metrics from the broader catalogs, each with `RENDERED`, `BLOCKED`, or `DEFERRED` status.
+3. Verify `kpi_figure_coverage.md` includes **every key performance indicator in `KPI_DEFINITION_CONTRACTS.md` and `kpi_catalog.md`** plus recommended measures and metrics from the broader catalogs, each with `RENDERED`, `BLOCKED`, or `DEFERRED` status.
 4. Verify `serve_report.py --smoke-test` or the documented server smoke test runs without error.
 5. Verify the local report page itself with `scripts/validate_local_web_report.py`, proving that `http://127.0.0.1:<port>/` returns HTTP 200 and non-empty HTML. This catches browser failures such as `ERR_EMPTY_RESPONSE`.
 6. If `generate_report.py` exists for snapshot export, verify it runs without error or document the exact blocker.

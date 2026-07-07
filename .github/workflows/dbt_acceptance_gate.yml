@@ -1,0 +1,66 @@
+# Skill repo: validates scripts and skill configuration on every PR.
+# Generated dbt projects: copy this workflow and uncomment warehouse steps when CI credentials exist.
+name: dbt Acceptance Gate
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  skill-repo-validation:
+    name: Skill repo validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install validation dependencies
+        run: pip install pyyaml
+
+      - name: Validate skill configuration
+        run: python scripts/validate_config.py --root .
+
+      - name: Compile Python scripts
+        run: python -m compileall scripts
+
+  # Uncomment and adapt for a generated dbt project with warehouse CI credentials.
+  # dbt-project-acceptance:
+  #   name: dbt project acceptance gate
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: <project.root>
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-python@v5
+  #       with:
+  #         python-version: "3.12"
+  #     - run: pip install -r requirements.txt
+  #     - run: pip install "dbt-core==1.10.15" "<dbt-adapter-package>"
+  #     - run: dbt deps
+  #     - run: dbt parse --no-partial-parse
+  #     - run: dbt build
+  #       env:
+  #         DBT_PROFILES_DIR: ${{ github.workspace }}/.dbt-ci
+  #     - run: python scripts/run_acceptance_gate.py --root .
+  #     - run: python scripts/validate_kpi_proofs.py --root .
+  #     - run: python scripts/check_requirement_traceability.py --root .
+  #     - run: python scripts/check_layer_proof_coverage.py --root .
+  #     - run: python scripts/verify_metric_reconciliation.py --root .
+  #     - name: Upload acceptance reports
+  #       if: always()
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: acceptance-gate-reports
+  #         path: |
+  #           reports/agent/ACCEPTANCE_GATE_REPORT.md
+  #           reports/agent/ACCEPTANCE_GATE_REPORT.json
+  #           reports/agent/INDEPENDENT_VERIFICATION_REPORT.md
+  #           reports/agent/INDEPENDENT_VERIFICATION_REPORT.json

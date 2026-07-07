@@ -6,6 +6,8 @@ Also read:
 
 - [references/universal-analytics-framework.md](../references/universal-analytics-framework.md)
 - [references/kpi-discovery-framework.md](../references/kpi-discovery-framework.md)
+- [references/kpi-definition-contract.md](../references/kpi-definition-contract.md)
+- [references/metric-verification-checklist.md](../references/metric-verification-checklist.md)
 - [references/kpi-reconciliation.md](../references/kpi-reconciliation.md)
 - [references/metric-verification.md](../references/metric-verification.md)
 
@@ -21,6 +23,8 @@ Maximize **useful validated coverage**, not chart count or catalog row count for
 
 Every number that appears in:
 
+- `KPI_DEFINITION_CONTRACTS.md`
+- `METRIC_VERIFICATION_MATRIX.md`
 - `measure_catalog.md`
 - `metric_catalog.md`
 - `kpi_catalog.md`
@@ -99,6 +103,8 @@ Before analytics insight reporting = `PASS`:
 | `measure_catalog.md` | All supported counts, sums, averages from gold facts |
 | `metric_catalog.md` | Time, dimension, ratio, funnel, quality metrics from measures |
 | `kpi_catalog.md` | Decision-relevant reconciled subset only |
+| `reports/agent/KPI_DEFINITION_CONTRACTS.md` | Business contract, source mapping, expected result, actual result, approval, and verification status for every key performance indicator claim |
+| `reports/agent/METRIC_VERIFICATION_MATRIX.md` | Source proof, mart proof, semantic proof, presentation proof, difference or tolerance, and status for important measures, metrics, and key performance indicators |
 | `insight_backlog.md` | Deferred and blocked candidates with reasons |
 | `sql_proofs/` | One proof file per published measure, metric, or key performance indicator |
 
@@ -171,14 +177,16 @@ Analytics insight reporting cannot be marked `PASS` unless:
 
 ```bash
 python scripts/validate_kpi_proofs.py --root .
+python scripts/verify_metric_reconciliation.py --root .
 ```
 
-passes, or the phase report documents each failed check with evidence and `insight_backlog.md` explains every catalog shortfall.
+pass, or the phase report documents each failed check with evidence and `insight_backlog.md` explains every catalog shortfall.
 
 ## Validation command
 
 ```bash
 python scripts/validate_kpi_proofs.py --root .
+python scripts/verify_metric_reconciliation.py --root .
 ```
 
 Optional project-scale targets:

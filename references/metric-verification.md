@@ -1,6 +1,6 @@
 # Metric Verification
 
-Use this before gold/marts, semantic layer, analytics insight reporting, presentation layer, Power BI artifacts, or final delivery complete. Also read [kpi-reconciliation.md](kpi-reconciliation.md) and [cardinality-validation.md](cardinality-validation.md).
+Use this before gold/marts, semantic layer, analytics insight reporting, presentation layer, Power BI artifacts, or final delivery complete. Also read [kpi-definition-contract.md](kpi-definition-contract.md), [metric-verification-checklist.md](metric-verification-checklist.md), [kpi-reconciliation.md](kpi-reconciliation.md), and [cardinality-validation.md](cardinality-validation.md).
 
 ## Core rule
 
@@ -88,6 +88,8 @@ Gold, semantic, analytics insight, presentation, and final reports must include:
 ```
 
 For metrics without denominators, use `Not applicable` for denominator columns and reconcile the aggregate value.
+
+Also update the cross-phase `reports/agent/METRIC_VERIFICATION_MATRIX.md` for every important measure, metric, and key performance indicator. The matrix is an acceptance-gate input and must link source proof, mart proof, semantic proof when applicable, presentation proof when applicable, expected result, actual result, difference or tolerance, and status.
 
 ## Stop conditions
 

@@ -34,6 +34,30 @@ PLAIN_FOLDERS = [
 ROOT_FILES = {
     "REPORT_INDEX.md": "# Report Index\n\nUse this file to list each report, status, purpose, and what the data engineer should verify.\n",
     "HUMAN_VERIFICATION_GUIDE.md": "# Human Verification Guide\n\nUse this file to explain how to re-run SQL proofs, review validation results, and confirm blocked or deferred items.\n",
+    "REQUIREMENTS_TRACEABILITY_MATRIX.md": """# Requirements Traceability Matrix
+
+| Requirement ID | Requirement / Rule | Source | Business Area | Layer Impact | Implementation Artifact | Verification Artifact | Presentation / Output Artifact | Status | Notes |
+|---|---|---|---|---|---|---|---|---|---|
+| TODO | Add approved discovery requirement | reports/agent/00_discovery/requirements.md | TODO | TODO | TODO | TODO | TODO | OPEN | Replace this starter row after discovery approval |
+""",
+    "LAYER_VERIFICATION_LEDGER.md": """# Layer Verification Ledger
+
+| Phase | Layer | Model / Artifact | Expected Grain | Row Count | Upstream Comparison | Key / Grain Proof | Relationship Proof | Measure / KPI Proof | Privacy Check | Proof Files | dbt Command Result | Overall Status | Notes |
+|---|---|---|---|---:|---|---|---|---|---|---|---|---|---|
+| TODO | TODO | TODO | TODO | 0 | TODO | TODO | TODO | TODO | TODO | TODO | TODO | OPEN | Replace this starter row after the first verified layer |
+""",
+    "KPI_DEFINITION_CONTRACTS.md": """# Key Performance Indicator Definition Contracts
+
+| KPI ID | Key Performance Indicator | Business Meaning | Formula | Grain | Date Basis | Included Rows | Excluded Rows | Source Tables / Models | Built In | Verified By SQL Proof | Expected Result | Actual Result | Difference / Tolerance | Approval Status | Verification Status | Why Correct / Open Question |
+|---|---|---|---|---|---|---|---|---|---|---|---:|---:|---|---|---|---|
+| TODO | Add approved or proposed key performance indicator | TODO | TODO | TODO | TODO | TODO | TODO | TODO | TODO | TODO | 0 | 0 | TODO | PROPOSED | BLOCKED | Replace this starter row when analytics insight reporting begins |
+""",
+    "METRIC_VERIFICATION_MATRIX.md": """# Metric Verification Matrix
+
+| Metric ID | Metric / Measure / KPI | Type | Definition Approved | Built In | Source Proof | Mart Proof | Semantic Proof | Presentation Proof | Expected Result | Actual Result | Difference / Tolerance | Status | Notes |
+|---|---|---|---|---|---|---|---|---|---:|---:|---|---|---|
+| TODO | Add verified measure, metric, or key performance indicator | measure / metric / key performance indicator | NO | TODO | TODO | TODO | N/A | N/A | 0 | 0 | TODO | BLOCKED | Replace this starter row when metric verification begins |
+""",
 }
 
 

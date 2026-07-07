@@ -1,0 +1,20 @@
+{
+  "$schema": "https://modelcontextprotocol.io/schema/mcp-config.json",
+  "description": "Optional MCP wiring for an independent dbt verifier agent. MCP provides access; the verifier agent and acceptance scripts make audit decisions.",
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "${workspaceFolder}"]
+    },
+    "git": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-git", "--repository", "${workspaceFolder}"]
+    }
+  },
+  "notes": [
+    "Add warehouse MCP only when the verifier needs live SQL spot-checks.",
+    "Example: user-awslabs.redshift-mcp-server for Redshift projects.",
+    "Do not treat MCP connectivity as proof; proof lives in sql_proofs/, target/run_results.json, and phase reports.",
+    "Copy relevant server entries into your editor MCP settings; paths are environment-specific."
+  ]
+}

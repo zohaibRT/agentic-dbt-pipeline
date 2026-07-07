@@ -1,5 +1,7 @@
 # Skill Workflow Update Snippet
 
+**Integrated into** [independent-verification-governance.md](independent-verification-governance.md) and `SKILL.md`. Keep this file as a short copy-paste aid.
+
 Add these rules to the dbt skill workflow instructions.
 
 ## Discovery Gate
@@ -54,15 +56,39 @@ Every important model must have evidence for:
 - SQL proof file path
 - PASS/WARN/FAIL/BLOCKED status
 
+## KPI and Metric Verification Gate
+
+Before semantic layer, analytics insight reporting, presentation layer, or final delivery, the agent must update:
+
+```text
+reports/agent/KPI_DEFINITION_CONTRACTS.md
+reports/agent/METRIC_VERIFICATION_MATRIX.md
+```
+
+The agent must use:
+
+```text
+references/evidence-driven-dbt-process.md
+references/kpi-definition-contract.md
+references/metric-verification-checklist.md
+```
+
+Every key performance indicator must have business meaning, formula, grain, date basis, included and excluded rows, source mapping, expected result, actual result, difference or tolerance, SQL proof file, approval status, and verification status.
+
+Every important measure, metric, and key performance indicator must reconcile source proof to mart proof, and semantic/presentation proof when those layers exist.
+
 ## Final Acceptance Gate
 
 Before final delivery, the agent must run:
 
 ```bash
 python scripts/run_acceptance_gate.py --root .
+python scripts/check_requirement_traceability.py --root .
+python scripts/check_layer_proof_coverage.py --root .
+python scripts/verify_metric_reconciliation.py --root .
 ```
 
-The final answer must not claim project completion if this script returns FAIL.
+The final answer must not claim project completion if any hard gate returns FAIL.
 
 The generated project should include:
 
@@ -70,3 +96,14 @@ The generated project should include:
 reports/agent/ACCEPTANCE_GATE_REPORT.md
 reports/agent/ACCEPTANCE_GATE_REPORT.json
 ```
+
+## Independent Verifier Phase
+
+After builder work is complete, run a fresh verifier agent with `agents/dbt-verifier-agent.md` from zero context. Write:
+
+```text
+reports/agent/INDEPENDENT_VERIFICATION_REPORT.md
+reports/agent/INDEPENDENT_VERIFICATION_REPORT.json
+```
+
+Do not claim final delivery if independent verification is FAIL.

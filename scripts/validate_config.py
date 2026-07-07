@@ -47,9 +47,22 @@ REQUIRED_GITIGNORE = {
 REQUIRED_REPO_FILES = {
     "requirements.txt",
     "scripts/create_report_skeleton.py",
+    "scripts/run_acceptance_gate.py",
+    "scripts/check_layer_proof_coverage.py",
+    "scripts/check_requirement_traceability.py",
+    "scripts/verify_metric_reconciliation.py",
     "scripts/validate_local_web_report.py",
     "scripts/validate_kpi_proofs.py",
     "docs/kpi_proof_standards.md",
+    "agents/dbt-verifier-agent.md",
+    "references/evidence-driven-dbt-process.md",
+    "references/kpi-definition-contract.md",
+    "references/metric-verification-checklist.md",
+    "references/discovery-approval-checklist.md",
+    "references/requirements-traceability-matrix.md",
+    "references/layer-verification-ledger.md",
+    "references/independent-verification-governance.md",
+    ".github/workflows/dbt_acceptance_gate.yml",
 }
 
 FORBIDDEN_ENV_KEY_PARTS = (

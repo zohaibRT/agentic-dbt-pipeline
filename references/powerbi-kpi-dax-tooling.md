@@ -8,7 +8,9 @@ Power BI implements and validates reporting logic. It does not own the business 
 
 Measure generation must be driven by:
 
-1. `reports/agent/09_analytics_insights/kpis/kpi_catalog.md`, or legacy `reports/agent/kpi_catalog.md` when the canonical file is absent
+1. `reports/agent/KPI_DEFINITION_CONTRACTS.md`
+2. `reports/agent/METRIC_VERIFICATION_MATRIX.md`
+3. `reports/agent/09_analytics_insights/kpis/kpi_catalog.md`, or legacy `reports/agent/kpi_catalog.md` when the canonical file is absent
 2. Validated dbt semantic metrics
 3. Explicit user-approved requirements
 4. Reconciled key performance indicator proof from `reports/agent/09_analytics_insights/kpis/kpi_reconciliation_report.md`, or legacy `reports/agent/kpi_reconciliation_report.md` when the canonical file is absent
@@ -33,7 +35,7 @@ For every generated DAX measure, record the source mapping in `reports/agent/10_
 | Field | Required |
 |---|---|
 | Measure label | Simple user-facing name |
-| Source key performance indicator | Name from `kpi_catalog.md` or semantic metric |
+| Source key performance indicator | Name from `KPI_DEFINITION_CONTRACTS.md`, `kpi_catalog.md`, or semantic metric |
 | Source dbt model | Gold/mart model or semantic model |
 | Formula | Approved numerator, denominator, filters, and safe division logic |
 | Time field | Approved date or timestamp for trend/time intelligence |
@@ -92,7 +94,7 @@ Do not:
 
 Before marking a Power BI phase complete:
 
-1. Confirm every DAX measure maps to `kpi_catalog.md`, a validated semantic metric, or approved user requirement.
+1. Confirm every DAX measure maps to `KPI_DEFINITION_CONTRACTS.md`, `METRIC_VERIFICATION_MATRIX.md`, `kpi_catalog.md`, a validated semantic metric, or approved user requirement.
 2. Recalculate every key performance indicator with SQL against gold/marts or with an approved semantic query.
 3. Compare expected versus actual numerator, denominator, and final result for rates, ratios, averages, and percentages.
 4. Validate relationship paths, one-side uniqueness, not-nullness, grain, and cardinality.

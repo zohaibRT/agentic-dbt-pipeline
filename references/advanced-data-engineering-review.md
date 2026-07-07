@@ -19,7 +19,7 @@ The agent must do a senior data-engineering review, not only a dbt command check
 | Data quality | Empty tables, row-count movement, date coverage, status distributions, and measure sanity are documented |
 | Privacy | Sensitive fields, direct identifiers, personally identifiable information, and protected health information are excluded, masked, hashed, or approved |
 | Key performance indicators | Metrics have business meaning, source model, grain, numerator, denominator, filters, time field, caveats, validation evidence, and approval status |
-| Semantic layer | Semantic metrics trace to supported final marts and approved or clearly supported key performance indicators |
+| Semantic layer | Semantic metrics trace to supported final marts and approved or clearly supported key performance indicators with `KPI_DEFINITION_CONTRACTS.md` and `METRIC_VERIFICATION_MATRIX.md` evidence |
 | Project evaluator | Warnings are fixed, documented, or explicitly accepted; no architecture-breaking fixes were used |
 | Documentation | `dbt docs generate` ran; docs include model purpose, grain, assumptions, and important columns |
 | Analytics insight reporting | Trusted reporting design files exist under `reports/agent/`; trusted vs deferred outputs are separated; presentation scope is documented before artifact build |

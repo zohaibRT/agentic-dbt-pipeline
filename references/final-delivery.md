@@ -33,6 +33,7 @@ If the presentation decision has not been asked or answered, set status to `Anal
 - dbt documentation generated
 - Analytics insight reporting outputs created under `reports/agent/09_analytics_insights/`: `analytics_insight_report.md`, `business_process_catalog.md`, `fact_catalog.md`, `dimension_catalog.md`, `reporting_catalog.md`, `dashboard_spec.md`, `insight_backlog.md`, `reporting_readiness_scorecard.md`, and `analytics_insight_reporting_report.md`, plus key performance indicator files under `reports/agent/09_analytics_insights/kpis/`
 - Key performance indicator reconciliation outputs created when key performance indicators are approved or implemented: `reports/agent/09_analytics_insights/kpis/kpi_reconciliation_report.md`, `reports/agent/09_analytics_insights/kpis/kpi_lineage_proofs.md`, `reports/agent/09_analytics_insights/kpis/kpi_variance_report.md`, and `reports/agent/09_analytics_insights/kpis/sql_proofs/`
+- Cross-phase evidence outputs created: `reports/agent/KPI_DEFINITION_CONTRACTS.md` and `reports/agent/METRIC_VERIFICATION_MATRIX.md`
 - Cardinality and grain outputs created when relationships, joins, final models, or Power BI relationships exist: `cardinality_report.md`, `relationship_profile.md`, `join_safety_report.md`, and `grain_validation_report.md`
 - Project evaluator run and warnings summarized
 - Presentation layer recommendation produced after final validation, with user-facing options and suggested metrics
@@ -93,9 +94,41 @@ Run:
 dbt parse --no-partial-parse
 dbt build
 dbt docs generate
+python scripts/run_acceptance_gate.py --root .
+python scripts/check_requirement_traceability.py --root .
+python scripts/check_layer_proof_coverage.py --root .
+python scripts/verify_metric_reconciliation.py --root .
 ```
 
 If a full `dbt build` is too expensive, explain why and run the most complete safe build.
+
+The acceptance gate and verification scripts must return `PASS` or a documented non-blocking `WARN` before final delivery. Do not mark delivery complete on `FAIL`.
+
+## Independent verification
+
+After the acceptance gate, run a **fresh verifier agent** with [agents/dbt-verifier-agent.md](../agents/dbt-verifier-agent.md). The verifier must start from zero builder chat context and treat repository files, dbt artifacts, SQL proofs, and reports as the only source of truth.
+
+Required outputs:
+
+```text
+reports/agent/INDEPENDENT_VERIFICATION_REPORT.md
+reports/agent/INDEPENDENT_VERIFICATION_REPORT.json
+```
+
+Final delivery is blocked when independent verification is `FAIL`.
+
+See [independent-verification-governance.md](independent-verification-governance.md).
+
+## Evidence files to summarize
+
+Final delivery must summarize:
+
+- `reports/agent/REQUIREMENTS_TRACEABILITY_MATRIX.md`
+- `reports/agent/LAYER_VERIFICATION_LEDGER.md`
+- `reports/agent/KPI_DEFINITION_CONTRACTS.md`
+- `reports/agent/METRIC_VERIFICATION_MATRIX.md`
+- `reports/agent/ACCEPTANCE_GATE_REPORT.md`
+- `reports/agent/INDEPENDENT_VERIFICATION_REPORT.md`
 
 For local documentation viewing after `dbt docs generate`:
 
@@ -173,7 +206,7 @@ Use a compact table when helpful:
 - Next-phase prompt status and path
 - Power BI PBIP/TMDL validation status when used: file validation, relationship ambiguity audit, Power BI Modeling Model Context Protocol model load, DAX smoke test, Desktop open test, and unresolved load errors
 - Power BI TMDL parser safety status when used: no bare M steps at TMDL root, no invalid linguistic metadata content-type mismatch, no JSON payload such as `{ "Version": "1.0.0" }` inside XML-typed metadata
-- Power BI template/generator status when used: bundled template found or fallback used, `dashboard_spec.md` and `kpi_catalog.md` consumed or blocked, no credentials found, no duplicate lineage tags, and local PBIP references approved before use
+- Power BI template/generator status when used: bundled template found or fallback used, `dashboard_spec.md`, `KPI_DEFINITION_CONTRACTS.md`, `METRIC_VERIFICATION_MATRIX.md`, and `kpi_catalog.md` consumed or blocked, no credentials found, no duplicate lineage tags, and local PBIP references approved before use
 - Power BI Modeling Model Context Protocol availability status: checked, available and used, unavailable with install path, unavailable with reason, or failed
 - Presentation time showcase validation status: discovered fact date fields, governed measures used, SQL verification queries, and any blocked trend visuals
 - Presentation delivery gate result: `PASS`, `BLOCKED`, `SKIPPED`, or `PENDING`; never omit this when a presentation artifact was approved

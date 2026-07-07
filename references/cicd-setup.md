@@ -4,6 +4,35 @@ Basic dbt validation on pull requests; Agents Schema sync on `main`.
 
 Before creating or changing workflow files, follow [phase-plan-approval.md](phase-plan-approval.md).
 
+## Acceptance gate workflow
+
+This skill repo ships [.github/workflows/dbt_acceptance_gate.yml](../.github/workflows/dbt_acceptance_gate.yml).
+
+- In the **skill repository**, the workflow validates skill configuration and compiles Python scripts on every pull request.
+- In a **generated dbt project**, copy or adapt the commented `dbt-project-acceptance` job when warehouse CI credentials are available.
+
+Generated projects should run at minimum:
+
+```bash
+dbt deps
+dbt parse --no-partial-parse
+dbt build
+python scripts/run_acceptance_gate.py --root .
+```
+
+When analytics KPI catalogs exist:
+
+```bash
+python scripts/validate_kpi_proofs.py --root .
+python scripts/check_requirement_traceability.py --root .
+python scripts/check_layer_proof_coverage.py --root .
+python scripts/verify_metric_reconciliation.py --root .
+```
+
+Upload `reports/agent/ACCEPTANCE_GATE_REPORT.md`, `ACCEPTANCE_GATE_REPORT.json`, and independent verification reports as CI artifacts when available.
+
+See [independent-verification-governance.md](independent-verification-governance.md).
+
 ## PR validation workflow
 
 Create `.github/workflows/dbt-ci.yml`:

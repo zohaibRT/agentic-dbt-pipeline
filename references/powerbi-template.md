@@ -68,6 +68,8 @@ The template should only provide:
 3. Read [powerbi-kpi-dax-tooling.md](powerbi-kpi-dax-tooling.md), then read and use these planning inputs when available:
    - `reports/agent/09_analytics_insights/dashboard_spec.md`
    - `reports/agent/09_analytics_insights/kpis/kpi_catalog.md`
+   - `reports/agent/KPI_DEFINITION_CONTRACTS.md`
+   - `reports/agent/METRIC_VERIFICATION_MATRIX.md`
    - `reports/agent/09_analytics_insights/reporting_catalog.md`
    - `reports/agent/09_analytics_insights/analytics_insight_report.md`
    - `reports/agent/09_analytics_insights/reporting_readiness_scorecard.md`
@@ -127,8 +129,8 @@ Before presentation delivery, verify:
 - Calculated metrics or measures table columns such as `MetricKey` include `sourceColumn` metadata such as `sourceColumn: [MetricKey]`; treat `PFE_TM_METADATA_CALCTABLE_COLUMN_MISSING_SOURCECOLUMN` as a validation failure.
 - `scripts/validate_powerbi_pbip.py` passes.
 - Power BI Desktop version was detected or recorded as unavailable; version-aware validation passed when the version was available.
-- `dashboard_spec.md` and `kpi_catalog.md` were used or their absence was documented as blocking/deferred.
-- Every generated DAX measure maps to `kpi_catalog.md`, a validated semantic metric, or an explicit user-approved requirement.
+- `dashboard_spec.md`, `KPI_DEFINITION_CONTRACTS.md`, `METRIC_VERIFICATION_MATRIX.md`, and `kpi_catalog.md` were used or their absence was documented as blocking/deferred.
+- Every generated DAX measure maps to `KPI_DEFINITION_CONTRACTS.md`, `METRIC_VERIFICATION_MATRIX.md`, `kpi_catalog.md`, a validated semantic metric, or an explicit user-approved requirement.
 - Optional Power BI Modeling Model Context Protocol tools and `pbi-cli` availability were checked when measure/model validation is needed, and the presentation report records whether they were used, unavailable, skipped with reason, or blocked.
 - Blocked or deferred visuals from `insight_backlog.md` were not generated.
 

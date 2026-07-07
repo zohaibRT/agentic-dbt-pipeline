@@ -51,7 +51,11 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] After valid required inputs were confirmed, discovery created `reports/agent/00_discovery/discovery_report.md` before the chat summary, even if the dbt project root did not exist yet
 - [ ] Discovery inspected schemas, tables, columns, row counts, candidate keys, date fields, status fields, amount fields, relationships, grain evidence, possible facts, possible dimensions, possible marts, and possible metrics where supported by the adapter and source evidence
 - [ ] Discovery created or updated `reports/agent/00_discovery/cardinality_report.md` and `reports/agent/00_discovery/relationship_profile.md` when relationships or candidate joins existed
-- [ ] Discovery created `reports/agent/00_discovery/requirements.md` before the chat summary with source-derived requirements, evidence, confidence, recommended defaults, open questions, and deferred or blocked scope
+- [ ] Discovery created `reports/agent/00_discovery/DISCOVERY_APPROVAL_CHECKLIST.md` with decision `APPROVED` or `APPROVED WITH CONDITIONS` before bootstrap/build
+- [ ] `reports/agent/REQUIREMENTS_TRACEABILITY_MATRIX.md` exists and links requirements to implementation artifacts and proof files
+- [ ] `reports/agent/LAYER_VERIFICATION_LEDGER.md` exists and covers important models with proof paths and statuses
+- [ ] `reports/agent/KPI_DEFINITION_CONTRACTS.md` exists and covers approved, proposed, deferred, and blocked key performance indicator claims
+- [ ] `reports/agent/METRIC_VERIFICATION_MATRIX.md` exists and reconciles important measures, metrics, and key performance indicators from source proof to mart proof, and semantic/presentation proof when applicable
 - [ ] Discovery created reusable SQL proof files under `reports/agent/00_discovery/sql_proofs/` for table inventory, row counts, candidate keys, important status or business-state counts, date coverage, numeric summaries, and relationship/cardinality checks where supported
 - [ ] Every discovery SQL proof file includes purpose, expected result, captured result, status, and runnable SQL
 - [ ] Discovery report includes recommended medallion direction for sources, bronze/staging, silver/intermediate, and gold/marts
@@ -89,6 +93,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Presentation decision options included the equivalent of `Yes - build Matplotlib refreshable web report (recommended)`, `Yes - prepare Power BI Desktop template handoff`, `No presentation layer - complete final delivery now`, and `Tell me what to change first`
 - [ ] `reports/agent/09_analytics_insights/analytics_insight_report.md`, `kpi_discovery_matrix.md`, `reporting_catalog.md`, `kpi_catalog.md`, `dashboard_spec.md`, `insight_backlog.md`, and `reporting_readiness_scorecard.md` exist when analytics insight reporting ran
 - [ ] `reports/agent/09_analytics_insights/kpis/kpi_reconciliation_report.md`, `kpi_lineage_proofs.md`, `kpi_variance_report.md`, and `sql_proofs/` exist when approved or implemented key performance indicators exist
+- [ ] `reports/agent/KPI_DEFINITION_CONTRACTS.md` and `reports/agent/METRIC_VERIFICATION_MATRIX.md` are updated when approved, proposed, deferred, or blocked key performance indicators exist
 - [ ] Measure, metric, key performance indicator, reconciliation, and presentation verification proofs are written as reusable SQL proof files with captured results, not only pasted into Markdown tables
 - [ ] Analytics insight reporting separated trusted outputs from uncertain or deferred outputs
 - [ ] Analytics insight reporting classified tables, detected grain, mapped candidate metrics to generic archetypes, scored confidence, and asked only targeted business questions for uncertain key performance indicators
@@ -220,7 +225,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Presentation options were recommended after analytics insight reporting: documentation only, business-facing report, dashboard design, semantic layer refinement, or query handoff
 - [ ] If the user approved a presentation layer and did not specify another technology, the agent used the Matplotlib refreshable web report workflow by default and created `reports/agent/10_presentation/matplotlib/` artifacts with SQL verification
 - [ ] If Matplotlib artifacts were created, missing `matplotlib`, `numpy`, or `pandas` packages were installed or the install blocker was documented with exact commands attempted
-- [ ] If Matplotlib artifacts were created, `kpi_figure_coverage.md` maps **every key performance indicator in `kpi_catalog.md`** to `RENDERED`, `BLOCKED`, or `DEFERRED`, and recommended measures/metrics appear in supporting tabs
+- [ ] If Matplotlib artifacts were created, `kpi_figure_coverage.md` maps **every key performance indicator in `KPI_DEFINITION_CONTRACTS.md` and `kpi_catalog.md`** to `RENDERED`, `BLOCKED`, or `DEFERRED`, and recommended measures/metrics appear in supporting tabs
 - [ ] If Matplotlib presentation artifacts were created, `serve_report.py` and `report.html` are the primary deliverable, with rich colorful classified tabs, summary cards, chart cards, captions, caveats, validation status, refresh timestamp/control, and `open_report.bat` or an equivalent browser launcher documented
 - [ ] If a presentation artifact was created, the dashboard/report uses a polished professional design with clear page hierarchy, intentional color palette, cards, captions, exception callouts, detail sections, and Report Information content rather than default or plain styling
 - [ ] If Matplotlib presentation artifacts were created, charts render through live Matplotlib SVG/HTML endpoints or approved browser-native charts from refreshed JSON; PNG is not the primary rendering path
@@ -260,7 +265,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] If Power BI PBIP/TMDL was created, approved report pages exist as Power BI report definition artifacts with actual `visual.json` files, not only Markdown page descriptions or empty page shells
 - [ ] If a presentation artifact was created, the agent produced a consultant-grade page plan from validated facts, dimensions, semantic metrics, source profiling, and data quality evidence instead of asking the user to design every visual
 - [ ] If a presentation artifact was created, every key performance indicator visual or measure was reconciled to gold or semantic SQL, including numerator, denominator, filters, and final result
-- [ ] If a Power BI artifact was created, every DAX measure maps to `reports/agent/09_analytics_insights/kpis/kpi_catalog.md`, a validated semantic metric, or an explicit user-approved requirement
+- [ ] If a Power BI artifact was created, every DAX measure maps to `reports/agent/KPI_DEFINITION_CONTRACTS.md`, `reports/agent/METRIC_VERIFICATION_MATRIX.md`, `reports/agent/09_analytics_insights/kpis/kpi_catalog.md`, a validated semantic metric, or an explicit user-approved requirement
 - [ ] If a Power BI artifact was created, every DAX measure maps to source-to-final key performance indicator reconciliation and cardinality proof
 - [ ] If a Power BI artifact was created, no Power BI-only key performance indicator, denominator, business flag, surrogate key, or relationship shortcut was invented to compensate for missing dbt logic
 - [ ] If a presentation artifact or business-facing report was created, it includes the five report pillars: context and strategy, key performance indicators, trend analysis and variance, insights and attribution, and recommendations and next steps; unsupported pillars are visibly deferred with reasons
@@ -357,3 +362,17 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Final response lists deferred or blocked key performance indicator definitions when definitions or data are missing
 - [ ] Final response summarizes metric verification status and names any unreconciled key performance indicators
 - [ ] Final response summarizes key performance indicator reconciliation, first failing layers, cardinality/grain validation, and any unexplained variance
+
+## Independent verification and acceptance gate
+
+- [ ] `python scripts/run_acceptance_gate.py --root .` was run before final delivery and the result was recorded
+- [ ] `python scripts/check_requirement_traceability.py --root .` was run before final delivery
+- [ ] `python scripts/check_layer_proof_coverage.py --root .` was run before final delivery
+- [ ] `python scripts/verify_metric_reconciliation.py --root .` was run before final delivery
+- [ ] `reports/agent/ACCEPTANCE_GATE_REPORT.md` and `reports/agent/ACCEPTANCE_GATE_REPORT.json` exist when the acceptance gate ran
+- [ ] Acceptance gate overall status is `PASS` or `WARN`; `FAIL` blocks final delivery
+- [ ] A fresh independent verifier agent ran with `agents/dbt-verifier-agent.md` without relying on builder chat memory
+- [ ] `reports/agent/INDEPENDENT_VERIFICATION_REPORT.md` and `.json` exist when independent verification ran
+- [ ] Independent verification overall status is `PASS` or `WARN`; `FAIL` blocks final delivery
+- [ ] `target/run_results.json` was inspected when available and shows no failed models/tests, or the failure is documented as a blocker
+- [ ] Generated dbt projects with CI include `.github/workflows/dbt_acceptance_gate.yml` or an equivalent acceptance workflow when automation is requested

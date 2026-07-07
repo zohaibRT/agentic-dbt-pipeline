@@ -17,6 +17,14 @@ reports/agent/
   NEXT_PHASE_PROMPT.md
   REPORT_INDEX.md
   HUMAN_VERIFICATION_GUIDE.md
+  REQUIREMENTS_TRACEABILITY_MATRIX.md
+  LAYER_VERIFICATION_LEDGER.md
+  KPI_DEFINITION_CONTRACTS.md
+  METRIC_VERIFICATION_MATRIX.md
+  ACCEPTANCE_GATE_REPORT.md
+  ACCEPTANCE_GATE_REPORT.json
+  INDEPENDENT_VERIFICATION_REPORT.md
+  INDEPENDENT_VERIFICATION_REPORT.json
   final_delivery.md
 ```
 
@@ -24,7 +32,7 @@ reports/agent/
 
 `HUMAN_VERIFICATION_GUIDE.md` is mandatory after analytics insight reporting and final delivery. It must explain how to verify layers, key performance indicators, blocked items, presentation artifacts, and next actions.
 
-Do not write phase-specific reports, logs, codegen output, relationship reports, cardinality reports, analytics files, presentation files, or validation files directly under `reports/agent/` for new projects. Put them in the canonical phase folder below.
+The traceability, ledger, contract, metric matrix, acceptance gate, and independent verification reports are allowed at the root because they are cross-phase evidence control files. Do not write phase-specific reports, logs, codegen output, relationship reports, cardinality reports, analytics files, presentation files, or validation files directly under `reports/agent/` for new projects. Put them in the canonical phase folder below.
 
 ## Canonical Folder Layout
 
@@ -77,6 +85,12 @@ This creates the managed folders and `_proof_index.md` files before the first pr
 |---|---|
 | Discovery report | `reports/agent/00_discovery/discovery_report.md` |
 | Requirements | `reports/agent/00_discovery/requirements.md` |
+| Requirements traceability matrix | `reports/agent/REQUIREMENTS_TRACEABILITY_MATRIX.md` |
+| Layer verification ledger | `reports/agent/LAYER_VERIFICATION_LEDGER.md` |
+| Key performance indicator definition contracts | `reports/agent/KPI_DEFINITION_CONTRACTS.md` |
+| Metric verification matrix | `reports/agent/METRIC_VERIFICATION_MATRIX.md` |
+| Acceptance gate report | `reports/agent/ACCEPTANCE_GATE_REPORT.md` and `reports/agent/ACCEPTANCE_GATE_REPORT.json` |
+| Independent verification report | `reports/agent/INDEPENDENT_VERIFICATION_REPORT.md` and `reports/agent/INDEPENDENT_VERIFICATION_REPORT.json` |
 | Relationship profile | `reports/agent/00_discovery/relationship_profile.md` |
 | Cardinality report | `reports/agent/00_discovery/cardinality_report.md` or the phase folder where the check was run |
 | Discovery SQL proofs | `reports/agent/00_discovery/sql_proofs/` |

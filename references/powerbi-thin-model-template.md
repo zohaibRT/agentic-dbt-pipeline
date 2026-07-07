@@ -93,7 +93,7 @@ The agent must not:
 1. Locate the approved measures table in TMDL files or `model.bim`.
 2. If no measures table exists, pause and ask whether to create one or ask the user to add it in Desktop.
 3. Keep the existing model format. Do not convert between TMDL and `model.bim` unless the user approves.
-4. Inject only measures that are present in `kpi_catalog.md`, validated dbt semantic metrics, or user-approved requirements.
+4. Inject only measures that are present in `KPI_DEFINITION_CONTRACTS.md`, `METRIC_VERIFICATION_MATRIX.md`, `kpi_catalog.md`, validated dbt semantic metrics, or user-approved requirements.
 5. Preserve existing measures unless the user approved replacing them.
 6. Use display folders from the key performance indicator catalog, dashboard specification, or semantic metric category.
 7. Record every injected measure in `reports/agent/10_presentation/dax_measures.md`.

@@ -2,7 +2,7 @@
 
 Use this after marts/gold, semantic layer, `dbt_project_evaluator`, and documentation are complete and validated. Run this before the presentation-layer recommendation or any Power BI / business intelligence handoff.
 
-Also read [report-artifact-organization.md](report-artifact-organization.md), [universal-analytics-framework.md](universal-analytics-framework.md), [kpi-discovery-framework.md](kpi-discovery-framework.md), [kpi-reconciliation.md](kpi-reconciliation.md), [cardinality-validation.md](cardinality-validation.md), [reporting-standards.md](reporting-standards.md), [kpi-definitions.md](kpi-definitions.md), [metric-verification.md](metric-verification.md), [../docs/kpi_proof_standards.md](../docs/kpi_proof_standards.md), [privacy-and-unknown-fields.md](privacy-and-unknown-fields.md), and [writing-style.md](writing-style.md).
+Also read [report-artifact-organization.md](report-artifact-organization.md), [evidence-driven-dbt-process.md](evidence-driven-dbt-process.md), [universal-analytics-framework.md](universal-analytics-framework.md), [kpi-discovery-framework.md](kpi-discovery-framework.md), [kpi-definition-contract.md](kpi-definition-contract.md), [metric-verification-checklist.md](metric-verification-checklist.md), [kpi-reconciliation.md](kpi-reconciliation.md), [cardinality-validation.md](cardinality-validation.md), [reporting-standards.md](reporting-standards.md), [kpi-definitions.md](kpi-definitions.md), [metric-verification.md](metric-verification.md), [../docs/kpi_proof_standards.md](../docs/kpi_proof_standards.md), [privacy-and-unknown-fields.md](privacy-and-unknown-fields.md), and [writing-style.md](writing-style.md).
 
 ## Phase purpose
 
@@ -59,6 +59,7 @@ These rules apply to every domain, source schema, and warehouse adapter:
 - Do not build presentation artifacts in this phase.
 - Do not apply `5 key performance indicators per table` to dimensions, bridges, reference tables, or audit tables.
 - Do not publish catalog numbers without linked `sql_proofs/*.sql` files per [../docs/kpi_proof_standards.md](../docs/kpi_proof_standards.md).
+- Maintain `reports/agent/KPI_DEFINITION_CONTRACTS.md` and `reports/agent/METRIC_VERIFICATION_MATRIX.md`; do not treat `kpi_catalog.md` alone as proof that a key performance indicator is correct.
 
 ## Phase contract
 
@@ -125,6 +126,8 @@ After phase completion, create or update these files. Use canonical paths for ne
 | `reports/agent/09_analytics_insights/kpis/kpi_lineage_proofs.md` | Source-to-final key performance indicator lineage summary showing where values changed |
 | `reports/agent/09_analytics_insights/kpis/kpi_variance_report.md` | First-layer versus final-layer variance and likely cause for each reconciled key performance indicator |
 | `reports/agent/09_analytics_insights/kpis/sql_proofs/` | SQL proof files with captured results for measures, metrics, key performance indicators, and layer reconciliation where applicable |
+| `reports/agent/KPI_DEFINITION_CONTRACTS.md` | Cross-phase key performance indicator contracts with business meaning, formula, grain, date basis, included/excluded rows, source mapping, proof file, expected result, actual result, approval status, and verification status |
+| `reports/agent/METRIC_VERIFICATION_MATRIX.md` | Cross-phase measure, metric, and key performance indicator verification matrix from source proof to mart, semantic, and presentation proof |
 | `reports/agent/09_analytics_insights/reporting_catalog.md` | Catalog of report/page candidates |
 | `reports/agent/09_analytics_insights/business_process_catalog.md` | Business areas, departments, processes, events, facts, dimensions, and report opportunities inferred from evidence |
 | `reports/agent/09_analytics_insights/dimension_catalog.md` | Safe reporting dimensions, labels, slicers, drill-down candidates, relationship safety, and privacy status |
@@ -239,11 +242,27 @@ Populate from [kpi-discovery-framework.md](kpi-discovery-framework.md). Include 
 
 ### `kpi_catalog.md`
 
-Generate from `metric_catalog.md`, `kpi_discovery_matrix.md`, reconciliation files from [kpi-reconciliation.md](kpi-reconciliation.md), approved definitions in [kpi-definitions.md](kpi-definitions.md), and reconciliation in [metric-verification.md](metric-verification.md). Promote only `HIGH` confidence and user-approved `MEDIUM` confidence key performance indicators into implemented metrics when grain, cardinality, and source-to-current-layer reconciliation are proven. Keep useful non-strategic metrics in `metric_catalog.md`. Keep `LOW`, `BLOCKED`, and unreconciled candidates as deferred or blocked with reasons.
+Generate from `metric_catalog.md`, `kpi_discovery_matrix.md`, reconciliation files from [kpi-reconciliation.md](kpi-reconciliation.md), approved definitions in [kpi-definitions.md](kpi-definitions.md), key performance indicator contracts from [kpi-definition-contract.md](kpi-definition-contract.md), and reconciliation in [metric-verification.md](metric-verification.md) plus [metric-verification-checklist.md](metric-verification-checklist.md). Promote only `HIGH` confidence and user-approved `MEDIUM` confidence key performance indicators into implemented metrics when grain, cardinality, and source-to-current-layer reconciliation are proven. Keep useful non-strategic metrics in `metric_catalog.md`. Keep `LOW`, `BLOCKED`, and unreconciled candidates as deferred or blocked with reasons. Mirror trusted, proposed, deferred, and blocked key performance indicators into `reports/agent/KPI_DEFINITION_CONTRACTS.md` and `reports/agent/METRIC_VERIFICATION_MATRIX.md`.
 
 | Key Performance Indicator | Definition | Source Model | Formula/Measure | Time Field | Grain | Allowed Dimensions | Business Use | Confidence | Caveats |
 |---|---|---|---|---|---|---|---|---|---|
 | `<kpi_name>` | `<business_meaning>` | `<model>` | `<formula_or_semantic_metric>` | `<time_field>` | `<grain>` | `<dimensions>` | `<use_case>` | `<HIGH/MEDIUM/LOW/DEFERRED/BLOCKED>` | `<caveats>` |
+
+### `KPI_DEFINITION_CONTRACTS.md`
+
+Use the root cross-phase file from [kpi-definition-contract.md](kpi-definition-contract.md).
+
+| KPI ID | Key Performance Indicator | Business Meaning | Formula | Grain | Date Basis | Included Rows | Excluded Rows | Source Tables / Models | Built In | Verified By SQL Proof | Expected Result | Actual Result | Difference / Tolerance | Approval Status | Verification Status | Why Correct / Open Question |
+|---|---|---|---|---|---|---|---|---|---|---|---:|---:|---|---|---|---|
+| `<kpi_id>` | `<name>` | `<meaning>` | `<formula>` | `<grain>` | `<date>` | `<included>` | `<excluded>` | `<sources/models>` | `<artifact>` | `<proof>` | `<expected>` | `<actual>` | `<difference>` | `<APPROVED/PROPOSED/DEFERRED/BLOCKED>` | `<PASS/WARN/FAIL/BLOCKED>` | `<why correct or question>` |
+
+### `METRIC_VERIFICATION_MATRIX.md`
+
+Use the root cross-phase file from [metric-verification-checklist.md](metric-verification-checklist.md).
+
+| Metric ID | Metric / Measure / KPI | Type | Definition Approved | Built In | Source Proof | Mart Proof | Semantic Proof | Presentation Proof | Expected Result | Actual Result | Difference / Tolerance | Status | Notes |
+|---|---|---|---|---|---|---|---|---|---:|---:|---|---|---|
+| `<metric_id>` | `<name>` | `<measure/metric/key performance indicator>` | `<YES/NO/N/A>` | `<artifact>` | `<proof>` | `<proof>` | `<proof or N/A>` | `<proof or N/A>` | `<expected>` | `<actual>` | `<difference>` | `<PASS/WARN/FAIL/BLOCKED>` | `<notes>` |
 
 ### `sql_proofs/`
 

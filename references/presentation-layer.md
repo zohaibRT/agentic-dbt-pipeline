@@ -14,6 +14,8 @@ Read [analytics-insight-reporting.md](analytics-insight-reporting.md), [universa
 | `reports/agent/09_analytics_insights/kpis/kpi_lineage_proofs.md` | First failing layer and lineage summary for trusted or blocked metrics |
 | `reports/agent/09_analytics_insights/kpis/kpi_variance_report.md` | Variance evidence for report caveats and blocked visuals |
 | `reports/agent/09_analytics_insights/kpis/kpi_catalog.md` | Measure and key performance indicator source |
+| `reports/agent/KPI_DEFINITION_CONTRACTS.md` | Approved, proposed, deferred, and blocked key performance indicator business contracts |
+| `reports/agent/METRIC_VERIFICATION_MATRIX.md` | Source-to-mart, semantic, and presentation reconciliation evidence |
 | `reports/agent/09_analytics_insights/reporting_catalog.md` | Report/page scope |
 | `reports/agent/09_analytics_insights/insight_backlog.md` | Blocked or deferred visuals |
 | `reports/agent/09_analytics_insights/reporting_readiness_scorecard.md` | Validation gate before artifact build |
@@ -24,7 +26,7 @@ Read [analytics-insight-reporting.md](analytics-insight-reporting.md), [universa
 
 The presentation layer must not invent pages, key performance indicators, visuals, measures, denominators, filters, or business scope that contradict or bypass analytics insight reporting outputs unless the user explicitly overrides them.
 
-Power BI measures must be generated only from `reports/agent/09_analytics_insights/kpis/kpi_catalog.md`, validated dbt semantic metrics, or explicit user-approved requirements. Each generated DAX measure must map back to the key performance indicator name, source dbt model, formula, time field, grain, allowed dimensions, confidence, caveats, cardinality proof, and verification evidence. Do not generate DAX for `LOW`, `BLOCKED`, or unreconciled key performance indicators from `kpi_discovery_matrix.md` and `kpi_reconciliation_report.md`.
+Power BI measures must be generated only from `reports/agent/KPI_DEFINITION_CONTRACTS.md`, `reports/agent/METRIC_VERIFICATION_MATRIX.md`, `reports/agent/09_analytics_insights/kpis/kpi_catalog.md`, validated dbt semantic metrics, or explicit user-approved requirements. Each generated DAX measure must map back to the key performance indicator name, source dbt model, formula, time field, grain, allowed dimensions, confidence, caveats, cardinality proof, SQL proof file, expected result, actual result, and verification evidence. Do not generate DAX for `LOW`, `BLOCKED`, `FAIL`, or unreconciled key performance indicators from `kpi_discovery_matrix.md`, `KPI_DEFINITION_CONTRACTS.md`, `METRIC_VERIFICATION_MATRIX.md`, and `kpi_reconciliation_report.md`.
 
 ## Purpose
 
@@ -104,7 +106,7 @@ If the user approves a presentation layer, treat it as a separate `presentation_
 
 | Area | Contract |
 |---|---|
-| Inputs required | Completed marts, semantic/evaluator/documentation status, analytics insight reporting outputs (`dashboard_spec.md`, `kpi_catalog.md`, `reporting_catalog.md`, `insight_backlog.md`, `reporting_readiness_scorecard.md`, `analytics_insight_report.md`), final model list, key performance indicator definitions, data quality notes, and privacy decisions |
+| Inputs required | Completed marts, semantic/evaluator/documentation status, analytics insight reporting outputs (`dashboard_spec.md`, `kpi_catalog.md`, `reporting_catalog.md`, `insight_backlog.md`, `reporting_readiness_scorecard.md`, `analytics_insight_report.md`), root verification outputs (`KPI_DEFINITION_CONTRACTS.md`, `METRIC_VERIFICATION_MATRIX.md`), final model list, key performance indicator definitions, data quality notes, and privacy decisions |
 | Allowed changes | Presentation recommendation report; presentation artifacts only after explicit user approval and a separate `presentation_layer` phase plan |
 | Not allowed | Dashboards, reports, slides, notebooks, Power BI projects, guessed measures, or sensitive-field exposure without approval |
 | Commands to run | Read-only model/metadata checks and artifact-specific validation only after the user approves artifact creation |
@@ -113,7 +115,7 @@ If the user approves a presentation layer, treat it as a separate `presentation_
 
 ## What to recommend
 
-Review `reports/agent/09_analytics_insights/analytics_insight_report.md`, `reports/agent/09_analytics_insights/dashboard_spec.md`, `reports/agent/09_analytics_insights/kpis/kpi_catalog.md`, `reports/agent/09_analytics_insights/reporting_catalog.md`, final gold/marts models, semantic metrics, source data limitations, documented business rules, and [kpi-definitions.md](kpi-definitions.md). Then recommend presentation options with evidence:
+Review `reports/agent/09_analytics_insights/analytics_insight_report.md`, `reports/agent/09_analytics_insights/dashboard_spec.md`, `reports/agent/09_analytics_insights/kpis/kpi_catalog.md`, `reports/agent/KPI_DEFINITION_CONTRACTS.md`, `reports/agent/METRIC_VERIFICATION_MATRIX.md`, `reports/agent/09_analytics_insights/reporting_catalog.md`, final gold/marts models, semantic metrics, source data limitations, documented business rules, and [kpi-definitions.md](kpi-definitions.md). Then recommend presentation options with evidence:
 
 | Option | When to recommend | What to include |
 |---|---|---|
@@ -298,7 +300,7 @@ If the recommendation cannot be produced, mark it `BLOCKED` or `SKIPPED` with th
 - Do not invent key performance indicators that are not supported by final marts or approved semantic metrics.
 - Do not recommend advanced key performance indicators unless numerator, denominator, filters, time field, source model, and caveats are known or clearly marked as deferred.
 - Do not put a key performance indicator into Power BI until [metric-verification.md](metric-verification.md) reconciles expected versus actual numerator, denominator, and result from gold or semantic logic.
-- Do not create Power BI-only key performance indicators or DAX measures that bypass `kpi_catalog.md`, validated semantic metrics, or user-approved requirements.
+- Do not create Power BI-only key performance indicators or DAX measures that bypass `KPI_DEFINITION_CONTRACTS.md`, `METRIC_VERIFICATION_MATRIX.md`, `kpi_catalog.md`, validated semantic metrics, or user-approved requirements.
 - Do not create missing keys, business flags, denominator logic, or relationship shortcuts in Power BI when they belong in dbt.
 - Do not create Power BI measures when source-to-final reconciliation, grain proof, or cardinality proof is missing or failed.
 - Do not ask the user to design every page. Recommend a consultant-grade default design from validated data and ask only for decisions that affect business meaning, privacy, cost, refresh behavior, or downstream usability.

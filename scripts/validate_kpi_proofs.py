@@ -10,6 +10,8 @@ from pathlib import Path
 
 
 REQUIRED_CATALOGS = (
+    "reports/agent/KPI_DEFINITION_CONTRACTS.md",
+    "reports/agent/METRIC_VERIFICATION_MATRIX.md",
     "reports/agent/09_analytics_insights/kpis/measure_catalog.md",
     "reports/agent/09_analytics_insights/kpis/metric_catalog.md",
     "reports/agent/09_analytics_insights/kpis/kpi_catalog.md",
@@ -19,6 +21,10 @@ REQUIRED_CATALOGS = (
     "reports/agent/09_analytics_insights/fact_catalog.md",
     "reports/agent/09_analytics_insights/dimension_catalog.md",
 )
+
+MEASURE_CATALOG = "reports/agent/09_analytics_insights/kpis/measure_catalog.md"
+METRIC_CATALOG = "reports/agent/09_analytics_insights/kpis/metric_catalog.md"
+KPI_CATALOG = "reports/agent/09_analytics_insights/kpis/kpi_catalog.md"
 
 LEGACY_CATALOGS = {
     "reports/agent/09_analytics_insights/kpis/measure_catalog.md": "reports/agent/measure_catalog.md",
@@ -105,9 +111,9 @@ def main() -> int:
         if resolve_path(root, relative) is None:
             errors.append(f"Missing required catalog: {relative}")
 
-    measure_path = resolve_path(root, REQUIRED_CATALOGS[0])
-    metric_path = resolve_path(root, REQUIRED_CATALOGS[1])
-    kpi_path = resolve_path(root, REQUIRED_CATALOGS[2])
+    measure_path = resolve_path(root, MEASURE_CATALOG)
+    metric_path = resolve_path(root, METRIC_CATALOG)
+    kpi_path = resolve_path(root, KPI_CATALOG)
 
     measure_count = count_markdown_table_rows(measure_path) if measure_path else 0
     metric_count = count_markdown_table_rows(metric_path) if metric_path else 0
