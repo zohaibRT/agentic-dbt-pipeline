@@ -1,5 +1,10 @@
 # Project Requirements From Discovery
 
+## Read First
+
+- Status meanings: see `reports/agent/00_discovery/README.md`.
+- `WARN` means a documented limitation exists; it is not the same as `FAIL`.
+
 ## Template Use
 
 Use this file as the fixed structure for `reports/agent/00_discovery/requirements.md`.

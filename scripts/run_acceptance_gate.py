@@ -46,6 +46,7 @@ LAYER_REPORT_REQUIREMENTS = {
 
 VALIDATION_SCRIPTS = [
     ["python", "scripts/validate_config.py", "--root", "."],
+    ["python", "scripts/check_discovery_artifacts.py", "--root", "."],
     ["python", "scripts/validate_kpi_proofs.py", "--root", "."],
     ["python", "scripts/check_requirement_traceability.py", "--root", "."],
     ["python", "scripts/check_layer_proof_coverage.py", "--root", "."],

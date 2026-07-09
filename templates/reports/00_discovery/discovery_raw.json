@@ -1,0 +1,82 @@
+{
+  "_file_meta": {
+    "file": "discovery_raw.json",
+    "purpose": "Structured raw discovery evidence exported from the warehouse before human-written summaries.",
+    "why": "Creates an audit trail of what the database actually returned and which proofs support each claim.",
+    "created_from_template": "templates/reports/00_discovery/discovery_raw.json",
+    "required_on_every_discovery_run": true,
+    "contains_secrets": false,
+    "large_schema_rule": "For very large schemas, include every table with at least table_name and row_count. Add columns, keys, relationships, and sample_values only for included or priority tables.",
+    "status_vocabulary": "PASS = evidence supports claim; WARN = documented limitation; FAIL = evidence contradicts claim; BLOCKED = cannot complete without user input; SKIPPED = intentionally not run",
+    "how_to_read": "Read _file_meta, then run, scope, tables[], and queries_executed[]."
+  },
+  "run": {
+    "generated_at": "<ISO-8601 timestamp>",
+    "discovery_status": "PENDING",
+    "dbt_profile_name": "<profile>",
+    "adapter": "<adapter>",
+    "source_schema": "<schema>"
+  },
+  "scope": {
+    "total_tables_in_schema": 0,
+    "tables_profiled": 0,
+    "tables_included_v1": 0,
+    "tables_deferred": 0,
+    "tables_excluded": 0,
+    "notes": "<how scope was narrowed for large schemas>"
+  },
+  "tables": [
+    {
+      "schema": "<source schema>",
+      "table_name": "<table name>",
+      "row_count": 0,
+      "inclusion_status": "included",
+      "inclusion_reason": "<why included, deferred, or excluded>",
+      "status": "PENDING",
+      "columns": [
+        {
+          "name": "<column name>",
+          "data_type": "<warehouse data type>",
+          "nullable": true,
+          "is_candidate_key": false,
+          "is_candidate_measure": false,
+          "is_candidate_date": false,
+          "is_candidate_status": false,
+          "is_sensitive": false
+        }
+      ],
+      "candidate_keys": [
+        "<column name>"
+      ],
+      "relationship_candidates": [
+        {
+          "child_column": "<column>",
+          "parent_schema": "<schema>",
+          "parent_table": "<table>",
+          "parent_column": "<column>",
+          "match_rate_percent": null,
+          "orphan_count": null,
+          "status": "PENDING",
+          "proof_file": "reports/agent/00_discovery/sql_proofs/060_<child>_<parent>_relationship_check.sql"
+        }
+      ],
+      "sample_values": {
+        "<column_name>": [
+          "<aggregate-safe sample value only>"
+        ]
+      },
+      "proof_files": [
+        "reports/agent/00_discovery/sql_proofs/010_<table>_row_count.sql"
+      ]
+    }
+  ],
+  "queries_executed": [
+    {
+      "proof_file": "reports/agent/00_discovery/sql_proofs/001_source_table_inventory.sql",
+      "purpose": "List all source tables and row counts",
+      "status": "PENDING",
+      "captured_at": "<ISO-8601 timestamp>",
+      "summary": "<short captured result summary>"
+    }
+  ]
+}

@@ -1,5 +1,11 @@
 # Discovery Report
 
+## Read First
+
+- Status meanings: `PASS`, `WARN`, `FAIL`, `BLOCKED`, `SKIPPED` — see `reports/agent/00_discovery/README.md` and skill reference `references/discovery-status-vocabulary.md`.
+- Machine-readable context: `core_profile.json` and `discovery_raw.json` in this folder are required on every discovery run.
+- `WARN` means a documented limitation exists; it is not the same as `FAIL`.
+
 ## Template Use
 
 Use this file as the fixed structure for `reports/agent/00_discovery/discovery_report.md`.

@@ -1,0 +1,47 @@
+# Discovery Status Vocabulary
+
+Use these status values consistently in discovery reports, SQL proof headers, JSON artifacts, checklists, and `PIPELINE_STATUS.md`.
+
+## Core statuses
+
+| Status | Meaning | When to use | Can build continue? |
+|---|---|---|---|
+| **PASS** | Evidence supports the claim; no material issue found | Row count matches expectation, key is unique, relationship match rate is acceptable | Yes for this item |
+| **WARN** | Evidence exists but a known limitation remains documented | Empty upstream table with approved reason, partial match rate that was accepted, low-confidence inference that is documented | Yes with documented review |
+| **FAIL** | Evidence shows the claim is wrong or unsafe | Duplicate grain, broken relationship, wrong schema/profile, missing required proof | No until fixed |
+| **BLOCKED** | Work cannot finish until user input, credential, source approval, or business decision arrives | Ambiguous business meaning, missing profile, unapproved source switch | No until resolved |
+| **SKIPPED** | Check was intentionally not run | Adapter cannot support query, table excluded from v1 scope, proof not applicable | Only if reason is documented |
+
+## Why WARN exists
+
+`WARN` does **not** mean failure. It means:
+
+- the check ran or was reviewed
+- the result is usable with eyes open
+- a limitation is written down
+- a human or later phase should confirm or accept the risk
+
+Examples:
+
+- Source table is empty, so downstream models will also be empty until data lands.
+- Relationship match rate is 94% and the team accepts orphan rows for guest checkout.
+- Business meaning of a status code is inferred but not yet approved.
+
+Do not use `WARN` to hide a `FAIL`. Do not use `PASS` when a real limitation was not documented.
+
+## Other common labels
+
+| Label | Meaning |
+|---|---|
+| **OPEN** | Requirement or matrix row exists but work has not started |
+| **IN_PROGRESS** | Approved for active work |
+| **DEFERRED** | Intentionally postponed with evidence |
+| **N/A** | Not applicable to this project or checkpoint |
+| **APPROVED** | Human or checklist approved moving forward |
+| **APPROVED WITH CONDITIONS** | Approved, but listed conditions must be carried into `CONTEXT_TREE.md` and requirements |
+
+## Required usage
+
+Every discovery SQL proof header must include one core status.
+
+Every discovery report summary, checklist row, JSON `status` field, and inventory inclusion decision must use the vocabulary above.

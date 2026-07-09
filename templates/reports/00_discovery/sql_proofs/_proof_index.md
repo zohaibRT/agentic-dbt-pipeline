@@ -4,6 +4,25 @@ Folder: `reports/agent/00_discovery/sql_proofs/`
 
 Purpose: Source discovery proofs for table inventory, row counts, candidate keys, business-state counts, date coverage, numeric summaries, relationship checks, cardinality checks, and data quality checks.
 
+## Status Vocabulary
+
+| Status | Meaning |
+|---|---|
+| PASS | Evidence supports the claim |
+| WARN | Usable with a documented limitation |
+| FAIL | Claim is wrong or unsafe |
+| BLOCKED | Waiting on user input or approval |
+| SKIPPED | Intentionally not run |
+
+## Large Schema Rule
+
+If the schema has hundreds or thousands of tables:
+
+1. Use `001_source_table_inventory.sql` for all table names and row counts.
+2. Put every table in `discovery_raw.json` with at least `table_name` and `row_count`.
+3. Create `010+` row-count proofs only for included or priority tables.
+4. Mark other tables `deferred` or `excluded` with reasons in `discovery_report.md`.
+
 ## How To Use
 
 Each proof file is a runnable SQL query with captured aggregate results in the comment header.

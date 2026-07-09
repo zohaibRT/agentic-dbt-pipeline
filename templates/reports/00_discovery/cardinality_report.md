@@ -1,5 +1,11 @@
 # Cardinality Report
 
+## Read First
+
+Cardinality = how two tables behave when joined (one-to-one, one-to-many, many-to-many).
+
+Status meanings: see `reports/agent/00_discovery/README.md`.
+
 ## Template Use
 
 Use this file as the fixed structure for `reports/agent/00_discovery/cardinality_report.md`.

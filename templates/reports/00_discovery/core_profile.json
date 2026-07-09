@@ -1,0 +1,35 @@
+{
+  "_file_meta": {
+    "file": "core_profile.json",
+    "purpose": "Machine-readable snapshot of the active dbt connection and discovery scope without secrets.",
+    "why": "Lets a later agent, verifier, or human reload project context without depending on chat history.",
+    "created_from_template": "templates/reports/00_discovery/core_profile.json",
+    "required_on_every_discovery_run": true,
+    "contains_secrets": false,
+    "status_vocabulary": "PASS = valid context captured; WARN = partial/placeholder values documented; FAIL = wrong profile or schema; BLOCKED = required inputs missing",
+    "how_to_read": "Read this _file_meta block first, then profile, source, and workspace sections below."
+  },
+  "run": {
+    "generated_at": "<ISO-8601 timestamp>",
+    "discovery_status": "PENDING",
+    "last_updated_by_phase": "discovery"
+  },
+  "profile": {
+    "dbt_profile_name": "<profile name without secrets>",
+    "adapter": "<postgres|redshift|snowflake|bigquery|databricks|other>",
+    "database_or_catalog": "<database/catalog/project>",
+    "target_schema": "<dbt target schema>",
+    "threads": null
+  },
+  "source": {
+    "domain": "<business domain label>",
+    "business_description": "<optional business description or null>",
+    "source_schema": "<warehouse source schema>",
+    "source_name": "<dbt source name or null>"
+  },
+  "workspace": {
+    "project_root": "<workspace or dbt project root>",
+    "dbt_project_name": "<project name or null>",
+    "env_file_present": false
+  }
+}

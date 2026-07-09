@@ -1,5 +1,11 @@
 # Discovery Approval Checklist
 
+## Read First
+
+- Status meanings: see `reports/agent/00_discovery/README.md`.
+- `WARN` = documented limitation, not failure.
+- `core_profile.json` and `discovery_raw.json` are required on every discovery run.
+
 ## Template Use
 
 Use this file as the fixed structure for `reports/agent/00_discovery/DISCOVERY_APPROVAL_CHECKLIST.md`.
@@ -11,6 +17,8 @@ Replace `TODO` with `PASS`, `WARN`, `FAIL`, `BLOCKED`, or `N/A`.
 |---|---|---|
 | Discovery report exists | TODO | `reports/agent/00_discovery/discovery_report.md` |
 | Requirements file exists | TODO | `reports/agent/00_discovery/requirements.md` |
+| Core profile JSON exists | TODO | `reports/agent/00_discovery/core_profile.json` |
+| Discovery raw JSON exists | TODO | `reports/agent/00_discovery/discovery_raw.json` |
 | Cardinality report exists | TODO | `reports/agent/00_discovery/cardinality_report.md` |
 | Relationship profile exists | TODO | `reports/agent/00_discovery/relationship_profile.md` |
 | SQL proof folder exists | TODO | `reports/agent/00_discovery/sql_proofs/` |

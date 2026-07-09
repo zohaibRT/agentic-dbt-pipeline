@@ -1,5 +1,11 @@
 # Relationship Profile
 
+## Read First
+
+This file documents which tables connect to which tables and which joins are proven vs uncertain.
+
+Status meanings: see `reports/agent/00_discovery/README.md`.
+
 ## Template Use
 
 Use this file as the fixed structure for `reports/agent/00_discovery/relationship_profile.md`.

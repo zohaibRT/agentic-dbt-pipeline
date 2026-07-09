@@ -8,6 +8,8 @@ Analyze the available source schemas enough to orient the project and the data e
 
 This phase is read-only. Do not create dbt projects, install packages, run codegen, write model files, create warehouse schemas, or change profiles during discovery.
 
+Read [discovery-artifacts.md](discovery-artifacts.md) and [discovery-status-vocabulary.md](discovery-status-vocabulary.md) before writing discovery outputs. Every discovery file must use the shared status vocabulary. Explain `WARN` with a reason; do not use `WARN` to hide `FAIL`.
+
 ## Phase contract
 
 | Area | Contract |
@@ -16,8 +18,8 @@ This phase is read-only. Do not create dbt projects, install packages, run codeg
 | Allowed changes | Discovery report, requirements file, pipeline status, and context tree only after required inputs are valid |
 | Not allowed | dbt project creation, package installation, codegen, model files, warehouse schema changes, profile changes, or alternate source profiling without approval |
 | Commands to run | Lightweight metadata and profiling queries through the selected dbt profile adapter only |
-| Completion criteria | Source inventory, relationships, business processes, data quality signals, inferred requirements, recommended medallion direction, confidence, unknowns, user decisions, and reusable SQL proof files are documented |
-| Report required | `reports/agent/00_discovery/discovery_report.md`, `reports/agent/00_discovery/requirements.md`, `reports/agent/00_discovery/cardinality_report.md`, `reports/agent/00_discovery/relationship_profile.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
+| Completion criteria | Source inventory, relationships, business processes, data quality signals, inferred requirements, recommended medallion direction, confidence, unknowns, user decisions, reusable SQL proof files, `core_profile.json`, and `discovery_raw.json` are documented |
+| Report required | `reports/agent/00_discovery/README.md`, `reports/agent/00_discovery/core_profile.json`, `reports/agent/00_discovery/discovery_raw.json`, `reports/agent/00_discovery/discovery_report.md`, `reports/agent/00_discovery/requirements.md`, `reports/agent/00_discovery/cardinality_report.md`, `reports/agent/00_discovery/relationship_profile.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
 
 Do not assume the business domain. Even when the user provides a domain label, first understand the source evidence:
 
@@ -73,7 +75,7 @@ At minimum, create:
 | Proof type | Required when | Example filename |
 |---|---|---|
 | Source table inventory | Always after source schema is confirmed | `001_source_table_inventory.sql` |
-| Per-table row count | Every included source table | `010_<source_table>_row_count.sql` |
+| Per-table row count | Every **included** source table, or priority tables when the schema is very large | `010_<source_table>_row_count.sql` |
 | Candidate key check | A likely primary key or unique business key exists | `020_<source_table>_<key>_key_check.sql` |
 | Status/category distribution | Status, stage, type, category, channel, source system, active flag, or similar fields exist | `030_<source_table>_<column>_distribution.sql` |
 | Active/open/closed count | Any active, current, open, closed, completed, cancelled, deleted, status, or lifecycle field exists | `035_<source_table>_<business_state>_count.sql` |
@@ -86,6 +88,42 @@ At minimum, create:
 Each proof file must include the captured result in the comment header above the runnable SQL. For example, if the source has an account table with status or active columns, write the query that proves active account counts and include the captured active count in the file header.
 
 The discovery report must include a `SQL Proof Files` section with links/paths and one-line explanations. The chat summary should mention the most important source proofs, such as table counts, active/open counts, date coverage, and relationship evidence.
+
+## Large source schemas
+
+When the source schema has hundreds or thousands of tables:
+
+1. Always create `001_source_table_inventory.sql` with all table names and row counts.
+2. Always populate `discovery_raw.json.tables[]` with at least `table_name`, `row_count`, `inclusion_status`, and `inclusion_reason` for every table.
+3. Mark tables as `included`, `deferred`, or `excluded` in `discovery_report.md` and `requirements.md`.
+4. Create deep per-table SQL proofs only for included or priority tables.
+5. Do not create thousands of `010+` row-count proof files.
+
+Document the scope decision in `discovery_raw.json.scope.notes`.
+
+## Mandatory JSON artifacts
+
+Discovery must create or fully update these JSON files every run:
+
+| File | Required | Purpose |
+|---|---|---|
+| `reports/agent/00_discovery/core_profile.json` | Yes | Non-secret profile/source/workspace snapshot for reload without chat |
+| `reports/agent/00_discovery/discovery_raw.json` | Yes | Structured warehouse evidence and proof linkage |
+
+Start from:
+
+```text
+templates/reports/00_discovery/core_profile.json
+templates/reports/00_discovery/discovery_raw.json
+```
+
+Rules:
+
+- Keep the top-level `_file_meta` object and explain any status used.
+- Never store passwords, tokens, private keys, or row-level direct identifiers.
+- Replace all placeholder values with real discovery evidence.
+- Link `discovery_raw.json.queries_executed[]` to `sql_proofs/` files.
+- For large schemas, shallow table entries are allowed for deferred/excluded tables; included tables need richer column/key/relationship detail.
 
 ## Discovery summary
 
@@ -136,6 +174,9 @@ If the configured source is empty or the agent recommends a different database, 
 Before sending the discovery summary in chat, create or update these files:
 
 ```text
+reports/agent/00_discovery/README.md
+reports/agent/00_discovery/core_profile.json
+reports/agent/00_discovery/discovery_raw.json
 reports/agent/00_discovery/discovery_report.md
 reports/agent/00_discovery/requirements.md
 reports/agent/00_discovery/cardinality_report.md
@@ -147,10 +188,15 @@ reports/agent/REPORT_INDEX.md
 reports/agent/REQUIREMENTS_TRACEABILITY_MATRIX.md
 ```
 
+`core_profile.json` and `discovery_raw.json` are mandatory on every discovery run. Do not treat them as optional agent-created extras.
+
 Use these canonical discovery templates when creating the discovery files:
 
 | Output | Template |
 |---|---|
+| `reports/agent/00_discovery/README.md` | `templates/reports/00_discovery/README.md` |
+| `reports/agent/00_discovery/core_profile.json` | `templates/reports/00_discovery/core_profile.json` |
+| `reports/agent/00_discovery/discovery_raw.json` | `templates/reports/00_discovery/discovery_raw.json` |
 | `reports/agent/00_discovery/discovery_report.md` | `templates/reports/00_discovery/discovery_report.md` |
 | `reports/agent/00_discovery/requirements.md` | `templates/reports/00_discovery/requirements.md` |
 | `reports/agent/00_discovery/cardinality_report.md` | `templates/reports/00_discovery/cardinality_report.md` |
