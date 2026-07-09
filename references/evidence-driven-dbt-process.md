@@ -20,6 +20,8 @@ No model, metric, key performance indicator, measure, dashboard value, or phase 
 
 Technical correctness is required but never sufficient by itself.
 
+For approved business beliefs discovered during profiling, also read [assumption-tests.md](assumption-tests.md). Promote those beliefs from one-time SQL proofs into permanent dbt tests so future builds fail when the assumption breaks.
+
 ## Required workflow
 
 ```text

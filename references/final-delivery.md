@@ -117,7 +117,7 @@ reports/agent/INDEPENDENT_VERIFICATION_REPORT.json
 
 Final delivery is blocked when independent verification is `FAIL`.
 
-See [independent-verification-governance.md](independent-verification-governance.md).
+See [how-to-verify-generated-project.md](../docs/how-to-verify-generated-project.md) and [assumption-tests.md](assumption-tests.md).
 
 ## Evidence files to summarize
 

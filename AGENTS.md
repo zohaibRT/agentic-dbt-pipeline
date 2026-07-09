@@ -31,7 +31,7 @@ Verification must not depend only on the builder agent or the same chat window.
 - Run a fresh verifier agent with `agents/dbt-verifier-agent.md` for an independent audit report.
 - Use `.github/workflows/dbt_acceptance_gate.yml` in generated projects when CI is enabled.
 
-See `references/independent-verification-governance.md`.
+See `references/independent-verification-governance.md` and `docs/how-to-verify-generated-project.md`.
 
 ## Before Editing
 

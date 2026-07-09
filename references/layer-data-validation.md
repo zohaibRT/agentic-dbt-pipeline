@@ -18,6 +18,8 @@ Every validation query must be saved as a reusable SQL proof file under the curr
 
 Each proof file must include a comment header with purpose, expected result, captured result, pass/warn/fail status, and the runnable SQL query. Follow the SQL proof standard in [report-artifact-organization.md](report-artifact-organization.md).
 
+After a proof confirms an approved assumption, promote it to a permanent dbt test using [assumption-tests.md](assumption-tests.md) and `templates/dbt/tests/`. Record the promoted test in the phase report and model YAML.
+
 ## What to validate
 
 For every model created or changed in the current layer:

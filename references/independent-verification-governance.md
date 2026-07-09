@@ -44,6 +44,8 @@ MCP is useful, but MCP itself is **not** the verifier.
 | [layer-verification-ledger.md](layer-verification-ledger.md) | Per-model verification ledger |
 | [kpi-definition-contract.md](kpi-definition-contract.md) | Key performance indicator contract standard |
 | [metric-verification-checklist.md](metric-verification-checklist.md) | Metric verification matrix standard |
+| [assumption-tests.md](assumption-tests.md) | Structural vs assumption dbt tests |
+| [docs/how-to-verify-generated-project.md](../docs/how-to-verify-generated-project.md) | Human verification guide for generated projects |
 | [mcp/dbt-verifier-mcp.json](../mcp/dbt-verifier-mcp.json) | Optional MCP server wiring example |
 
 ## Discovery gate

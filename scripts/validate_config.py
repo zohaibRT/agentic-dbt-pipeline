@@ -62,6 +62,9 @@ REQUIRED_REPO_FILES = {
     "references/requirements-traceability-matrix.md",
     "references/layer-verification-ledger.md",
     "references/independent-verification-governance.md",
+    "references/assumption-tests.md",
+    "docs/how-to-verify-generated-project.md",
+    "templates/dbt/tests/README.md",
     ".github/workflows/dbt_acceptance_gate.yml",
 }
 

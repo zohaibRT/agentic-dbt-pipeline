@@ -427,6 +427,39 @@ Known limitations:
 
 ---
 
+---
+
+## How To Know You Are On Track
+
+Read `docs/how-to-verify-generated-project.md`.
+
+You are going in the right direction when:
+
+- `PIPELINE_STATUS.md` has no unresolved `FAIL` or `BLOCKED`
+- each built layer has `sql_proofs/` with captured results
+- approved assumptions are locked in as dbt tests
+- KPI variance report is clean or explained
+- acceptance gate and verifier return `PASS` or documented `WARN`
+
+---
+
+## Structural vs Assumption Tests
+
+| Type | Examples | Catches |
+|---|---|---|
+| Structural | `unique`, `not_null`, `relationships` | schema issues |
+| Assumption | grain after join, date order, status implies field | business beliefs that break later |
+
+Process:
+
+```text
+State assumption -> prove in sql_proofs -> lock in dbt test
+```
+
+Templates: `templates/dbt/tests/`
+
+---
+
 ## Further Improvements
 
 Useful next improvements:

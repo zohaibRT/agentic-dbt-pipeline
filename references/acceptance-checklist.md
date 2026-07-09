@@ -183,7 +183,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] `project_rules` applied or explicitly marked not provided
 - [ ] Manual mappings implemented as seeds or reference-table joins where appropriate
 - [ ] Mapping coverage checked; unmapped values summarized or approved
-- [ ] Business grain and key assumptions documented in model YAML or handoff notes
+- [ ] Approved assumptions from discovery or `CONTEXT_TREE.md` were promoted into dbt assumption tests per `references/assumption-tests.md`, not left only in chat or one-time SQL proofs
 - [ ] Key performance indicators include business meaning, source model, grain, numerator, denominator, filters, time field, caveats, validation evidence, and approval status
 - [ ] Key performance indicators include expected versus actual reconciliation from upstream logic to gold, semantic, and presentation layers where implemented
 - [ ] Key performance indicators include source-to-final proof, first failing layer when variance exists, variance percentage, proof file paths, and cardinality/grain proof
@@ -368,7 +368,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] `python scripts/run_acceptance_gate.py --root .` was run before final delivery and the result was recorded
 - [ ] `python scripts/check_requirement_traceability.py --root .` was run before final delivery
 - [ ] `python scripts/check_layer_proof_coverage.py --root .` was run before final delivery
-- [ ] `python scripts/verify_metric_reconciliation.py --root .` was run before final delivery
+- [ ] `docs/how-to-verify-generated-project.md` was used or equivalent human verification steps were followed before final sign-off
 - [ ] `reports/agent/ACCEPTANCE_GATE_REPORT.md` and `reports/agent/ACCEPTANCE_GATE_REPORT.json` exist when the acceptance gate ran
 - [ ] Acceptance gate overall status is `PASS` or `WARN`; `FAIL` blocks final delivery
 - [ ] A fresh independent verifier agent ran with `agents/dbt-verifier-agent.md` without relying on builder chat memory

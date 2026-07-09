@@ -96,7 +96,7 @@ Use where helpful for stronger governance, especially in marts and important int
 - Non-negative measures and valid date ranges
 - Boolean and categorical expectations that are more expressive than built-in generic tests
 
-Do not add expectation tests that encode unapproved business assumptions.
+Do not add expectation tests that encode unapproved business assumptions. Approved assumptions from discovery or `CONTEXT_TREE.md` should become explicit assumption tests per [assumption-tests.md](assumption-tests.md).
 
 ### dbt_project_evaluator - after layers built
 

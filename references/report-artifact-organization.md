@@ -85,9 +85,12 @@ For all reports, phase folders, SQL proof folders, and root control files, use t
 templates/reports/
 templates/reports/00_discovery/
 templates/reports/root/
+templates/dbt/tests/
 ```
 
-These templates define the fixed report structure for discovery, setup, sources, bronze/staging, silver/intermediate, gold/marts, semantic layer, project evaluator, documentation, analytics insight reporting, presentation layer, operations, proof indexes, SQL proof files, pipeline status, context tree, report index, requirements traceability, and next-phase prompt. Copy/fill templates only when the corresponding phase/checkpoint is active and allowed. The template structure should stay consistent across projects; the content should change based on the source evidence, built artifacts, validation results, and approved user requirements.
+Report templates define the fixed report structure for discovery, setup, sources, bronze/staging, silver/intermediate, gold/marts, semantic layer, project evaluator, documentation, analytics insight reporting, presentation layer, operations, proof indexes, SQL proof files, pipeline status, context tree, report index, requirements traceability, and next-phase prompt.
+
+Assumption test templates under `templates/dbt/tests/` define reusable dbt singular test patterns for grain, join cardinality, date logic, business rules, completeness, and cross-checks. Copy and adapt them into the generated project's `tests/` folder per [assumption-tests.md](../references/assumption-tests.md).
 
 Do not hand-invent a phase report structure when a template exists. Use the template as the starting shape, replace placeholders with project-specific evidence, keep sections present, and write `None`, `Not observed`, `Not applicable`, `Skipped`, or `Blocked` when a section has no evidence yet.
 
