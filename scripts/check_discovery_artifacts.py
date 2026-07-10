@@ -15,6 +15,8 @@ REQUIRED_DISCOVERY_FILES = [
     "reports/agent/00_discovery/discovery_raw.json",
     "reports/agent/00_discovery/discovery_report.md",
     "reports/agent/00_discovery/requirements.md",
+    "reports/agent/00_discovery/cardinality_report.md",
+    "reports/agent/00_discovery/relationship_profile.md",
     "reports/agent/00_discovery/DISCOVERY_APPROVAL_CHECKLIST.md",
     "reports/agent/00_discovery/sql_proofs/_proof_index.md",
 ]
@@ -46,6 +48,7 @@ def validate_json(path: Path) -> list[str]:
 
     if path.name == "discovery_raw.json":
         tables = data.get("tables")
+        queries = data.get("queries_executed")
         if not isinstance(tables, list):
             errors.append(f"{path.name}: tables must be a list")
         elif not tables:
@@ -58,6 +61,18 @@ def validate_json(path: Path) -> list[str]:
                 for field in ("table_name", "row_count", "inclusion_status"):
                     if field not in table:
                         errors.append(f"{path.name}: tables[{index}] missing '{field}'")
+        if not isinstance(queries, list):
+            errors.append(f"{path.name}: queries_executed must be a list")
+        elif not queries:
+            errors.append(f"{path.name}: queries_executed must not be empty after discovery")
+        else:
+            for index, query in enumerate(queries):
+                if not isinstance(query, dict):
+                    errors.append(f"{path.name}: queries_executed[{index}] must be an object")
+                    continue
+                proof_file = query.get("proof_file") or query.get("sql_proof_file") or query.get("path")
+                if not proof_file:
+                    errors.append(f"{path.name}: queries_executed[{index}] missing proof_file/sql_proof_file/path")
 
     if path.name == "core_profile.json":
         profile = data.get("profile", {})
@@ -69,6 +84,62 @@ def validate_json(path: Path) -> list[str]:
         ):
             if isinstance(value, str) and value.strip().startswith("<"):
                 errors.append(f"{path.as_posix()}: placeholder value still present for {label}")
+
+    return errors
+
+
+def validate_sql_proof_linkage(root: Path) -> list[str]:
+    errors: list[str] = []
+    discovery_dir = root / "reports" / "agent" / "00_discovery"
+    raw_path = discovery_dir / "discovery_raw.json"
+    proof_dir = discovery_dir / "sql_proofs"
+    if not raw_path.exists():
+        return errors
+
+    try:
+        data = json.loads(raw_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return errors
+    queries = data.get("queries_executed", [])
+    linked_files: set[str] = set()
+    for index, query in enumerate(queries):
+        if not isinstance(query, dict):
+            continue
+        proof_file = query.get("proof_file") or query.get("sql_proof_file") or query.get("path")
+        if not proof_file:
+            continue
+        proof_path = Path(str(proof_file))
+        if not proof_path.is_absolute():
+            if proof_path.parts and proof_path.parts[0] == "reports":
+                proof_path = root / proof_path
+            else:
+                proof_path = proof_dir / proof_path
+        if not proof_path.exists():
+            errors.append(f"discovery_raw.json: queries_executed[{index}] proof file does not exist: {proof_file}")
+        else:
+            linked_files.add(proof_path.resolve().as_posix())
+
+    proof_files = [
+        path for path in proof_dir.glob("*.sql")
+        if path.name != "sql_proof_template.sql"
+    ]
+    if not proof_files:
+        errors.append("Discovery sql_proofs folder has no concrete .sql proof files")
+    unlinked = [
+        path.relative_to(root).as_posix()
+        for path in proof_files
+        if path.resolve().as_posix() not in linked_files
+    ]
+    if unlinked:
+        errors.append("SQL proof files not linked from discovery_raw.json queries_executed[]: " + ", ".join(unlinked[:20]))
+
+    report_text = ""
+    for relative in ("cardinality_report.md", "relationship_profile.md"):
+        path = discovery_dir / relative
+        if path.exists():
+            report_text += "\n" + path.read_text(encoding="utf-8", errors="replace").lower()
+    if proof_files and not any(token in report_text for token in ("sql_proofs/", ".sql")):
+        errors.append("cardinality_report.md or relationship_profile.md should link the SQL proof files that support relationship claims")
 
     return errors
 
@@ -90,6 +161,7 @@ def main() -> int:
         path = root / "reports" / "agent" / "00_discovery" / name
         if path.exists():
             errors.extend(validate_json(path))
+    errors.extend(validate_sql_proof_linkage(root))
 
     inventory = root / "reports/agent/00_discovery/sql_proofs/001_source_table_inventory.sql"
     if not inventory.exists():

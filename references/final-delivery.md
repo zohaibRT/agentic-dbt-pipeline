@@ -94,10 +94,10 @@ Run:
 dbt parse --no-partial-parse
 dbt build
 dbt docs generate
-python scripts/run_acceptance_gate.py --root .
-python scripts/check_requirement_traceability.py --root .
-python scripts/check_layer_proof_coverage.py --root .
-python scripts/verify_metric_reconciliation.py --root .
+python <installed-skill-path>/scripts/run_acceptance_gate.py --root <project.root>
+python <installed-skill-path>/scripts/check_requirement_traceability.py --root <project.root>
+python <installed-skill-path>/scripts/check_layer_proof_coverage.py --root <project.root>
+python <installed-skill-path>/scripts/verify_metric_reconciliation.py --root <project.root>
 ```
 
 If a full `dbt build` is too expensive, explain why and run the most complete safe build.

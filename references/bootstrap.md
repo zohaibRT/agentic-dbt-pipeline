@@ -9,9 +9,9 @@ Run this setup phase before layer work. Do not skip unless the user explicitly d
 | Area | Contract |
 |---|---|
 | Inputs required | Accepted discovery checkpoint, valid `.env` or prompt values, selected dbt profile, source schema, and project root decision |
-| Allowed changes | Local dbt scaffold, baseline config files, packages file, dependency lock file, safe schema macro, managed report skeleton, setup reports |
+| Allowed changes | Local dbt scaffold, baseline config files, packages file, dependency lock file, safe schema macro, managed report skeleton, setup reports, local git initialization, and generated-project `.gitignore` hygiene |
 | Not allowed | Source YAML generation, model layer creation, warehouse model builds, continuous integration workflows, Agents Schema workflows, profile edits without approval, commits, or pushes |
-| Commands to run | install `requirements.txt` when present, create managed report skeleton, `dbt --version`, `dbt debug`, `dbt deps`, `dbt parse --no-partial-parse`, plus skill/config validation when available |
+| Commands to run | initialize git if missing, install `requirements.txt` when present, create managed report skeleton, `dbt --version`, `dbt debug`, `dbt deps`, `dbt parse --no-partial-parse`, plus skill/config validation when available |
 | Completion criteria | Python requirements install or documented skip, managed report skeleton exists, dbt connection works, packages install, parse succeeds or skip is documented, profile target schema hygiene is safe or blocked, and next phase is ready |
 | Report required | `reports/agent/01_setup/setup_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
 
@@ -44,6 +44,8 @@ Project setup and configuration may:
 
 - Create a local dbt project scaffold when the project root is missing
 - Create baseline local files required to make dbt parse, such as `dbt_project.yml`, `packages.yml`, `.gitignore`, safe profile examples, and the schema naming macro
+- Initialize local git with `git init` when `.git/` is missing, before any phase commit planning
+- Create or update the generated-project `.gitignore` before any commit
 - Install skill utility requirements from `requirements.txt` when that file is available from the installed skill or workspace
 - Create the managed `reports/agent/` folder skeleton, including phase folders and SQL proof index files
 - Install missing dbt Agent Skills when `auto_install_dbt_skills: true`
@@ -59,6 +61,38 @@ Project setup and configuration must not:
 - Build, drop, replace, or full-refresh warehouse models
 - Change `~/.dbt/profiles.yml` without explicit user approval
 - Commit or push without the configured git approval flow
+
+## Generated-project git hygiene
+
+During project setup and configuration, initialize local git if the workspace or dbt project root is not already a repository:
+
+```powershell
+git init
+git branch -M main
+```
+
+Do not commit automatically during setup unless the configured git workflow and user approval allow it. Setup only prepares git so later phase commits can be clean and separate.
+
+Ensure the generated dbt project `.gitignore` includes at least:
+
+```text
+.env
+profiles.yml
+.venv/
+target/
+logs/
+dbt_packages/
+.agents/
+reports/
+scripts/
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+*.swp
+```
+
+For generated dbt projects, `.agents/`, `reports/`, and copied helper `scripts/` are runtime/control artifacts and should be ignored by default unless the user explicitly asks to version evidence reports or helper scripts. Do not apply this generated-project ignore rule to the skill repository itself, where `scripts/`, `templates/`, `references/`, and `docs/` are source files.
 
 ## Stop and ask before setup when
 

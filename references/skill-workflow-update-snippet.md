@@ -1,5 +1,7 @@
 # Skill Workflow Update Snippet
 
+> Deprecated reference snippet. The current source of truth is `SKILL.md`, `references/discovery-requirements.md`, `references/report-artifact-organization.md`, and `references/acceptance-checklist.md`. Use this file only as historical context when migrating older prompts.
+
 **Integrated into** [independent-verification-governance.md](independent-verification-governance.md) and `SKILL.md`. Keep this file as a short copy-paste aid.
 
 Add these rules to the dbt skill workflow instructions.
@@ -82,10 +84,10 @@ Every important measure, metric, and key performance indicator must reconcile so
 Before final delivery, the agent must run:
 
 ```bash
-python scripts/run_acceptance_gate.py --root .
-python scripts/check_requirement_traceability.py --root .
-python scripts/check_layer_proof_coverage.py --root .
-python scripts/verify_metric_reconciliation.py --root .
+python <installed-skill-path>/scripts/run_acceptance_gate.py --root <project.root>
+python <installed-skill-path>/scripts/check_requirement_traceability.py --root <project.root>
+python <installed-skill-path>/scripts/check_layer_proof_coverage.py --root <project.root>
+python <installed-skill-path>/scripts/verify_metric_reconciliation.py --root <project.root>
 ```
 
 The final answer must not claim project completion if any hard gate returns FAIL.

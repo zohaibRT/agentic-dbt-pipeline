@@ -7,11 +7,11 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] `SKILL.md` has `name` and `description` only in frontmatter
 - [ ] Workflow instructions in body; details in `references/`
 - [ ] `agents/openai.yaml` exists and matches the skill
-- [ ] Installed skill folder contains local `references/`, `scripts/`, `agents/`, `project.config.yml`, `prompt.md`, and `.env.example`, or `SKILL.md` hydrated them before reading references
+- [ ] Installed skill folder contains local `references/`, `scripts/`, `agents/`, `templates/`, `docs/`, `project.config.yml`, `prompt.md`, and `.env.example`, or `SKILL.md` hydrated them before reading references
 - [ ] Skill install alone did not require a pre-existing workspace `.env`; first run created workspace `.env` from `.env.example` when missing
 - [ ] `requirements.txt` exists in the installed skill or workspace and was installed during setup, or the skip/blocker was documented
 - [ ] `scripts/create_report_skeleton.py --root <project-or-workspace-root>` ran during setup, or the skip/blocker was documented
-- [ ] `python scripts/validate_config.py --root .` passes
+- [ ] `python <installed-skill-path>/scripts/validate_config.py --root <installed-skill-path>` passes for the skill repository
 - [ ] No secrets or hardcoded GitHub accounts in skill files
 - [ ] `project.config.yml` has non-secret defaults
 
@@ -49,6 +49,8 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Any subagent delegation was read-only/draft work; main agent kept dbt commands, edits, commits, and final decisions
 - [ ] `AGENT_PLAN.md` created or updated with automatic setup-only project setup status and approved plans for each implemented non-setup phase
 - [ ] After valid required inputs were confirmed, discovery created `reports/agent/00_discovery/discovery_report.md` before the chat summary, even if the dbt project root did not exist yet
+- [ ] Discovery created `reports/agent/00_discovery/core_profile.json` with non-secret profile, source, adapter, and workspace context
+- [ ] Discovery created `reports/agent/00_discovery/discovery_raw.json` with structured source evidence, table scope, and `queries_executed[]` entries linked to SQL proof files
 - [ ] Discovery inspected schemas, tables, columns, row counts, candidate keys, date fields, status fields, amount fields, relationships, grain evidence, possible facts, possible dimensions, possible marts, and possible metrics where supported by the adapter and source evidence
 - [ ] Discovery created or updated `reports/agent/00_discovery/cardinality_report.md` and `reports/agent/00_discovery/relationship_profile.md` when relationships or candidate joins existed
 - [ ] Discovery created `reports/agent/00_discovery/DISCOVERY_APPROVAL_CHECKLIST.md` with decision `APPROVED` or `APPROVED WITH CONDITIONS` before bootstrap/build
@@ -57,6 +59,7 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] `reports/agent/KPI_DEFINITION_CONTRACTS.md` exists and covers approved, proposed, deferred, and blocked key performance indicator claims
 - [ ] `reports/agent/METRIC_VERIFICATION_MATRIX.md` exists and reconciles important measures, metrics, and key performance indicators from source proof to mart proof, and semantic/presentation proof when applicable
 - [ ] Discovery created reusable SQL proof files under `reports/agent/00_discovery/sql_proofs/` for table inventory, row counts, candidate keys, important status or business-state counts, date coverage, numeric summaries, and relationship/cardinality checks where supported
+- [ ] For large schemas, `discovery_raw.json.tables[]` includes every visible table with `included`, `deferred`, or `excluded` scope, and deep SQL proofs are limited to included or priority tables
 - [ ] Every discovery SQL proof file includes purpose, expected result, captured result, status, and runnable SQL
 - [ ] Discovery report includes recommended medallion direction for sources, bronze/staging, silver/intermediate, and gold/marts
 - [ ] Discovery report includes a Mermaid entity relationship diagram when credible relationships exist
@@ -365,9 +368,9 @@ Verify before marking the dbt pipeline workflow complete.
 
 ## Independent verification and acceptance gate
 
-- [ ] `python scripts/run_acceptance_gate.py --root .` was run before final delivery and the result was recorded
-- [ ] `python scripts/check_requirement_traceability.py --root .` was run before final delivery
-- [ ] `python scripts/check_layer_proof_coverage.py --root .` was run before final delivery
+- [ ] `python <installed-skill-path>/scripts/run_acceptance_gate.py --root <project.root>` was run before final delivery and the result was recorded
+- [ ] `python <installed-skill-path>/scripts/check_requirement_traceability.py --root <project.root>` was run before final delivery
+- [ ] `python <installed-skill-path>/scripts/check_layer_proof_coverage.py --root <project.root>` was run before final delivery
 - [ ] `docs/how-to-verify-generated-project.md` was used or equivalent human verification steps were followed before final sign-off
 - [ ] `reports/agent/ACCEPTANCE_GATE_REPORT.md` and `reports/agent/ACCEPTANCE_GATE_REPORT.json` exist when the acceptance gate ran
 - [ ] Acceptance gate overall status is `PASS` or `WARN`; `FAIL` blocks final delivery

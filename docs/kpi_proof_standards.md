@@ -177,7 +177,7 @@ Analytics insight reporting cannot be marked `PASS` unless:
 
 ```bash
 python scripts/validate_kpi_proofs.py --root .
-python scripts/verify_metric_reconciliation.py --root .
+python <installed-skill-path>/scripts/verify_metric_reconciliation.py --root <project.root>
 ```
 
 pass, or the phase report documents each failed check with evidence and `insight_backlog.md` explains every catalog shortfall.
@@ -186,7 +186,7 @@ pass, or the phase report documents each failed check with evidence and `insight
 
 ```bash
 python scripts/validate_kpi_proofs.py --root .
-python scripts/verify_metric_reconciliation.py --root .
+python <installed-skill-path>/scripts/verify_metric_reconciliation.py --root <project.root>
 ```
 
 Optional project-scale targets:

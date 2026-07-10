@@ -27,6 +27,8 @@ Some versions of `npx skills add` install only this `SKILL.md` entry file into a
 references/
 scripts/
 agents/
+templates/
+docs/
 project.config.yml
 prompt.md
 .env.example
@@ -43,6 +45,8 @@ git clone --depth 1 https://github.com/zohaibRT/agentic-dbt-pipeline.git $tmp
 Copy-Item -Path (Join-Path $tmp "references") -Destination $skillDir -Recurse -Force
 Copy-Item -Path (Join-Path $tmp "scripts") -Destination $skillDir -Recurse -Force
 Copy-Item -Path (Join-Path $tmp "agents") -Destination $skillDir -Recurse -Force
+Copy-Item -Path (Join-Path $tmp "templates") -Destination $skillDir -Recurse -Force
+Copy-Item -Path (Join-Path $tmp "docs") -Destination $skillDir -Recurse -Force
 Copy-Item -Path (Join-Path $tmp "project.config.yml") -Destination $skillDir -Force
 Copy-Item -Path (Join-Path $tmp "prompt.md") -Destination $skillDir -Force
 Copy-Item -Path (Join-Path $tmp ".env.example") -Destination $skillDir -Force
@@ -58,6 +62,8 @@ git clone --depth 1 https://github.com/zohaibRT/agentic-dbt-pipeline.git "$tmp"
 cp -R "$tmp/references" "$skill_dir/"
 cp -R "$tmp/scripts" "$skill_dir/"
 cp -R "$tmp/agents" "$skill_dir/"
+cp -R "$tmp/templates" "$skill_dir/"
+cp -R "$tmp/docs" "$skill_dir/"
 cp "$tmp/project.config.yml" "$skill_dir/"
 cp "$tmp/prompt.md" "$skill_dir/"
 cp "$tmp/.env.example" "$skill_dir/"
@@ -83,7 +89,7 @@ Avoid these common first-run mistakes:
 
 Read and execute [references/discovery-requirements.md](references/discovery-requirements.md) before project setup, project initialization, or full pipeline runs.
 
-Discovery is read-only and project-oriented. It may inspect schemas, tables, columns, row counts, keys, relationships, dates, measures, and statuses. Its input/report/output must focus on the source data and analytics project, not environment setup. It must write `reports/agent/00_discovery/discovery_report.md`, `reports/agent/00_discovery/requirements.md`, `reports/agent/00_discovery/sql_proofs/`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` before the chat summary, even when the dbt project has not been initialized yet. Use the canonical templates under `templates/reports/00_discovery/` and `templates/reports/root/` for every file created or updated by the discovery checkpoint, including discovery report, requirements, cardinality, relationship profile, discovery approval checklist, proof index, SQL proof files, pipeline status, context tree, report index, requirements traceability, and next-phase prompt. The template structure should stay consistent across projects; the content must change based on source evidence and user-approved rules. The requirements file must capture inferred requirements, recommended defaults, unknowns, user-decision needs, and blocked/deferred scope derived from the source evidence and business domain. The discovery `sql_proofs/` folder must include reusable source proof queries with captured results for table inventory, per-table row counts, candidate keys, important statuses such as active/open/closed counts, date coverage, numeric summaries, and relationship/cardinality checks wherever the source supports them. It must create Mermaid discovery diagrams when the source evidence supports them, including an entity relationship diagram when credible relationships exist, plus other necessary source inventory, business process, or medallion direction diagrams. It must not install packages, run codegen, create warehouse schemas, or change profiles.
+Discovery is read-only and project-oriented. It may inspect schemas, tables, columns, row counts, keys, relationships, dates, measures, and statuses. Its input/report/output must focus on the source data and analytics project, not environment setup. It must write `reports/agent/00_discovery/discovery_report.md`, `reports/agent/00_discovery/requirements.md`, `reports/agent/00_discovery/core_profile.json`, `reports/agent/00_discovery/discovery_raw.json`, `reports/agent/00_discovery/sql_proofs/`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` before the chat summary, even when the dbt project has not been initialized yet. Use the canonical templates under `templates/reports/00_discovery/` and `templates/reports/root/` for every file created or updated by the discovery checkpoint, including discovery report, requirements, structured JSON evidence, cardinality, relationship profile, discovery approval checklist, proof index, SQL proof files, pipeline status, context tree, report index, requirements traceability, and next-phase prompt. The template structure should stay consistent across projects; the content must change based on source evidence and user-approved rules. The requirements file must capture inferred requirements, recommended defaults, unknowns, user-decision needs, and blocked/deferred scope derived from the source evidence and business domain. The discovery `sql_proofs/` folder must include reusable source proof queries with captured results for table inventory, per-table row counts, candidate keys, important statuses such as active/open/closed counts, date coverage, numeric summaries, and relationship/cardinality checks wherever the source supports them. `discovery_raw.json.queries_executed[]` must link to the SQL proof files that support the discovery claims. It must create Mermaid discovery diagrams when the source evidence supports them, including an entity relationship diagram when credible relationships exist, plus other necessary source inventory, business process, or medallion direction diagrams. It must not install packages, run codegen, create warehouse schemas, or change profiles.
 
 Do not assume the business domain. During discovery, understand source tables, table relationships, business processes, metrics required, data quality rules, required output models, and reporting needs before proposing dbt models.
 
@@ -178,7 +184,7 @@ Context prompt template: [agent-context-prompt.md](references/agent-context-prom
 
 ## Step 0 - Load configuration
 
-Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), [profile-listing.md](references/profile-listing.md), [project-naming.md](references/project-naming.md), [schema-isolation.md](references/schema-isolation.md), [env-configuration.md](references/env-configuration.md), [source-confirmation.md](references/source-confirmation.md), [warehouse-adapter-routing.md](references/warehouse-adapter-routing.md), [skill-knowledge.md](references/skill-knowledge.md), [project-knowledge.md](references/project-knowledge.md), [discovery-requirements.md](references/discovery-requirements.md), [phased-discovery.md](references/phased-discovery.md), [recommendation-and-review.md](references/recommendation-and-review.md), [writing-style.md](references/writing-style.md), [reporting-standards.md](references/reporting-standards.md), [universal-analytics-framework.md](references/universal-analytics-framework.md), [analytics-insight-reporting.md](references/analytics-insight-reporting.md), [mermaid-diagrams.md](references/mermaid-diagrams.md), [principal-data-engineering-standards.md](references/principal-data-engineering-standards.md), [evidence-driven-dbt-process.md](references/evidence-driven-dbt-process.md), [layer-data-validation.md](references/layer-data-validation.md), [cardinality-validation.md](references/cardinality-validation.md), [kpi-definitions.md](references/kpi-definitions.md), [kpi-definition-contract.md](references/kpi-definition-contract.md), [metric-verification.md](references/metric-verification.md), [metric-verification-checklist.md](references/metric-verification-checklist.md), [kpi-reconciliation.md](references/kpi-reconciliation.md), [advanced-data-engineering-review.md](references/advanced-data-engineering-review.md), [phase-plan-approval.md](references/phase-plan-approval.md), [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md), [phase-completion-report.md](references/phase-completion-report.md), [report-artifact-organization.md](references/report-artifact-organization.md), [next-phase-prompt.md](references/next-phase-prompt.md), and [context-tree.md](references/context-tree.md).
+Read [project.config.yml](project.config.yml), [skill-inputs.md](references/skill-inputs.md), [profile-listing.md](references/profile-listing.md), [project-naming.md](references/project-naming.md), [schema-isolation.md](references/schema-isolation.md), [env-configuration.md](references/env-configuration.md), [source-confirmation.md](references/source-confirmation.md), [warehouse-adapter-routing.md](references/warehouse-adapter-routing.md), [skill-knowledge.md](references/skill-knowledge.md), [project-knowledge.md](references/project-knowledge.md), [discovery-requirements.md](references/discovery-requirements.md), [discovery-artifacts.md](references/discovery-artifacts.md), [discovery-status-vocabulary.md](references/discovery-status-vocabulary.md), [phased-discovery.md](references/phased-discovery.md), [recommendation-and-review.md](references/recommendation-and-review.md), [writing-style.md](references/writing-style.md), [reporting-standards.md](references/reporting-standards.md), [universal-analytics-framework.md](references/universal-analytics-framework.md), [analytics-insight-reporting.md](references/analytics-insight-reporting.md), [mermaid-diagrams.md](references/mermaid-diagrams.md), [principal-data-engineering-standards.md](references/principal-data-engineering-standards.md), [evidence-driven-dbt-process.md](references/evidence-driven-dbt-process.md), [layer-data-validation.md](references/layer-data-validation.md), [cardinality-validation.md](references/cardinality-validation.md), [kpi-definitions.md](references/kpi-definitions.md), [kpi-definition-contract.md](references/kpi-definition-contract.md), [metric-verification.md](references/metric-verification.md), [metric-verification-checklist.md](references/metric-verification-checklist.md), [kpi-reconciliation.md](references/kpi-reconciliation.md), [advanced-data-engineering-review.md](references/advanced-data-engineering-review.md), [phase-plan-approval.md](references/phase-plan-approval.md), [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md), [phase-completion-report.md](references/phase-completion-report.md), [report-artifact-organization.md](references/report-artifact-organization.md), [next-phase-prompt.md](references/next-phase-prompt.md), and [context-tree.md](references/context-tree.md).
 
 For smaller context windows, read required references fully, extract the rules that apply to the active checkpoint into the phase plan or working notes, and avoid carrying unused details forward. Prefer loading phase-specific references only when entering that phase. Do not skip required safety references, but summarize-and-discard details that are not relevant to the active checkpoint.
 
@@ -294,10 +300,10 @@ Read [validation-commands.md](references/validation-commands.md).
 
 **Never mark a phase complete without successful validation.**
 
-Validate the skill configuration before project work:
+Validate the skill repository configuration before project work when operating inside the skill repository:
 
 ```powershell
-python scripts/validate_config.py --root .
+python <installed-skill-path>/scripts/validate_config.py --root <installed-skill-path>
 ```
 
 ```powershell
@@ -320,7 +326,7 @@ Verification must not depend only on the same agent or chat window. The builder 
 |---|---|
 | Builder agent | Discovery, build, SQL proofs, reports, status files |
 | Independent verifier agent | [agents/dbt-verifier-agent.md](agents/dbt-verifier-agent.md) - audit from disk only |
-| Acceptance script | `python scripts/run_acceptance_gate.py --root .` - deterministic pass/fail |
+| Acceptance script | `python <installed-skill-path>/scripts/run_acceptance_gate.py --root <project.root>` - deterministic pass/fail |
 | CI gate | [.github/workflows/dbt_acceptance_gate.yml](.github/workflows/dbt_acceptance_gate.yml) |
 | Human sign-off | `reports/agent/HUMAN_VERIFICATION_GUIDE.md` |
 
@@ -329,10 +335,10 @@ MCP may provide access to repo, files, database, and dbt commands, but MCP is no
 Before final delivery, run:
 
 ```powershell
-python scripts/run_acceptance_gate.py --root .
-python scripts/check_requirement_traceability.py --root .
-python scripts/check_layer_proof_coverage.py --root .
-python scripts/verify_metric_reconciliation.py --root .
+python <installed-skill-path>/scripts/run_acceptance_gate.py --root <project.root>
+python <installed-skill-path>/scripts/check_requirement_traceability.py --root <project.root>
+python <installed-skill-path>/scripts/check_layer_proof_coverage.py --root <project.root>
+python <installed-skill-path>/scripts/verify_metric_reconciliation.py --root <project.root>
 ```
 
 Do not claim project completion when the acceptance gate returns `FAIL`. Generated projects should include `reports/agent/ACCEPTANCE_GATE_REPORT.md` and `reports/agent/ACCEPTANCE_GATE_REPORT.json`.
@@ -357,7 +363,7 @@ Read [separate-layer-builds.md](references/separate-layer-builds.md).
 10. Presentation layer gate - required after analytics insight reporting and before final delivery; ask whether the user wants a presentation layer and which technology to use. Offer **Matplotlib** as the recommended default and Power BI as the alternative. If the user approves and does not name another technology, default to the Matplotlib refreshable web report workflow, run a separate `presentation_layer` phase, install missing `matplotlib`/`numpy`/`pandas` prerequisites when needed, map every recommended measure and key performance indicator from analytics insight catalogs into `kpi_figure_coverage.md`, and build a rich local browser report under `reports/agent/10_presentation/matplotlib/` with `serve_report.py`, `report.html`, colorful business tabs, executive cards, chart cards, insight captions, exception callouts, detail sections, live SVG/HTML or browser-native chart routes, SQL verification, `open_report.bat`, and business-friendly labels via `label_dictionary.md`. Validate the actual local report URL with `scripts/validate_local_web_report.py` before handoff; do not mark complete if the browser would see an empty response. Do not use PNG files as the primary web rendering path; use them only as optional exports/snapshots. If the user explicitly chooses Power BI, use the Power BI Desktop human-connected template workflow, create the handoff folder/checklist, wait for the user to save and confirm the connected PBIP, then inject only approved measures and safe reporting metadata.
 11. Agents Schema - publish dbt metadata to `AGENTS.*` after `target/manifest.json` exists when enabled and supported
 12. Automation - continuous integration workflow
-13. **Acceptance gate + independent verification** - `python scripts/run_acceptance_gate.py --root .`, then fresh verifier agent per [agents/dbt-verifier-agent.md](agents/dbt-verifier-agent.md)
+13. **Acceptance gate + independent verification** - `python <installed-skill-path>/scripts/run_acceptance_gate.py --root <project.root>`, then fresh verifier agent per [agents/dbt-verifier-agent.md](agents/dbt-verifier-agent.md)
 14. **Advanced review, acceptance + final summary** - [advanced-data-engineering-review.md](references/advanced-data-engineering-review.md), [acceptance-checklist.md](references/acceptance-checklist.md), [final-delivery.md](references/final-delivery.md)
 
 After project setup and configuration, each stage: **phase-specific discovery -> agent recommendation -> data engineer decision check -> write Markdown plan -> ask approval -> implement -> parse/build -> warehouse data validation queries -> write phase report with validation results in the managed reports folder -> update report index -> update context tree -> write `reports/agent/NEXT_PHASE_PROMPT.md` -> send a normal assistant message with a visible Markdown chat control-panel summary of what was completed and what is next -> paste the exact next-phase prompt in that chat message -> ask interactive approval for the displayed prompt when available -> ask commit**. Ask for push only when a non-local GitHub repository is configured or the user requested push. The native question card is not enough by itself; the visible chat summary must appear as a separate assistant message immediately before the clickable approval question.
@@ -366,7 +372,7 @@ After project setup and configuration, each stage: **phase-specific discovery ->
 
 Read [packages-and-sources.md](references/packages-and-sources.md), [source-profiling.md](references/source-profiling.md), [schema-isolation.md](references/schema-isolation.md), and [dbt-packages-and-skills.md](references/dbt-packages-and-skills.md).
 
-All four packages in `packages.yml`. Codegen for sources. Derive `source.name` from `source.schema` unless explicitly provided; use domain only as a last fallback when the source schema is generic. Write source YAML only under `models/sources/`, never under bronze, silver, or gold layer folders. Do not move source YAML into bronze/staging to satisfy evaluator source-directory warnings; document accepted exceptions or ask before changing structure. Add the configured `source.schema` to source YAML after generate. Profile row counts, candidate keys, relationships, important dates, measures, and status/code fields before staging.
+All five mandatory packages in `packages.yml`: `codegen`, `dbt_utils`, `dbt_expectations`, `dbt_project_evaluator`, and `audit_helper`. Codegen for sources. Derive `source.name` from `source.schema` unless explicitly provided; use domain only as a last fallback when the source schema is generic. Write source YAML only under `models/sources/`, never under bronze, silver, or gold layer folders. Do not move source YAML into bronze/staging to satisfy evaluator source-directory warnings; document accepted exceptions or ask before changing structure. Add the configured `source.schema` to source YAML after generate. Profile row counts, candidate keys, relationships, important dates, measures, and status/code fields before staging.
 
 ## Step 3 - Layer 1 (staging)
 
@@ -417,7 +423,7 @@ Read [analytics-insight-reporting.md](references/analytics-insight-reporting.md)
 - Do not publish catalog numbers without linked `sql_proofs/*.sql` files per [docs/kpi_proof_standards.md](docs/kpi_proof_standards.md).
 - Maximum means maximum useful business insight supported by validated data: business areas, processes, facts, dimensions, measures, metrics, strategic key performance indicators, report pages, and deferred opportunities with proof status, not maximum number of dashboards.
 
-After this phase, run `python scripts/validate_kpi_proofs.py --root .` and `python scripts/verify_metric_reconciliation.py --root .`, then record the results in the phase report. For medium projects with broad table scope, use project-scale targets or document each shortfall in `insight_backlog.md`. Update `reports/agent/09_analytics_insights/analytics_insight_reporting_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md`, then stop at the presentation-layer gate unless the user already approved presentation work.
+After this phase, run `python <installed-skill-path>/scripts/validate_kpi_proofs.py --root <project.root>` and `python <installed-skill-path>/scripts/verify_metric_reconciliation.py --root <project.root>`, then record the results in the phase report. For medium projects with broad table scope, use project-scale targets or document each shortfall in `insight_backlog.md`. Update `reports/agent/09_analytics_insights/analytics_insight_reporting_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md`, then stop at the presentation-layer gate unless the user already approved presentation work.
 
 ## Step 6b - Presentation layer recommendation
 
@@ -425,7 +431,7 @@ Read [presentation-layer.md](references/presentation-layer.md), [matplotlib-pres
 
 The presentation-layer recommendation and user decision gate are mandatory for full pipeline final delivery. If the user has not answered the presentation question, set status to `Analytics insight reporting complete - presentation decision pending`, not `Delivery complete`. If the recommendation cannot be produced, mark it `BLOCKED` or `SKIPPED` with evidence in the final report, pipeline status, context tree, and final response.
 
-## Step 6b - Human review
+## Step 6c - Human review
 
 Read [human-review.md](references/human-review.md). Summarize business assumptions, data quality notes, and open decisions after each layer. Ask for approval when business meaning, grain, mappings, metrics, or sensitive fields are unclear.
 
@@ -446,7 +452,7 @@ Use Agents Schema after documentation generation or any step that produces `targ
 
 Read [advanced-data-engineering-review.md](references/advanced-data-engineering-review.md), [phase-completion-report.md](references/phase-completion-report.md), [report-artifact-organization.md](references/report-artifact-organization.md), [reporting-standards.md](references/reporting-standards.md), [context-tree.md](references/context-tree.md), [evidence-driven-dbt-process.md](references/evidence-driven-dbt-process.md), [independent-verification-governance.md](references/independent-verification-governance.md), and [final-delivery.md](references/final-delivery.md) before marking any full pipeline or requested phase complete.
 
-Run `python scripts/run_acceptance_gate.py --root .` and record the result. When full delivery is requested, also run or delegate a fresh independent verifier per [agents/dbt-verifier-agent.md](agents/dbt-verifier-agent.md) and record `reports/agent/INDEPENDENT_VERIFICATION_REPORT.md`.
+Run `python <installed-skill-path>/scripts/run_acceptance_gate.py --root <project.root>` and record the result. Generated dbt projects do not need to contain the skill `scripts/` folder for this gate to run; use the scripts from the installed/hydrated skill folder against the project root. When full delivery is requested, also run or delegate a fresh independent verifier per [agents/dbt-verifier-agent.md](agents/dbt-verifier-agent.md) and record `reports/agent/INDEPENDENT_VERIFICATION_REPORT.md`.
 
 ## Universal iteration summary rule
 

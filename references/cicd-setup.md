@@ -17,16 +17,16 @@ Generated projects should run at minimum:
 dbt deps
 dbt parse --no-partial-parse
 dbt build
-python scripts/run_acceptance_gate.py --root .
+python <installed-skill-path>/scripts/run_acceptance_gate.py --root <project.root>
 ```
 
 When analytics KPI catalogs exist:
 
 ```bash
-python scripts/validate_kpi_proofs.py --root .
-python scripts/check_requirement_traceability.py --root .
-python scripts/check_layer_proof_coverage.py --root .
-python scripts/verify_metric_reconciliation.py --root .
+python <installed-skill-path>/scripts/validate_kpi_proofs.py --root <project.root>
+python <installed-skill-path>/scripts/check_requirement_traceability.py --root <project.root>
+python <installed-skill-path>/scripts/check_layer_proof_coverage.py --root <project.root>
+python <installed-skill-path>/scripts/verify_metric_reconciliation.py --root <project.root>
 ```
 
 Upload `reports/agent/ACCEPTANCE_GATE_REPORT.md`, `ACCEPTANCE_GATE_REPORT.json`, and independent verification reports as CI artifacts when available.

@@ -27,6 +27,8 @@ FAIL_STATUSES = {"FAIL", "BLOCKED"}
 
 REQUIRED_CONTROL_FILES = [
     "AGENT_PLAN.md",
+    "reports/agent/00_discovery/core_profile.json",
+    "reports/agent/00_discovery/discovery_raw.json",
     "reports/agent/00_discovery/requirements.md",
     "reports/agent/PIPELINE_STATUS.md",
     "reports/agent/CONTEXT_TREE.md",
@@ -35,7 +37,6 @@ REQUIRED_CONTROL_FILES = [
     "reports/agent/LAYER_VERIFICATION_LEDGER.md",
     "reports/agent/KPI_DEFINITION_CONTRACTS.md",
     "reports/agent/METRIC_VERIFICATION_MATRIX.md",
-    "references/acceptance-checklist.md",
 ]
 
 LAYER_REPORT_REQUIREMENTS = {
@@ -44,15 +45,14 @@ LAYER_REPORT_REQUIREMENTS = {
     "05_gold": ["Data Verification Results", "SQL Proof Files"],
 }
 
-VALIDATION_SCRIPTS = [
-    ["python", "scripts/validate_config.py", "--root", "."],
-    ["python", "scripts/check_discovery_artifacts.py", "--root", "."],
-    ["python", "scripts/validate_kpi_proofs.py", "--root", "."],
-    ["python", "scripts/check_requirement_traceability.py", "--root", "."],
-    ["python", "scripts/check_layer_proof_coverage.py", "--root", "."],
-    ["python", "scripts/verify_metric_reconciliation.py", "--root", "."],
-    ["python", "scripts/validate_powerbi_pbip.py"],
-    ["python", "scripts/validate_local_web_report.py"],
+PROJECT_VALIDATION_SCRIPTS = [
+    ("check_discovery_artifacts.py", ["--root", "{root}"]),
+    ("validate_kpi_proofs.py", ["--root", "{root}"]),
+    ("check_requirement_traceability.py", ["--root", "{root}"]),
+    ("check_layer_proof_coverage.py", ["--root", "{root}"]),
+    ("verify_metric_reconciliation.py", ["--root", "{root}"]),
+    ("validate_powerbi_pbip.py", []),
+    ("validate_local_web_report.py", []),
 ]
 
 DBT_COMMANDS = [
@@ -110,7 +110,8 @@ def read_text(path: Path) -> str:
 
 def run_command(command: list[str], root: Path, timeout: int) -> CheckResult:
     command_text = " ".join(command)
-    if shutil.which(command[0]) is None:
+    executable = Path(command[0])
+    if not executable.exists() and shutil.which(command[0]) is None:
         return CheckResult(command_text, "WARN", f"Executable not found: {command[0]}", command_text)
     try:
         completed = subprocess.run(
@@ -241,17 +242,20 @@ def check_operational_gaps(root: Path, report: GateReport) -> None:
 
 
 def run_validation_scripts(root: Path, report: GateReport, timeout: int) -> None:
-    for command in VALIDATION_SCRIPTS:
-        script_path = root / command[1]
+    script_dir = Path(__file__).resolve().parent
+    for script_name, script_args in PROJECT_VALIDATION_SCRIPTS:
+        script_path = script_dir / script_name
         if not script_path.exists():
-            report.add(CheckResult("Validation script: " + command[1], "WARN", "script not found"))
+            report.add(CheckResult("Validation script: " + script_name, "FAIL", f"skill script not found at {script_path}"))
             continue
-        if command[1].endswith("validate_powerbi_pbip.py") and not list((root / "reports" / "agent" / "10_presentation").glob("**/*.pbip")):
-            report.add(CheckResult("Validation script: " + command[1], "SKIPPED", "no PBIP found"))
+        if script_name == "validate_powerbi_pbip.py" and not list((root / "reports" / "agent" / "10_presentation").glob("**/*.pbip")):
+            report.add(CheckResult("Validation script: " + script_name, "SKIPPED", "no PBIP found"))
             continue
-        if command[1].endswith("validate_local_web_report.py") and not (root / "reports" / "agent" / "10_presentation" / "matplotlib" / "serve_report.py").exists():
-            report.add(CheckResult("Validation script: " + command[1], "SKIPPED", "no local web report server found"))
+        if script_name == "validate_local_web_report.py" and not (root / "reports" / "agent" / "10_presentation" / "matplotlib" / "serve_report.py").exists():
+            report.add(CheckResult("Validation script: " + script_name, "SKIPPED", "no local web report server found"))
             continue
+        resolved_args = [str(root) if item == "{root}" else item for item in script_args]
+        command = [sys.executable, str(script_path), *resolved_args]
         report.add(run_command(command, root, timeout))
 
 

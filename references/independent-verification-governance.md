@@ -119,10 +119,10 @@ Every important measure, metric, and key performance indicator must reconcile so
 Before final delivery, the builder agent must run:
 
 ```bash
-python scripts/run_acceptance_gate.py --root .
-python scripts/check_requirement_traceability.py --root .
-python scripts/check_layer_proof_coverage.py --root .
-python scripts/verify_metric_reconciliation.py --root .
+python <installed-skill-path>/scripts/run_acceptance_gate.py --root <project.root>
+python <installed-skill-path>/scripts/check_requirement_traceability.py --root <project.root>
+python <installed-skill-path>/scripts/check_layer_proof_coverage.py --root <project.root>
+python <installed-skill-path>/scripts/verify_metric_reconciliation.py --root <project.root>
 ```
 
 Do not claim project completion if any hard gate returns `FAIL`.
@@ -156,7 +156,7 @@ CI should run at minimum:
 1. `dbt deps`
 2. `dbt parse --no-partial-parse`
 3. `dbt build` when warehouse credentials are configured
-4. `python scripts/run_acceptance_gate.py --root .`
+4. `python <installed-skill-path>/scripts/run_acceptance_gate.py --root <project.root>`
 
 See [cicd-setup.md](cicd-setup.md).
 

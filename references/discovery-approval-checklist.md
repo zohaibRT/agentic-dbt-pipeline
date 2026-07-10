@@ -26,6 +26,8 @@ Use only:
 |---|---|---|
 | `reports/agent/00_discovery/discovery_report.md` exists | TODO | |
 | `reports/agent/00_discovery/requirements.md` exists | TODO | |
+| `reports/agent/00_discovery/core_profile.json` exists and contains non-secret profile/source context | TODO | |
+| `reports/agent/00_discovery/discovery_raw.json` exists and contains table evidence plus `queries_executed[]` | TODO | |
 | `reports/agent/00_discovery/cardinality_report.md` exists | TODO | |
 | `reports/agent/00_discovery/relationship_profile.md` exists | TODO | |
 | `reports/agent/00_discovery/sql_proofs/` exists | TODO | |
@@ -173,6 +175,7 @@ Decision rule: FAIL if later-layer direction is disconnected from discovery find
 | SQL proof files exist for orphan checks | TODO | |
 | SQL proof files include captured results | TODO | |
 | SQL proof files include PASS/WARN/FAIL/BLOCKED status | TODO | |
+| `discovery_raw.json.queries_executed[]` links to the SQL proof files used for discovery claims | TODO | |
 
 Decision rule: FAIL if discovery claims are made without SQL evidence.
 

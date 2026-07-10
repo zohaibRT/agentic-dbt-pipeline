@@ -8,9 +8,9 @@ This repository contains a dbt analytics engineering agent workflow. Use `SKILL.
 2. Discovery approval checklist and requirements traceability matrix
 3. Project setup and configuration
 4. Sources
-5. Staging
-6. Intermediate
-7. Marts
+5. Bronze or staging
+6. Silver or intermediate
+7. Gold or marts
 8. Validation
 9. Documentation
 10. Analytics insight reporting
@@ -26,8 +26,8 @@ Semantic layer, project evaluator, analytics insight reporting, presentation lay
 Verification must not depend only on the builder agent or the same chat window.
 
 - Builder agent writes evidence to `reports/agent/`, SQL proofs, and dbt artifacts.
-- Run `python scripts/run_acceptance_gate.py --root .` before final delivery.
-- Run `python scripts/check_requirement_traceability.py --root .`, `python scripts/check_layer_proof_coverage.py --root .`, and `python scripts/verify_metric_reconciliation.py --root .` before final delivery.
+- Run `python <installed-skill-path>/scripts/run_acceptance_gate.py --root <project.root>` before final delivery.
+- Run `python <installed-skill-path>/scripts/check_requirement_traceability.py --root <project.root>`, `python <installed-skill-path>/scripts/check_layer_proof_coverage.py --root <project.root>`, and `python <installed-skill-path>/scripts/verify_metric_reconciliation.py --root <project.root>` before final delivery.
 - Run a fresh verifier agent with `agents/dbt-verifier-agent.md` for an independent audit report.
 - Use `.github/workflows/dbt_acceptance_gate.yml` in generated projects when CI is enabled.
 
@@ -54,7 +54,7 @@ Do not:
 - Hardcode credentials in SQL, YAML, Markdown, workflows, or scripts.
 - Update, insert, delete, truncate, merge into, create, drop, alter, or repair rows or objects in the configured source schema or source tables.
 - Write dbt outputs into the configured source schema.
-- Create marts before staging and intermediate models are built and validated.
+- Create gold or marts before bronze/staging and silver/intermediate models are built and validated.
 - Guess business metrics, mappings, relationships, reporting needs, or sensitive-field handling.
 - Mark work complete when dbt tests or warehouse validation failed without documenting the blocker.
 - Mark work complete when `scripts/run_acceptance_gate.py` returns `FAIL` or independent verification returns `FAIL`.
@@ -67,10 +67,10 @@ After dbt model or YAML changes, run the smallest useful validation first, then 
 - `dbt build --select <model_name>+`
 - `dbt build --select +path:<layer_path>`
 - `dbt test --select <model_name>`
-- `python scripts/run_acceptance_gate.py --root .`
-- `python scripts/validate_kpi_proofs.py --root .`
-- `python scripts/check_requirement_traceability.py --root .`
-- `python scripts/check_layer_proof_coverage.py --root .`
-- `python scripts/verify_metric_reconciliation.py --root .`
+- `python <installed-skill-path>/scripts/run_acceptance_gate.py --root <project.root>`
+- `python <installed-skill-path>/scripts/validate_kpi_proofs.py --root <project.root>`
+- `python <installed-skill-path>/scripts/check_requirement_traceability.py --root <project.root>`
+- `python <installed-skill-path>/scripts/check_layer_proof_coverage.py --root <project.root>`
+- `python <installed-skill-path>/scripts/verify_metric_reconciliation.py --root <project.root>`
 
 Document validation commands, failures, fixes, skips, and remaining risks in the phase report.

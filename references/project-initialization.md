@@ -69,13 +69,34 @@ All checks must pass before continuing.
 
 Ensure entries from [security-and-credentials.md](security-and-credentials.md) exist.
 
+For generated dbt projects, also include runtime/control artifacts that should not be committed by default:
+
+```text
+.env
+profiles.yml
+.venv/
+target/
+logs/
+dbt_packages/
+.agents/
+reports/
+scripts/
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+*.swp
+```
+
+Track source code, dbt models, macros, tests, seeds, snapshots, package files, project config, and approved workflow files. Ignore generated evidence reports unless the user explicitly asks to version them.
+
 ## 5. Initial Git commit
 
 ```powershell
 git init
+git branch -M main
 git add .
 git commit -m "Initialize dbt project"
-git branch -M main
 ```
 
 Only if GitHub push is requested, resolve owner + repo after approval:

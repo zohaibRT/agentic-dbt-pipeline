@@ -49,7 +49,9 @@ Inspect these files when present:
 - `target/manifest.json`
 - `target/run_results.json`
 - `target/sources.json` *(if source freshness was run)*
-- `references/acceptance-checklist.md`
+- `reports/agent/00_discovery/core_profile.json`
+- `reports/agent/00_discovery/discovery_raw.json`
+- Skill reference `references/acceptance-checklist.md` from the installed skill folder, when available
 
 ## Verification rules
 
@@ -60,7 +62,8 @@ Check the following:
 1. Discovery was approved before bootstrap/build.
 2. Requirements are traceable to models, tests, reports, or documented exclusions.
 3. Every dbt layer has verification results:
-   - source/staging
+   - sources
+   - bronze/staging
    - bronze
    - silver
    - gold/star schema
@@ -91,16 +94,16 @@ Run these commands when available:
 dbt deps
 dbt parse --no-partial-parse
 dbt build
-python scripts/run_acceptance_gate.py --root .
-python scripts/validate_kpi_proofs.py --root .
-python scripts/check_requirement_traceability.py --root .
-python scripts/check_layer_proof_coverage.py --root .
-python scripts/verify_metric_reconciliation.py --root .
+python <installed-skill-path>/scripts/run_acceptance_gate.py --root <project.root>
+python <installed-skill-path>/scripts/validate_kpi_proofs.py --root <project.root>
+python <installed-skill-path>/scripts/check_requirement_traceability.py --root <project.root>
+python <installed-skill-path>/scripts/check_layer_proof_coverage.py --root <project.root>
+python <installed-skill-path>/scripts/verify_metric_reconciliation.py --root <project.root>
 ```
 
 If a command cannot run, mark it as `BLOCKED` and explain why.
 
-Use `python scripts/run_acceptance_gate.py --root . --skip-dbt` only when warehouse credentials are unavailable and document that limitation in the report.
+Use `python <installed-skill-path>/scripts/run_acceptance_gate.py --root <project.root> --skip-dbt` only when warehouse credentials are unavailable and document that limitation in the report.
 
 ## Output
 

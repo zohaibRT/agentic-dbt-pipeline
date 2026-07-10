@@ -61,6 +61,9 @@ ROOT_FILES = {
 |---|---|---|---|---|---|---|---|---|---:|---:|---|---|---|
 | TODO | Add verified measure, metric, or key performance indicator | measure / metric / key performance indicator | NO | TODO | TODO | TODO | N/A | N/A | 0 | 0 | TODO | BLOCKED | Replace this starter row when metric verification begins |
 """,
+    "ACCEPTANCE_GATE_REPORT.md": "# Acceptance Gate Report\n\nOverall status: **NOT RUN**\n",
+    "INDEPENDENT_VERIFICATION_REPORT.md": "# Independent Verification Report\n\nOverall status: **NOT RUN**\n",
+    "final_delivery.md": "# Final Delivery Summary\n\nStatus: **NOT READY**\n",
 }
 
 def write_if_missing(path: Path, content: str) -> bool:

@@ -23,13 +23,17 @@ Read in this order:
 
 1. `reports/agent/PIPELINE_STATUS.md`
 2. `reports/agent/REPORT_INDEX.md`
-3. `reports/agent/REQUIREMENTS_TRACEABILITY_MATRIX.md`
-4. `reports/agent/LAYER_VERIFICATION_LEDGER.md`
-5. One phase folder per built layer, especially `sql_proofs/`
+3. `reports/agent/00_discovery/core_profile.json`
+4. `reports/agent/00_discovery/discovery_raw.json`
+5. `reports/agent/REQUIREMENTS_TRACEABILITY_MATRIX.md`
+6. `reports/agent/LAYER_VERIFICATION_LEDGER.md`
+7. One phase folder per built layer, especially `sql_proofs/`
 
 Red flags:
 
 - `FAIL` or `BLOCKED` in `PIPELINE_STATUS.md`
+- `core_profile.json` points to a different profile/source than the user approved
+- `discovery_raw.json.queries_executed[]` does not link to SQL proof files
 - missing proof files for important claims
 - KPI in catalog with no linked SQL proof
 - agent says complete but acceptance gate failed
@@ -149,11 +153,11 @@ Run from the generated dbt project root:
 
 ```bash
 dbt build
-python scripts/run_acceptance_gate.py --root .
-python scripts/check_requirement_traceability.py --root .
-python scripts/check_layer_proof_coverage.py --root .
-python scripts/validate_kpi_proofs.py --root . --require-sql-proofs
-python scripts/verify_metric_reconciliation.py --root .
+python <installed-skill-path>/scripts/run_acceptance_gate.py --root <project.root>
+python <installed-skill-path>/scripts/check_requirement_traceability.py --root <project.root>
+python <installed-skill-path>/scripts/check_layer_proof_coverage.py --root <project.root>
+python <installed-skill-path>/scripts/validate_kpi_proofs.py --root <project.root> --require-sql-proofs
+python <installed-skill-path>/scripts/verify_metric_reconciliation.py --root <project.root>
 ```
 
 Then run a fresh verifier session with [agents/dbt-verifier-agent.md](../agents/dbt-verifier-agent.md) and read:
