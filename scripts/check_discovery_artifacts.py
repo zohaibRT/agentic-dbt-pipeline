@@ -144,6 +144,38 @@ def validate_sql_proof_linkage(root: Path) -> list[str]:
     return errors
 
 
+def validate_status_review_sections(root: Path) -> list[str]:
+    errors: list[str] = []
+    files = [
+        root / "reports" / "agent" / "PIPELINE_STATUS.md",
+        root / "reports" / "agent" / "00_discovery" / "discovery_report.md",
+        root / "reports" / "agent" / "00_discovery" / "DISCOVERY_APPROVAL_CHECKLIST.md",
+    ]
+    status_tokens = ("WARN", "FAIL", "BLOCKED", "SKIPPED")
+    required_terms = ("why", "evidence", "review", "action")
+
+    for path in files:
+        if not path.exists():
+            continue
+        text = path.read_text(encoding="utf-8", errors="replace")
+        upper = text.upper()
+        if not any(token in upper for token in status_tokens):
+            continue
+        lower = text.lower()
+        has_review_section = "status review" in lower or "status review queue" in lower
+        if not has_review_section:
+            errors.append(f"{path.as_posix()}: contains non-PASS statuses but no Status Review section")
+            continue
+        missing_terms = [term for term in required_terms if term not in lower]
+        if missing_terms:
+            errors.append(
+                f"{path.as_posix()}: Status Review section is missing expected terms: "
+                + ", ".join(missing_terms)
+            )
+
+    return errors
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=Path("."))
@@ -162,6 +194,7 @@ def main() -> int:
         if path.exists():
             errors.extend(validate_json(path))
     errors.extend(validate_sql_proof_linkage(root))
+    errors.extend(validate_status_review_sections(root))
 
     inventory = root / "reports/agent/00_discovery/sql_proofs/001_source_table_inventory.sql"
     if not inventory.exists():

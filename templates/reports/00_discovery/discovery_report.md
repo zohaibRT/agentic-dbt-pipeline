@@ -20,6 +20,14 @@ Do not remove sections; write `None`, `Not observed`, `Not supported by evidence
 - Non-empty tables: <count>
 - Recommended next step: <automatic setup / stop for requirements / stop for source confirmation>
 
+## Status Review
+
+Every non-`PASS` status in this report must be explained here so the data engineer does not need to guess.
+
+| Status | Area | Why this status was used | Evidence | What the data engineer should review | Recommended action | Owner | Blocks next phase? |
+|---|---|---|---|---|---|---|---|
+| <WARN/FAIL/BLOCKED/SKIPPED> | <area> | <specific reason> | <proof/report path> | <human review question> | <approve/fix/defer/change scope> | <agent/data engineer> | <yes/no> |
+
 ## Source Inventory
 
 | Table | Row count | Likely role | Included in first pass | Notes |

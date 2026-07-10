@@ -43,6 +43,14 @@ Keep this file current after every checkpoint.
 | Analytics insight reporting | PENDING | `reports/agent/09_analytics_insights/analytics_insight_report.md` | Not approved by discovery |
 | Presentation layer | PENDING | `reports/agent/10_presentation/presentation_report.md` | Not approved by discovery |
 
+## Status Review Queue
+
+Every `WARN`, `FAIL`, `BLOCKED`, or `SKIPPED` status must have a review row here.
+
+| Status | Phase / Area | Why this status was used | Evidence | What to review | Required action | Owner | Blocks next checkpoint? |
+|---|---|---|---|---|---|---|---|
+| <WARN/FAIL/BLOCKED/SKIPPED> | <phase/area> | <specific reason> | <proof/report path> | <review question> | <approve/fix/defer/change scope> | <agent/data engineer> | <yes/no> |
+
 ## Current Approval Gate
 
 - Approval requested: <yes/no>

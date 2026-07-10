@@ -228,6 +228,8 @@ Read [privacy-and-unknown-fields.md](references/privacy-and-unknown-fields.md) w
 
 Read [writing-style.md](references/writing-style.md) and [reporting-standards.md](references/reporting-standards.md) before writing user-facing prompts, plans, reports, summaries, diagram notes, presentation artifacts, or final handoffs. Use full wording instead of shorthand, except for official tool names, commands, filenames, environment variables, and code identifiers. Every report must include the five reporting pillars when relevant: context and strategy, key performance indicators, trend analysis and variance, insights and attribution, and recommendations and next steps. If a pillar is not supported yet, mark it deferred with the reason instead of guessing.
 
+Every `WARN`, `FAIL`, `BLOCKED`, or `SKIPPED` status in `PIPELINE_STATUS.md`, phase reports, approval checklists, SQL proof indexes, and final summaries must include why the status was used, the evidence path, what the data engineer should review, the required action, and whether it blocks the next checkpoint. Do not leave non-`PASS` statuses as unexplained labels.
+
 Read [data-engineer-decision-gate.md](references/data-engineer-decision-gate.md) before writing each phase plan. The phase plan must show the agent's data-engineering decisions, evidence, and approval needs; do not hide grain, key, join, bridge table, mapping, privacy, metric, materialization, or validation choices inside code.
 
 If the agent cannot understand the source tables, relationships, business processes, required metrics, data quality rules, required output models, or reporting needs for the current scope, stop the dependent scope and ask instead of guessing.

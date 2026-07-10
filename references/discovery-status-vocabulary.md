@@ -45,3 +45,17 @@ Do not use `WARN` to hide a `FAIL`. Do not use `PASS` when a real limitation was
 Every discovery SQL proof header must include one core status.
 
 Every discovery report summary, checklist row, JSON `status` field, and inventory inclusion decision must use the vocabulary above.
+
+## Status reason requirement
+
+Every `WARN`, `FAIL`, `BLOCKED`, or `SKIPPED` status must include:
+
+| Required field | Why |
+|---|---|
+| Why this status was used | Prevents unexplained labels |
+| Evidence path | Lets the human verify the claim |
+| What to review | Tells the data engineer exactly where judgment is needed |
+| Required action | Makes the next step clear |
+| Whether it blocks the next phase | Prevents accidental continuation |
+
+Write these details in `reports/agent/PIPELINE_STATUS.md` under `Status Review Queue` and in the phase report under `Status Review`. Do not leave a non-`PASS` status only in a table row or prose paragraph.

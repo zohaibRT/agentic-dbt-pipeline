@@ -183,6 +183,8 @@ Every phase report and index entry must answer:
 - How to use it
 - What the data engineer should verify
 - What passed, warned, failed, skipped, or blocked
+- Why each `WARN`, `FAIL`, `BLOCKED`, or `SKIPPED` status was assigned
+- What the data engineer should review for each non-`PASS` status
 - What to do next
 
 ## Chat Summary Requirement

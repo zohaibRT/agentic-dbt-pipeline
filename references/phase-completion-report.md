@@ -207,6 +207,22 @@ Use these labels consistently:
 | `SKIPPED` | Intentionally not run |
 | `BLOCKED` | Waiting on user/external action |
 
+Every `WARN`, `FAIL`, `BLOCKED`, or `SKIPPED` status must be accompanied by a status-review row in the phase report and `reports/agent/PIPELINE_STATUS.md`.
+
+Required fields:
+
+| Field | Purpose |
+|---|---|
+| Status | The status label |
+| Phase / area | Where the issue belongs |
+| Why this status was used | Plain-English reason |
+| Evidence | Report, SQL proof, command output, or artifact path |
+| What to review | Exact human review question |
+| Required action | Approve, fix, defer, change scope, or provide business rule |
+| Blocks next checkpoint? | Yes/no with reason |
+
+Do not make the user infer why a phase is `WARN`, `FAIL`, `BLOCKED`, or `SKIPPED`.
+
 ## Phase report template
 
 ```markdown
@@ -214,6 +230,12 @@ Use these labels consistently:
 
 ## Status
 Overall: <PASS | WARN | FAIL | SKIPPED | BLOCKED>
+
+## Status Review
+
+| Status | Area | Why this status was used | Evidence | What to review | Required action | Blocks next checkpoint? |
+|---|---|---|---|---|---|---|
+| <status> | <area> | <reason> | <path/output> | <human review question> | <action> | <yes/no> |
 
 ## Context and Strategy
 - Objective: <why this phase or report matters>

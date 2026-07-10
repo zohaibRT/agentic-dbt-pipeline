@@ -49,6 +49,14 @@ Replace `TODO` with `PASS`, `WARN`, `FAIL`, `BLOCKED`, or `N/A`.
 | Sensitive or ambiguous fields reviewed | TODO | |
 | Open questions listed | TODO | |
 
+## Status Review Items
+
+Every non-`PASS` checklist item must be listed here with the reason and review action.
+
+| Status | Checklist area | Why this status was used | Evidence | What the data engineer should review | Required action before next phase |
+|---|---|---|---|---|---|
+| <WARN/FAIL/BLOCKED/SKIPPED> | <area> | <specific reason> | <proof/report path> | <review question> | <approve/fix/defer/change scope> |
+
 ## Final Discovery Decision
 
 Decision: TODO
