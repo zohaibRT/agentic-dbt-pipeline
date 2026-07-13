@@ -13,6 +13,7 @@ REQUIRED_DISCOVERY_FILES = [
     "reports/agent/00_discovery/README.md",
     "reports/agent/00_discovery/core_profile.json",
     "reports/agent/00_discovery/discovery_raw.json",
+    "reports/agent/00_discovery/first_pass_scope.json",
     "reports/agent/00_discovery/discovery_report.md",
     "reports/agent/00_discovery/requirements.md",
     "reports/agent/00_discovery/cardinality_report.md",
@@ -24,6 +25,14 @@ REQUIRED_DISCOVERY_FILES = [
 REQUIRED_JSON_KEYS = {
     "core_profile.json": ["_file_meta", "profile", "source", "workspace"],
     "discovery_raw.json": ["_file_meta", "run", "scope", "tables", "queries_executed"],
+    "first_pass_scope.json": [
+        "_file_meta",
+        "lock_status",
+        "fingerprint",
+        "counts",
+        "included_tables",
+        "deferred_tables",
+    ],
 }
 
 
@@ -84,6 +93,64 @@ def validate_json(path: Path) -> list[str]:
         ):
             if isinstance(value, str) and value.strip().startswith("<"):
                 errors.append(f"{path.as_posix()}: placeholder value still present for {label}")
+
+    if path.name == "first_pass_scope.json":
+        lock_status = str(data.get("lock_status") or "").strip().lower()
+        if lock_status not in ("proposed", "approved", "superseded"):
+            errors.append(
+                f"{path.as_posix()}: lock_status must be proposed, approved, or superseded"
+            )
+        fingerprint = data.get("fingerprint")
+        if not isinstance(fingerprint, dict):
+            errors.append(f"{path.as_posix()}: fingerprint must be an object")
+        else:
+            for field in ("profile", "database", "source_schema", "business_process"):
+                value = fingerprint.get(field)
+                if not value or (isinstance(value, str) and value.strip().startswith("<")):
+                    errors.append(f"{path.as_posix()}: fingerprint.{field} must be filled")
+        included = data.get("included_tables")
+        deferred = data.get("deferred_tables")
+        if not isinstance(included, list):
+            errors.append(f"{path.as_posix()}: included_tables must be a list")
+        if not isinstance(deferred, list):
+            errors.append(f"{path.as_posix()}: deferred_tables must be a list")
+
+    return errors
+
+
+def validate_scope_lock_consistency(root: Path) -> list[str]:
+    errors: list[str] = []
+    discovery_dir = root / "reports" / "agent" / "00_discovery"
+    raw_path = discovery_dir / "discovery_raw.json"
+    scope_path = discovery_dir / "first_pass_scope.json"
+    if not raw_path.exists() or not scope_path.exists():
+        return errors
+
+    try:
+        raw = json.loads(raw_path.read_text(encoding="utf-8"))
+        scope = json.loads(scope_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return errors
+
+    raw_included = {
+        str(item.get("table_name") or "").strip()
+        for item in raw.get("tables", [])
+        if isinstance(item, dict)
+        and str(item.get("inclusion_status") or "").strip().lower() == "included"
+    }
+    scope_included = {
+        str(name).strip()
+        for name in (scope.get("included_tables") or [])
+        if str(name).strip()
+    }
+    if raw_included and scope_included and raw_included != scope_included:
+        only_raw = sorted(raw_included - scope_included)
+        only_scope = sorted(scope_included - raw_included)
+        errors.append(
+            "first_pass_scope.json included_tables does not match discovery_raw.json included set"
+            + (f"; only in raw: {only_raw}" if only_raw else "")
+            + (f"; only in scope lock: {only_scope}" if only_scope else "")
+        )
 
     return errors
 
@@ -212,6 +279,7 @@ def main() -> int:
             errors.extend(validate_json(path))
     errors.extend(validate_sql_proof_linkage(root))
     errors.extend(validate_status_review_sections(root))
+    errors.extend(validate_scope_lock_consistency(root))
 
     inventory = root / "reports/agent/00_discovery/sql_proofs/001_source_table_inventory.sql"
     if not inventory.exists():

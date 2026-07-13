@@ -12,6 +12,7 @@ Discovery must create or fully update these files every run:
 reports/agent/00_discovery/README.md
 reports/agent/00_discovery/core_profile.json
 reports/agent/00_discovery/discovery_raw.json
+reports/agent/00_discovery/first_pass_scope.json
 reports/agent/00_discovery/discovery_report.md
 reports/agent/00_discovery/requirements.md
 reports/agent/00_discovery/cardinality_report.md
@@ -25,7 +26,7 @@ reports/agent/REQUIREMENTS_TRACEABILITY_MATRIX.md
 reports/agent/NEXT_PHASE_PROMPT.md
 ```
 
-`core_profile.json` and `discovery_raw.json` are **required**, not optional.
+`core_profile.json`, `discovery_raw.json`, and `first_pass_scope.json` are **required**, not optional.
 
 ## Machine-readable JSON files
 
@@ -47,7 +48,16 @@ reports/agent/NEXT_PHASE_PROMPT.md
 | **When** | **Fully updated every discovery run** |
 | **Large schemas** | Inventory all tables with counts; deep column/sample detail only for included or priority tables |
 
-Both JSON files use a top-level `_file_meta` object because JSON cannot contain comments. Read `_file_meta` first.
+### `first_pass_scope.json`
+
+| Field | Purpose |
+|---|---|
+| **What** | Locked included/deferred table list for the first-pass process |
+| **Why** | Same profile/database/source/process must reuse the same included set |
+| **When** | Written every discovery run as `proposed`; set to `approved` after discovery approval |
+| **Reuse** | On a later run with the same fingerprint, reuse this file; do not invent a new 28-vs-26 style list |
+
+These JSON files use a top-level `_file_meta` object because JSON cannot contain comments. Read `_file_meta` first.
 
 ## Human-readable discovery files
 
@@ -82,6 +92,8 @@ Mandatory reusable checklist:
 3. Exclude audit/log/platform/empty unless the user requested them
 4. Require an `inclusion_reason` for every table
 5. Ask the user if process scope is unclear
+
+Also apply the **scope lock and repeatability** rules in that file: reuse an approved same-fingerprint scope; default borderline neighbors to deferred; stop and ask before changing an approved included set.
 
 Required outcome:
 

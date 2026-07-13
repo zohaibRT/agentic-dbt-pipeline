@@ -19,6 +19,7 @@ Replace `TODO` with `PASS`, `WARN`, `FAIL`, `BLOCKED`, or `N/A`.
 | Requirements file exists | TODO | `reports/agent/00_discovery/requirements.md` |
 | Core profile JSON exists | TODO | `reports/agent/00_discovery/core_profile.json` |
 | Discovery raw JSON exists | TODO | `reports/agent/00_discovery/discovery_raw.json` |
+| First-pass scope lock JSON exists | TODO | `reports/agent/00_discovery/first_pass_scope.json` |
 | Cardinality report exists | TODO | `reports/agent/00_discovery/cardinality_report.md` |
 | Relationship profile exists | TODO | `reports/agent/00_discovery/relationship_profile.md` |
 | SQL proof folder exists | TODO | `reports/agent/00_discovery/sql_proofs/` |
@@ -44,6 +45,10 @@ Replace `TODO` with `PASS`, `WARN`, `FAIL`, `BLOCKED`, or `N/A`.
 | Every table has inclusion_status and inclusion_reason in discovery_raw.json | TODO | included / deferred / excluded |
 | Ask user if process scope is unclear | TODO | or document why scope is clear |
 | Deep proofs limited to included or priority tables | TODO | `001` covers all; `010+` covers included only |
+| Scope fingerprint recorded | TODO | profile + database + source_schema + business_process |
+| Same-fingerprint prior scope reused or compared | TODO | `scripts/compare_discovery_scope.py` when a prior run exists |
+| Borderline neighbors defaulted to deferred | TODO | agreements/credit notes/enrichment unless user asked |
+| first_pass_scope.json matches discovery_raw included set | TODO | no silent 28-vs-26 drift |
 
 ## Evidence Quality
 

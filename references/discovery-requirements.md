@@ -214,6 +214,7 @@ Use these canonical discovery templates when creating the discovery files:
 | `reports/agent/00_discovery/README.md` | `templates/reports/00_discovery/README.md` |
 | `reports/agent/00_discovery/core_profile.json` | `templates/reports/00_discovery/core_profile.json` |
 | `reports/agent/00_discovery/discovery_raw.json` | `templates/reports/00_discovery/discovery_raw.json` |
+| `reports/agent/00_discovery/first_pass_scope.json` | `templates/reports/00_discovery/first_pass_scope.json` |
 | `reports/agent/00_discovery/discovery_report.md` | `templates/reports/00_discovery/discovery_report.md` |
 | `reports/agent/00_discovery/requirements.md` | `templates/reports/00_discovery/requirements.md` |
 | `reports/agent/00_discovery/cardinality_report.md` | `templates/reports/00_discovery/cardinality_report.md` |

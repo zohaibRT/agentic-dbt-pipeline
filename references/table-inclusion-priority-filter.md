@@ -192,6 +192,69 @@ Stop and ask before treating a table as included if:
 
 If process scope is unclear, do not invent it. Ask the user, mark the scope decision `BLOCKED` until answered, and keep deep proofs limited to already-approved tables only.
 
+## Scope lock and repeatability (mandatory)
+
+Same profile, database, source schema, and first-pass business process must produce the **same included table set** unless the user explicitly re-scopes.
+
+### Why this exists
+
+Discovery judgment on borderline tables (agreements, credit notes, device conditions, addresses, attempts) can otherwise drift across runs (for example 28 vs 26). That makes it hard to know which discovery is “correct.”
+
+Rule: **the approved first-pass scope is the source of truth.** Later runs reuse it. They do not invent a new count.
+
+### Fingerprint
+
+Build a scope fingerprint from:
+
+| Field | Source |
+|---|---|
+| `profile` | `DBT_PROFILE_NAME` / `core_profile.json` |
+| `database` | active profile database/catalog |
+| `source_schema` | `DBT_SOURCE_SCHEMA` |
+| `business_process` | named first-pass process from discovery |
+
+If those four match a prior discovery, treat it as the same discovery target.
+
+### Reuse order
+
+1. If this project already has an **approved** scope lock (`first_pass_scope.json` with `lock_status: approved`, or an approved `DISCOVERY_APPROVAL_CHECKLIST.md` plus `discovery_raw.json`), **reuse that exact included/deferred/excluded set**.
+2. If the user points at a prior project/run with the same fingerprint, compare with `scripts/compare_discovery_scope.py` and **reuse the approved prior included list** unless the user asks to re-scope.
+3. Only invent a new inclusion set when no prior approved scope exists for this fingerprint.
+4. If a fresh classification would change an existing approved included set, **stop and ask**. Do not silently move tables between included and deferred.
+
+### Borderline table default (domain-neutral)
+
+When no prior approved scope exists, classify borderline neighbors as **`deferred` by default**:
+
+| Prefer `included` | Prefer `deferred` (until user asks) |
+|---|---|
+| Fact/event on the named process | Optional enrichment (conditions, attributes, notes) |
+| Required parent of an included fact | Adjacent commercial docs (agreements, credit notes) unless named |
+| Required child/detail line of an included fact | Secondary attempt/log companions that are not the event of record |
+| Required lookup/bridge to test grain or joins | Nice-to-have slicing tables with no required FK for first-pass grain |
+
+Do not flip these defaults between runs without user approval.
+
+### Which discovery is correct?
+
+| Situation | Correct scope |
+|---|---|
+| One run approved, later run differs | The **approved** run |
+| Two fresh runs, neither approved | Neither is authoritative yet — compare with the script, apply borderline defaults, ask the user once |
+| User explicitly re-scopes | The new user-approved list |
+
+After approval, write/update:
+
+```text
+reports/agent/00_discovery/first_pass_scope.json
+```
+
+with fingerprint, `lock_status: approved`, sorted `included_tables`, `deferred_tables`, `excluded_count`, and the discovery report path.
+
+### Proof filenames
+
+Keep proof **bands** stable (`001`, `010`, `020`, … `080`). Do not rename bands between runs for the same fingerprint. Optional mid-band proofs (`025`, `035`) are allowed only when they support a warning already in the report; they must not change the included table set.
+
 ## Completion rule
 
 Discovery is incomplete when:
@@ -206,3 +269,6 @@ Discovery is incomplete when:
 - included tables are missing from priority proofs without explanation
 - the discovery report has no Table Inclusion Filter section
 - scope was narrowed but `001_source_table_inventory.sql` was skipped
+- an approved same-fingerprint scope exists and this run changed included tables without user re-scope approval
+- `first_pass_scope.json` is missing after discovery approval
+- two discovery runs for the same fingerprint disagree and the agent did not stop to ask which scope to lock

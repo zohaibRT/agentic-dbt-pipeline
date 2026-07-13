@@ -11,6 +11,7 @@ Status meanings: see [references/discovery-status-vocabulary.md](../../../refere
 | `README.md` | This guide | Helps humans understand discovery outputs | When discovery process changes |
 | `core_profile.json` | Connection context snapshot (no secrets) | Reload project context without chat | **Every discovery run** |
 | `discovery_raw.json` | Structured warehouse evidence | Audit trail before human summaries | **Every discovery run** |
+| `first_pass_scope.json` | Locked included/deferred table list | Keep same-fingerprint discovery repeatable | **Every discovery run**; `approved` after approval |
 | `discovery_report.md` | Main discovery summary | Human-readable findings | **Every discovery run** |
 | `requirements.md` | Requirements from source evidence | Bridge to build planning | **Every discovery run** |
 | `cardinality_report.md` | Join safety and row multiplication risks | Prevent unsafe joins | When relationships exist |

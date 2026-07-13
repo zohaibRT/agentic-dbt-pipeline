@@ -578,7 +578,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 | [discovery-requirements.md](references/discovery-requirements.md) | Read-only schema/data discovery and requirements checkpoint before build planning |
 | [discovery-artifacts.md](references/discovery-artifacts.md) | Mandatory discovery files including core_profile.json and discovery_raw.json |
 | [discovery-status-vocabulary.md](references/discovery-status-vocabulary.md) | PASS, WARN, FAIL, BLOCKED, SKIPPED meanings for discovery outputs |
-| [table-inclusion-priority-filter.md](references/table-inclusion-priority-filter.md) | How to include, defer, or exclude tables and choose priority proofs |
+| [table-inclusion-priority-filter.md](references/table-inclusion-priority-filter.md) | How to include, defer, or exclude tables, lock first-pass scope, and keep runs repeatable |
 | [project.config.yml](project.config.yml) | Defaults, paths, git, materialization |
 | [skill-inputs.md](references/skill-inputs.md) | Required inputs |
 | [profile-listing.md](references/profile-listing.md) | Safe available-profile table when `DBT_PROFILE_NAME` is missing or ambiguous |

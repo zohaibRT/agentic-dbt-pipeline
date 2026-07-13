@@ -1,0 +1,26 @@
+{
+  "_file_meta": {
+    "purpose": "Locked first-pass table inclusion scope for repeatable discovery",
+    "why": "Same profile/database/source/process must reuse this included set unless the user explicitly re-scopes",
+    "required_on_every_discovery_run": true
+  },
+  "lock_status": "proposed",
+  "fingerprint": {
+    "profile": "<DBT_PROFILE_NAME>",
+    "database": "<database or catalog>",
+    "source_schema": "<DBT_SOURCE_SCHEMA>",
+    "business_process": "<first-pass process name>"
+  },
+  "counts": {
+    "total_tables": 0,
+    "included": 0,
+    "deferred": 0,
+    "excluded": 0
+  },
+  "included_tables": [],
+  "deferred_tables": [],
+  "prior_scope_path": null,
+  "approved_at": null,
+  "approved_by": null,
+  "notes": "Copy exact included_tables from discovery_raw.json. On re-run with the same fingerprint, reuse this file instead of inventing a new list."
+}
