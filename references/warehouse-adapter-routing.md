@@ -71,8 +71,21 @@ If discovery fails against the selected profile:
 
 1. Report the selected profile name and adapter.
 2. Report the failed command or check.
-3. Ask the user whether to fix that profile or choose a different profile.
-4. Do not try another adapter automatically.
+3. Before claiming the password is missing, follow [profile-credential-keys.md](profile-credential-keys.md):
+   - Check for dbt's `pass` key and alternate `password` key
+   - Run `scripts/check_profile_credential_keys.py --profile <name>`
+   - If `pass` exists, map it to the connector password parameter and retry
+4. Ask the user whether to fix that profile or choose a different profile.
+5. Do not try another adapter automatically.
+6. Do not ask the user to paste the password in chat.
+
+Common false blocker:
+
+```text
+PostgreSQL authentication returned no password supplied
+```
+
+Often means the agent looked only for `password` while the profile correctly has dbt's `pass` field. Remap and retry before asking the user to reconfigure credentials.
 
 ## If the selected source is wrong
 

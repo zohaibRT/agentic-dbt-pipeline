@@ -69,6 +69,8 @@ REQUIRED_REPO_FILES = {
     "references/discovery-status-vocabulary.md",
     "references/table-inclusion-priority-filter.md",
     "references/software-prerequisites.md",
+    "references/profile-credential-keys.md",
+    "scripts/check_profile_credential_keys.py",
     "templates/reports/00_discovery/core_profile.json",
     "templates/reports/00_discovery/discovery_raw.json",
     "templates/reports/00_discovery/first_pass_scope.json",
