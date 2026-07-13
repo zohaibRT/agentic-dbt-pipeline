@@ -8,6 +8,8 @@ Keep this file current after every checkpoint.
 
 When any phase status is `WARN`, `FAIL`, `BLOCKED`, or `SKIPPED`, fill the Status Review Queue using the exact template columns below. Never drop **Why this status was used**.
 
+Write **Why this status was used** in plain language a non-dbt reader can understand: what we found, why it matters, what can continue now, and what must wait. Put proof filenames in Evidence, not as the only explanation.
+
 ## Current Status
 
 | Field | Value |

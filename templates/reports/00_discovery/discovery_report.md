@@ -22,11 +22,24 @@ Do not remove sections; write `None`, `Not observed`, `Not supported by evidence
 
 ## Status Review
 
-Every non-`PASS` status in this report must be explained here so the data engineer does not need to guess.
+Every non-`PASS` status in this report must be explained here so a normal human can understand it without asking the agent.
+
+**Writing rule for this table:** use plain language first, technical detail second.
+
+Each **Why this status was used** cell must answer all of these in 2–4 short sentences:
+
+1. What we found (in everyday words)
+2. Why that matters / what could go wrong
+3. What is still OK to do now
+4. What must wait
+
+Do **not** write only jargon such as “21 of 38 candidate joins contain orphans” with no explanation of orphan.
 
 | Status | Area | Why this status was used | Evidence | What the data engineer should review | Recommended action | Owner | Blocks next phase? |
 |---|---|---|---|---|---|---|---|
-| <WARN/FAIL/BLOCKED/SKIPPED> | <area> | <specific reason> | <proof/report path> | <human review question> | <approve/fix/defer/change scope> | <agent/data engineer> | <yes/no> |
+| WARN | Relationships | We checked 38 possible table links. 21 of them have child rows that point to a parent id that is missing or blank (orphan rows). If we use hard inner joins later, those rows can disappear and totals will look wrong. Setup can continue. Careful join design is required before silver/gold. | `<proof file>` | Confirm what those keys mean in the source before building joined models. | Keep the warning; use left joins and report orphans; do not assume every child has a valid parent. | Data engineer | No for setup; yes for dependent joined models |
+| WARN | Monetary units | One payment system shows amounts like normal money (example max about 4,241). Another shows much larger numbers (example max about 487,800). That may mean major vs minor currency units (for example riyal vs halala), but it is not proven. Setup can continue. Do not publish revenue metrics until units are confirmed. | `<proof file>` | Confirm currency and whether payment-service amounts are minor units. | Defer money KPIs until reconciled. | Data engineer | No for setup; yes for financial metrics |
+| <WARN/FAIL/BLOCKED/SKIPPED> | <area> | <plain-language why: found + risk + what can continue + what must wait> | <proof/report path> | <human review question in plain words> | <approve/fix/defer/change scope> | <agent/data engineer> | <yes/no and for which phase> |
 
 ## Table Inclusion Filter
 

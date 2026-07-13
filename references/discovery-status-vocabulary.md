@@ -66,6 +66,37 @@ Write these details in:
 
 Do not leave a non-`PASS` status only in a table row or prose paragraph with no reason.
 
+### Plain-language rule (mandatory)
+
+Status Review is for humans, not only for engineers.
+
+**Why this status was used** must be readable by a non-dbt person. Use this shape:
+
+```text
+What we found.
+Why it matters / what could go wrong.
+What can continue now.
+What must wait.
+```
+
+Bad (too coded):
+
+> 21 of 38 candidate joins contain orphan rows or unusable keys.
+
+Good (human):
+
+> We checked 38 possible table links. 21 have child rows that point to a missing or blank parent id. Hard inner joins later can hide those rows and make totals wrong. Setup can continue. Careful joins are required before silver/gold.
+
+Bad:
+
+> CRM payment maximum is 4,241.74 while payment-service maximum is 487,800, consistent with a possible major/minor unit difference but not proven.
+
+Good:
+
+> One payment system shows amounts like normal money (max about 4,241). Another shows much larger numbers (max about 487,800). That may be riyal vs halala-style units, but it is not proven. Setup can continue. Do not publish revenue metrics until units are confirmed.
+
+Technical proof filenames stay in the **Evidence** column. The **Why** column must still explain the issue in everyday words.
+
 ### REPORT_INDEX.md rule
 
 `REPORT_INDEX.md` is the first place many humans look. For every discovery or phase row:

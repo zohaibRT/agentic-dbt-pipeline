@@ -64,11 +64,13 @@ Replace `TODO` with `PASS`, `WARN`, `FAIL`, `BLOCKED`, or `N/A`.
 
 ## Status Review Items
 
-Every non-`PASS` checklist item must be listed here with the reason and review action.
+Every non-`PASS` checklist item must be listed here with a plain-language reason a normal human can understand.
+
+Write **Why this status was used** as: what we found, why it matters, what can continue now, what must wait. Do not leave jargon-only reasons.
 
 | Status | Checklist area | Why this status was used | Evidence | What the data engineer should review | Required action before next phase |
 |---|---|---|---|---|---|
-| <WARN/FAIL/BLOCKED/SKIPPED> | <area> | <specific reason> | <proof/report path> | <review question> | <approve/fix/defer/change scope> |
+| <WARN/FAIL/BLOCKED/SKIPPED> | <area> | <plain-language: found + risk + can continue + must wait> | <proof/report path> | <review question> | <approve/fix/defer/change scope> |
 
 ## Final Discovery Decision
 
