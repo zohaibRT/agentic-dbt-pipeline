@@ -36,6 +36,14 @@ Replace `TODO` with `PASS`, `WARN`, `FAIL`, `BLOCKED`, or `N/A`.
 | Correct source schema inspected | TODO | |
 | Source tables discovered from metadata, not guessed | TODO | |
 | No alternate source profiled without approval | TODO | |
+| First-pass business process named | TODO | |
+| Table Inclusion Filter section present in discovery report | TODO | `references/table-inclusion-priority-filter.md` |
+| Keep fact/event tables on the main process | TODO | |
+| Keep related dimensions/lookups for included facts | TODO | |
+| Exclude audit/log/platform/empty unless user requested | TODO | |
+| Every table has inclusion_status and inclusion_reason in discovery_raw.json | TODO | included / deferred / excluded |
+| Ask user if process scope is unclear | TODO | or document why scope is clear |
+| Deep proofs limited to included or priority tables | TODO | `001` covers all; `010+` covers included only |
 
 ## Evidence Quality
 

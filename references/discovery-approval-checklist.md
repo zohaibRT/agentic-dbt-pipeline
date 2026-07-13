@@ -56,14 +56,23 @@ Decision rule: FAIL if the wrong database/schema/profile was used.
 | Check | Status | Evidence / Notes |
 |---|---|---|
 | All expected source tables are listed | TODO | |
+| Full inventory proof exists (`001_source_table_inventory.sql`) | TODO | |
 | Row counts captured for important tables | TODO | |
+| First-pass business process named | TODO | |
+| Table Inclusion Filter documented in discovery report | TODO | see `references/table-inclusion-priority-filter.md` |
+| Keep fact/event tables on the main process | TODO | |
+| Keep related dimensions/lookups for included facts | TODO | |
+| Exclude audit/log/platform/empty unless user requested | TODO | |
+| Every table has inclusion_status and inclusion_reason in `discovery_raw.json` | TODO | included / deferred / excluded |
+| Ask user if process scope is unclear | TODO | or document why scope is clear |
+| Deep proofs limited to included or priority tables | TODO | |
 | Important columns identified | TODO | |
 | Important date columns identified | TODO | |
 | Important measure columns identified | TODO | |
 | Important status/category columns identified | TODO | |
 | Unused or low-value tables identified | TODO | |
 
-Decision rule: FAIL if important source tables are missing or row counts are not captured.
+Decision rule: FAIL if important source tables are missing, row counts are not captured, or scope was narrowed without documenting the inclusion filter.
 
 ## 4. Grain and Key Checks
 

@@ -19,9 +19,11 @@ Purpose: Source discovery proofs for table inventory, row counts, candidate keys
 If the schema has hundreds or thousands of tables:
 
 1. Use `001_source_table_inventory.sql` for all table names and row counts.
-2. Put every table in `discovery_raw.json` with at least `table_name` and `row_count`.
-3. Create `010+` row-count proofs only for included or priority tables.
-4. Mark other tables `deferred` or `excluded` with reasons in `discovery_report.md`.
+2. Put every table in `discovery_raw.json` with at least `table_name`, `row_count`, `inclusion_status`, and `inclusion_reason`.
+3. Apply `references/table-inclusion-priority-filter.md` before choosing deep proofs.
+4. Create `010+` row-count proofs only for included or priority tables.
+5. Mark other tables `deferred` or `excluded` with reasons in `discovery_report.md`.
+6. Document the filter in the discovery report **Table Inclusion Filter** section.
 
 ## How To Use
 

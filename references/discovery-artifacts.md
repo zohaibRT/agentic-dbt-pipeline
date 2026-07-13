@@ -66,9 +66,30 @@ Both JSON files use a top-level `_file_meta` object because JSON cannot contain 
 If the source schema has hundreds or thousands of tables:
 
 1. Put **all tables** in `001_source_table_inventory.sql` and `discovery_raw.json.tables[]` with at least `table_name` and `row_count`.
-2. Mark each table `included`, `deferred`, or `excluded` with a reason.
-3. Create deep per-table proofs only for **included** or **priority** tables.
-4. Do not create one row-count proof file per table when the schema is very large.
+2. Apply the table inclusion filter in [table-inclusion-priority-filter.md](table-inclusion-priority-filter.md).
+3. Mark each table `included`, `deferred`, or `excluded` with a reason.
+4. Create deep per-table proofs only for **included** or **priority** tables.
+5. Do not create one row-count proof file per table when the schema is very large.
+
+## Table inclusion and priority filter
+
+Read [table-inclusion-priority-filter.md](table-inclusion-priority-filter.md) before narrowing discovery scope.
+
+Mandatory reusable checklist:
+
+1. Keep fact/event tables on the main process
+2. Keep related dimensions/lookups for included facts
+3. Exclude audit/log/platform/empty unless the user requested them
+4. Require an `inclusion_reason` for every table
+5. Ask the user if process scope is unclear
+
+Required outcome:
+
+- `001_source_table_inventory.sql` covers every table
+- first-pass business process is named
+- every table has `inclusion_status` + `inclusion_reason`
+- deep proofs (`010+` and later) cover only included/priority tables
+- `discovery_report.md` includes a **Table Inclusion Filter** section with the checklist above
 
 ## Templates
 

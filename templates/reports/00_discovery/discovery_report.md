@@ -28,11 +28,43 @@ Every non-`PASS` status in this report must be explained here so the data engine
 |---|---|---|---|---|---|---|---|
 | <WARN/FAIL/BLOCKED/SKIPPED> | <area> | <specific reason> | <proof/report path> | <human review question> | <approve/fix/defer/change scope> | <agent/data engineer> | <yes/no> |
 
+## Table Inclusion Filter
+
+Use the skill rule in `references/table-inclusion-priority-filter.md`.
+
+### Mandatory checklist
+
+| # | Checklist item | Done? | Evidence |
+|---|---|---|---|
+| 1 | Keep fact/event tables on the main process | <yes/no> | <process name + fact tables> |
+| 2 | Keep related dimensions/lookups for included facts | <yes/no> | <entity/lookup tables> |
+| 3 | Exclude audit/log/platform/empty (unless user requested) | <yes/no> | <excluded groups + counts> |
+| 4 | Every table has `inclusion_reason` in `discovery_raw.json` | <yes/no> | `discovery_raw.json.tables[]` |
+| 5 | Ask user if process scope is unclear | <yes/no/n/a> | <question asked or why scope is clear> |
+
+- First-pass business process: <process name>
+- Total tables in schema: <count>
+- Included (v1 / priority): <count>
+- Deferred: <count>
+- Excluded: <count>
+- Filter rationale: <why these tables were kept or dropped>
+- Inventory proof: `sql_proofs/001_source_table_inventory.sql`
+- Priority / deep proof set: <paths such as `sql_proofs/010_priority_table_row_counts.sql`>
+- User approval needed for scope? <yes/no and why>
+
+| Inclusion status | Meaning |
+|---|---|
+| `included` / yes | First-pass process path; deep proofs required |
+| `deferred` / defer | Relevant later; inventory only for now |
+| `excluded` / no | Outside first-pass scope; inventory only |
+
 ## Source Inventory
 
-| Table | Row count | Likely role | Included in first pass | Notes |
-|---|---:|---|---|---|
-| <table> | <row_count> | <entity/fact/link/reference/unknown> | <yes/no/defer> | <notes> |
+| Table | Row count | Likely role | Included in first pass | Inclusion reason | Notes |
+|---|---:|---|---|---|---|
+| <table> | <row_count> | <entity/fact/link/reference/unknown> | <yes/no/defer> | <reason matching discovery_raw.json> | <notes> |
+
+For large schemas, summarize excluded groups in one or more rows and keep the full per-table list in `discovery_raw.json`.
 
 ## Important Entities And Business Processes
 

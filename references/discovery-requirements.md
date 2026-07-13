@@ -95,11 +95,28 @@ When the source schema has hundreds or thousands of tables:
 
 1. Always create `001_source_table_inventory.sql` with all table names and row counts.
 2. Always populate `discovery_raw.json.tables[]` with at least `table_name`, `row_count`, `inclusion_status`, and `inclusion_reason` for every table.
-3. Mark tables as `included`, `deferred`, or `excluded` in `discovery_report.md` and `requirements.md`.
-4. Create deep per-table SQL proofs only for included or priority tables.
-5. Do not create thousands of `010+` row-count proof files.
+3. Apply [table-inclusion-priority-filter.md](table-inclusion-priority-filter.md) to choose included, deferred, and excluded tables.
+4. Mark tables as `included`, `deferred`, or `excluded` in `discovery_report.md` and `requirements.md`.
+5. Create deep per-table SQL proofs only for included or priority tables.
+6. Do not create thousands of `010+` row-count proof files.
+7. Add a **Table Inclusion Filter** section to `discovery_report.md` with process name, counts, and rationale.
 
 Document the scope decision in `discovery_raw.json.scope.notes`.
+
+### Priority filter quick rule
+
+```text
+Inventory all tables (001)
+  -> name the first-pass business process
+  -> keep fact/event tables on that process
+  -> keep related dimensions/lookups
+  -> exclude audit/log/platform/empty (unless requested)
+  -> require inclusion_reason for every table
+  -> ask user if process scope is unclear
+  -> deep-proof only the included set (010+)
+```
+
+Every inclusion decision must be visible in `discovery_raw.json` and the discovery report. Do not leave filter logic only in chat.
 
 ## Mandatory JSON artifacts
 

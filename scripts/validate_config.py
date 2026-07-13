@@ -65,6 +65,7 @@ REQUIRED_REPO_FILES = {
     "scripts/check_discovery_artifacts.py",
     "references/discovery-artifacts.md",
     "references/discovery-status-vocabulary.md",
+    "references/table-inclusion-priority-filter.md",
     "templates/reports/00_discovery/core_profile.json",
     "templates/reports/00_discovery/discovery_raw.json",
     "templates/reports/00_discovery/README.md",

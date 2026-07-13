@@ -19,6 +19,8 @@ Before proposing models, summarize:
 
 If any of these areas cannot be understood from profiling, project knowledge, or user requirements, do not guess. Mark the area as unknown, explain the modeling impact, recommend a safe default or deferral when possible, and ask the user before building anything that depends on that unclear business meaning.
 
+When the schema is large, use [table-inclusion-priority-filter.md](table-inclusion-priority-filter.md): inventory all tables, name the first-pass business process, mark each table included/deferred/excluded with a reason, and deep-profile only the included set.
+
 ## Inspect
 
 For each source table, capture:

@@ -23,7 +23,9 @@
     "tables_included_v1": 0,
     "tables_deferred": 0,
     "tables_excluded": 0,
-    "notes": "<how scope was narrowed for large schemas>"
+    "first_pass_business_process": "<named process such as subscription management>",
+    "filter_reference": "references/table-inclusion-priority-filter.md",
+    "notes": "<how scope was narrowed: include core process tables; defer adjacent; exclude platform/audit/empty>"
   },
   "tables": [
     {

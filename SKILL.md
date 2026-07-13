@@ -141,7 +141,7 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 
 | Phase | When | Reference |
 |---|---|---|
-| **Discovery** | First for new/full pipeline runs | [discovery-requirements.md](references/discovery-requirements.md), [discovery-artifacts.md](references/discovery-artifacts.md), [discovery-status-vocabulary.md](references/discovery-status-vocabulary.md), [source-profiling.md](references/source-profiling.md) |
+| **Discovery** | First for new/full pipeline runs | [discovery-requirements.md](references/discovery-requirements.md), [discovery-artifacts.md](references/discovery-artifacts.md), [discovery-status-vocabulary.md](references/discovery-status-vocabulary.md), [table-inclusion-priority-filter.md](references/table-inclusion-priority-filter.md), [source-profiling.md](references/source-profiling.md) |
 | **Project setup and configuration** | Automatic setup-only phase after discovery requirements are accepted | [bootstrap.md](references/bootstrap.md) |
 | **0 Inputs** | Always first | [skill-inputs.md](references/skill-inputs.md), [profile-listing.md](references/profile-listing.md), [project-naming.md](references/project-naming.md), [env-configuration.md](references/env-configuration.md), [source-confirmation.md](references/source-confirmation.md), [warehouse-adapter-routing.md](references/warehouse-adapter-routing.md), [security-and-credentials.md](references/security-and-credentials.md), [schema-isolation.md](references/schema-isolation.md), [code-agent-setup.md](references/code-agent-setup.md) |
 | **0a Knowledge layers** | Built-in reusable knowledge plus user dbt standards and domain rules | [skill-knowledge.md](references/skill-knowledge.md), [project-knowledge.md](references/project-knowledge.md) |
@@ -576,6 +576,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 | [discovery-requirements.md](references/discovery-requirements.md) | Read-only schema/data discovery and requirements checkpoint before build planning |
 | [discovery-artifacts.md](references/discovery-artifacts.md) | Mandatory discovery files including core_profile.json and discovery_raw.json |
 | [discovery-status-vocabulary.md](references/discovery-status-vocabulary.md) | PASS, WARN, FAIL, BLOCKED, SKIPPED meanings for discovery outputs |
+| [table-inclusion-priority-filter.md](references/table-inclusion-priority-filter.md) | How to include, defer, or exclude tables and choose priority proofs |
 | [project.config.yml](project.config.yml) | Defaults, paths, git, materialization |
 | [skill-inputs.md](references/skill-inputs.md) | Required inputs |
 | [profile-listing.md](references/profile-listing.md) | Safe available-profile table when `DBT_PROFILE_NAME` is missing or ambiguous |

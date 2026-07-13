@@ -55,6 +55,39 @@ Open `_file_meta` first. This file stores structured discovery output:
 
 For large schemas, every table should appear with at least `table_name` and `row_count`. Deep column and sample detail is required only for included or priority tables.
 
+## Table inclusion / priority filter
+
+Discovery must document how tables were filtered using this mandatory checklist:
+
+1. Keep fact/event tables on the main process
+2. Keep related dimensions/lookups for included facts
+3. Exclude audit/log/platform/empty unless the user requested them
+4. Require an `inclusion_reason` for every table
+5. Ask the user if process scope is unclear
+
+| Status | Meaning | Deep proofs |
+|---|---|---|
+| `included` | First-pass business process path | Yes |
+| `deferred` | Later phase | No |
+| `excluded` | Outside scope | No |
+
+Process:
+
+```text
+1. Count all tables in 001_source_table_inventory.sql
+2. Name the first-pass business process
+3. Include core facts/events on that process
+4. Include related dimensions/lookups needed by those facts
+5. Exclude platform, audit, operational, empty, or unrelated tables
+6. Write inclusion_reason for every table
+7. Ask the user if process scope is unclear
+8. Deep-proof only the included set
+```
+
+See skill reference: `references/table-inclusion-priority-filter.md`.
+
+The discovery report must include a **Table Inclusion Filter** section with the checklist above. Every table needs `inclusion_status` and `inclusion_reason` in `discovery_raw.json`.
+
 ## SQL proofs
 
 See `sql_proofs/_proof_index.md` for the proof map.
