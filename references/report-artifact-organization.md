@@ -28,7 +28,7 @@ reports/agent/
   final_delivery.md
 ```
 
-`REPORT_INDEX.md` is mandatory after the first phase report. It must group reports by phase and include the path, status, purpose, and what the human should check.
+`REPORT_INDEX.md` is mandatory after the first phase report. It must group reports by phase and include the path, status, purpose, **why this status was used**, and what the human should check. Never mark a report `WARN` without a concrete why sentence in the same row.
 
 `HUMAN_VERIFICATION_GUIDE.md` is mandatory after analytics insight reporting and final delivery. It must explain how to verify layers, key performance indicators, blocked items, presentation artifacts, and next actions.
 

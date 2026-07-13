@@ -58,7 +58,34 @@ Every `WARN`, `FAIL`, `BLOCKED`, or `SKIPPED` status must include:
 | Required action | Makes the next step clear |
 | Whether it blocks the next phase | Prevents accidental continuation |
 
-Write these details in `reports/agent/PIPELINE_STATUS.md` under `Status Review Queue` and in the phase report under `Status Review`. Do not leave a non-`PASS` status only in a table row or prose paragraph.
+Write these details in:
+
+1. `reports/agent/PIPELINE_STATUS.md` under `Status Review Queue`
+2. The phase report under `Status Review`
+3. `reports/agent/REPORT_INDEX.md` in the **Why this status was used** column for every non-`PASS` row
+
+Do not leave a non-`PASS` status only in a table row or prose paragraph with no reason.
+
+### REPORT_INDEX.md rule
+
+`REPORT_INDEX.md` is the first place many humans look. For every discovery or phase row:
+
+| Column | Required |
+|---|---|
+| Status | `PASS` / `WARN` / `FAIL` / `BLOCKED` / `SKIPPED` / `PENDING` / `NOT APPROVED` |
+| Why this status was used | One concrete sentence answering “why this status?” |
+| What the data engineer should check | What to verify next |
+
+Bad:
+
+> Status = WARN, check column = “review privacy”
+
+Good:
+
+> Status = WARN, Why = “108 potential sensitive fields remain; clear-text gold exposure is not approved yet”, Check = “Approve exclude/mask/hash default before gold”
+
+If discovery overall is `WARN` because open conditions exist, each discovery file row may also be `WARN`, but each row must state **its own** reason (do not copy a blank check list with no why).
+
 
 ### Mandatory Status Review Queue columns
 

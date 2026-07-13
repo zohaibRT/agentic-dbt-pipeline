@@ -260,6 +260,25 @@ def validate_status_review_sections(root: Path) -> list[str]:
     return errors
 
 
+def validate_report_index_why(root: Path) -> list[str]:
+    """REPORT_INDEX must explain why non-PASS statuses were used."""
+    errors: list[str] = []
+    path = root / "reports" / "agent" / "REPORT_INDEX.md"
+    if not path.exists():
+        return errors
+    text = path.read_text(encoding="utf-8", errors="replace")
+    lower = text.lower()
+    upper = text.upper()
+    if not any(token in upper for token in ("WARN", "FAIL", "BLOCKED", "SKIPPED")):
+        return errors
+    if "why this status was used" not in lower and "why this status" not in lower:
+        errors.append(
+            f"{path.as_posix()}: contains non-PASS statuses but no 'Why this status was used' column. "
+            "Copy headers from templates/reports/root/REPORT_INDEX.md so WARN/FAIL have an answer."
+        )
+    return errors
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=Path("."))
@@ -280,6 +299,7 @@ def main() -> int:
     errors.extend(validate_sql_proof_linkage(root))
     errors.extend(validate_status_review_sections(root))
     errors.extend(validate_scope_lock_consistency(root))
+    errors.extend(validate_report_index_why(root))
 
     inventory = root / "reports/agent/00_discovery/sql_proofs/001_source_table_inventory.sql"
     if not inventory.exists():
