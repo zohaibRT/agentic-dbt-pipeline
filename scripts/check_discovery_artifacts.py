@@ -153,6 +153,13 @@ def validate_status_review_sections(root: Path) -> list[str]:
     ]
     status_tokens = ("WARN", "FAIL", "BLOCKED", "SKIPPED")
     required_terms = ("why", "evidence", "review", "action")
+    # Exact template headers that agents must not drop when rewriting PIPELINE_STATUS.md
+    pipeline_required_headers = (
+        "why this status was used",
+        "evidence",
+        "what to review",
+        "required action",
+    )
 
     for path in files:
         if not path.exists():
@@ -172,6 +179,16 @@ def validate_status_review_sections(root: Path) -> list[str]:
                 f"{path.as_posix()}: Status Review section is missing expected terms: "
                 + ", ".join(missing_terms)
             )
+        if path.name == "PIPELINE_STATUS.md":
+            missing_headers = [
+                header for header in pipeline_required_headers if header not in lower
+            ]
+            if missing_headers:
+                errors.append(
+                    f"{path.as_posix()}: Status Review Queue must keep template columns: "
+                    + ", ".join(missing_headers)
+                    + ". Copy headers from templates/reports/root/PIPELINE_STATUS.md"
+                )
 
     return errors
 

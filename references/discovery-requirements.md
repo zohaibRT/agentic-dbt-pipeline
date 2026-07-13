@@ -227,6 +227,8 @@ Use these canonical discovery templates when creating the discovery files:
 | `reports/agent/REQUIREMENTS_TRACEABILITY_MATRIX.md` | `templates/reports/root/REQUIREMENTS_TRACEABILITY_MATRIX.md` |
 | `reports/agent/NEXT_PHASE_PROMPT.md` | `templates/reports/root/NEXT_PHASE_PROMPT.md` |
 
+Copy `PIPELINE_STATUS.md` from the template. Keep the Status Review Queue columns exactly, including **Why this status was used**. Do not shorten that table. See [discovery-status-vocabulary.md](discovery-status-vocabulary.md).
+
 The templates define structure only. The content must change based on the confirmed source schema, source tables, row counts, keys, relationships, data quality, privacy findings, business process evidence, and user-provided rules.
 
 If the dbt project root does not exist yet, create `reports/agent/` in the current workspace/run root. Move or preserve these files in the dbt project root later only if the project root is created elsewhere and the user approves that layout.

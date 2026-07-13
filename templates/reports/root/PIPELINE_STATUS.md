@@ -6,6 +6,8 @@ Use this file as the fixed structure for `reports/agent/PIPELINE_STATUS.md`.
 Replace placeholder text with the current pipeline state.
 Keep this file current after every checkpoint.
 
+When any phase status is `WARN`, `FAIL`, `BLOCKED`, or `SKIPPED`, fill the Status Review Queue using the exact template columns below. Never drop **Why this status was used**.
+
 ## Current Status
 
 | Field | Value |

@@ -59,3 +59,19 @@ Every `WARN`, `FAIL`, `BLOCKED`, or `SKIPPED` status must include:
 | Whether it blocks the next phase | Prevents accidental continuation |
 
 Write these details in `reports/agent/PIPELINE_STATUS.md` under `Status Review Queue` and in the phase report under `Status Review`. Do not leave a non-`PASS` status only in a table row or prose paragraph.
+
+### Mandatory Status Review Queue columns
+
+When creating or updating `reports/agent/PIPELINE_STATUS.md`, copy the Status Review Queue table from `templates/reports/root/PIPELINE_STATUS.md` exactly. Required header text:
+
+```text
+| Status | Phase / Area | Why this status was used | Evidence | What to review | Required action | Owner | Blocks next checkpoint? |
+```
+
+Rules:
+
+- Keep the **Why this status was used** column on every run, including first discovery and every later phase update.
+- Do not shorten the table to only `Status | Area | Evidence | Required action`.
+- Do not rename `Why this status was used` to a shorter label that drops the word `why`.
+- If there are no non-`PASS` statuses, keep the section and write one row: `None | N/A | No non-PASS statuses | N/A | N/A | None | Agent | No`.
+- `scripts/check_discovery_artifacts.py` fails when non-`PASS` statuses exist without these columns/terms.

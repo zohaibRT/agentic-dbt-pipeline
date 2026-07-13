@@ -4,6 +4,8 @@ For a new project or full pipeline, run [discovery-requirements.md](discovery-re
 
 Run this setup phase before layer work. Do not skip unless the user explicitly disables automatic project setup.
 
+Read [software-prerequisites.md](software-prerequisites.md) at the start of setup. Detect missing software, install what can be installed safely into `.venv`, and stop with `BLOCKED` when a required tool needs manual user action.
+
 ## Phase contract
 
 | Area | Contract |
@@ -11,8 +13,8 @@ Run this setup phase before layer work. Do not skip unless the user explicitly d
 | Inputs required | Accepted discovery checkpoint, valid `.env` or prompt values, selected dbt profile, source schema, and project root decision |
 | Allowed changes | Local dbt scaffold, baseline config files, packages file, dependency lock file, safe schema macro, managed report skeleton, setup reports, local git initialization, and generated-project `.gitignore` hygiene |
 | Not allowed | Source YAML generation, model layer creation, warehouse model builds, continuous integration workflows, Agents Schema workflows, profile edits without approval, commits, or pushes |
-| Commands to run | initialize git if missing, install `requirements.txt` when present, create managed report skeleton, `dbt --version`, `dbt debug`, `dbt deps`, `dbt parse --no-partial-parse`, plus skill/config validation when available |
-| Completion criteria | Python requirements install or documented skip, managed report skeleton exists, dbt connection works, packages install, parse succeeds or skip is documented, profile target schema hygiene is safe or blocked, and next phase is ready |
+| Commands to run | initialize git if missing, check/install software prerequisites, install `requirements.txt` when present, create managed report skeleton, `dbt --version`, `dbt debug`, `dbt deps`, `dbt parse --no-partial-parse`, plus skill/config validation when available |
+| Completion criteria | Software prerequisites checked, Python/dbt/adapter available or blocked with evidence, Python requirements install or documented skip, managed report skeleton exists, dbt connection works, packages install, parse succeeds or skip is documented, profile target schema hygiene is safe or blocked, and next phase is ready |
 | Report required | `reports/agent/01_setup/setup_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
 
 ## Automatic setup rule
@@ -151,6 +153,30 @@ python <path-to-installed-skill-or-workspace>\scripts\create_report_skeleton.py 
 ```
 
 This creates `reports/agent/00_discovery/sql_proofs/`, `02_sources/sql_proofs/`, `03_bronze/sql_proofs/`, `04_silver/sql_proofs/`, `05_gold/sql_proofs/`, `06_semantic/sql_proofs/`, `07_evaluator/sql_proofs/`, `09_analytics_insights/kpis/sql_proofs/`, and presentation verification folders with `_proof_index.md` files so humans can see which proof file belongs to which check.
+
+## 3b. Software prerequisites check
+
+Read [software-prerequisites.md](software-prerequisites.md).
+
+Before `dbt debug`, detect and install required software:
+
+```powershell
+python <path-to-installed-skill-or-workspace>\scripts\check_software_prerequisites.py --root <project.root-or-workspace.root> --adapter <selected-adapter> --write-report
+```
+
+If dbt or the selected adapter is missing:
+
+```powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\activate
+python -m pip install --upgrade pip setuptools wheel
+python -m pip install -r <path-to-installed-skill-or-workspace>\requirements.txt
+python -m pip install "dbt-core==1.10.15" "<dbt-adapter-package-for-selected-profile>"
+dbt --version
+```
+
+Record results in `reports/agent/01_setup/setup_report.md` and `reports/agent/01_setup/SOFTWARE_PREREQUISITES.md`.
+Do not continue to sources/layer builds while required software is `BLOCKED`.
 
 ## 4. Check dbt CLI
 

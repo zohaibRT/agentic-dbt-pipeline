@@ -107,11 +107,12 @@ After discovery completes, create `reports/agent/00_discovery/DISCOVERY_APPROVAL
 
 Read and execute [references/bootstrap.md](references/bootstrap.md) **before** any layer work:
 
-1. **Install dbt Agent Skills** + all dbt packages - see [dbt-packages-and-skills.md](references/dbt-packages-and-skills.md)
-2. **`dbt debug`** - verify connection
-3. **`dbt deps` + codegen** - when sources/full pipeline
-4. **Resolve git mode** - local commits by default; GitHub only when push is requested - [github-repo-resolution.md](references/github-repo-resolution.md)
-5. **Create continuous integration and Agents Schema workflows** - when requested, or when `auto_agents_schema: true` and the destination is supported
+1. **Check/install software prerequisites** - Python, venv, dbt-core, matching adapter, skill requirements - [software-prerequisites.md](references/software-prerequisites.md)
+2. **Install dbt Agent Skills** + all dbt packages - see [dbt-packages-and-skills.md](references/dbt-packages-and-skills.md)
+3. **`dbt debug`** - verify connection
+4. **`dbt deps` + codegen** - when sources/full pipeline
+5. **Resolve git mode** - local commits by default; GitHub only when push is requested - [github-repo-resolution.md](references/github-repo-resolution.md)
+6. **Create continuous integration and Agents Schema workflows** - when requested, or when `auto_agents_schema: true` and the destination is supported
 
 User one-time manual steps: **profiles.yml password**, plus **GitHub repository or secret** only when remote push, continuous integration, or Agents Schema synchronization is requested.
 
@@ -142,8 +143,8 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 | Phase | When | Reference |
 |---|---|---|
 | **Discovery** | First for new/full pipeline runs | [discovery-requirements.md](references/discovery-requirements.md), [discovery-artifacts.md](references/discovery-artifacts.md), [discovery-status-vocabulary.md](references/discovery-status-vocabulary.md), [table-inclusion-priority-filter.md](references/table-inclusion-priority-filter.md), [source-profiling.md](references/source-profiling.md) |
-| **Project setup and configuration** | Automatic setup-only phase after discovery requirements are accepted | [bootstrap.md](references/bootstrap.md) |
-| **0 Inputs** | Always first | [skill-inputs.md](references/skill-inputs.md), [profile-listing.md](references/profile-listing.md), [project-naming.md](references/project-naming.md), [env-configuration.md](references/env-configuration.md), [source-confirmation.md](references/source-confirmation.md), [warehouse-adapter-routing.md](references/warehouse-adapter-routing.md), [security-and-credentials.md](references/security-and-credentials.md), [schema-isolation.md](references/schema-isolation.md), [code-agent-setup.md](references/code-agent-setup.md) |
+| **Project setup and configuration** | Automatic setup-only phase after discovery requirements are accepted | [bootstrap.md](references/bootstrap.md), [software-prerequisites.md](references/software-prerequisites.md) |
+| **0 Inputs** | Always first | [skill-inputs.md](references/skill-inputs.md), [profile-listing.md](references/profile-listing.md), [project-naming.md](references/project-naming.md), [env-configuration.md](references/env-configuration.md), [source-confirmation.md](references/source-confirmation.md), [warehouse-adapter-routing.md](references/warehouse-adapter-routing.md), [security-and-credentials.md](references/security-and-credentials.md), [schema-isolation.md](references/schema-isolation.md), [code-agent-setup.md](references/code-agent-setup.md), [software-prerequisites.md](references/software-prerequisites.md) |
 | **0a Knowledge layers** | Built-in reusable knowledge plus user dbt standards and domain rules | [skill-knowledge.md](references/skill-knowledge.md), [project-knowledge.md](references/project-knowledge.md) |
 | **0b Subagents** | Optional speed-up | [subagent-workflow.md](references/subagent-workflow.md) |
 | **0c Best practices** | Design guardrails | [data-engineering-best-practices.md](references/data-engineering-best-practices.md), [privacy-and-unknown-fields.md](references/privacy-and-unknown-fields.md) |
@@ -159,7 +160,7 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 | **0i Key performance indicators** | Business metric definitions, approval evidence, contracts, and reconciliation | [kpi-definitions.md](references/kpi-definitions.md), [kpi-definition-contract.md](references/kpi-definition-contract.md), [metric-verification.md](references/metric-verification.md), [metric-verification-checklist.md](references/metric-verification-checklist.md), [kpi-reconciliation.md](references/kpi-reconciliation.md) |
 | **0j Advanced review** | Senior data-engineering completion gate | [advanced-data-engineering-review.md](references/advanced-data-engineering-review.md) |
 | **0k Rollback / redo** | Controlled rollback when a completed phase must be undone or rebuilt | [phase-rollback.md](references/phase-rollback.md) |
-| **1 Init** | New project | [project-initialization.md](references/project-initialization.md) |
+| **1 Init** | New project | [project-initialization.md](references/project-initialization.md), [software-prerequisites.md](references/software-prerequisites.md) |
 | **2 Schemas** | After init | [warehouse-schema-setup.md](references/warehouse-schema-setup.md), [schema-isolation.md](references/schema-isolation.md) |
 | **3 Sources** | Packages + source YAML | [packages-and-sources.md](references/packages-and-sources.md) |
 | **3b Source profiling** | Before staging | [source-profiling.md](references/source-profiling.md), [cardinality-validation.md](references/cardinality-validation.md) |
@@ -573,6 +574,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 |---|---|
 | [install-skill.md](references/install-skill.md) | Install via npx or `.agents/skills/` |
 | [bootstrap.md](references/bootstrap.md) | Automatic project setup and configuration: skills install, packages, debug, dependency install, parse, and setup reports |
+| [software-prerequisites.md](references/software-prerequisites.md) | Detect/install Python, dbt, adapters, git, Node/npx, gh, and presentation packages |
 | [discovery-requirements.md](references/discovery-requirements.md) | Read-only schema/data discovery and requirements checkpoint before build planning |
 | [discovery-artifacts.md](references/discovery-artifacts.md) | Mandatory discovery files including core_profile.json and discovery_raw.json |
 | [discovery-status-vocabulary.md](references/discovery-status-vocabulary.md) | PASS, WARN, FAIL, BLOCKED, SKIPPED meanings for discovery outputs |
@@ -614,7 +616,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 | [principal-data-engineering-standards.md](references/principal-data-engineering-standards.md) | Principal-level dbt, Power BI, storage, warehouse, and SQL standards |
 | [privacy-and-unknown-fields.md](references/privacy-and-unknown-fields.md) | Safe defaults for sensitive fields and unclear coded fields |
 | [security-and-credentials.md](references/security-and-credentials.md) | Secrets & gitignore |
-| [project-initialization.md](references/project-initialization.md) | venv, dbt init, debug |
+| [project-initialization.md](references/project-initialization.md) | venv, dbt init, debug, software prerequisite check |
 | [warehouse-schema-setup.md](references/warehouse-schema-setup.md) | Warehouse schemas |
 | [dbt-packages-and-skills.md](references/dbt-packages-and-skills.md) | codegen, utils, evaluator, audit_helper, agent skills |
 | [project-evaluator.md](references/project-evaluator.md) | Align dbt_project_evaluator with bronze/silver/gold and accepted warnings |

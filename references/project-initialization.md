@@ -8,6 +8,8 @@ Before running `dbt init`, resolve `dbt_project_name` and `dbt_project_root` fro
 
 Before creating the project, write/update `AGENT_PLAN.md` with the init plan and get approval.
 
+Read [software-prerequisites.md](software-prerequisites.md) first. If Python, pip, dbt-core, or the selected adapter are missing, install them during this phase or stop with `BLOCKED`.
+
 ## 1. Workspace setup
 
 ```powershell
@@ -19,9 +21,12 @@ python -m pip install --upgrade pip setuptools wheel
 python -m pip install -r <path-to-installed-skill-or-workspace>\requirements.txt
 python -m pip install --force-reinstall "dbt-core==1.10.15" "<dbt-adapter-package-for-selected-profile>"
 dbt --version
+python <path-to-installed-skill-or-workspace>\scripts\check_software_prerequisites.py --root . --adapter <selected-adapter> --write-report
 ```
 
 Choose the adapter package only after `DBT_PROFILE_NAME` is selected and the profile target `type` is known. Examples: `dbt-postgres`, `dbt-redshift`, `dbt-snowflake`, `dbt-bigquery`, or `dbt-databricks`.
+
+Supported software stack for the full pipeline is listed in [software-prerequisites.md](software-prerequisites.md): Python, venv, pip, dbt-core, matching dbt adapter, skill requirements, git, Node/npx for skill install, and `gh` when GitHub automation is requested.
 
 If `requirements.txt` is not available, continue with dbt setup and document the skip. If optional reporting packages fail to install, do not block dbt-only work; mark presentation readiness as `WARN` and retry when presentation work is approved.
 

@@ -43,6 +43,8 @@ See `references/independent-verification-governance.md` and `docs/how-to-verify-
 
 Creating or updating workspace `.env` from user-provided values on first run is allowed per `references/env-configuration.md`. Do not commit `.env`.
 
+Before setup or layer builds, ensure required software is available per `references/software-prerequisites.md`. Run `python <skill>/scripts/check_software_prerequisites.py --root . --write-report` during setup. Install missing dbt/Python packages into `.venv` when safe; stop with `BLOCKED` when Python/Git/Node must be installed by the user.
+
 ## Safety Rules
 
 Do not:

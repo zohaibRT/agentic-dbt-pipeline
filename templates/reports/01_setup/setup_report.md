@@ -13,10 +13,29 @@ Replace placeholders with setup-specific evidence. Do not remove sections.
 - Adapter: <adapter>
 - Setup mode: Automatic setup-only
 
+## Software Prerequisites
+
+Use `references/software-prerequisites.md` and `scripts/check_software_prerequisites.py`.
+
+| Software | Required for | Detected | Installed / action | Status | Notes |
+|---|---|---|---|---|---|
+| Python | scripts + dbt env | <version or missing> | <action> | <PASS/WARN/FAIL/BLOCKED> | <notes> |
+| venv | isolated installs | <yes/no> | <action> | <PASS/WARN/FAIL/BLOCKED> | <notes> |
+| pip | package install | <version or missing> | <action> | <PASS/WARN/FAIL/BLOCKED> | <notes> |
+| dbt-core | build/test | <version or missing> | <action> | <PASS/WARN/FAIL/BLOCKED> | <notes> |
+| dbt adapter | warehouse | <adapter/version or missing> | <action> | <PASS/WARN/FAIL/BLOCKED> | <notes> |
+| Skill requirements.txt | YAML/scripts/presentation | <ok/missing> | <action> | <PASS/WARN/FAIL/BLOCKED> | <notes> |
+| git | commits | <version or missing> | <action> | <PASS/WARN/FAIL/BLOCKED> | <notes> |
+| Node/npx | skill install | <version or missing> | <action> | <PASS/WARN/N/A> | <notes> |
+| gh | GitHub automation | <version or missing/n/a> | <action> | <PASS/WARN/N/A> | <notes> |
+
+Evidence report: `reports/agent/01_setup/SOFTWARE_PREREQUISITES.md`
+
 ## What Was Completed
 
 | Item | Result | Evidence |
 |---|---|---|
+| Software prerequisites check | <PASS/WARN/FAIL/BLOCKED> | <notes> |
 | Workspace `.env` check | <PASS/WARN/FAIL/BLOCKED> | <notes> |
 | dbt project scaffold | <PASS/WARN/FAIL/BLOCKED/SKIPPED> | <path> |
 | Dependency installation | <PASS/WARN/FAIL/BLOCKED/SKIPPED> | <command/result> |
