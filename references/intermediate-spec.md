@@ -39,6 +39,18 @@ Use these patterns:
 - Keep one clear grain per intermediate model
 - Create reusable metrics at the lowest safe grain, but do not create final BI marts here
 
+## Lookup and entity promotion (mandatory)
+
+Discovery-included entity and lookup tables (accounts, partners, programs, SKUs, methods, durations, pricing references, etc.) must not disappear between bronze and silver without a written reason.
+
+| Silver decision | When to use |
+|---|---|
+| Build `int_*` entity/reference models | Default for included lookups/entities needed by gold dimensions |
+| Keep reference-only models | Temporary bridge to gold dim planning; must be listed in silver report |
+| Exclude | Only when deferred/blocked in discovery or user re-scopes |
+
+If silver builds only event facts and drops included lookups, gold cannot invent dimensions later without a silver gap. Document omitted lookups in the silver report and carry them into [gold-dimension-completeness.md](gold-dimension-completeness.md).
+
 ## Example pattern only
 
 Use this as an example of shape and grain, not as a required model list:

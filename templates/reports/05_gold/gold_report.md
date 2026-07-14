@@ -11,13 +11,23 @@ Replace placeholders with facts, dimensions, marts, metric components, and valid
 - Layer schema: <schema>
 - Dimensions built: <count>
 - Facts built: <count>
+- Bridges built: <count>
 - Marts built: <count>
+- Star-schema completeness: <COMPLETE / INCOMPLETE — see Dimension Inventory>
+
+## Dimension Inventory
+
+Every candidate dimension from included discovery/silver entities must appear here. Zero built dimensions is allowed only when every row is `DEFERRED`, `BLOCKED`, or `NOT_NEEDED` with proof. See `references/gold-dimension-completeness.md`.
+
+| Candidate dimension | Evidence model/table | Decision | Privacy handling | Proof | Blocks complete star? |
+|---|---|---|---|---|---|
+| <entity or date dim> | <silver/bronze model> | <BUILD / BUILD_PRIVACY_SAFE / DEFERRED / BLOCKED / NOT_NEEDED> | <hash/exclude attrs/n/a> | `<proof file>` | <yes/no> |
 
 ## Models Built Or Changed
 
 | Model | Type | Grain | Materialization | Row count | Status |
 |---|---|---|---|---:|---|
-| <model> | <dimension/fact/mart> | <grain> | <table/incremental/view> | <row_count> | <PASS/WARN/FAIL/BLOCKED> |
+| <model> | <dimension/fact/bridge/mart> | <grain> | <table/incremental/view> | <row_count> | <PASS/WARN/FAIL/BLOCKED> |
 
 ## Star Schema And Reporting Shape
 

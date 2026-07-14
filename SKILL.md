@@ -167,7 +167,7 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 | **4 Layer names** | Before models | [dbt-project-layers.md](references/dbt-project-layers.md) |
 | **5 Staging** | Layer 1 | [staging-spec.md](references/staging-spec.md) |
 | **6 Intermediate** | Layer 2 | [intermediate-spec.md](references/intermediate-spec.md), [mapping-seeds.md](references/mapping-seeds.md) |
-| **7 Marts** | Layer 3 star schema | [marts-spec.md](references/marts-spec.md), [materialization-rules.md](references/materialization-rules.md) |
+| **7 Marts** | Layer 3 star schema | [marts-spec.md](references/marts-spec.md), [gold-dimension-completeness.md](references/gold-dimension-completeness.md), [materialization-rules.md](references/materialization-rules.md) |
 | **7b Semantic** | Metrics on marts | [semantic-layer-spec.md](references/semantic-layer-spec.md) |
 | **7c Evaluator** | Best-practice audit | [project-evaluator.md](references/project-evaluator.md), [dbt-packages-and-skills.md](references/dbt-packages-and-skills.md) |
 | **8 Docs** | After layers | [documentation.md](references/documentation.md) |
@@ -177,7 +177,7 @@ Install agent skills: [references/install-dbt-agent-skills.md](references/instal
 | **10 Agents Schema / continuous integration** | Metadata + automation | [agents-schema-setup.md](references/agents-schema-setup.md), [cicd-setup.md](references/cicd-setup.md) |
 | **Plan approval** | Before each non-setup build phase | [phase-plan-approval.md](references/phase-plan-approval.md) |
 | **Review** | Human approval points | [human-review.md](references/human-review.md) |
-| **Phase report** | After each completed phase | [phase-completion-report.md](references/phase-completion-report.md), [report-artifact-organization.md](references/report-artifact-organization.md), [next-phase-prompt.md](references/next-phase-prompt.md) |
+| **Phase report** | After each completed phase | [phase-completion-report.md](references/phase-completion-report.md), [report-artifact-organization.md](references/report-artifact-organization.md), [human-attention-reporting.md](references/human-attention-reporting.md), [next-phase-prompt.md](references/next-phase-prompt.md) |
 | **Context tree** | Ongoing project memory | [context-tree.md](references/context-tree.md) |
 | **Done** | Final check + user summary | [acceptance-checklist.md](references/acceptance-checklist.md), [final-delivery.md](references/final-delivery.md), [independent-verification-governance.md](references/independent-verification-governance.md) |
 
@@ -331,6 +331,7 @@ Verification must not depend only on the same agent or chat window. The builder 
 | Independent verifier agent | [agents/dbt-verifier-agent.md](agents/dbt-verifier-agent.md) - audit from disk only |
 | Acceptance script | `python <installed-skill-path>/scripts/run_acceptance_gate.py --root <project.root>` - deterministic pass/fail |
 | CI gate | [.github/workflows/dbt_acceptance_gate.yml](.github/workflows/dbt_acceptance_gate.yml) |
+| Human attention board | `reports/agent/HUMAN_ATTENTION_BOARD.md` |
 | Human sign-off | `reports/agent/HUMAN_VERIFICATION_GUIDE.md` |
 
 MCP may provide access to repo, files, database, and dbt commands, but MCP is not the verifier.
@@ -387,7 +388,7 @@ Read [intermediate-spec.md](references/intermediate-spec.md), [mapping-seeds.md]
 
 ## Step 5 - Layer 3 (marts / star schema)
 
-Read [marts-spec.md](references/marts-spec.md), [evidence-driven-dbt-process.md](references/evidence-driven-dbt-process.md), [layer-data-validation.md](references/layer-data-validation.md), [cardinality-validation.md](references/cardinality-validation.md), [kpi-definitions.md](references/kpi-definitions.md), [kpi-definition-contract.md](references/kpi-definition-contract.md), [metric-verification.md](references/metric-verification.md), [metric-verification-checklist.md](references/metric-verification-checklist.md), and [kpi-reconciliation.md](references/kpi-reconciliation.md). `ref()` only. Build domain-appropriate facts, dimensions, and reporting marts based on profiled source grain and user requirements. After build, verify every fact, dimension, and reporting mart has data when upstream data exists; treat unexpected empty gold models as blockers. Define and reconcile key performance indicators explicitly before promoting them to gold marts or semantic metrics.
+Read [marts-spec.md](references/marts-spec.md), [gold-dimension-completeness.md](references/gold-dimension-completeness.md), [evidence-driven-dbt-process.md](references/evidence-driven-dbt-process.md), [layer-data-validation.md](references/layer-data-validation.md), [cardinality-validation.md](references/cardinality-validation.md), [kpi-definitions.md](references/kpi-definitions.md), [kpi-definition-contract.md](references/kpi-definition-contract.md), [metric-verification.md](references/metric-verification.md), [metric-verification-checklist.md](references/metric-verification-checklist.md), and [kpi-reconciliation.md](references/kpi-reconciliation.md). `ref()` only. Build domain-appropriate facts, dimensions, and reporting marts based on profiled source grain and user requirements. A fact-only gold layer is incomplete unless every missing dimension is explicitly BLOCKED/DEFERRED with proof. Prefer privacy-safe dimensions over dropping all dimensions. After build, verify every fact, dimension, and reporting mart has data when upstream data exists; treat unexpected empty gold models as blockers. Define and reconcile key performance indicators explicitly before promoting them to gold marts or semantic metrics. Run `scripts/check_gold_star_shape.py --root <project.root>` before calling gold complete.
 
 ## Step 5b - Semantic layer
 
@@ -508,7 +509,7 @@ Read [phase-rollback.md](references/phase-rollback.md) when a completed phase mu
 
 ## Next-phase prompt after each phase
 
-After every completed or blocked checkpoint, read [phase-completion-report.md](references/phase-completion-report.md), [report-artifact-organization.md](references/report-artifact-organization.md), and [next-phase-prompt.md](references/next-phase-prompt.md). Write or update `reports/agent/NEXT_PHASE_PROMPT.md` with the exact prompt for the recommended next phase, write or update `reports/agent/REPORT_INDEX.md`, then send a normal assistant message with a visible Markdown chat control-panel summary before asking approval. The chat summary must explain what was completed, what passed/warned/failed, what is recommended next, what the next phase will and will not include, how to approve, and paste the exact next-phase prompt in chat. Do not only say that the prompt is in `NEXT_PHASE_PROMPT.md`. Do not show only a native question card, approval widget, or file diff; the user-facing summary must appear as a separate assistant message directly above the question so the run does not look stopped or abandoned. Do not put the full summary only inside the `request_user_input` or native question body. Ask through a native interactive question only when the runtime can keep the normal summary visibly present directly above that question. In Codex, use `request_user_input` or the current native question/approval UI only when that visible-summary ordering is guaranteed; keep the tool question short. Recommended question: `Do you want me to run this next-phase prompt as written?` Recommended option: `Yes, run this prompt`. Other options: `Tell me what to change` and `Not now`. If interactive questions are unavailable or the visible summary would not appear directly above the question, use the text fallback: `Do you want me to run this next-phase prompt as written? Reply Yes to proceed, or tell me what to change.`
+After every completed or blocked checkpoint, read [phase-completion-report.md](references/phase-completion-report.md), [report-artifact-organization.md](references/report-artifact-organization.md), [human-attention-reporting.md](references/human-attention-reporting.md), and [next-phase-prompt.md](references/next-phase-prompt.md). Update `reports/agent/HUMAN_ATTENTION_BOARD.md` with only OPEN human decisions and carry-forward conditions. Write or update `reports/agent/NEXT_PHASE_PROMPT.md` with the exact prompt for the recommended next phase, write or update `reports/agent/REPORT_INDEX.md`, then send a normal assistant message with a visible Markdown chat control-panel summary before asking approval. The chat summary must mirror the Attention Board OPEN rows, explain what was completed, what passed/warned/failed, what is recommended next, what the next phase will and will not include, how to approve, and paste the exact next-phase prompt in chat. Do not paste full inventories or cardinality matrices into chat. Do not only say that the prompt is in `NEXT_PHASE_PROMPT.md`. Do not show only a native question card, approval widget, or file diff; the user-facing summary must appear as a separate assistant message directly above the question so the run does not look stopped or abandoned. Do not put the full summary only inside the `request_user_input` or native question body. Ask through a native interactive question only when the runtime can keep the normal summary visibly present directly above that question. In Codex, use `request_user_input` or the current native question/approval UI only when that visible-summary ordering is guaranteed; keep the tool question short. Recommended question: `Do you want me to run this next-phase prompt as written?` Recommended option: `Yes, run this prompt`. Other options: `Tell me what to change` and `Not now`. If interactive questions are unavailable or the visible summary would not appear directly above the question, use the text fallback: `Do you want me to run this next-phase prompt as written? Reply Yes to proceed, or tell me what to change.`
 
 When the user approves the displayed next-phase prompt, do not run `NEXT_PHASE_PROMPT.md` alone. First reload the approved next-phase context bundle from [next-phase-prompt.md](references/next-phase-prompt.md): `SKILL.md`, `prompt.md`, phase-specific references, `AGENT_PLAN.md`, `reports/agent/PIPELINE_STATUS.md`, `reports/agent/CONTEXT_TREE.md`, `reports/agent/00_discovery/requirements.md` when present, legacy `reports/agent/requirements.md` only when the canonical file is absent, the latest relevant phase report, `reports/agent/NEXT_PHASE_PROMPT.md`, and project knowledge files when present. Then execute only the approved next phase.
 
@@ -628,7 +629,8 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 | [staging-spec.md](references/staging-spec.md) | Layer 1 |
 | [intermediate-spec.md](references/intermediate-spec.md) | Layer 2 |
 | [mapping-seeds.md](references/mapping-seeds.md) | Manual mapping seeds and coverage tests |
-| [marts-spec.md](references/marts-spec.md) | Star schema |
+| [marts-spec.md](references/marts-spec.md) | Star schema facts, dimensions, bridges |
+| [gold-dimension-completeness.md](references/gold-dimension-completeness.md) | Prevent fact-only gold without dim register |
 | [documentation.md](references/documentation.md) | Docs generate |
 | [analytics-insight-reporting.md](references/analytics-insight-reporting.md) | Business reporting design before presentation |
 | [universal-analytics-framework.md](references/universal-analytics-framework.md) | Maximum useful analytics coverage and rich dashboard page framework |
@@ -641,6 +643,7 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 | [powerbi-official-docs.md](references/powerbi-official-docs.md) | Official Microsoft Power BI PBIP/PBIR/TMDL project documentation links and doc-driven constraints |
 | [powerbi-pbip-desktop-requirements.md](references/powerbi-pbip-desktop-requirements.md) | Power BI PBIP/TMDL Desktop layout, metadata, page-content, and validation requirements |
 | [human-review.md](references/human-review.md) | Engineer/domain review checkpoints |
+| [human-attention-reporting.md](references/human-attention-reporting.md) | One Attention Board for human decisions; reduce report repetition |
 | [final-delivery.md](references/final-delivery.md) | Final handoff checklist |
 | [validation-commands.md](references/validation-commands.md) | debug, parse, build, documentation |
 | [stuck-recovery.md](references/stuck-recovery.md) | Stuck command and blocker recovery |

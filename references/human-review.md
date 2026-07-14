@@ -52,6 +52,8 @@ What changed:
 Business assumptions:
 Data quality notes:
 Tests/build result:
-Open decisions:
+Open decisions: (IDs from reports/agent/HUMAN_ATTENTION_BOARD.md only)
 Approval needed:
 ```
+
+Do not repeat full inventories or cardinality matrices in the human review summary. Put OPEN decisions only on the Attention Board per [human-attention-reporting.md](human-attention-reporting.md).

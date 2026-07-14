@@ -18,7 +18,7 @@ Before creating or changing marts files, follow [phase-plan-approval.md](phase-p
 | Allowed changes | Fact models, dimension models, reporting mart models, marts YAML, marts tests, semantic-ready fields, and key performance indicator documentation |
 | Not allowed | Semantic layer files, dashboards, reports, unclear metric implementation, direct source reads, or unapproved sensitive-field exposure |
 | Commands to run | `dbt parse --no-partial-parse`, `dbt build --select +path:models/{layer_3_name}/{project_slug}`, and marts data validation queries |
-| Completion criteria | Facts and dimensions have documented grains, cardinality and relationship proof exists, tests pass, non-empty expectations are verified, metric reconciliation checks pass, and privacy exposure is reviewed |
+| Completion criteria | Facts **and** dimensions are built, or every missing dimension is in an explicit BLOCKED/DEFERRED register with proof; cardinality and relationship proof exists; tests pass; non-empty expectations are verified; metric reconciliation checks pass; and privacy exposure is reviewed |
 | Report required | `reports/agent/marts_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md` |
 
 ## Folder and naming
@@ -41,6 +41,16 @@ Choose:
 - Reporting marts only when they directly support a known dashboard, KPI, or stakeholder question
 
 Create as many credible dimensions, facts, bridge tables, reporting marts, and metrics as the source data and approved requirements support. Do not force five dimensions, two facts, two reporting marts, or any other fixed model count. Do not invent unsupported models just to increase coverage.
+
+**Hard completeness rule:** a fact-only gold layer is incomplete unless [gold-dimension-completeness.md](gold-dimension-completeness.md) is followed. If bronze/silver contains entity or lookup tables (accounts, partners, programs, SKUs, methods, etc.), gold must build privacy-safe dimensions where possible, or register each omission as `BLOCKED` / `DEFERRED` with proof. Do not mark gold complete with zero dimensions and no register.
+
+Also evaluate and usually build:
+
+- A date dimension / time spine when facts have usable dates
+- Non-PII descriptive dimensions (partner, program, product/SKU when grain is unique)
+- Privacy-safe entity dimensions (hashed keys + safe attributes) instead of dropping customer/subscriber dimensions entirely
+
+Read [gold-dimension-completeness.md](gold-dimension-completeness.md) before approving gold discovery or marking gold complete.
 
 Each final model must have a documented grain.
 

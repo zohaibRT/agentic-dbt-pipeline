@@ -47,6 +47,7 @@ LAYER_REPORT_REQUIREMENTS = {
 
 PROJECT_VALIDATION_SCRIPTS = [
     ("check_discovery_artifacts.py", ["--root", "{root}"]),
+    ("check_gold_star_shape.py", ["--root", "{root}"]),
     ("validate_kpi_proofs.py", ["--root", "{root}"]),
     ("check_requirement_traceability.py", ["--root", "{root}"]),
     ("check_layer_proof_coverage.py", ["--root", "{root}"]),
