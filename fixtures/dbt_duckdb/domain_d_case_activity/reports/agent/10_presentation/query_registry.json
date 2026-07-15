@@ -1,0 +1,49 @@
+{
+  "version": "1",
+  "queries": [
+    {
+      "query_id": "Q-volume_trend",
+      "metric_ids": [
+        "KPI-001"
+      ],
+      "source_resource_ids": [
+        "model.domain_d_case_activity.fct_case_activities"
+      ],
+      "sql_path": "reports/agent/10_presentation/matplotlib/sql_verification/010_volume.sql",
+      "description": "Volume trend query"
+    },
+    {
+      "query_id": "Q-completion_rate",
+      "metric_ids": [
+        "KPI-002"
+      ],
+      "source_resource_ids": [
+        "model.domain_d_case_activity.fct_case_activities"
+      ],
+      "sql_path": "reports/agent/10_presentation/matplotlib/sql_verification/020_rate.sql",
+      "description": "Completion rate trend query"
+    },
+    {
+      "query_id": "Q-volume_card",
+      "metric_ids": [
+        "KPI-001"
+      ],
+      "source_resource_ids": [
+        "model.domain_d_case_activity.fct_case_activities"
+      ],
+      "sql_path": "reports/agent/10_presentation/matplotlib/sql_verification/010_volume.sql",
+      "description": "Volume card query"
+    },
+    {
+      "query_id": "Q-completion_card",
+      "metric_ids": [
+        "KPI-002"
+      ],
+      "source_resource_ids": [
+        "model.domain_d_case_activity.fct_case_activities"
+      ],
+      "sql_path": "reports/agent/10_presentation/matplotlib/sql_verification/020_rate.sql",
+      "description": "Completion card query"
+    }
+  ]
+}

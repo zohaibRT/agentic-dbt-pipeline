@@ -1,0 +1,84 @@
+{
+  "version": "1",
+  "pages": [
+    {
+      "page_id": "executive_overview",
+      "page_name": "Executive Overview",
+      "page_class": "executive_overview",
+      "audience": "leadership",
+      "trusted": true,
+      "primary_kpi_ids": [
+        "KPI-001",
+        "KPI-002"
+      ],
+      "driver_metric_ids": [
+        "KPI-002"
+      ],
+      "guardrail_metric_ids": [],
+      "visual_ids": [
+        "visual_volume_trend",
+        "visual_completion_rate_trend",
+        "card_volume",
+        "card_completion"
+      ],
+      "technical_validation_status": "PASS",
+      "business_approval_status": "APPROVED"
+    },
+    {
+      "page_id": "exceptions_and_data_quality",
+      "page_name": "Exceptions and Data Quality",
+      "page_class": "exceptions_quality",
+      "audience": "data engineering",
+      "trusted": true,
+      "primary_kpi_ids": [
+        "DQ-001"
+      ],
+      "visual_ids": [],
+      "technical_validation_status": "PASS",
+      "business_approval_status": "APPROVED"
+    },
+    {
+      "page_id": "pipeline_health",
+      "page_name": "Pipeline Health",
+      "page_class": "pipeline_health",
+      "audience": "platform",
+      "trusted": true,
+      "primary_kpi_ids": [
+        "PIPE-001"
+      ],
+      "visual_ids": [],
+      "technical_validation_status": "PASS",
+      "business_approval_status": "APPROVED"
+    },
+    {
+      "page_id": "all_measures",
+      "page_name": "All Measures",
+      "page_class": "metric_dictionary",
+      "audience": "analysts",
+      "trusted": false,
+      "visual_ids": [],
+      "technical_validation_status": "PASS",
+      "business_approval_status": "APPROVED"
+    },
+    {
+      "page_id": "all_metrics",
+      "page_name": "All Metrics",
+      "page_class": "metric_dictionary",
+      "audience": "analysts",
+      "trusted": false,
+      "visual_ids": [],
+      "technical_validation_status": "PASS",
+      "business_approval_status": "APPROVED"
+    },
+    {
+      "page_id": "all_dimensions",
+      "page_name": "Dimensions",
+      "page_class": "dimension_explorer",
+      "audience": "analysts",
+      "trusted": false,
+      "visual_ids": [],
+      "technical_validation_status": "PASS",
+      "business_approval_status": "APPROVED"
+    }
+  ]
+}

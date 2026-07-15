@@ -16,8 +16,27 @@ DBT_FIX = ROOT / "fixtures" / "dbt_duckdb"
 
 sys.path.insert(0, str(SCRIPTS))
 from lib_gate_common import list_gold_fact_names, named_status  # noqa: E402
-from run_acceptance_gate import GateReport, WarningRecord, compute_exit_code  # noqa: E402
+from run_acceptance_gate import (  # noqa: E402
+    GateReport,
+    WarningRecord,
+    compute_exit_code,
+    detect_ci_orchestration_evidence,
+    resolve_enforce_warning_policy,
+)
 from verify_metric_reconciliation import detect_contract_schema  # noqa: E402
+from lib_gate_common import REQUIRED_OBSERVABILITY_DOMAINS  # noqa: E402
+
+# Include HITL suite when running: python -m unittest tests.test_production_enforcement
+from tests.test_kpi_contracts_hitl import P0KpiContractsHitlTests  # noqa: E402,F401
+from tests.test_manifest_resource_identity import (  # noqa: E402,F401
+    CanonicalIdentityTests,
+    ClassificationPolicyTests,
+    CoverageRegressionTests,
+    ExposureTests,
+    FactDiscoveryTests,
+    ManifestInventoryTests,
+)
+from tests.test_presentation_traceability import PresentationTraceabilityTests  # noqa: E402,F401
 
 
 def run_script(script: str, *args: str, cwd: Path | None = None) -> subprocess.CompletedProcess[str]:
@@ -375,6 +394,225 @@ class DomainNeutralityNegativeTests(unittest.TestCase):
             proc = run_script("check_domain_neutrality.py", "--root", str(root))
             self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
             self.assertIn("dim_customer", (proc.stdout + proc.stderr).lower())
+
+
+def _write_fact_root(root: Path, contract_md: str) -> None:
+    gold = root / "models" / "gold"
+    gold.mkdir(parents=True, exist_ok=True)
+    (gold / "fct_events.sql").write_text("select 1 as event_id\n", encoding="utf-8")
+    insights = root / "reports" / "agent" / "09_analytics_insights"
+    insights.mkdir(parents=True, exist_ok=True)
+    (insights / "model_classification.md").write_text(
+        """
+| Model | Class | Status |
+|---|---|---|
+| fct_events | fact/event | PASS |
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    (insights / "fact_coverage_contracts.md").write_text(contract_md.strip() + "\n", encoding="utf-8")
+    (root / "project.config.yml").write_text(
+        "analytics_policy:\n  critical_fact_coverage_required: 1.0\n",
+        encoding="utf-8",
+    )
+
+
+COMPLETE_FACT_CONTRACT = """
+| Fact | Grain | Counting Key | Primary Date | Volume | Amount or Quantity | Duration or Balance | Status Distribution | Lifecycle | Dimensions | Time Trends | Period Comparison | Data Quality | Exceptions | Aging | Reconciliation | Business Questions | Notes | Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| fct_events | one row per event | event_id | event_date | SUPPORTED | SUPPORTED | NOT_APPLICABLE | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | NOT_APPLICABLE | SUPPORTED | volume and completion | Proof: sql_proofs/vol.sql; duration N/A — no duration column | PASS |
+"""
+
+
+class P0AcceptanceFactsTests(unittest.TestCase):
+    """P0-ACCEPTANCE-FACTS: warning policy, CI, observability neutrality, fact coverage."""
+
+    def test_analytics_warning_does_not_fail_without_strict(self) -> None:
+        from run_acceptance_gate import CheckResult
+
+        policy = {"final_fail_on_warning": True, "require_explicit_warning_acceptance": True}
+        self.assertFalse(
+            resolve_enforce_warning_policy(
+                phase="analytics", strict=False, fail_on_warning=False, acceptance_policy=policy
+            )
+        )
+        gate = GateReport(phase="analytics", enforce_warning_policy=False)
+        gate.add(CheckResult("Source freshness", "WARN", "missing freshness"))
+        gate.finalize(set(), require_explicit_warning_acceptance=True)
+        self.assertEqual(gate.overall_status, "WARN")
+        self.assertEqual(compute_exit_code(gate), 0)
+
+    def test_analytics_warning_fails_with_strict(self) -> None:
+        policy = {"final_fail_on_warning": True, "require_explicit_warning_acceptance": True}
+        self.assertTrue(
+            resolve_enforce_warning_policy(
+                phase="analytics", strict=True, fail_on_warning=False, acceptance_policy=policy
+            )
+        )
+        from run_acceptance_gate import CheckResult
+
+        gate = GateReport(phase="analytics", enforce_warning_policy=True)
+        gate.add(CheckResult("Source freshness", "WARN", "missing freshness"))
+        gate.finalize(set(), require_explicit_warning_acceptance=True)
+        self.assertEqual(gate.overall_status, "FAIL")
+        self.assertEqual(compute_exit_code(gate), 1)
+
+    def test_final_unaccepted_warning_fails(self) -> None:
+        policy = {"final_fail_on_warning": True, "require_explicit_warning_acceptance": True}
+        self.assertTrue(
+            resolve_enforce_warning_policy(
+                phase="final", strict=False, fail_on_warning=False, acceptance_policy=policy
+            )
+        )
+        from run_acceptance_gate import CheckResult
+
+        gate = GateReport(phase="final", enforce_warning_policy=True)
+        gate.add(CheckResult("Human verification guide", "WARN", "missing guide"))
+        gate.finalize(set(), require_explicit_warning_acceptance=True)
+        self.assertEqual(gate.overall_status, "FAIL")
+        self.assertEqual(compute_exit_code(gate), 1)
+
+    def test_final_accepted_warning_passes(self) -> None:
+        from run_acceptance_gate import CheckResult
+
+        gate = GateReport(phase="final", enforce_warning_policy=True)
+        gate.add(CheckResult("Human verification guide", "WARN", "missing guide"))
+        gate.finalize({"human verification guide"}, require_explicit_warning_acceptance=True)
+        self.assertEqual(gate.overall_status, "WARN")
+        self.assertEqual(compute_exit_code(gate), 0)
+        self.assertTrue(gate.warning_records[0].accepted)
+
+    def test_analytics_gates_yml_detected_as_relevant_ci(self) -> None:
+        summary = detect_ci_orchestration_evidence(ROOT)
+        self.assertTrue(summary.get("has_relevant_ci"), summary)
+        joined = " ".join(str(item) for item in (summary.get("workflows") or [])).lower()
+        self.assertIn("analytics_gates", joined)
+
+    def test_empty_workflow_not_treated_as_ci(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            wf = root / ".github" / "workflows"
+            wf.mkdir(parents=True)
+            (wf / "empty.yml").write_text(
+                "name: empty\non: push\njobs: {}\n",
+                encoding="utf-8",
+            )
+            summary = detect_ci_orchestration_evidence(root)
+            self.assertFalse(summary.get("has_relevant_ci"), summary)
+
+    def test_custom_observability_evidence_passes_without_elementary(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            insights = root / "reports" / "agent" / "09_analytics_insights"
+            kpis = insights / "kpis"
+            kpis.mkdir(parents=True, exist_ok=True)
+            rows = [
+                "| Domain | Scope | Models | Metric IDs | Business Or Engineering Question | "
+                "Validation Method | Proof Or Telemetry | Threshold Or SLA | Expected Result | "
+                "Actual Result | Owner | Incident Or Action | Status | Notes | Reassessment Condition |"
+            ]
+            rows.append("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
+            for domain in sorted(REQUIRED_OBSERVABILITY_DOMAINS):
+                rows.append(
+                    f"| {domain} | scope | models | mid | question | custom sql proof | "
+                    f"reports/agent/sql_proofs/obs.sql | sla | PASS | PASS | analytics | none | "
+                    f"PASS | Custom dbt-test evidence | n/a |"
+                )
+            (insights / "data_observability_coverage.md").write_text(
+                "\n".join(rows) + "\n", encoding="utf-8"
+            )
+            (kpis / "data_quality_metric_catalog.md").write_text(
+                "| Metric | Status |\n|---|---|\n| orphan_rate | PASS |\n",
+                encoding="utf-8",
+            )
+            (kpis / "pipeline_health_metric_catalog.md").write_text(
+                "| Metric | Status |\n|---|---|\n| build_success_rate | PASS |\n",
+                encoding="utf-8",
+            )
+            (root / "project.config.yml").write_text(
+                "analytics_policy:\n  observability_domain_coverage_required: 1.0\n",
+                encoding="utf-8",
+            )
+            text = (insights / "data_observability_coverage.md").read_text(encoding="utf-8").lower()
+            self.assertNotIn("elementary", text)
+            proc = run_script("check_data_observability_coverage.py", "--root", str(root))
+            self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+
+    def test_overall_status_pass_does_not_satisfy_status_distribution(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            # Single overall Status column — must NOT count as status_distribution
+            _write_fact_root(
+                root,
+                """
+| Fact | Grain | Counting Key | Primary Date | Volume | Amount or Quantity | Duration or Balance | Lifecycle | Dimensions | Time Trends | Period Comparison | Data Quality | Exceptions | Aging | Reconciliation | Business Questions | Notes | Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| fct_events | one row per event | event_id | event_date | SUPPORTED | SUPPORTED | NOT_APPLICABLE | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | NOT_APPLICABLE | SUPPORTED | volume | Proof present | PASS |
+""",
+            )
+            proc = run_script("check_fact_analytical_coverage.py", "--root", str(root))
+            self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
+            self.assertIn("status_distribution", (proc.stdout + proc.stderr).lower())
+
+    def test_fact_missing_amount_applicability_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            _write_fact_root(
+                root,
+                """
+| Fact | Grain | Counting Key | Primary Date | Volume | Duration or Balance | Status Distribution | Lifecycle | Dimensions | Time Trends | Period Comparison | Data Quality | Exceptions | Aging | Reconciliation | Business Questions | Notes | Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| fct_events | one row per event | event_id | event_date | SUPPORTED | NOT_APPLICABLE | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | NOT_APPLICABLE | SUPPORTED | volume | Proof present | PASS |
+""",
+            )
+            proc = run_script("check_fact_analytical_coverage.py", "--root", str(root))
+            self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
+            joined = (proc.stdout + proc.stderr).lower()
+            self.assertTrue(
+                "amount" in joined or "amount_or_quantity" in joined,
+                joined,
+            )
+
+    def test_not_applicable_without_reason_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            _write_fact_root(
+                root,
+                """
+| Fact | Grain | Counting Key | Primary Date | Volume | Amount or Quantity | Duration or Balance | Status Distribution | Lifecycle | Dimensions | Time Trends | Period Comparison | Data Quality | Exceptions | Aging | Reconciliation | Business Questions | Notes | Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| fct_events | one row per event | event_id | event_date | SUPPORTED | SUPPORTED | NOT_APPLICABLE | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | NOT_APPLICABLE | SUPPORTED | volume |  | PASS |
+""",
+            )
+            proc = run_script("check_fact_analytical_coverage.py", "--root", str(root))
+            self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
+            self.assertIn("not_applicable", (proc.stdout + proc.stderr).lower())
+            self.assertIn("reason", (proc.stdout + proc.stderr).lower())
+
+    def test_blocked_without_owner_or_next_action_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            _write_fact_root(
+                root,
+                """
+| Fact | Grain | Counting Key | Primary Date | Volume | Amount or Quantity | Duration or Balance | Status Distribution | Lifecycle | Dimensions | Time Trends | Period Comparison | Data Quality | Exceptions | Aging | Reconciliation | Business Questions | Notes | Owner | Missing Evidence | Next Action | Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| fct_events | one row per event | event_id | event_date | SUPPORTED | SUPPORTED | NOT_APPLICABLE | BLOCKED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | NOT_APPLICABLE | SUPPORTED | volume | Missing status map |  |  |  | PASS |
+""",
+            )
+            proc = run_script("check_fact_analytical_coverage.py", "--root", str(root))
+            self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
+            joined = (proc.stdout + proc.stderr).lower()
+            self.assertIn("blocked", joined)
+            self.assertTrue("owner" in joined or "next_action" in joined, joined)
+
+    def test_complete_valid_fact_contract_passes(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            _write_fact_root(root, COMPLETE_FACT_CONTRACT)
+            proc = run_script("check_fact_analytical_coverage.py", "--root", str(root))
+            self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
 
 
 if __name__ == "__main__":

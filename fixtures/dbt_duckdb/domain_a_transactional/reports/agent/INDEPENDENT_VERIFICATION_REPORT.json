@@ -1,0 +1,203 @@
+{
+  "overall_status": "PASS",
+  "checked_at": "2026-07-15T23:07:31.080473+00:00",
+  "root": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_a_transactional",
+  "mode": "independent",
+  "results": [
+    {
+      "script": "check_model_classification_coverage.py",
+      "category": "manifest_inventory_classification",
+      "status": "PASS",
+      "return_code": 0,
+      "stdout": "Model classification (manifest): classified=9/9 (100%) unique_id_denominator=yes\nModel classification coverage check PASSED\n",
+      "stderr": ""
+    },
+    {
+      "script": "check_fact_analytical_coverage.py",
+      "category": "fact_coverage",
+      "status": "PASS",
+      "return_code": 0,
+      "stdout": "Fact coverage contracts: rows=1, gold_facts=1, unique_ids=1\nCritical fact coverage: 1/1 (100%)\nFact analytical coverage check PASSED\n",
+      "stderr": ""
+    },
+    {
+      "script": "check_metric_contract_completeness.py",
+      "category": "kpi_contract_completeness",
+      "status": "PASS",
+      "return_code": 0,
+      "stdout": "Metric contract completeness: schema=expanded contract_rows=2\nCritical KPI contract coverage: 2/2 (100%)\nMetric contract completeness check PASSED\n",
+      "stderr": ""
+    },
+    {
+      "script": "verify_metric_reconciliation.py",
+      "category": "numeric_and_set_reconciliation",
+      "status": "PASS",
+      "return_code": 0,
+      "stdout": "Detected KPI contract schema: expanded\nMetric reconciliation summary:\n  KPI contract schema: expanded\n  KPI contracts checked: 2\n  metric matrix rows checked: 2\n  blocked/deferred KPIs: 0\n  critical reconciliation coverage: 2/2 (100%)\n  matrix reconciled: 2/2\n  warnings: 0\n  errors: 0\n",
+      "stderr": ""
+    },
+    {
+      "script": "check_human_approval_coverage.py",
+      "category": "human_approval_coverage",
+      "status": "PASS",
+      "return_code": 0,
+      "stdout": "Human approval coverage: 2/2 (phase=final)\nHuman approval coverage check PASSED\n",
+      "stderr": ""
+    },
+    {
+      "script": "check_time_intelligence_coverage.py",
+      "category": "time_intelligence_coverage",
+      "status": "PASS",
+      "return_code": 0,
+      "stdout": "Time intelligence coverage: supported=8, applicable=8 (100%)\nTime intelligence coverage check PASSED\n",
+      "stderr": ""
+    },
+    {
+      "script": "check_data_observability_coverage.py",
+      "category": "observability_coverage",
+      "status": "PASS",
+      "return_code": 0,
+      "stdout": "Observability domain coverage: 18/18 (100%)\nData observability coverage check PASSED\n",
+      "stderr": ""
+    },
+    {
+      "script": "check_exposure_coverage.py",
+      "category": "exposure_coverage",
+      "status": "PASS",
+      "return_code": 0,
+      "stdout": "Exposure discovery: source=manifest inventory=manifest count=1\nProduction exposure coverage: 1/1 (100%)\nExposure coverage check PASSED\n",
+      "stderr": ""
+    },
+    {
+      "script": "check_report_page_contracts.py",
+      "category": "page_contracts",
+      "status": "PASS",
+      "return_code": 0,
+      "stdout": "Report page contracts: rows=6, rendered_pages~13\nReport page contract field coverage: 6/6 (100%)\nReport page contracts check PASSED\n",
+      "stderr": ""
+    },
+    {
+      "script": "check_presentation_traceability.py",
+      "category": "visual_traceability_proof_mapping",
+      "status": "PASS",
+      "return_code": 0,
+      "stdout": "Presentation traceability: metrics=3 visuals~8 proofs~2 errors=0\nWARN: metric KPI-PENDING-001: no visual_ids/chart_ids/card_ids mapped\nWARN: metric KPI-PENDING-001: missing query_id mapping\nPresentation traceability check PASSED with warnings\n",
+      "stderr": ""
+    },
+    {
+      "script": "validate_rendered_report_content.py",
+      "category": "rendered_values",
+      "status": "PASS",
+      "return_code": 0,
+      "stdout": "Rendered report content scan: errors=0\nRendered report content validation PASSED\n",
+      "stderr": ""
+    },
+    {
+      "script": "validate_chart_registry.py",
+      "category": "chart_registry_proof_mapping",
+      "status": "PASS",
+      "return_code": 0,
+      "stdout": "Chart registry validation: charts=2 errors=0\nChart registry validation PASSED\n",
+      "stderr": ""
+    },
+    {
+      "script": "check_report_business_readability.py",
+      "category": "technical_labels_not_visible",
+      "status": "PASS",
+      "return_code": 0,
+      "stdout": "Business readability: files=12, tech_name_hits~908, dim_row_count_hits~0, raw_float_hits~245, display_hints=True, label_coverage=100% (required=100%)\nWARN: high-precision raw floats present \u00e2\u20ac\u201d ensure UI shows formatted_value (%, currency, rounded decimals)\nReport business readability check PASSED with warnings\n",
+      "stderr": ""
+    },
+    {
+      "script": "validate_kpi_proofs.py",
+      "category": "proof_mapping",
+      "status": "PASS",
+      "return_code": 0,
+      "stdout": "Optional catalogs present: dimension_catalog.md\nKPI proof validation summary:\n  measures: 6\n  metrics: 8\n  kpis: 2\n  sql proof files: 2\n  referenced proofs: 0\nWARN: Catalogs do not reference sql_proofs/*.sql paths explicitly\nKPI proof validation PASSED with warnings\n",
+      "stderr": ""
+    },
+    {
+      "script": "check_layer_proof_coverage.py",
+      "category": "layer_proof_mapping",
+      "status": "PASS",
+      "return_code": 0,
+      "stdout": "Layer proof coverage summary:\n  rows checked: 9\n  warnings: 0\n  errors: 0\n",
+      "stderr": ""
+    },
+    {
+      "script": "check_requirement_traceability.py",
+      "category": "requirement_traceability",
+      "status": "PASS",
+      "return_code": 0,
+      "stdout": "Requirement traceability summary:\n  requirements checked: 5\n  warnings: 0\n  errors: 0\n",
+      "stderr": ""
+    },
+    {
+      "script": "check_presentation_coverage.py",
+      "category": "presentation_coverage",
+      "status": "PASS",
+      "return_code": 0,
+      "stdout": "Presentation coverage: measures~6, metrics~4, kpis~2; RENDERED/TRUSTED=3; gold_facts~1\nRendered proof coverage: 3/3 (100%)\nPresentation coverage check PASSED\n",
+      "stderr": ""
+    },
+    {
+      "script": "validate_live_report_dom.py",
+      "category": "live_browser_behavior",
+      "status": "SKIPPED",
+      "return_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "local_checks": [
+    {
+      "name": "manifest_inventory",
+      "status": "PASS",
+      "detail": "resources=26"
+    },
+    {
+      "name": "detect_builder_false_pass",
+      "status": "PASS",
+      "detail": "checked=2 false_pass=0"
+    },
+    {
+      "name": "synthetic_approval_path_guard",
+      "status": "PASS",
+      "detail": "fixture path \u2014 synthetic approval evidence permitted"
+    },
+    {
+      "name": "no_fixed_count_gates",
+      "status": "PASS",
+      "detail": "no arbitrary fixed-count gates"
+    }
+  ],
+  "recalculation": {
+    "manifest_inventory": {
+      "status": "PASS",
+      "count": 26,
+      "by_resource_type": {
+        "model": 9,
+        "seed": 4,
+        "test": 8,
+        "source": 4,
+        "exposure": 1
+      },
+      "sample_unique_ids": [
+        "model.domain_a_transactional.dim_catalog_items",
+        "model.domain_a_transactional.dim_entities",
+        "model.domain_a_transactional.dim_statuses",
+        "model.domain_a_transactional.fct_events",
+        "model.domain_a_transactional.int_events_enriched",
+        "model.domain_a_transactional.stg_catalog_items",
+        "model.domain_a_transactional.stg_entities",
+        "model.domain_a_transactional.stg_events"
+      ]
+    }
+  },
+  "failures": [],
+  "notes": [
+    "Independent verifier reads repository/dbt/report artifacts only.",
+    "Browser PASS does not grant business approval.",
+    "Synthetic TEST FIXTURE approvals are valid only under fixtures/ paths."
+  ]
+}

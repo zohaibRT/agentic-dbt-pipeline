@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -22,7 +23,12 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Iterable
 
-from lib_gate_common import load_acceptance_policy, load_accepted_warnings, load_analytics_policy
+from lib_gate_common import (
+    load_acceptance_policy,
+    load_accepted_warnings,
+    load_analytics_policy,
+    load_presentation_policy,
+)
 
 STATUS_VALUES = {"PASS", "WARN", "FAIL", "BLOCKED", "SKIPPED", "DEFERRED"}
 FAIL_STATUSES = {"FAIL", "BLOCKED"}
@@ -76,17 +82,22 @@ PROJECT_VALIDATION_SCRIPTS = [
     ("check_requirement_traceability.py", ["--root", "{root}"], "bronze"),
     ("check_layer_proof_coverage.py", ["--root", "{root}"], "bronze"),
     ("verify_metric_reconciliation.py", ["--root", "{root}"], "analytics"),
-    ("check_model_classification_coverage.py", ["--root", "{root}"], "analytics"),
+    ("check_model_classification_coverage.py", ["--root", "{root}", "--phase", "{phase}"], "analytics"),
     ("check_analytics_coverage.py", ["--root", "{root}"], "analytics"),
     ("check_analytics_product_completeness.py", ["--root", "{root}"], "analytics"),
     ("check_fact_analytical_coverage.py", ["--root", "{root}"], "analytics"),
     ("check_metric_contract_completeness.py", ["--root", "{root}"], "analytics"),
+    (
+        "check_human_approval_coverage.py",
+        ["--root", "{root}", "--phase", "{phase}"],
+        "analytics",
+    ),
     ("check_time_intelligence_coverage.py", ["--root", "{root}"], "analytics"),
     ("check_data_observability_coverage.py", ["--root", "{root}"], "analytics"),
     ("check_presentation_coverage.py", ["--root", "{root}"], "presentation"),
-    ("check_report_page_contracts.py", ["--root", "{root}"], "presentation"),
+    ("check_report_page_contracts.py", ["--root", "{root}", "--phase", "{phase}"], "presentation"),
     ("check_report_business_readability.py", ["--root", "{root}"], "presentation"),
-    ("check_exposure_coverage.py", ["--root", "{root}"], "analytics"),
+    ("check_exposure_coverage.py", ["--root", "{root}", "--phase", "{phase}"], "analytics"),
     ("check_presentation_hardcodes.py", ["--root", "{root}"], "presentation"),
     ("check_privacy_opt_out.py", ["--root", "{root}"], "presentation"),
     ("check_domain_neutrality.py", ["--root", "{skill_root}"], "discovery"),
@@ -107,6 +118,10 @@ PROJECT_VALIDATION_SCRIPTS = [
         ],
         "presentation",
     ),
+    ("validate_chart_registry.py", ["--root", "{root}"], "presentation"),
+    ("check_presentation_traceability.py", ["--root", "{root}", "--phase", "{phase}"], "presentation"),
+    ("validate_live_report_dom.py", ["--root", "{root}", "--desktop", "--tablet", "--mobile"], "presentation"),
+    ("run_independent_verifier.py", ["--root", "{root}", "--skip-live"], "final"),
 ]
 
 DBT_COMMANDS = [
@@ -154,11 +169,22 @@ class GateReport:
             self.warnings.append(message)
             self.warning_records.append(WarningRecord(warning_id=result.name, message=message))
 
-    def finalize(self, accepted_tokens: set[str]) -> None:
+    def finalize(
+        self,
+        accepted_tokens: set[str],
+        *,
+        require_explicit_warning_acceptance: bool = True,
+    ) -> None:
         if self.enforce_warning_policy:
             remaining_warnings: list[str] = []
             for record in self.warning_records:
-                record.accepted = any(token in record.message.lower() for token in accepted_tokens)
+                if require_explicit_warning_acceptance:
+                    record.accepted = any(
+                        token in record.message.lower() for token in accepted_tokens
+                    )
+                else:
+                    # No acceptance escape hatch — every warning becomes a failure.
+                    record.accepted = False
                 if record.accepted:
                     remaining_warnings.append(record.message)
                 else:
@@ -388,6 +414,107 @@ def check_traceability_files(root: Path, report: GateReport, phase: str) -> None
         )
 
 
+def detect_ci_orchestration_evidence(root: Path) -> dict[str, object]:
+    """Inspect .github/workflows/*.yml|*.yaml for relevant CI evidence.
+
+    Filename alone is never sufficient. Empty workflows or workflows without
+    jobs/steps that run tests, dbt, analytics gates, acceptance gates, or
+    fixture builds do not count.
+    """
+    workflows_dir = root / ".github" / "workflows"
+    command_patterns = (
+        r"\bunittest\b",
+        r"\bpytest\b",
+        r"python\s+-m\s+unittest",
+        r"\bdbt\s+parse\b",
+        r"\bdbt\s+build\b",
+        r"\bdbt\s+test\b",
+        r"\bdbt\s+deps\b",
+        r"run_acceptance_gate",
+        r"acceptance_gate",
+        r"analytics_gates",
+        r"check_domain_neutrality",
+        r"build_analytics_fixtures",
+        r"build_dbt_duckdb",
+        r"validate_live_report",
+        r"independent_verifier",
+        r"\bschedule\s*:",
+        r"\bcron\s*:",
+    )
+    findings: list[str] = []
+    if workflows_dir.exists():
+        paths = sorted(workflows_dir.glob("*.yml")) + sorted(workflows_dir.glob("*.yaml"))
+        for path in paths:
+            text = read_text(path)
+            lower = text.lower().strip()
+            if not lower:
+                continue
+            if "jobs:" not in lower:
+                continue
+            # Empty jobs block is not valid CI evidence
+            if re.search(r"jobs:\s*\{\s*\}", lower):
+                continue
+            if "run:" not in lower and "uses:" not in lower and "schedule:" not in lower:
+                continue
+            # Normalize hit labels for reporting
+            labels: list[str] = []
+            for pattern in command_patterns:
+                if not re.search(pattern, lower):
+                    continue
+                if "unittest" in pattern:
+                    labels.append("unittest")
+                elif "pytest" in pattern:
+                    labels.append("pytest")
+                elif r"dbt\s+parse" in pattern:
+                    labels.append("dbt parse")
+                elif r"dbt\s+build" in pattern:
+                    labels.append("dbt build")
+                elif r"dbt\s+test" in pattern:
+                    labels.append("dbt test")
+                elif r"dbt\s+deps" in pattern:
+                    labels.append("dbt deps")
+                elif "run_acceptance_gate" in pattern or pattern == r"acceptance_gate":
+                    labels.append("acceptance_gate")
+                elif "analytics_gates" in pattern:
+                    labels.append("analytics_gates")
+                elif "build_analytics_fixtures" in pattern:
+                    labels.append("build_analytics_fixtures")
+                elif "build_dbt_duckdb" in pattern:
+                    labels.append("build_dbt_duckdb")
+                elif "check_domain_neutrality" in pattern:
+                    labels.append("check_domain_neutrality")
+                elif "validate_live_report" in pattern:
+                    labels.append("validate_live_report")
+                elif "independent_verifier" in pattern:
+                    labels.append("independent_verifier")
+                elif "schedule" in pattern:
+                    labels.append("schedule")
+                elif "cron" in pattern:
+                    labels.append("cron")
+            labels = sorted(set(labels))
+            if labels:
+                findings.append(f"{path.name} ({', '.join(labels[:8])})")
+
+    has_airflow = (root / "airflow").exists() or (root / "dags").exists()
+    if has_airflow:
+        findings.append("airflow/dags present")
+
+    if findings:
+        return {
+            "has_relevant_ci": True,
+            "detail": "relevant CI/orchestration evidence: " + "; ".join(findings[:8]),
+            "workflows": findings,
+        }
+    return {
+        "has_relevant_ci": False,
+        "detail": (
+            "no relevant CI/orchestration evidence under .github/workflows/ "
+            "(need dbt/test/analytics-gate/acceptance/fixture/schedule steps)"
+        ),
+        "workflows": [],
+    }
+
+
 def check_operational_gaps(root: Path, report: GateReport, phase: str) -> None:
     if not phase_at_least(phase, "final"):
         return
@@ -402,20 +529,37 @@ def check_operational_gaps(root: Path, report: GateReport, phase: str) -> None:
     lowered = all_text.lower()
     if "freshness:" not in lowered and "loaded_at_field" not in lowered:
         report.add(CheckResult("Source freshness", "WARN", "no dbt source freshness configuration detected"))
-    if "elementary" not in lowered:
+
+    obs_cov = root / "reports" / "agent" / "09_analytics_insights" / "data_observability_coverage.md"
+    obs_report = root / "reports" / "agent" / "09_analytics_insights" / "data_observability_report.md"
+    has_obs_evidence = obs_cov.exists() or obs_report.exists()
+    has_dq_tests = "unique" in lowered or "not_null" in lowered or "relationships" in lowered
+    if not has_obs_evidence and not has_dq_tests:
         report.add(
             CheckResult(
                 "Data observability",
                 "WARN",
-                "no Elementary/observability package or monitoring evidence detected",
+                "no observability coverage matrix, observability report, or dbt "
+                "data-quality test / SQL-proof / telemetry / monitoring evidence detected "
+                "(vendor-neutral)",
             )
         )
-    if not any((root / p).exists() for p in [".github/workflows/dbt.yml", ".github/workflows/ci.yml", "airflow", "dags"]):
+
+    ci_summary = detect_ci_orchestration_evidence(root)
+    if not ci_summary["has_relevant_ci"]:
         report.add(
             CheckResult(
                 "Production schedule / CI",
                 "WARN",
-                "no obvious CI or scheduled production orchestration found",
+                ci_summary["detail"],
+            )
+        )
+    else:
+        report.add(
+            CheckResult(
+                "Production schedule / CI",
+                "PASS",
+                ci_summary["detail"],
             )
         )
     if not (root / "reports" / "agent" / "HUMAN_VERIFICATION_GUIDE.md").exists():
@@ -479,6 +623,39 @@ def run_validation_scripts(root: Path, report: GateReport, timeout: int, phase: 
         if script_name == "validate_rendered_report_content.py" and not (matplotlib_dir / "report.html").exists():
             report.add(CheckResult("Validation script: " + script_name, "SKIPPED", "no report.html"))
             continue
+        if script_name == "validate_chart_registry.py" and not matplotlib_dir.exists():
+            report.add(CheckResult("Validation script: " + script_name, "SKIPPED", "no Matplotlib presentation folder"))
+            continue
+        if script_name == "check_presentation_traceability.py" and not matplotlib_dir.exists():
+            report.add(CheckResult("Validation script: " + script_name, "SKIPPED", "no Matplotlib presentation folder"))
+            continue
+        if script_name == "run_independent_verifier.py" and os.environ.get("INDEPENDENT_VERIFIER_ACTIVE") == "1":
+            report.add(
+                CheckResult(
+                    "Validation script: " + script_name,
+                    "SKIPPED",
+                    "already inside independent verifier",
+                )
+            )
+            continue
+        if script_name == "validate_live_report_dom.py" and not (matplotlib_dir / "report.html").exists():
+            report.add(CheckResult("Validation script: " + script_name, "SKIPPED", "no report.html"))
+            continue
+        if script_name == "validate_live_report_dom.py":
+            presentation_policy = load_presentation_policy(root)
+            if not presentation_policy.get("require_live_browser_validation", True):
+                report.add(
+                    CheckResult(
+                        "Validation script: " + script_name,
+                        "SKIPPED",
+                        "presentation_policy.require_live_browser_validation=false",
+                    )
+                )
+                continue
+            # Replace default viewport flags with policy viewports when provided
+            viewports = presentation_policy.get("live_browser_viewports") or []
+            if isinstance(viewports, list) and viewports:
+                script_args = ["--root", "{root}"] + [f"--{str(v).strip().lower()}" for v in viewports]
         if script_name in analytics_scripts and not insights.exists():
             report.add(
                 CheckResult(
@@ -522,7 +699,21 @@ def run_validation_scripts(root: Path, report: GateReport, timeout: int, phase: 
                 value = value.replace("{root}", str(root))
             if "{skill_root}" in value:
                 value = value.replace("{skill_root}", str(skill_root))
+            if "{phase}" in value:
+                # Map gate phase onto human-approval enforcement phase
+                hitl_phase = "analytics"
+                if phase_at_least(phase, "final"):
+                    hitl_phase = "final"
+                elif phase_at_least(phase, "presentation"):
+                    hitl_phase = "presentation"
+                value = value.replace("{phase}", hitl_phase)
             resolved_args.append(value)
+        if script_name == "validate_live_report_dom.py" and not os.environ.get("CI", "").lower() in {
+            "1",
+            "true",
+            "yes",
+        }:
+            resolved_args.append("--allow-skip")
         command = [sys.executable, str(script_path), *resolved_args]
         cwd = skill_root if script_name == "check_domain_neutrality.py" else root
         report.add(run_command(command, cwd, timeout))
@@ -605,6 +796,26 @@ def write_reports(root: Path, gate: GateReport, accepted_tokens: set[str]) -> No
     md_path.write_text("\n".join(md) + "\n", encoding="utf-8")
 
 
+def resolve_enforce_warning_policy(
+    *,
+    phase: str,
+    strict: bool,
+    fail_on_warning: bool,
+    acceptance_policy: dict,
+) -> bool:
+    """Return whether unaccepted warnings must fail this gate run.
+
+    Normal discovery/bronze/silver/gold/semantic/analytics/presentation runs do
+    not enforce warnings unless --strict or --fail-on-warning is passed.
+    Final phase enforces when acceptance_policy.final_fail_on_warning is true.
+    """
+    return bool(
+        strict
+        or fail_on_warning
+        or (phase == "final" and acceptance_policy.get("final_fail_on_warning", True))
+    )
+
+
 def compute_exit_code(gate: GateReport) -> int:
     return 1 if gate.overall_status == "FAIL" else 0
 
@@ -641,15 +852,20 @@ def main() -> int:
     root = args.root.resolve()
     phase = args.phase or resolve_default_phase(root)
     acceptance_policy = load_acceptance_policy(root)
-    load_analytics_policy(root)
+    analytics_policy = load_analytics_policy(root)
+    _ = analytics_policy  # loaded for policy coverage / future advisory reporting
     accepted_tokens = load_accepted_warnings(root, args.accepted_warning_file)
 
-    enforce_warning_policy = bool(
-        phase == "final"
-        or args.strict
-        or args.fail_on_warning
-        or acceptance_policy.get("final_fail_on_warning", True)
+    # Final warning policy applies only on final phase when
+    # acceptance_policy.final_fail_on_warning is true, or when the caller
+    # explicitly requests --strict / --fail-on-warning.
+    enforce_warning_policy = resolve_enforce_warning_policy(
+        phase=phase,
+        strict=bool(args.strict),
+        fail_on_warning=bool(args.fail_on_warning),
+        acceptance_policy=acceptance_policy,
     )
+    require_explicit = bool(acceptance_policy.get("require_explicit_warning_acceptance", True))
 
     gate = GateReport(phase=phase, enforce_warning_policy=enforce_warning_policy)
 
@@ -662,7 +878,7 @@ def main() -> int:
     run_dbt(root, gate, args.timeout, args.skip_dbt, phase)
     check_operational_gaps(root, gate, phase)
 
-    gate.finalize(accepted_tokens)
+    gate.finalize(accepted_tokens, require_explicit_warning_acceptance=require_explicit)
     write_reports(root, gate, accepted_tokens)
 
     print(f"Acceptance gate overall status: {gate.overall_status}")

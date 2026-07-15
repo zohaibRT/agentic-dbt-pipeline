@@ -1,0 +1,59 @@
+{
+  "_file_meta": {
+    "purpose": "Structured raw discovery evidence for fixture",
+    "why": "Audit trail for gate regression",
+    "required_on_every_discovery_run": true
+  },
+  "run": {
+    "generated_at": "2026-01-01T00:00:00Z",
+    "discovery_status": "PASS",
+    "dbt_profile_name": "fixture_duckdb",
+    "adapter": "duckdb",
+    "source_schema": "main"
+  },
+  "scope": {
+    "total_tables_in_schema": 3,
+    "tables_profiled": 3,
+    "tables_included_v1": 3,
+    "tables_deferred": 0,
+    "tables_excluded": 0,
+    "first_pass_business_process": "Asset event monitoring",
+    "filter_reference": "fixture",
+    "notes": "TEST FIXTURE ONLY"
+  },
+  "tables": [
+    {
+      "schema": "main",
+      "table_name": "raw_statuses",
+      "row_count": 5,
+      "inclusion_status": "included",
+      "inclusion_reason": "TEST FIXTURE seed table",
+      "status": "PASS"
+    },
+    {
+      "schema": "main",
+      "table_name": "raw_assets",
+      "row_count": 5,
+      "inclusion_status": "included",
+      "inclusion_reason": "TEST FIXTURE seed table",
+      "status": "PASS"
+    },
+    {
+      "schema": "main",
+      "table_name": "raw_asset_events",
+      "row_count": 5,
+      "inclusion_status": "included",
+      "inclusion_reason": "TEST FIXTURE seed table",
+      "status": "PASS"
+    }
+  ],
+  "queries_executed": [
+    {
+      "proof_file": "reports/agent/00_discovery/sql_proofs/001_source_table_inventory.sql",
+      "purpose": "List source tables and row counts",
+      "status": "PASS",
+      "captured_at": "2026-01-01T00:00:00Z",
+      "summary": "All fixture seeds inventoried"
+    }
+  ]
+}

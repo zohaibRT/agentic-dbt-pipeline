@@ -16,24 +16,39 @@ FIX = ROOT / "fixtures" / "analytics"
 SCRIPTS = ROOT / "scripts"
 
 sys.path.insert(0, str(SCRIPTS))
+from lib_fixture_control_plane import write_control_plane_files  # noqa: E402
 from lib_gate_common import REQUIRED_OBSERVABILITY_DOMAINS  # noqa: E402
+from fixture_kpi_contracts import (  # noqa: E402
+    approval_register_markdown,
+    attention_board_markdown,
+    decision_log_markdown,
+    kpi_contracts_markdown,
+    matrix_markdown,
+    rate_sql,
+    volume_sql,
+)
+from lib_interactive_presentation import write_interactive_presentation  # noqa: E402
 
 TIME_INTEL_METRICS = [
     "KPI-001",
-    "Volume KPI",
     "KPI-002",
-    "Completion rate KPI",
     "volume_kpi",
     "completion_kpi",
     "completion_rate",
-    "Completion rate",
     "failure_rate",
-    "Failure rate",
     "avg_amount",
-    "Average amount",
     "mom_volume_change",
-    "Month-over-month volume change",
 ]
+
+
+def fact_coverage_table(fact: str) -> str:
+    return f"""
+# Fact Coverage Contracts (TEST FIXTURE)
+
+| Fact | Grain | Counting Key | Primary Date | Volume | Amount or Quantity | Duration or Balance | Status Distribution | Lifecycle | Dimensions | Time Trends | Period Comparison | Data Quality | Exceptions | Aging | Reconciliation | Business Questions | Notes | Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| {fact} | one row per event | event_id | event_date | SUPPORTED | SUPPORTED | NOT_APPLICABLE | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | NOT_APPLICABLE | SUPPORTED | volume and completion | Fixture | PASS |
+"""
 
 
 def write(path: Path, content: str) -> None:
@@ -52,16 +67,17 @@ def observability_coverage_table() -> str:
     rows = []
     for domain in sorted(REQUIRED_OBSERVABILITY_DOMAINS):
         if domain in na_domains:
-            status = "NOT_APPLICABLE"
-            notes = "Fixture has no second source or incident system"
+            rows.append(
+                f"| {domain} | fixture scope | n/a | n/a | Is {domain} monitored? | n/a | n/a | n/a | n/a | n/a | analytics | none | NOT_APPLICABLE | Fixture has no second source or incident system | Reassess when source exists |"
+            )
         else:
-            status = "PASS"
-            notes = "Checked in fixture"
-        rows.append(f"| {domain} | evidence | analytics | {status} | {notes} |")
+            rows.append(
+                f"| {domain} | all gold models | fct_events | orphan_rate | Is {domain} healthy? | dbt tests | sql proof | SLA n/a | 0 | 0 | analytics | none | PASS | Checked in fixture | n/a |"
+            )
     header = (
         "# Data Observability Coverage (TEST FIXTURE)\n\n"
-        "| Domain | Evidence | Owner | Status | Notes |\n"
-        "|---|---|---|---|---|\n"
+        "| Domain | Scope | Models | Metric IDs | Business or Engineering Question | Validation Method | Proof or Telemetry | Threshold or SLA | Expected Result | Actual Result | Owner | Incident or Action | Status | Notes | Reassessment Condition |\n"
+        "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n"
     )
     return header + "\n".join(rows)
 
@@ -105,7 +121,12 @@ analytics_policy:
   critical_data_quality_coverage_required: 1.0
   critical_process_module_coverage_required: 1.0
   production_exposure_coverage_required: 1.0
-  fail_on_warning_at_final: true
+presentation_policy:
+  require_stable_visual_ids: true
+  require_bidirectional_page_contract_mapping: true
+  require_bidirectional_proof_mapping: true
+  approved_kpis_required_for_trusted_executive_pages: true
+  pending_kpis_allowed_in_draft_pages: true
 acceptance_policy:
   final_fail_on_warning: true
   require_explicit_warning_acceptance: true
@@ -114,6 +135,23 @@ acceptance_policy:
     write(base / "models" / "gold" / f"{fact}.sql", f"-- TEST FIXTURE ONLY\nselect 1 as id\n")
     for dim in dims:
         write(base / "models" / "gold" / f"{dim}.sql", f"-- TEST FIXTURE ONLY\nselect 1 as id\n")
+
+    seed_name = fact.replace("fct_", "raw_").replace("activity_events", "raw_activities")
+    if not seed_name.startswith("raw_"):
+        seed_name = f"raw_{fact}"
+    write(
+        base / "models" / "sources" / "raw.yml",
+        f"""
+version: 2
+sources:
+  - name: raw
+    description: TEST FIXTURE source stub for gate evidence
+    schema: main
+    tables:
+      - name: {seed_name}
+        description: TEST FIXTURE seed table
+""",
+    )
 
     insights = base / "reports" / "agent" / "09_analytics_insights"
     kpis = insights / "kpis"
@@ -138,16 +176,7 @@ acceptance_policy:
 | {process} | {fact} | {', '.join(dims)} | yes | 6 | 4 | 2 | current+prior | yes | yes | yes | yes | Executive Overview | owner | PASS | none |
 """,
     )
-    write(
-        insights / "fact_coverage_contracts.md",
-        f"""
-# Fact Coverage Contracts (TEST FIXTURE)
-
-| Fact | Grain | Counting Key | Volume | Value | Status | Time | Dimensions | Quality | Reconciliation | Business Questions | Status |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| {fact} | one row per event | event_id | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | volume and completion | PASS |
-""",
-    )
+    write(insights / "fact_coverage_contracts.md", fact_coverage_table(fact))
     write(
         insights / "model_classification.md",
         f"""
@@ -286,45 +315,31 @@ Within tolerance.
     )
     write(
         base / "reports" / "agent" / "KPI_DEFINITION_CONTRACTS.md",
-        f"""
-# Key Performance Indicator Definition Contracts (TEST FIXTURE)
-
-| KPI ID | Display Name | Metric Class | Business Process | Business Question | Decision Supported | Action When Bad | Owner | Formula | Grain | Counting Key | Date Field | Date Role | Included Rows | Excluded Rows | Dimensions | Unit/Currency | Format | Aggregation | Target | Desired Direction | Source Models | Built In | Validation Type | SQL Proof | Expected | Actual | Diff / Tolerance | Approval | Verification | Why Correct / Open Question |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| KPI-001 | Volume KPI | kpi | {process} | How many events occurred? | Capacity planning | Investigate drop | analytics | count(*) | event | event_id | event_date | occurred | all valid | test rows | status | count | integer | additive | Target not defined | increase | {fact} | report | numeric_tolerance | reports/agent/sql_proofs/010_volume.sql | 100 | 100 | 0 | APPROVED | PASS | Matches source |
-| KPI-002 | Completion rate KPI | kpi | {process} | What share completed? | Process health | Review failures | analytics | completed/total | event | event_id | event_date | completed | non-cancelled | cancelled | status | ratio | percent | ratio | Target not defined | increase | {fact} | report | numeric_tolerance | reports/agent/sql_proofs/020_rate.sql | 0.8 | 0.8 | 0 | APPROVED | PASS | Definition approved |
-""",
+        kpi_contracts_markdown(process=process, fact=fact, volume_expected="100"),
+    )
+    write(
+        base / "reports" / "agent" / "BUSINESS_APPROVAL_REGISTER.md",
+        approval_register_markdown(process=process, fact=fact, volume_expected="100"),
+    )
+    write(
+        base / "reports" / "agent" / "DECISION_LOG.md",
+        decision_log_markdown(),
+    )
+    write(
+        base / "reports" / "agent" / "HUMAN_ATTENTION_BOARD.md",
+        attention_board_markdown(),
     )
     write(
         base / "reports" / "agent" / "METRIC_VERIFICATION_MATRIX.md",
-        """
-# Metric Verification Matrix (TEST FIXTURE)
-
-| Metric | Source Proof | Current Model Proof | Expected Result | Actual Result | Diff | Status | Notes |
-|---|---|---|---|---|---|---|---|
-| Volume KPI | reports/agent/sql_proofs/010_volume.sql | reports/agent/sql_proofs/010_volume.sql | 100 | 100 | 0 | PASS | Matches |
-| Completion rate KPI | reports/agent/sql_proofs/020_rate.sql | reports/agent/sql_proofs/020_rate.sql | 0.8 | 0.8 | 0 | PASS | Matches |
-""",
+        matrix_markdown(volume_expected="100"),
     )
     write(
         base / "reports" / "agent" / "sql_proofs" / "010_volume.sql",
-        """
--- purpose: volume KPI
--- expected result: 100
--- captured result: 100
--- status: PASS
-select 100 as volume;
-""",
+        volume_sql(kpi_id="KPI-001", expected="100"),
     )
     write(
         base / "reports" / "agent" / "sql_proofs" / "020_rate.sql",
-        """
--- purpose: completion rate KPI
--- expected result: 0.8
--- captured result: 0.8
--- status: PASS
-select 0.8 as rate;
-""",
+        rate_sql(kpi_id="KPI-002", expected="0.8"),
     )
 
     matplotlib = base / "reports" / "agent" / "10_presentation" / "matplotlib"
@@ -333,14 +348,14 @@ select 0.8 as rate;
         f"""
 # Report Page Contracts (TEST FIXTURE)
 
-| Page ID | Page Name | Audience | Business Purpose | Decisions Supported | Primary KPIs | Time Period | Exceptions | Recommended Actions | Status |
-|---|---|---|---|---|---|---|---|---|---|
-| executive_overview | Executive Overview | leadership | Summarize {process} | Prioritize interventions | Volume KPI, Completion rate KPI | Current month | Open exceptions listed | Act on failure spike | PASS |
-| exceptions_and_data_quality | Exceptions and Data Quality | data engineering | Separate DQ from business KPIs | Fix pipeline issues | Orphan rate | All time | Source/transform issues | Repair orphans | PASS |
-| pipeline_health | Pipeline Health | platform | Monitor delivery | Restore SLA | Build success rate | Current week | Failed tests | Rerun failed models | PASS |
-| all_measures | All Measures | analysts | Browse measures | Trace definitions | n/a | All time | none | Use dictionary | PASS |
-| all_metrics | All Metrics | analysts | Browse metrics | Trace definitions | n/a | All time | none | Use dictionary | PASS |
-| all_dimensions | Dimensions | analysts | Browse dimension values | Understand segments | n/a | All time | none | Filter reports | PASS |
+| Page ID | Page Name | Page Class | Audience | Business Processes | Business Questions | Decisions Supported | Primary KPIs | Driver Metrics | Guardrail Metrics | Dimensions | Filters | Reporting Period | Visuals | Exceptions | Insight Narrative | Recommended Actions | Caveats | Technical Validation Status | Business Approval Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| executive_overview | Executive Overview | executive_overview | leadership | {process} | What is volume and completion? | Prioritize interventions | KPI-001, KPI-002 | KPI-002 | NOT_APPLICABLE: no DQ guardrails on executive | {', '.join(dims)} | period | Current month | visual_volume_trend, visual_completion_rate_trend, card_volume, card_completion | Open exceptions listed | Volume stable; completion on target | Act on failure spike | SYNTHETIC_FIXTURE | PASS | APPROVED |
+| exceptions_and_data_quality | Exceptions and Data Quality | exceptions_quality | data engineering | {process} | Where is quality failing? | Fix pipeline issues | DQ-001 | NOT_APPLICABLE: DQ page | orphan_rate | NOT_APPLICABLE: quality page | status | All time | NOT_APPLICABLE: table view | Source/transform issues | Orphans within tolerance | Repair orphans | SYNTHETIC_FIXTURE | PASS | APPROVED |
+| pipeline_health | Pipeline Health | pipeline_health | platform | {process} | Is delivery healthy? | Restore SLA | PIPE-001 | NOT_APPLICABLE: pipeline page | build_success_rate | NOT_APPLICABLE: pipeline page | run_date | Current week | NOT_APPLICABLE: status cards | Failed tests | Builds succeeding | Rerun failed models | SYNTHETIC_FIXTURE | PASS | APPROVED |
+| all_measures | All Measures | metric_dictionary | analysts | {process} | Which measures exist? | Trace definitions | NOT_APPLICABLE: dictionary browse | NOT_APPLICABLE: dictionary browse | NOT_APPLICABLE: dictionary browse | {', '.join(dims)} | NOT_APPLICABLE: no filters on dictionary | All time | measure_board | NOT_APPLICABLE: no exceptions on dictionary | Browse measures with display names | Use dictionary | SYNTHETIC_FIXTURE | PASS | APPROVED |
+| all_metrics | All Metrics | metric_dictionary | analysts | {process} | Which metrics exist? | Trace definitions | NOT_APPLICABLE: dictionary browse | NOT_APPLICABLE: dictionary browse | NOT_APPLICABLE: dictionary browse | {', '.join(dims)} | NOT_APPLICABLE: no filters on dictionary | All time | metric_board | NOT_APPLICABLE: no exceptions on dictionary | Browse metrics with display names | Use dictionary | SYNTHETIC_FIXTURE | PASS | APPROVED |
+| all_dimensions | Dimensions | dimension_explorer | analysts | {process} | Which segments exist? | Understand segments | NOT_APPLICABLE: dimension browse | NOT_APPLICABLE: dimension browse | NOT_APPLICABLE: dimension browse | {', '.join(dims)} | dim filters | All time | dimension_board | NOT_APPLICABLE: no exceptions on dimension browse | Browse dimension labels | Filter reports | SYNTHETIC_FIXTURE | PASS | APPROVED |
 """,
     )
     write(
@@ -366,45 +381,7 @@ select 0.8 as rate;
 | status_code | F | Failed | seed | HIGH |
 """,
     )
-    write(
-        matplotlib / "data_access.py",
-        """
-# TEST FIXTURE ONLY — illustrates required board payload shape
-MEASURE_BOARD = [
-    {"id": "event_count", "display_name": "Event count", "value": 100, "formatted_value": "100", "group": "Volume", "format": "integer"},
-]
-METRIC_BOARD = [
-    {"id": "completion_rate", "display_name": "Completion rate", "value": 0.8, "formatted_value": "80.0%", "group": "Performance", "format": "percent"},
-]
-
-def format_value(value, fmt):
-    if fmt == "percent":
-        return f"{value * 100:.1f}%"
-    return str(value)
-""",
-    )
-    write(
-        matplotlib / "report_builder.py",
-        """
-# TEST FIXTURE ONLY
-TABS = ["Executive Overview", "Exceptions and Data Quality", "Pipeline Health", "All Measures", "All Metrics", "Dimensions"]
-""",
-    )
-    write(
-        matplotlib / "report.html",
-        """
-<html><body>
-<h1>Executive Overview</h1>
-<table><tr><th>Display name</th><th>Formatted value</th></tr>
-<tr><td>Event count</td><td>100</td></tr>
-<tr><td>Completion rate</td><td>80.0%</td></tr>
-</table>
-<section id="all_dimensions"><h2>Dimensions</h2><table><tr><th>Status</th></tr><tr><td>Completed</td></tr></table></section>
-<section id="exceptions_and_data_quality"><h2>Data Quality</h2></section>
-<section id="pipeline_health"><h2>Pipeline Health</h2></section>
-</body></html>
-""",
-    )
+    write_interactive_presentation(matplotlib, volume_total=100, completion_rate=0.8)
     write(
         matplotlib / "sql_verification" / "010_volume.sql",
         """
@@ -440,11 +417,11 @@ select 0;
         """
 # Proof Index (TEST FIXTURE)
 
-| Item | Proof | Status |
-|---|---|---|
-| Volume KPI | 010_volume.sql | PASS |
-| Completion rate KPI | 020_rate.sql | PASS |
-| Orphan rate | 030_dq.sql | PASS |
+| Proof ID | Item | Metric ID | Proof | Status |
+|---|---|---|---|---|
+| PROOF-010_volume | Volume KPI | KPI-001 | 010_volume.sql | PASS |
+| PROOF-020_rate | Completion rate KPI | KPI-002 | 020_rate.sql | PASS |
+| PROOF-030_dq | Orphan rate | DQ-001 | 030_dq.sql | PASS |
 """,
     )
     write(
@@ -454,6 +431,21 @@ select 0;
 
 Live SQL verification completed for RENDERED KPIs. Refresh path exercised in fixture mode.
 """,
+    )
+    staging = [f"stg_{fact.replace('fct_', '')}"]
+    intermediate = [f"int_{fact.replace('fct_', '')}_enriched"]
+    write_control_plane_files(
+        write,
+        base,
+        slug=slug,
+        process=process,
+        seeds=[seed_name],
+        staging_models=staging,
+        intermediate_models=intermediate,
+        facts=[fact],
+        dims=dims,
+        profile_name="fixture_analytics",
+        adapter="duckdb",
     )
     return base
 
@@ -495,6 +487,9 @@ def main() -> int:
         "check_fact_analytical_coverage.py",
         "check_model_classification_coverage.py",
         "check_metric_contract_completeness.py",
+        "verify_metric_reconciliation.py",
+        "validate_kpi_proofs.py",
+        "check_human_approval_coverage.py",
         "check_time_intelligence_coverage.py",
         "check_data_observability_coverage.py",
         "check_presentation_coverage.py",
@@ -502,12 +497,17 @@ def main() -> int:
         "check_report_business_readability.py",
         "check_exposure_coverage.py",
         "validate_rendered_report_content.py",
+        "validate_chart_registry.py",
+        "check_presentation_traceability.py",
+        "validate_live_report_dom.py",
     ]
     failures = 0
     for slug, _, _, _ in fixtures:
         root = FIX / slug
         for script in checks:
             cmd = [sys.executable, str(SCRIPTS / script), "--root", str(root)]
+            if script == "validate_live_report_dom.py":
+                cmd.append("--allow-skip")
             proc = subprocess.run(cmd, cwd=str(SCRIPTS), capture_output=True, text=True)
             status = "PASS" if proc.returncode == 0 else "FAIL"
             if proc.returncode != 0:

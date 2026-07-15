@@ -1,0 +1,30 @@
+{
+  "_file_meta": {
+    "purpose": "Locked first-pass table inclusion scope for fixture",
+    "why": "Repeatable fixture discovery",
+    "required_on_every_discovery_run": true
+  },
+  "lock_status": "approved",
+  "fingerprint": {
+    "profile": "fixture_duckdb",
+    "database": "fixture",
+    "source_schema": "main",
+    "business_process": "Asset event monitoring"
+  },
+  "counts": {
+    "total_tables": 3,
+    "included": 3,
+    "deferred": 0,
+    "excluded": 0
+  },
+  "included_tables": [
+    "raw_statuses",
+    "raw_assets",
+    "raw_asset_events"
+  ],
+  "deferred_tables": [],
+  "prior_scope_path": null,
+  "approved_at": "2026-01-01T00:00:00Z",
+  "approved_by": "fixture builder",
+  "notes": "TEST FIXTURE ONLY"
+}

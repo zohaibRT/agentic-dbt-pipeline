@@ -10,53 +10,49 @@ from lib_gate_common import (
     cell,
     load_analytics_policy,
     named_status,
+    normalize_header,
     print_results,
     ratio,
     table_dicts,
 )
 
-
 PUBLISHED_APPROVALS = {"APPROVED", "PROPOSED"}
 
 
 def published_metric_ids(root: Path) -> set[str]:
+    """Return canonical metric_id / kpi_id obligations only (not display names)."""
     ids: set[str] = set()
 
     contracts = root / "reports" / "agent" / "KPI_DEFINITION_CONTRACTS.md"
     for row in table_dicts(contracts, required_any_headers=("kpi_id", "approval")):
         approval = cell(row, "approval", "approval_status").upper()
         if approval in PUBLISHED_APPROVALS:
-            for alias in ("kpi_id", "kpi", "id", "display_name"):
+            for alias in ("kpi_id", "kpi", "id"):
                 value = cell(row, alias)
                 if value:
+                    ids.add(normalize_header(value))
                     ids.add(value.strip())
-                    ids.add(value.strip().lower())
 
     insights = root / "reports" / "agent" / "09_analytics_insights" / "kpis"
     for catalog_name in ("kpi_catalog.md", "business_metric_catalog.md"):
         catalog = insights / catalog_name
-        for row in table_dicts(catalog, required_any_headers=("kpi", "metric", "display_name")):
-            for alias in ("kpi", "kpi_id", "metric", "display_name", "metric_name"):
+        for row in table_dicts(catalog, required_any_headers=("kpi", "metric", "metric_id")):
+            for alias in ("kpi", "kpi_id", "metric", "metric_id"):
                 value = cell(row, alias)
                 if value:
+                    ids.add(normalize_header(value))
                     ids.add(value.strip())
-                    ids.add(value.strip().lower())
 
     return {token for token in ids if token}
 
 
 def coverage_metric_id(row: dict[str, str]) -> str:
-    return cell(
-        row,
-        "metric_id",
-        "metric id",
-        "metric / kpi",
-        "metric_kpi",
-        "metric",
-        "kpi",
-        "kpi_id",
-        "display_name",
-    ).strip()
+    """Primary match key is metric_id; display names are attributes only."""
+    return cell(row, "metric_id", "metric id", "kpi_id", "kpi", "metric").strip()
+
+
+def coverage_display_name(row: dict[str, str]) -> str:
+    return cell(row, "display_name", "display name", "metric_name", "metric name").strip()
 
 
 def main() -> int:
@@ -99,10 +95,15 @@ def main() -> int:
 
     for row in rows:
         metric = coverage_metric_id(row)
+        display = coverage_display_name(row)
         if not metric:
+            if display:
+                warnings.append(
+                    f"time intelligence row '{display}' missing metric_id — display names are not obligations"
+                )
             continue
+        covered_ids.add(normalize_header(metric))
         covered_ids.add(metric)
-        covered_ids.add(metric.lower())
         status = named_status(row)
         if status == "NOT_APPLICABLE":
             continue
@@ -113,7 +114,9 @@ def main() -> int:
             warnings.append(f"time intelligence row for {metric} has unclear status")
 
     missing = sorted(
-        mid for mid in metric_ids if mid not in covered_ids and mid.lower() not in covered_ids
+        mid
+        for mid in metric_ids
+        if normalize_header(mid) not in covered_ids and mid not in covered_ids
     )
     if missing:
         errors.append(

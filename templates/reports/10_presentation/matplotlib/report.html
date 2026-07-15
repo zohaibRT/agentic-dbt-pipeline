@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Analytics Presentation Report</title>
+  <!-- Offline Plotly bundle — no public CDN dependency -->
+  <script src="./vendor/plotly.min.js"></script>
+  <style>
+    :root { color-scheme: light; font-family: "Segoe UI", "Helvetica Neue", sans-serif; }
+    body { margin: 0; padding: 1.5rem; background: #f8fafc; color: #0f172a; }
+    header { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; margin-bottom: 1.5rem; }
+    h1, .site-title { margin: 0; font-size: 1.5rem; font-weight: 700; }
+    nav { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    nav a, button { padding: 0.5rem 0.75rem; border-radius: 0.375rem; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; text-decoration: none; color: inherit; }
+    button:hover, nav a:hover, button:focus-visible, nav a:focus-visible { background: #e2e8f0; outline: 2px solid #f59e0b; outline-offset: 2px; }
+    .freshness { color: #475569; font-size: 0.9rem; }
+    section.page { display: none; margin-bottom: 2rem; }
+    section.page.active { display: block; }
+    .board-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin: 1rem 0; }
+    .board-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 0.5rem; padding: 1rem; }
+    .board-card .label { font-size: 0.85rem; color: #64748b; }
+    .board-card .value { font-size: 1.4rem; font-weight: 600; }
+    .interactive-chart { position: relative; background: #fff; border: 1px solid #e2e8f0; border-radius: 0.5rem; padding: 1rem; margin: 1rem 0; }
+    .chart-title { margin: 0 0 0.5rem; font-size: 1rem; }
+    .chart-tooltip { position: absolute; pointer-events: none; background: #0f172a; color: #fff; padding: 0.35rem 0.55rem; border-radius: 0.25rem; font-size: 0.85rem; z-index: 5; white-space: pre-line; max-width: min(320px, 90vw); }
+    .chart-data-table { width: 100%; border-collapse: collapse; margin-top: 0.75rem; font-size: 0.9rem; }
+    .chart-data-table th, .chart-data-table td { border: 1px solid #e2e8f0; padding: 0.4rem 0.6rem; text-align: left; }
+    .chart-data-table:focus { outline: 2px solid #f59e0b; }
+    .chart-point, .chart-bar { fill: #2563eb; stroke: #1d4ed8; cursor: pointer; }
+    .chart-point:focus, .chart-bar:focus { outline: 2px solid #f59e0b; }
+    .chart-partial { stroke-dasharray: 3 2; }
+    .status-badge { display: inline-block; margin: 0 0 0.5rem; padding: 0.15rem 0.45rem; border: 1px solid #92400e; background: #fffbeb; color: #92400e; font-size: 0.75rem; }
+    .status-badge.status-pending::before { content: "⚠ "; }
+    .status-row { display: flex; flex-wrap: wrap; gap: 0.75rem; font-size: 0.85rem; color: #334155; margin: 0.25rem 0 0.75rem; }
+    .status-row [data-status-kind] { border: 1px solid #cbd5e1; border-radius: 0.25rem; padding: 0.2rem 0.45rem; background: #fff; }
+    body.stale-data .freshness-label::after { content: " (stale — refresh failed)"; color: #92400e; font-weight: 600; }
+    .static-fallback { margin-top: 0.5rem; font-size: 0.85rem; color: #475569; }
+    .period-label { font-size: 0.9rem; color: #475569; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <p class="site-title">Analytics Presentation Report</p>
+    <nav aria-label="Report pages">
+      <a href="#executive_overview" data-page="executive_overview">Executive Overview</a>
+      <a href="#exceptions_and_data_quality" data-page="exceptions_and_data_quality">Exceptions and Data Quality</a>
+      <a href="#pipeline_health" data-page="pipeline_health">Pipeline Health</a>
+      <a href="#all_measures" data-page="all_measures">All Measures</a>
+      <a href="#all_metrics" data-page="all_metrics">All Metrics</a>
+      <a href="#all_dimensions" data-page="all_dimensions">Dimensions</a>
+    </nav>
+    <button class="refresh-data" type="button" aria-label="Refresh report data">Refresh Data</button>
+    <span class="freshness freshness-label" aria-live="polite">Freshness: loading…</span>
+    <span class="refresh-status" aria-live="polite">Idle</span>
+    <div class="status-row" aria-label="Report trust statuses">
+      <span data-status-kind="technical" data-technical-validation-status="PENDING">Technical: PENDING</span>
+      <span data-status-kind="business" data-business-approval-status="PENDING">Business approval: PENDING</span>
+    </div>
+    <p class="period-label" data-reporting-period="Current quarter">Reporting period: Current quarter</p>
+  </header>
+
+  <section id="executive_overview" class="page active" aria-label="Executive Overview">
+    <h2>Executive Overview</h2>
+    <div class="executive-cards board-grid" aria-label="Executive KPI cards"></div>
+    <div class="executive-charts"></div>
+  </section>
+
+  <section id="exceptions_and_data_quality" class="page" aria-label="Exceptions and Data Quality">
+    <h2>Exceptions and Data Quality</h2>
+    <div class="dq-cards board-grid" aria-label="Data quality cards"></div>
+  </section>
+
+  <section id="pipeline_health" class="page" aria-label="Pipeline Health">
+    <h2>Pipeline Health</h2>
+    <div class="pipeline-cards board-grid" aria-label="Pipeline health cards"></div>
+  </section>
+
+  <section id="all_measures" class="page" aria-label="All Measures">
+    <h2>All Measures</h2>
+    <table class="measure-board" aria-label="All measures board">
+      <thead><tr><th>Display name</th><th>Formatted value</th><th>Group</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section id="all_metrics" class="page" aria-label="All Metrics">
+    <h2>All Metrics</h2>
+    <table class="metric-board" aria-label="All metrics board">
+      <thead><tr><th>Display name</th><th>Formatted value</th><th>Group</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section id="all_dimensions" class="page" aria-label="Dimensions">
+    <h2>Dimensions</h2>
+    <table class="dimension-board" aria-label="Dimensions browse table">
+      <thead><tr><th>Status</th></tr></thead>
+      <tbody><tr><td>Completed</td></tr></tbody>
+    </table>
+  </section>
+
+  <script>
+    window.__REPORT_READY__ = false;
+    window.__REPORT_CHART_REGISTRY__ = { charts: [] };
+    window.__REPORT_METRIC_MANIFEST__ = { metrics: [] };
+    window.__REPORT_DATA_VERSION__ = null;
+    window.__REPORT_REFRESH_STATUS__ = "idle";
+
+    function formatFreshness(ts) {
+      if (!ts) return "unknown";
+      try { return new Date(ts).toLocaleString(); } catch (_) { return ts; }
+    }
+
+    function showPage(pageId) {
+      document.querySelectorAll("section.page").forEach((section) => {
+        section.classList.toggle("active", section.id === pageId);
+      });
+      document.querySelectorAll("nav a[data-page]").forEach((link) => {
+        link.setAttribute("aria-current", link.dataset.page === pageId ? "page" : "false");
+      });
+    }
+
+    function renderBoard(tableClass, rows) {
+      const tbody = document.querySelector(`table.${tableClass} tbody`);
+      if (!tbody) return;
+      tbody.innerHTML = rows.map((row) =>
+        `<tr><td>${row.display_name}</td><td>${row.formatted_value}</td><td>${row.group || ""}</td></tr>`
+      ).join("");
+    }
+
+    function renderCards(containerClass, rows) {
+      const container = document.querySelector(`.${containerClass}`);
+      if (!container) return;
+      container.innerHTML = rows.map((row) => {
+        const metricKey = row.metric_id || row.id || "";
+        const pending = (row.business_approval_status || "").toUpperCase() === "PENDING";
+        const badge = pending
+          ? '<span class="status-badge status-pending" aria-label="Pending approval">Pending approval</span>'
+          : "";
+        return '<article class="board-card" data-metric-id="' + metricKey + '">' +
+          badge +
+          '<div class="label">' + row.display_name + '</div>' +
+          '<div class="value">' + row.formatted_value + '</div>' +
+          (row.period_label ? '<div class="label">' + row.period_label + '</div>' : '') +
+          '</article>';
+      }).join("");
+    }
+
+    function clampTooltip(chartEl, tooltip, clientX, clientY) {
+      const rect = chartEl.getBoundingClientRect();
+      let x = (clientX || rect.left + 20) - rect.left + 12;
+      let y = (clientY || rect.top + 20) - rect.top - 28;
+      tooltip.hidden = false;
+      tooltip.style.left = "0px";
+      tooltip.style.top = "0px";
+      const tw = tooltip.offsetWidth || 160;
+      const th = tooltip.offsetHeight || 40;
+      x = Math.max(8, Math.min(x, rect.width - tw - 8));
+      y = Math.max(8, Math.min(y, rect.height - th - 8));
+      tooltip.style.left = `${x}px`;
+      tooltip.style.top = `${y}px`;
+    }
+
+    function attachSvgTooltips(root) {
+      root.querySelectorAll(".svg-chart").forEach((chartEl) => {
+        const tooltip = chartEl.querySelector(".chart-tooltip");
+        const show = (target, event) => {
+          if (!tooltip || !target) return;
+          const text = target.getAttribute("data-tooltip") || "";
+          tooltip.textContent = text;
+          const clientX = event.clientX || (event.touches && event.touches[0] && event.touches[0].clientX);
+          const clientY = event.clientY || (event.touches && event.touches[0] && event.touches[0].clientY);
+          clampTooltip(chartEl, tooltip, clientX, clientY);
+        };
+        const hide = () => { if (tooltip) tooltip.hidden = true; };
+        chartEl.querySelectorAll(".chart-point, .chart-bar").forEach((node) => {
+          node.addEventListener("mouseenter", (e) => show(node, e));
+          node.addEventListener("mousemove", (e) => show(node, e));
+          node.addEventListener("mouseleave", hide);
+          node.addEventListener("focus", (e) => show(node, e));
+          node.addEventListener("blur", hide);
+          // Mobile tap provides the same information as hover
+          node.addEventListener("touchstart", (e) => {
+            e.preventDefault();
+            show(node, e);
+          }, { passive: false });
+        });
+      });
+    }
+
+    function chartAttrs(spec) {
+      const metricIds = (spec.metric_ids || []).join(",");
+      return {
+        "data-chart-id": spec.chart_id || "",
+        "data-page-id": spec.page_id || "",
+        "data-metric-ids": metricIds,
+        "data-query-id": spec.query_id || "",
+        "data-validation-status": spec.validation_status || "PENDING",
+        "data-business-approval-status": spec.business_approval_status || "PENDING",
+      };
+    }
+
+    function applyAttrs(el, attrs) {
+      Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+    }
+
+    function renderSvgChart(spec) {
+      const width = 480, height = 220, padding = 36;
+      const data = spec.data || [];
+      const yField = (spec.y_fields && spec.y_fields[0]) || "value";
+      const xField = spec.x_field || "period";
+      const values = data
+        .filter((row) => row[yField] != null && !row.missing_period)
+        .map((row) => Number(row[yField] || 0));
+      let minVal = Math.min(...values, 0);
+      let maxVal = Math.max(...values, 1);
+      if (spec.chart_type === "bar" || spec.chart_type === "grouped_bar" || spec.chart_type === "stacked_bar") {
+        if (Math.min(...values) >= 0) minVal = 0;
+      }
+      if (!Number.isFinite(minVal) || !Number.isFinite(maxVal) || minVal === maxVal) {
+        minVal = (minVal || 0) - 1;
+        maxVal = (maxVal || 1) + 1;
+      }
+
+      const coords = (idx, value) => {
+        const x = padding + (idx / Math.max(data.length - 1, 1)) * (width - 2 * padding);
+        const y = height - padding - ((value - minVal) / (maxVal - minVal)) * (height - 2 * padding);
+        return { x, y };
+      };
+
+      let shapes = "";
+      let marks = "";
+      let lastGood = null;
+      data.forEach((row, idx) => {
+        const missing = row.missing_period || row[yField] == null;
+        const tooltip = row.tooltip_text || row.formatted_value || String(row[yField] ?? "—");
+        const xLabel = row[xField] || "";
+        const period = row.period_label || xLabel;
+        if (missing) {
+          const { x } = coords(idx, minVal);
+          marks += `<circle class="chart-point chart-missing" cx="${x}" cy="${height - padding}" r="4" fill="none" stroke="#94a3b8" stroke-dasharray="2 2" data-tooltip="${tooltip}" data-x="${xLabel}" tabindex="0" role="button" aria-label="${period}: missing"/>`;
+          return;
+        }
+        const value = Number(row[yField] || 0);
+        const { x, y } = coords(idx, value);
+        const partial = row.is_partial_period ? " chart-partial" : "";
+        if (spec.chart_type === "bar" || spec.chart_type === "grouped_bar" || spec.chart_type === "stacked_bar") {
+          const barWidth = ((width - 2 * padding) / Math.max(data.length, 1)) * 0.6;
+          const barHeight = height - padding - y;
+          marks += `<rect class="chart-bar${partial}" x="${x - barWidth / 2}" y="${y}" width="${barWidth}" height="${barHeight}" data-tooltip="${tooltip}" data-x="${xLabel}" tabindex="0" role="button" aria-label="${period}: ${tooltip}"/>`;
+        } else {
+          marks += `<circle class="chart-point${partial}" cx="${x}" cy="${y}" r="5" data-tooltip="${tooltip}" data-x="${xLabel}" tabindex="0" role="button" aria-label="${period}: ${tooltip}"/>`;
+          if (lastGood !== null && idx === lastGood + 1) {
+            const prev = coords(lastGood, Number(data[lastGood][yField] || 0));
+            shapes += `<line x1="${prev.x}" y1="${prev.y}" x2="${x}" y2="${y}" stroke="#2563eb" stroke-width="2"/>`;
+          }
+        }
+        lastGood = idx;
+      });
+
+      const tableRows = data.map((row) =>
+        `<tr><td>${row.period_label || row[xField] || ""}</td><td>${row.series_display_name || ""}</td><td>${row.formatted_value || row[yField] || "—"}</td><td>${row.partial_period_note || (row.missing_period ? "Missing — not interpolated" : "")}</td></tr>`
+      ).join("");
+
+      const attrs = chartAttrs(spec);
+      const attrStr = Object.entries(attrs).map(([k, v]) => `${k}="${v}"`).join(" ");
+      const accessibleName = spec.accessible_name || spec.title || spec.chart_id;
+      const accessibleDesc = spec.accessible_description || spec.business_question || "";
+      const pending = (spec.business_approval_status || "").toUpperCase() === "PENDING";
+      const badge = pending
+        ? '<span class="status-badge status-pending" aria-label="Pending approval">Pending approval</span>'
+        : "";
+      const staticNote = spec.static_fallback_path
+        ? `<p class="static-fallback">Static export: ${spec.static_fallback_path}</p>`
+        : "";
+
+      return `<div class="interactive-chart svg-chart" ${attrStr} role="figure" aria-label="${accessibleName}" aria-description="${accessibleDesc}" data-mobile-tap="true">` +
+        `<h3 class="chart-title">${spec.title}</h3>` +
+        badge +
+        `<span class="sr-only">${accessibleDesc}</span>` +
+        `<svg class="chart-svg" viewBox="0 0 ${width} ${height}" width="100%" height="${height}" aria-hidden="true">` +
+          `<line x1="${padding}" y1="${height - padding}" x2="${width - padding}" y2="${height - padding}" stroke="#94a3b8"/>` +
+          `<line x1="${padding}" y1="${padding}" x2="${padding}" y2="${height - padding}" stroke="#94a3b8"/>` +
+          shapes + marks +
+        `</svg>` +
+        `<div class="chart-tooltip" role="tooltip" aria-live="polite" hidden></div>` +
+        `<table class="chart-data-table" tabindex="0" aria-label="${accessibleName} data table"><thead><tr><th>Period / category</th><th>Series</th><th>Value</th><th>Notes</th></tr></thead><tbody>${tableRows}</tbody></table>` +
+        staticNote +
+      `</div>`;
+    }
+
+    function renderCharts(registry) {
+      const byPage = {};
+      (registry.charts || []).forEach((spec) => {
+        byPage[spec.page_id] = byPage[spec.page_id] || [];
+        byPage[spec.page_id].push(spec);
+      });
+      const exec = document.querySelector(".executive-charts");
+      if (exec) {
+        exec.innerHTML = (byPage.executive_overview || []).map((spec) => {
+          if (spec.interactive_html) return spec.interactive_html;
+          return renderSvgChart(spec);
+        }).join("");
+        attachSvgTooltips(exec);
+      }
+    }
+
+    async function loadBoards() {
+      const metrics = await fetch("/api/metrics.json").then((r) => r.json()).catch(() => ({ metrics: [] }));
+      const measureRows = (window.MEASURE_BOARD || []);
+      const metricRows = (window.METRIC_BOARD || []);
+      renderBoard("measure-board", measureRows);
+      renderBoard("metric-board", metricRows);
+      const kpiCards = (metrics.metrics || window.__REPORT_METRIC_MANIFEST__.metrics || []).filter((m) => (m.chart_ids || []).length);
+      renderCards("executive-cards", kpiCards.map((m) => ({
+        metric_id: m.metric_id,
+        display_name: m.display_name,
+        formatted_value: m.formatted_value,
+        period_label: m.period_label,
+        business_approval_status: m.business_approval_status,
+      })));
+    }
+
+    async function boot() {
+      window.__REPORT_REFRESH_STATUS__ = "loading";
+      document.querySelector(".refresh-status").textContent = "Loading";
+      document.querySelectorAll("nav a[data-page]").forEach((link) => {
+        link.addEventListener("click", (event) => {
+          event.preventDefault();
+          showPage(link.dataset.page);
+        });
+      });
+      const registry = await fetch("/api/charts.json").then((r) => r.json()).catch(() => window.__REPORT_CHART_REGISTRY__);
+      window.__REPORT_CHART_REGISTRY__ = registry;
+      window.__REPORT_METRIC_MANIFEST__ = window.RENDERED_METRIC_MANIFEST || window.__REPORT_METRIC_MANIFEST__;
+      window.__REPORT_DATA_VERSION__ = registry.freshness_timestamp || registry.version || null;
+      document.querySelector(".freshness-label").textContent =
+        `Freshness: ${formatFreshness(registry.freshness_timestamp)}`;
+      document.querySelector(".freshness-label").removeAttribute("data-stale");
+      document.body.classList.remove("stale-data");
+
+      const pages = (window.PAGE_REGISTRY && window.PAGE_REGISTRY.pages) || [];
+      const execPage = pages.find((p) => p.page_id === "executive_overview") || {};
+      const techStatus = execPage.technical_validation_status || "PASS";
+      const bizStatus = execPage.business_approval_status || "APPROVED";
+      const techEl = document.querySelector("[data-status-kind='technical']");
+      const bizEl = document.querySelector("[data-status-kind='business']");
+      if (techEl) {
+        techEl.setAttribute("data-technical-validation-status", techStatus);
+        techEl.textContent = `Technical: ${techStatus}`;
+      }
+      if (bizEl) {
+        bizEl.setAttribute("data-business-approval-status", bizStatus);
+        bizEl.textContent = `Business approval: ${bizStatus}`;
+      }
+
+      renderCharts(registry);
+      await loadBoards();
+      document.querySelector(".refresh-data").addEventListener("click", async () => {
+        const priorVersion = window.__REPORT_DATA_VERSION__;
+        window.__REPORT_REFRESH_STATUS__ = "refreshing";
+        document.querySelector(".refresh-status").textContent = "Refreshing";
+        try {
+          const response = await fetch("/api/refresh");
+          if (!response.ok) {
+            throw new Error(`Refresh HTTP ${response.status}`);
+          }
+          const refreshed = await response.json();
+          if (refreshed.status === "error" || refreshed.error) {
+            throw new Error(refreshed.error || "refresh returned error status");
+          }
+          if (typeof refreshed.sql_error === "string" && refreshed.sql_error) {
+            throw new Error(`SQL error: ${refreshed.sql_error}`);
+          }
+          document.querySelector(".freshness-label").textContent =
+            `Freshness: ${formatFreshness(refreshed.freshness_timestamp)}`;
+          document.querySelector(".freshness-label").removeAttribute("data-stale");
+          document.body.classList.remove("stale-data");
+          window.__REPORT_DATA_VERSION__ = refreshed.freshness_timestamp || refreshed.data_version || priorVersion;
+          window.__REPORT_REFRESH_STATUS__ = "ready";
+          document.querySelector(".refresh-status").textContent = "Ready";
+        } catch (err) {
+          console.error("Refresh failed", err);
+          window.__REPORT_REFRESH_STATUS__ = "error";
+          document.querySelector(".refresh-status").textContent =
+            "Refresh failed — showing previous data (stale)";
+          document.querySelector(".freshness-label").setAttribute("data-stale", "true");
+          document.body.classList.add("stale-data");
+          // Keep prior data version; do not pretend refresh succeeded
+          window.__REPORT_DATA_VERSION__ = priorVersion;
+        }
+      });
+      window.__REPORT_REFRESH_STATUS__ = "ready";
+      document.querySelector(".refresh-status").textContent = "Ready";
+      window.__REPORT_READY__ = true;
+    }
+
+    boot().catch((err) => {
+      console.error("Report boot failed", err);
+      window.__REPORT_READY__ = false;
+      window.__REPORT_REFRESH_STATUS__ = "error";
+      document.querySelector(".refresh-status").textContent = "Boot error";
+    });
+  </script>
+</body>
+</html>

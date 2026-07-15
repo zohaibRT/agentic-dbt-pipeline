@@ -244,8 +244,15 @@ def main() -> int:
         errors.append("Pipeline Health page required when gold facts or pipeline-health metric catalog exist")
 
     gold_sql = list((root / "models" / "gold").rglob("dim_*.sql")) if (root / "models" / "gold").exists() else []
-    if gold_sql and not has_dim_tab:
-        errors.append("gold dimensions exist but no Dimensions browse tab found")
+    # Prefer classification/manifest unique_id dimension discovery over filename helpers alone
+    from lib_gate_common import list_gold_dimension_names
+
+    classified_dims = list_gold_dimension_names(root)
+    if (classified_dims or gold_sql) and not has_dim_tab:
+        errors.append(
+            "classified/gold dimensions exist but no Dimensions browse tab found "
+            "(detection prefers classification unique_id over dim_* filename helpers)"
+        )
 
     if advisory_measures and measure_count < int(advisory_measures) and gold_facts >= 3:
         warnings.append(

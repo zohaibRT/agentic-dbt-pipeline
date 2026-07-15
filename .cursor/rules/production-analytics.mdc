@@ -1,0 +1,19 @@
+---
+description: Production analytics implementation rules
+alwaysApply: true
+---
+
+# Mandatory implementation behavior
+
+- Do not use arbitrary measure, metric, KPI, chart, proof, or model-count gates.
+- Do not hardcode industry-specific entities, tables, fields, formulas, pages, or models.
+- Use dbt manifest unique_id as the canonical resource identifier when available.
+- Do not infer PASS from arbitrary text. Read explicit status fields.
+- Do not trust recorded PASS when evidence can be calculated independently.
+- SQL execution and business approval are separate statuses.
+- Every approved rendered KPI must map to a contract, catalog entry, query, proof, page, and visible report element.
+- Missing evidence must be BLOCKED or DEFERRED, never fabricated.
+- Do not weaken validators or tests to obtain a pass.
+- Do not mark a task complete until the specified commands return exit code 0.
+- When blocked, report the exact blocker, file, command, and required action.
+- Examples are illustrative only and must never become executable requirements.

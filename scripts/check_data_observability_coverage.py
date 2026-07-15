@@ -19,6 +19,24 @@ from lib_gate_common import (
     table_dicts,
 )
 
+EXPANDED_OBSERVABILITY_COLUMNS = (
+    "domain",
+    "scope",
+    "models",
+    "metric_ids",
+    "business_or_engineering_question",
+    "validation_method",
+    "proof_or_telemetry",
+    "threshold_or_sla",
+    "expected_result",
+    "actual_result",
+    "owner",
+    "incident_or_action",
+    "status",
+    "notes",
+    "reassessment_condition",
+)
+
 
 def observability_row_status(row: dict[str, str]) -> str:
     status = named_status(row)
@@ -34,6 +52,28 @@ def analytics_in_scope(root: Path) -> bool:
     insights = root / "reports" / "agent" / "09_analytics_insights"
     presentation = root / "reports" / "agent" / "10_presentation" / "matplotlib"
     return insights.exists() or presentation.exists() or count_gold_facts(root) > 0
+
+
+def validate_observability_row(
+    domain: str, row: dict[str, str], errors: list[str], warnings: list[str]
+) -> str:
+    status = observability_row_status(row)
+    notes = cell(row, "notes", "reason", "comment", "comments", "evidence")
+    owner = cell(row, "owner")
+    reassessment = cell(row, "reassessment_condition", "reassessment condition")
+
+    if status == "NOT_APPLICABLE":
+        if not notes:
+            errors.append(f"{domain}: NOT_APPLICABLE requires Notes/reason")
+        if not owner:
+            errors.append(f"{domain}: NOT_APPLICABLE requires owner")
+        if not reassessment:
+            warnings.append(f"{domain}: NOT_APPLICABLE should document reassessment_condition when possible")
+    elif status == "UNKNOWN":
+        errors.append(f"{domain}: explicit Status required (PASS/SUPPORTED/NOT_APPLICABLE/BLOCKED)")
+    elif status not in {"PASS", "WARN"}:
+        errors.append(f"{domain}: status {status} is not acceptable for observability coverage")
+    return status
 
 
 def main() -> int:
@@ -67,6 +107,20 @@ def main() -> int:
     if not rows:
         rows = table_dicts(coverage_path)
 
+    header_keys = set()
+    for row in rows:
+        header_keys.update(row.keys())
+    missing_cols = [
+        col
+        for col in EXPANDED_OBSERVABILITY_COLUMNS
+        if col not in header_keys and col not in {"scope", "models", "metric_ids", "reassessment_condition"}
+    ]
+    if missing_cols and "evidence" in header_keys:
+        warnings.append(
+            "data_observability_coverage.md uses legacy columns — migrate to expanded schema: "
+            + ", ".join(missing_cols[:6])
+        )
+
     domain_rows: dict[str, dict[str, str]] = {}
     for row in rows:
         domain = normalize_header(cell(row, "domain", "observability_domain", "area"))
@@ -81,19 +135,11 @@ def main() -> int:
         if row is None:
             errors.append(f"data_observability_coverage.md missing domain row: {domain}")
             continue
-        status = observability_row_status(row)
-        notes = cell(row, "notes", "reason", "comment", "comments", "evidence")
-        if status == "NOT_APPLICABLE":
-            if not notes:
-                errors.append(f"{domain}: NOT_APPLICABLE requires Notes/reason")
-            else:
-                covered += 1
-        elif status == "PASS":
+        status = validate_observability_row(domain, row, errors, warnings)
+        if status in {"PASS", "NOT_APPLICABLE"} and not any(
+            err.startswith(f"{domain}:") for err in errors
+        ):
             covered += 1
-        elif status == "UNKNOWN":
-            errors.append(f"{domain}: explicit Status required (PASS/SUPPORTED/NOT_APPLICABLE)")
-        else:
-            errors.append(f"{domain}: status {status} is not acceptable for observability coverage")
 
     cov = ratio(covered, applicable)
     if cov is not None:
@@ -106,12 +152,12 @@ def main() -> int:
     pipeline_row = domain_rows.get(normalize_header("pipeline reliability"))
     pipeline_na = pipeline_row is not None and observability_row_status(pipeline_row) == "NOT_APPLICABLE"
 
-    if insights.exists() and not pipeline_na:
+    if insights.exists():
         if not dq.exists() or len(read_text(dq).strip()) < 40:
             errors.append(
                 "missing or empty data_quality_metric_catalog.md while analytics is in scope"
             )
-        if not pipeline.exists() or len(read_text(pipeline).strip()) < 40:
+        if not pipeline_na and (not pipeline.exists() or len(read_text(pipeline).strip()) < 40):
             errors.append(
                 "missing or empty pipeline_health_metric_catalog.md "
                 "(unless pipeline reliability is NOT_APPLICABLE in coverage)"

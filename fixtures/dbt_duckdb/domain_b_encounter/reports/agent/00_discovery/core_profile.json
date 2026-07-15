@@ -1,0 +1,30 @@
+{
+  "_file_meta": {
+    "purpose": "Machine-readable snapshot of fixture dbt connection",
+    "why": "Gate regression without chat history",
+    "required_on_every_discovery_run": true
+  },
+  "run": {
+    "generated_at": "2026-01-01T00:00:00Z",
+    "discovery_status": "PASS",
+    "last_updated_by_phase": "discovery"
+  },
+  "profile": {
+    "dbt_profile_name": "fixture_duckdb",
+    "adapter": "duckdb",
+    "database_or_catalog": "fixture",
+    "target_schema": "main",
+    "threads": 1
+  },
+  "source": {
+    "domain": "domain_b_encounter",
+    "business_description": "Encounter lifecycle",
+    "source_schema": "main",
+    "source_name": "raw"
+  },
+  "workspace": {
+    "project_root": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_b_encounter",
+    "dbt_project_name": "domain_b_encounter",
+    "env_file_present": false
+  }
+}

@@ -3,9 +3,11 @@ exposures:
   - name: browser_report
     type: dashboard
     maturity: high
-    description: TEST FIXTURE browser report for Encounter lifecycle
+    label: Browser Report
+    description: "TEST FIXTURE browser report for Encounter lifecycle | purpose: Encounter lifecycle overview for analysts | criticality: high | refresh: daily | audience: analysts | approval: APPROVED | evidence: SYNTHETIC_FIXTURE_APPROVAL:exposure_coverage#browser_report"
     depends_on:
       - ref('fct_encounters')
       - ref('activity_events')
     owner:
-      name: analytics
+      name: fixture-owner
+      email: fixture-owner@example.test

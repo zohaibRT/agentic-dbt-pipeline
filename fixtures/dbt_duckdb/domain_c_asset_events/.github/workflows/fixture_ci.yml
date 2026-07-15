@@ -1,0 +1,14 @@
+# TEST FIXTURE ONLY — documents CI/orchestration evidence for acceptance gate
+name: Fixture CI
+
+on:
+  workflow_dispatch:
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Fixture validated by analytics_gates workflow"
+      - run: python scripts/run_acceptance_gate.py --phase final --strict
+      - run: python scripts/build_dbt_duckdb_fixtures.py
+      - run: python -m unittest discover -s tests -p "test_*.py"

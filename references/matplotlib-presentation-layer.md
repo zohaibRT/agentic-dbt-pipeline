@@ -25,11 +25,22 @@ Matplotlib delivery is not complete with PNG files alone, and PNGs embedded in H
 Default behavior:
 
 - `serve_report.py` starts a local web server and queries or reloads validated data on page load, browser refresh, or an approved auto-refresh interval.
-- Charts are rendered as inline SVG/HTML fragments from Python/Matplotlib, or as browser-native charts from refreshed JSON data when another approved charting library is used.
-- PNG files are optional exports for download, documentation, or offline snapshots only. Do not use PNG as the only chart rendering path.
+- Charts are rendered through a domain-neutral `chart_renderer.py` abstraction:
+  - `interactive_html` / `auto` (browser default): Plotly (preferred) or offline SVG charts with exact hover/tap tooltips; JavaScript is bundled under `vendor/plotly.min.js` (no public CDN required)
+  - `static_image`: Matplotlib PNG/PDF exports for print, email, and offline snapshots
+- Required presentation artifacts:
+  - `chart_registry.json` — stable `chart_id` / ChartSpec fields, metric bindings, data payloads, formatted tooltip values
+  - `rendered_metric_manifest.json` — KPI/metric ID → page → chart/card → proof mapping
+  - `chart_interactivity_contracts.md` — hover/tap expectations per chart
+- `report.html` must set Batch 6 hooks after boot: `window.__REPORT_READY__`, `window.__REPORT_CHART_REGISTRY__`, `window.__REPORT_METRIC_MANIFEST__`, `window.__REPORT_DATA_VERSION__`, `window.__REPORT_REFRESH_STATUS__`. Chart containers must expose `data-chart-id`, `data-page-id`, `data-metric-ids`, `data-query-id`, `data-validation-status`, and `data-business-approval-status`.
+- Live hover/tap browser verification is performed by `scripts/validate_live_report_dom.py` (Playwright) across desktop, tablet, and mobile viewports. It writes `LIVE_REPORT_DOM_REPORT.json` / `.md`, and captures screenshots/traces under `live_browser_artifacts/` on failure.
+- Acceptance gate runs live browser validation in presentation and final phases when `report.html` exists. CI installs Chromium via `playwright install --with-deps` and uploads artifacts on failure.
+- Automated accessibility checks in the live validator are practical hooks only — not a full legal accessibility certification.
+- Browser PASS does not grant business approval; technical verification and business approval statuses remain separate.
+- PNG/PDF files are optional exports for download, documentation, or offline snapshots. Do not use PNG as the only chart rendering path.
 - `report.html` is the web shell and can be served by `serve_report.py`; a fully static `report.html` is acceptable only as an explicit export/snapshot mode.
 
-Why this matters: Matplotlib does not execute inside the browser. To reflect changed values automatically, the browser must either call a Python-backed endpoint that re-runs the queries and renders fresh SVG/HTML, or use a browser chart library that redraws from refreshed JSON data.
+Why this matters: Matplotlib does not execute inside the browser. To reflect changed values automatically, the browser must either call a Python-backed endpoint that re-runs the queries and renders fresh SVG/HTML, or use the offline interactive renderer that redraws from refreshed JSON data.
 
 ### Primary review experience
 

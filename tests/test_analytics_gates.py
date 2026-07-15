@@ -17,11 +17,40 @@ DBT_FIX = ROOT / "fixtures" / "dbt_duckdb"
 sys.path.insert(0, str(SCRIPTS))
 from lib_gate_common import named_status, ratio, list_gold_fact_names  # noqa: E402
 from verify_metric_reconciliation import detect_contract_schema  # noqa: E402
+from tests.test_manifest_resource_identity import (  # noqa: E402,F401
+    CanonicalIdentityTests,
+    ClassificationPolicyTests,
+    CoverageRegressionTests,
+    ExposureTests,
+    FactDiscoveryTests,
+    ManifestInventoryTests,
+)
+from tests.test_presentation_traceability import PresentationTraceabilityTests  # noqa: E402,F401
 
 
 def run_script(script: str, *args: str, cwd: Path | None = None) -> subprocess.CompletedProcess[str]:
     cmd = [sys.executable, str(SCRIPTS / script), *args]
     return subprocess.run(cmd, cwd=str(cwd or SCRIPTS), capture_output=True, text=True)
+
+
+class HumanApprovalGateTests(unittest.TestCase):
+    def test_human_approval_script_passes_analytics_fixtures(self) -> None:
+        for slug in ("domain_a_transactional", "domain_d_case_activity"):
+            proc = run_script(
+                "check_human_approval_coverage.py",
+                "--root",
+                str(FIX / slug),
+                "--phase",
+                "analytics",
+            )
+            self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+
+    def test_fingerprint_ignores_display_name(self) -> None:
+        from lib_gate_common import compute_contract_fingerprint
+
+        a = compute_contract_fingerprint({"formula": "count(*)", "business_definition": "volume", "display_name": "A"})
+        b = compute_contract_fingerprint({"formula": "count(*)", "business_definition": "volume", "display_name": "B"})
+        self.assertEqual(a, b)
 
 
 class DomainNeutralityTests(unittest.TestCase):
@@ -66,6 +95,8 @@ class ReconciliationHeaderTests(unittest.TestCase):
             "Business Question",
             "Counting Key",
             "Decision Supported",
+            "Business Definition",
+            "Validation Type",
             "SQL Proof",
             "Expected",
             "Actual",
@@ -178,6 +209,8 @@ class MultiDomainFixtureTests(unittest.TestCase):
             "check_report_business_readability.py",
             "check_exposure_coverage.py",
             "verify_metric_reconciliation.py",
+            "validate_chart_registry.py",
+            "check_presentation_traceability.py",
         ]
         for slug in (
             "domain_a_transactional",

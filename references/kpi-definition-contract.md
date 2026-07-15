@@ -31,40 +31,45 @@ reports/agent/09_analytics_insights/kpis/pipeline_health_metric_catalog.md
 
 ## Required contract fields
 
-Every published KPI (and preferably every published business metric) should document:
+Every published KPI (APPROVED / PROPOSED) must document the canonical fields in
+`templates/reports/root/KPI_DEFINITION_CONTRACTS.md`, including:
 
 ```yaml
-metric_name:
+kpi_id:
+contract_version:
+contract_fingerprint:
 display_name:
-metric_class: measure | metric | kpi | quality | pipeline_health
+metric_class:
 
 business_process:
 business_question:
 decision_supported:
 action_when_bad:
-owner:
+business_owner:
+approver:
 
-business_definition:
+business_definition:   # plain language — not an alias of formula
 formula:
 numerator:
 denominator:
+included_records:
+excluded_records:
+status_logic:
 
 grain:
 counting_key:
 source_models:
 source_columns:
-
-included_records:
-excluded_records:
-status_logic:
 date_field:
 date_role:
-
+timezone:
 dimensions:
+
 unit:
 currency:
 format:
-aggregation_behavior: additive | semi_additive | non_additive
+precision:
+aggregation_behavior:
 null_behavior:
 zero_denominator_behavior:
 
@@ -75,14 +80,30 @@ target:
 target_source:
 warning_threshold:
 critical_threshold:
-desired_direction: increase | decrease | range
+desired_direction:
 
 validation_source:
+validation_type:
 reconciliation_tolerance:
 sql_proof:
-approval_status:
+expected_result:
+actual_result:
+calculated_difference:
+calculated_status:
+technical_verification_status:  # never confuse with business approval
+
+business_approval_status:
+approval_evidence:
+approval_date:
+approval_conditions:
+approval_expiry_or_review_condition:
 confidence:
+caveats:
 ```
+
+Conditionally inapplicable fields require `NOT_APPLICABLE: <specific reason>`.
+
+Technical PASS never implies business APPROVED. See `docs/kpi-contract-human-approval-migration.md`.
 
 Most important fields:
 
@@ -92,8 +113,9 @@ Most important fields:
 - `aggregation_behavior`
 - `desired_direction`
 - `target_source`
+- `business_approval_status` + `approval_evidence`
 
-Without these, the system can calculate a number but cannot justify showing it.
+Without these, the system can calculate a number but cannot justify showing it as a trusted business KPI.
 
 ## Validation Type values
 
@@ -113,10 +135,17 @@ When documenting proof or reconciliation expectations, use explicit validation t
 ```markdown
 # Key Performance Indicator Definition Contracts
 
-| KPI ID | Display Name | Metric Class | Business Process | Business Question | Decision Supported | Action When Bad | Owner | Formula | Grain | Counting Key | Date Field | Date Role | Included Rows | Excluded Rows | Dimensions | Unit/Currency | Format | Aggregation | Target | Desired Direction | Source Models | Built In | SQL Proof | Expected | Actual | Diff / Tolerance | Approval | Verification | Why Correct / Open Question |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| KPI-001 | <display> | kpi | <process> | <question> | <decision> | <action> | <owner> | <formula> | <grain> | <key> | <date> | <role> | <include> | <exclude> | <dims> | <unit> | <format> | additive/semi/non | <target or not defined> | increase/decrease/range | <models> | <path> | <proof> | <value> | <value> | <diff> | APPROVED/PROPOSED/DEFERRED/BLOCKED | PASS/WARN/FAIL/BLOCKED | <reason> |
+| KPI ID | Display Name | Metric Class | Business Process | Business Question | Decision Supported | Action When Bad | Owner | Business Definition | Formula | Grain | Counting Key | Date Field | Date Role | Included Rows | Excluded Rows | Dimensions | Numerator | Denominator | Unit/Currency | Currency | Format | Aggregation | Target | Desired Direction | Source Models | Built In | Validation Type | Precision | Null Behavior | Zero Denominator Behavior | Confidence | SQL Proof | Expected | Actual | Diff / Tolerance | Approval | Verification | Missing Evidence | Next Action | Why Correct / Open Question |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| KPI-001 | <display> | kpi | <process> | <question> | <decision> | <action> | <owner> | <plain-language definition> | <formula> | <grain> | <key> | <date> | <role> | <include> | <exclude> | <dims> | <num> | <den> | <unit> | <code> | <format> | additive/semi/non/ratio | <target or not defined> | increase/decrease/range | <models> | <path> | numeric_tolerance | <precision> | <null rule> | <zero-den rule> | HIGH | <proof> | <value> | <value> | <diff> | APPROVED/PROPOSED/DEFERRED/BLOCKED | PASS/WARN/FAIL/BLOCKED | <missing> | <next> | <reason> |
 ```
+
+**Business Definition** and **Formula** are separate required columns. Business Definition is plain-language meaning; Formula is the executable calculation.
+
+Ratio metrics (`metric_class=ratio`, `validation_type=ratio_*`, or `format=percent`) require **Numerator** and **Denominator**.
+Currency format requires **Currency**.
+
+BLOCKED/DEFERRED rows require **Reason**, **Missing Evidence**, **Owner**, and **Next Action** (hard errors).
 
 ## Required approval questions
 

@@ -1,0 +1,320 @@
+{
+  "status": "PASS",
+  "validated_at": "2026-07-15T23:06:17.123231+00:00",
+  "url": "http://127.0.0.1:55211/",
+  "viewports": [
+    "desktop",
+    "tablet",
+    "mobile"
+  ],
+  "errors": [],
+  "warnings": [],
+  "details": {
+    "viewports": {
+      "desktop": {
+        "viewport": "desktop",
+        "charts": [
+          {
+            "chart_id": "volume_trend",
+            "viewport": "desktop",
+            "accessible_name": "Volume KPI Trend",
+            "data_table": true,
+            "tooltip_text": "Volume KPI \u2014 Actual\nJanuary 2026\n0 events\nStatus: On track\nFresh as of: 2026-07-15T22:54:44+00:00",
+            "expected": {
+              "metric_display_name": "Volume KPI",
+              "formatted_value": "0 events",
+              "period_label": "January 2026",
+              "series_display_name": "Actual",
+              "unit": "events",
+              "currency": null,
+              "partial_period_note": null,
+              "tooltip_text": "Volume KPI \u2014 Actual\nJanuary 2026\n0 events\nStatus: On track\nFresh as of: 2026-07-15T22:54:44+00:00"
+            }
+          },
+          {
+            "chart_id": "completion_rate_trend",
+            "viewport": "desktop",
+            "accessible_name": "Completion Rate KPI",
+            "data_table": true,
+            "tooltip_text": "Completion rate KPI \u2014 Actual\nJanuary 2026\n35.00%\nFresh as of: 2026-07-15T22:54:44+00:00",
+            "expected": {
+              "metric_display_name": "Completion rate KPI",
+              "formatted_value": "35.00%",
+              "period_label": "January 2026",
+              "series_display_name": "Actual",
+              "unit": null,
+              "currency": null,
+              "partial_period_note": null,
+              "tooltip_text": "Completion rate KPI \u2014 Actual\nJanuary 2026\n35.00%\nFresh as of: 2026-07-15T22:54:44+00:00"
+            }
+          }
+        ],
+        "pages": [
+          {
+            "page_id": "executive_overview",
+            "exists": true,
+            "title": "Executive Overview"
+          },
+          {
+            "page_id": "exceptions_and_data_quality",
+            "exists": true,
+            "title": "Exceptions and Data Quality"
+          },
+          {
+            "page_id": "pipeline_health",
+            "exists": true,
+            "title": "Pipeline Health"
+          },
+          {
+            "page_id": "all_measures",
+            "exists": true,
+            "title": "All Measures"
+          },
+          {
+            "page_id": "all_metrics",
+            "exists": true,
+            "title": "All Metrics"
+          },
+          {
+            "page_id": "all_dimensions",
+            "exists": true,
+            "title": "Dimensions"
+          }
+        ],
+        "console_errors": [],
+        "page_errors": [],
+        "failed_requests": [],
+        "refresh": {
+          "prior_version": "2026-07-15T23:05:55.065332+00:00",
+          "status": "ready",
+          "status_text": "Ready",
+          "new_version": "2026-07-15T23:06:00.837760+00:00",
+          "forced_failure": {
+            "status": "error",
+            "stale_labelled": true,
+            "version_unchanged": true,
+            "status_text": "Refresh failed \u2014 showing previous data (stale)"
+          }
+        },
+        "accessibility": {
+          "has_nav_landmark": true,
+          "has_main_or_pages": true,
+          "heading_count": 7,
+          "focusable_charts": 8,
+          "status_text_beyond_color": true,
+          "disclaimer": "Automated checks only \u2014 not a full legal accessibility certification"
+        },
+        "artifacts": {}
+      },
+      "tablet": {
+        "viewport": "tablet",
+        "charts": [
+          {
+            "chart_id": "volume_trend",
+            "viewport": "tablet",
+            "accessible_name": "Volume KPI Trend",
+            "data_table": true,
+            "tooltip_text": "Volume KPI \u2014 Actual\nJanuary 2026\n0 events\nStatus: On track\nFresh as of: 2026-07-15T22:54:44+00:00",
+            "expected": {
+              "metric_display_name": "Volume KPI",
+              "formatted_value": "0 events",
+              "period_label": "January 2026",
+              "series_display_name": "Actual",
+              "unit": "events",
+              "currency": null,
+              "partial_period_note": null,
+              "tooltip_text": "Volume KPI \u2014 Actual\nJanuary 2026\n0 events\nStatus: On track\nFresh as of: 2026-07-15T22:54:44+00:00"
+            }
+          },
+          {
+            "chart_id": "completion_rate_trend",
+            "viewport": "tablet",
+            "accessible_name": "Completion Rate KPI",
+            "data_table": true,
+            "tooltip_text": "Completion rate KPI \u2014 Actual\nJanuary 2026\n35.00%\nFresh as of: 2026-07-15T22:54:44+00:00",
+            "expected": {
+              "metric_display_name": "Completion rate KPI",
+              "formatted_value": "35.00%",
+              "period_label": "January 2026",
+              "series_display_name": "Actual",
+              "unit": null,
+              "currency": null,
+              "partial_period_note": null,
+              "tooltip_text": "Completion rate KPI \u2014 Actual\nJanuary 2026\n35.00%\nFresh as of: 2026-07-15T22:54:44+00:00"
+            }
+          }
+        ],
+        "pages": [
+          {
+            "page_id": "executive_overview",
+            "exists": true,
+            "title": "Executive Overview"
+          },
+          {
+            "page_id": "exceptions_and_data_quality",
+            "exists": true,
+            "title": "Exceptions and Data Quality"
+          },
+          {
+            "page_id": "pipeline_health",
+            "exists": true,
+            "title": "Pipeline Health"
+          },
+          {
+            "page_id": "all_measures",
+            "exists": true,
+            "title": "All Measures"
+          },
+          {
+            "page_id": "all_metrics",
+            "exists": true,
+            "title": "All Metrics"
+          },
+          {
+            "page_id": "all_dimensions",
+            "exists": true,
+            "title": "Dimensions"
+          }
+        ],
+        "console_errors": [],
+        "page_errors": [],
+        "failed_requests": [],
+        "refresh": {
+          "prior_version": "2026-07-15T23:06:00.837760+00:00",
+          "status": "ready",
+          "status_text": "Ready",
+          "new_version": "2026-07-15T23:06:07.702255+00:00",
+          "forced_failure": {
+            "status": "error",
+            "stale_labelled": true,
+            "version_unchanged": true,
+            "status_text": "Refresh failed \u2014 showing previous data (stale)"
+          }
+        },
+        "accessibility": {
+          "has_nav_landmark": true,
+          "has_main_or_pages": true,
+          "heading_count": 7,
+          "focusable_charts": 8,
+          "status_text_beyond_color": true,
+          "disclaimer": "Automated checks only \u2014 not a full legal accessibility certification"
+        },
+        "artifacts": {}
+      },
+      "mobile": {
+        "viewport": "mobile",
+        "charts": [
+          {
+            "chart_id": "volume_trend",
+            "viewport": "mobile",
+            "accessible_name": "Volume KPI Trend",
+            "data_table": true,
+            "tooltip_text": "Volume KPI \u2014 Actual\nJanuary 2026\n0 events\nStatus: On track\nFresh as of: 2026-07-15T22:54:44+00:00",
+            "expected": {
+              "metric_display_name": "Volume KPI",
+              "formatted_value": "0 events",
+              "period_label": "January 2026",
+              "series_display_name": "Actual",
+              "unit": "events",
+              "currency": null,
+              "partial_period_note": null,
+              "tooltip_text": "Volume KPI \u2014 Actual\nJanuary 2026\n0 events\nStatus: On track\nFresh as of: 2026-07-15T22:54:44+00:00"
+            }
+          },
+          {
+            "chart_id": "completion_rate_trend",
+            "viewport": "mobile",
+            "accessible_name": "Completion Rate KPI",
+            "data_table": true,
+            "tooltip_text": "Completion rate KPI \u2014 Actual\nJanuary 2026\n35.00%\nFresh as of: 2026-07-15T22:54:44+00:00",
+            "expected": {
+              "metric_display_name": "Completion rate KPI",
+              "formatted_value": "35.00%",
+              "period_label": "January 2026",
+              "series_display_name": "Actual",
+              "unit": null,
+              "currency": null,
+              "partial_period_note": null,
+              "tooltip_text": "Completion rate KPI \u2014 Actual\nJanuary 2026\n35.00%\nFresh as of: 2026-07-15T22:54:44+00:00"
+            }
+          }
+        ],
+        "pages": [
+          {
+            "page_id": "executive_overview",
+            "exists": true,
+            "title": "Executive Overview"
+          },
+          {
+            "page_id": "exceptions_and_data_quality",
+            "exists": true,
+            "title": "Exceptions and Data Quality"
+          },
+          {
+            "page_id": "pipeline_health",
+            "exists": true,
+            "title": "Pipeline Health"
+          },
+          {
+            "page_id": "all_measures",
+            "exists": true,
+            "title": "All Measures"
+          },
+          {
+            "page_id": "all_metrics",
+            "exists": true,
+            "title": "All Metrics"
+          },
+          {
+            "page_id": "all_dimensions",
+            "exists": true,
+            "title": "Dimensions"
+          }
+        ],
+        "console_errors": [],
+        "page_errors": [],
+        "failed_requests": [],
+        "refresh": {
+          "prior_version": "2026-07-15T23:06:07.702255+00:00",
+          "status": "ready",
+          "status_text": "Ready",
+          "new_version": "2026-07-15T23:06:15.807170+00:00",
+          "forced_failure": {
+            "status": "error",
+            "stale_labelled": true,
+            "version_unchanged": true,
+            "status_text": "Refresh failed \u2014 showing previous data (stale)"
+          }
+        },
+        "accessibility": {
+          "has_nav_landmark": true,
+          "has_main_or_pages": true,
+          "heading_count": 7,
+          "focusable_charts": 8,
+          "status_text_beyond_color": true,
+          "disclaimer": "Automated checks only \u2014 not a full legal accessibility certification"
+        },
+        "artifacts": {}
+      }
+    },
+    "endpoints": {
+      "/api/charts.json": {
+        "status": 200,
+        "ok": true
+      },
+      "/api/metrics.json": {
+        "status": 200,
+        "ok": true
+      },
+      "/api/refresh": {
+        "status": 200,
+        "ok": true
+      }
+    }
+  },
+  "artifacts_dir": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_d_case_activity\\reports\\agent\\10_presentation\\live_browser_artifacts",
+  "notes": [
+    "Automated browser checks only \u2014 not a full legal accessibility certification.",
+    "Browser PASS does not grant business approval."
+  ]
+}

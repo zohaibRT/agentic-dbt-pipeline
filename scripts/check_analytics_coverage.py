@@ -183,17 +183,26 @@ def main() -> int:
             "measure_catalog.md appears to mix model row_count / engineering QA with business measures"
         )
 
-    # Advisory-only targets (never hard fail unless explicitly set and mode says so)
+    # Advisory targets: WARN under process_coverage; hard fail under fixed_count mode
+    mode = str(policy.get("completion_mode") or "process_coverage").strip().lower()
     adv_m = policy.get("advisory_measure_target")
     adv_t = policy.get("advisory_metric_target")
     if adv_m is not None and measure_count < int(adv_m):
-        warnings.append(
-            f"advisory measure target {adv_m} not met (have {measure_count}) — not a completion gate"
+        msg = (
+            f"advisory measure target {adv_m} not met (have {measure_count})"
         )
+        if mode == "fixed_count":
+            errors.append(msg + " — completion_mode=fixed_count treats advisory targets as gates")
+        else:
+            warnings.append(msg + " — not a completion gate under process_coverage")
     if adv_t is not None and metric_count < int(adv_t):
-        warnings.append(
-            f"advisory metric target {adv_t} not met (have {metric_count}) — not a completion gate"
+        msg = (
+            f"advisory metric target {adv_t} not met (have {metric_count})"
         )
+        if mode == "fixed_count":
+            errors.append(msg + " — completion_mode=fixed_count treats advisory targets as gates")
+        else:
+            warnings.append(msg + " — not a completion gate under process_coverage")
 
     return print_results("Analytics coverage check", errors, warnings)
 

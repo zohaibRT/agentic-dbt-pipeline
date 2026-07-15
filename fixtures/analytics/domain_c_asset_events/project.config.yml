@@ -18,7 +18,12 @@ analytics_policy:
   critical_data_quality_coverage_required: 1.0
   critical_process_module_coverage_required: 1.0
   production_exposure_coverage_required: 1.0
-  fail_on_warning_at_final: true
+presentation_policy:
+  require_stable_visual_ids: true
+  require_bidirectional_page_contract_mapping: true
+  require_bidirectional_proof_mapping: true
+  approved_kpis_required_for_trusted_executive_pages: true
+  pending_kpis_allowed_in_draft_pages: true
 acceptance_policy:
   final_fail_on_warning: true
   require_explicit_warning_acceptance: true

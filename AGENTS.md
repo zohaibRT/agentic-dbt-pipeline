@@ -26,9 +26,10 @@ Semantic layer, project evaluator, analytics insight reporting, presentation lay
 Verification must not depend only on the builder agent or the same chat window.
 
 - Builder agent writes evidence to `reports/agent/`, SQL proofs, and dbt artifacts.
-- Keep `reports/agent/HUMAN_ATTENTION_BOARD.md` and `reports/agent/KPI_GAP_REGISTER.md` current; chat must re-warn OPEN KPI gaps after every checkpoint.
+- Keep `reports/agent/HUMAN_ATTENTION_BOARD.md`, `reports/agent/BUSINESS_APPROVAL_REGISTER.md`, `reports/agent/DECISION_LOG.md`, and `reports/agent/KPI_GAP_REGISTER.md` current; chat must re-warn OPEN KPI gaps after every checkpoint.
+- Technical verification and business approval are separate. A technical PASS never implies business APPROVED. The agent must never approve its own business definitions.
 - Run `python <installed-skill-path>/scripts/run_acceptance_gate.py --root <project.root>` before final delivery.
-- Run `python <installed-skill-path>/scripts/check_requirement_traceability.py --root <project.root>`, `python <installed-skill-path>/scripts/check_layer_proof_coverage.py --root <project.root>`, and `python <installed-skill-path>/scripts/verify_metric_reconciliation.py --root <project.root>` before final delivery.
+- Run `python <installed-skill-path>/scripts/check_requirement_traceability.py --root <project.root>`, `python <installed-skill-path>/scripts/check_layer_proof_coverage.py --root <project.root>`, `python <installed-skill-path>/scripts/verify_metric_reconciliation.py --root <project.root>`, and `python <installed-skill-path>/scripts/check_human_approval_coverage.py --root <project.root> --phase final` before final delivery.
 - Run a fresh verifier agent with `agents/dbt-verifier-agent.md` for an independent audit report.
 - Use `.github/workflows/dbt_acceptance_gate.yml` in generated projects when CI is enabled.
 
@@ -37,6 +38,10 @@ See `references/independent-verification-governance.md` and `docs/how-to-verify-
 ## Domain neutrality
 
 This skill must work for any industry. Infer processes, entities, dimensions, KPIs, and sensitive fields from **this warehouse’s evidence** and the user’s written rules for that run.
+
+Canonical analytical resource identity is dbt manifest `unique_id` when a manifest exists (not bare model names). At final phase with a manifest, name-only classification rows fail. See `docs/manifest-resource-identity-migration.md`, `docs/consolidated-migration-guide.md`, and `references/universal-model-classification.md`.
+
+Presentation identity uses stable `page_id` / `visual_id` / `metric_id` / `proof_id` / `query_id` registries under `reports/agent/10_presentation/`. Display names may change without breaking traceability. Technical validation and business approval remain separate.
 
 Do not:
 

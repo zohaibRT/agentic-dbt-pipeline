@@ -1,6 +1,6 @@
 # Metric Verification Matrix (TEST FIXTURE)
 
-| Metric | Source Proof | Current Model Proof | Expected Result | Actual Result | Diff | Status | Notes |
-|---|---|---|---|---|---|---|---|
-| Volume KPI | reports/agent/sql_proofs/010_volume.sql | reports/agent/sql_proofs/010_volume.sql | 5 | 5 | 0 | PASS | Matches |
-| Completion rate KPI | reports/agent/sql_proofs/020_rate.sql | reports/agent/sql_proofs/020_rate.sql | 0.4 | 0.4 | 0 | PASS | Matches |
+| Metric ID | Validation Type | Source Proof | Current Model Proof | Semantic Proof | Presentation Proof | Expected Result | Actual Result | Calculated Difference | Tolerance | Calculated Status | Recorded Technical Status | Business Approval Status | Notes |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| KPI-001 | numeric_tolerance | reports/agent/sql_proofs/010_volume.sql | reports/agent/sql_proofs/010_volume.sql | NOT_APPLICABLE: no semantic layer in fixture | DEFERRED: presentation checked separately | 5 | 5 | 0 | 0 | PASS | PASS | APPROVED | Matches |
+| KPI-002 | ratio_tolerance | reports/agent/sql_proofs/020_rate.sql | reports/agent/sql_proofs/020_rate.sql | NOT_APPLICABLE: no semantic layer in fixture | DEFERRED: presentation checked separately | 0.4 | 0.4 | 0 | 0 | PASS | PASS | APPROVED | Matches |

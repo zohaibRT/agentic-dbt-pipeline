@@ -1,0 +1,65 @@
+{
+  "version": "1",
+  "proofs": [
+    {
+      "proof_id": "PROOF-010_volume",
+      "metric_id": "KPI-001",
+      "kpi_id": "KPI-001",
+      "page_id": "executive_overview",
+      "visual_ids": [
+        "visual_volume_trend",
+        "card_volume"
+      ],
+      "query_id": "Q-volume_trend",
+      "proof_path": "reports/agent/10_presentation/matplotlib/sql_verification/010_volume.sql",
+      "source_resource_ids": [
+        "model.domain_b_encounter.fct_encounters"
+      ],
+      "captured_value": "5",
+      "displayed_value": "5",
+      "formatting_rule": "integer",
+      "proof_status": "PASS",
+      "technical_validation_status": "PASS",
+      "business_approval_status": "APPROVED"
+    },
+    {
+      "proof_id": "PROOF-020_rate",
+      "metric_id": "KPI-002",
+      "kpi_id": "KPI-002",
+      "page_id": "executive_overview",
+      "visual_ids": [
+        "visual_completion_rate_trend",
+        "card_completion"
+      ],
+      "query_id": "Q-completion_rate",
+      "proof_path": "reports/agent/10_presentation/matplotlib/sql_verification/020_rate.sql",
+      "source_resource_ids": [
+        "model.domain_b_encounter.fct_encounters"
+      ],
+      "captured_value": "0.4",
+      "displayed_value": "40.0%",
+      "formatting_rule": "percent",
+      "proof_status": "PASS",
+      "technical_validation_status": "PASS",
+      "business_approval_status": "APPROVED"
+    },
+    {
+      "proof_id": "PROOF-030_dq",
+      "metric_id": "DQ-001",
+      "kpi_id": "DQ-001",
+      "page_id": "exceptions_and_data_quality",
+      "visual_ids": [],
+      "query_id": "Q-dq_orphan",
+      "proof_path": "reports/agent/10_presentation/matplotlib/sql_verification/030_dq.sql",
+      "source_resource_ids": [
+        "model.domain_b_encounter.fct_encounters"
+      ],
+      "captured_value": "0.0",
+      "displayed_value": "0.0%",
+      "formatting_rule": "percent",
+      "proof_status": "PASS",
+      "technical_validation_status": "PASS",
+      "business_approval_status": "APPROVED"
+    }
+  ]
+}

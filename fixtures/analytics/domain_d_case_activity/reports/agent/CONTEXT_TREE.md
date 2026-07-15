@@ -1,0 +1,33 @@
+# Context Tree (TEST FIXTURE ONLY)
+
+## Active Run
+
+| Field | Value |
+|---|---|
+| Current checkpoint | Final |
+| Current status | PASS |
+| Last updated | fixture build |
+| Source lock status | locked |
+
+## Input Context
+
+| Input | Value | Source | Notes |
+|---|---|---|---|
+| Domain | domain_d_case_activity | fixture | TEST FIXTURE ONLY |
+| Business description | Case activity lifecycle | fixture | illustrative |
+| dbt profile name | fixture_analytics | profiles.yml | no secrets |
+| Adapter | duckdb | profiles.yml | local duckdb |
+| Database or catalog | fixture | profiles.yml | file-backed |
+| Source schema | main | seeds | synthetic |
+
+## Decisions And Rules
+
+| Decision / Rule | Status | Source | Applies To | Notes |
+|---|---|---|---|---|
+| Use synthetic seeds | approved | fixture | all layers | Gate regression only |
+
+## Open Questions
+
+| Question | Why it matters | Blocking phase | Current status |
+|---|---|---|---|
+| None | n/a | n/a | answered |

@@ -12,6 +12,8 @@ import re
 import sys
 from pathlib import Path
 
+from lib_gate_common import load_analytics_policy
+
 
 SNAKE_TECH_RE = re.compile(
     r"\b(?:dim|fct|mart|stg|int)_[a-z0-9_]+\b"
@@ -56,6 +58,8 @@ def main() -> int:
     parser.add_argument("--root", type=Path, default=Path("."))
     args = parser.parse_args()
     root = args.root.resolve()
+    policy = load_analytics_policy(root)
+    label_required = float(policy.get("business_label_coverage_required", 1.0))
 
     text, paths = collect_presentation_text(root)
     if not text:
@@ -81,17 +85,21 @@ def main() -> int:
     dim_row_counts = [h for h in tech_hits if h.startswith("dim_") and "row_count" in h]
     raw_floats = RAW_FLOAT_RE.findall(text)
     has_display = any(h in lower for h in DISPLAY_HINTS)
+    # Ratio: 1.0 when display helpers present on business pages; 0.0 otherwise
+    label_coverage = 1.0 if (not business_focus or has_display) else 0.0
 
     print(
         f"Business readability: files={len(paths)}, tech_name_hits~{len(tech_hits)}, "
         f"dim_row_count_hits~{len(dim_row_counts)}, raw_float_hits~{len(raw_floats)}, "
-        f"display_hints={has_display}"
+        f"display_hints={has_display}, label_coverage={label_coverage:.0%} "
+        f"(required={label_required:.0%})"
     )
 
-    if business_focus and not has_display:
+    if business_focus and label_coverage < label_required:
         errors.append(
             "business pages lack display_name/formatted_value fields — "
-            "do not show snake_case warehouse ids as primary labels"
+            "do not show snake_case warehouse ids as primary labels "
+            f"(business_label_coverage_required={label_required:.0%})"
         )
 
     if len(dim_row_counts) >= 5 and "dimensions" not in lower:

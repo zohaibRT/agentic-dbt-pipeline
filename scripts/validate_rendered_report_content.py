@@ -22,52 +22,79 @@ STACK_TRACE_RE = re.compile(
 
 
 def scan_text(text: str, source: str, errors: list[str]) -> None:
-    for match in PREFIX_LABEL_RE.finditer(text):
+    # Ignore script/style payloads — technical IDs are allowed in JSON/DOM attributes and scripts
+    visible = re.sub(r"<script\b[^>]*>.*?</script>", " ", text, flags=re.I | re.S)
+    visible = re.sub(r"<style\b[^>]*>.*?</style>", " ", visible, flags=re.I | re.S)
+    # Strip HTML attributes (data-* ids may contain technical tokens)
+    visible = re.sub(r"\s[\w:-]+=\"[^\"]*\"", " ", visible)
+    visible = re.sub(r"\s[\w:-]+='[^']*'", " ", visible)
+
+    for match in PREFIX_LABEL_RE.finditer(visible):
         errors.append(f"{source}: visible technical model label '{match.group(0)}'")
-    for match in HIGH_PRECISION_RE.finditer(text):
+    for match in HIGH_PRECISION_RE.finditer(visible):
         errors.append(f"{source}: high-precision float '{match.group(0)}'")
-    for match in RAW_RATIO_RE.finditer(text):
+    for match in RAW_RATIO_RE.finditer(visible):
         token = match.group(0).strip(">< ").strip()
         errors.append(f"{source}: raw ratio value '{token}' (format as percent)")
-    for match in TODO_RE.finditer(text):
+    for match in TODO_RE.finditer(visible):
         errors.append(f"{source}: placeholder token '{match.group(0)}'")
-    if STACK_TRACE_RE.search(text):
+    if STACK_TRACE_RE.search(visible):
         errors.append(f"{source}: stack trace or exception text visible in report")
 
     # Table/header cells and prominent labels
-    for cell_match in re.finditer(r"<t[hd][^>]*>([^<]{3,})</t[hd]>", text, re.I):
+    for cell_match in re.finditer(r"<t[hd][^>]*>([^<]{3,})</t[hd]>", visible, re.I):
         label = cell_match.group(1).strip()
         if SNAKE_CASE_RE.fullmatch(label) and "_" in label:
             errors.append(f"{source}: snake_case table label '{label}'")
-    for heading in re.finditer(r"<h[1-6][^>]*>([^<]{3,})</h[1-6]>", text, re.I):
+    for heading in re.finditer(r"<h[1-6][^>]*>([^<]{3,})</h[1-6]>", visible, re.I):
         label = heading.group(1).strip()
         if SNAKE_CASE_RE.fullmatch(label) and "_" in label:
             errors.append(f"{source}: snake_case heading '{label}'")
 
 
 def scan_json_payload(path: Path, errors: list[str]) -> None:
+    """Scan JSON for visible business-label issues.
+
+    Technical IDs are allowed as keys and as non-display fields (metric_id, proof_id,
+    source_resource_unique_id, etc.). Fail when technical model names appear in
+    display_name / title / label / formatted business text.
+    """
     try:
         data = json.loads(read_text(path))
     except json.JSONDecodeError:
         errors.append(f"{path.name}: invalid JSON payload")
         return
 
-    def walk(node: object, prefix: str) -> None:
+    display_keys = {
+        "display_name",
+        "title",
+        "label",
+        "business_label",
+        "formatted_value",
+        "tooltip_text",
+        "period_label",
+        "page_name",
+    }
+
+    def walk(node: object, prefix: str, parent_key: str = "") -> None:
         if isinstance(node, dict):
             for key, value in node.items():
-                if isinstance(key, str) and SNAKE_CASE_RE.fullmatch(key) and key.startswith(
-                    ("dim_", "fct_", "stg_")
-                ):
-                    errors.append(f"{path.name}: technical key '{key}' in {prefix}")
-                walk(value, f"{prefix}.{key}")
+                walk(value, f"{prefix}.{key}", parent_key=str(key))
         elif isinstance(node, list):
             for idx, item in enumerate(node):
-                walk(item, f"{prefix}[{idx}]")
+                walk(item, f"{prefix}[{idx}]", parent_key=parent_key)
         elif isinstance(node, str):
-            if PREFIX_LABEL_RE.search(node):
-                errors.append(f"{path.name}: technical label text '{node}' in {prefix}")
-            if HIGH_PRECISION_RE.search(node):
-                errors.append(f"{path.name}: high-precision value '{node}' in {prefix}")
+            key_l = parent_key.lower()
+            if key_l in display_keys or key_l.endswith("_label") or key_l.endswith("_title"):
+                if PREFIX_LABEL_RE.search(node):
+                    errors.append(f"{path.name}: technical label text '{node}' in display field {prefix}")
+                if HIGH_PRECISION_RE.search(node) and "%" not in node and key_l in {
+                    "formatted_value",
+                    "display_name",
+                    "title",
+                }:
+                    errors.append(f"{path.name}: high-precision value '{node}' in {prefix}")
+            # Internal IDs / paths may contain technical tokens — allowed
 
     walk(data, "root")
 

@@ -1,0 +1,8 @@
+version: 2
+sources:
+  - name: raw
+    description: TEST FIXTURE source stub for gate evidence
+    schema: main
+    tables:
+      - name: raw_events
+        description: TEST FIXTURE seed table

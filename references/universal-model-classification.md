@@ -6,9 +6,11 @@ Also read [analytics-product-completeness.md](analytics-product-completeness.md)
 
 ## Core rule
 
-Classify **every included model/table** from current-project evidence. Do not require fixed business entity names. A structural class is required only when evidence supports it.
+Classify **every included resource** from current-project evidence using dbt manifest `unique_id` as the canonical identity when a manifest exists. Do not require fixed business entity names. A structural class is required only when evidence supports it. Naming prefixes (`fct_`, `dim_`, `mart_`) are fallback hints only.
 
 Illustrative only — do not treat as required model names or metric logic: `dim_customer`, `fct_orders`, `fct_payments`.
+
+See also [docs/manifest-resource-identity-migration.md](../docs/manifest-resource-identity-migration.md).
 
 ## Allowed model classes
 

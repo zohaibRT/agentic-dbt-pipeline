@@ -4,12 +4,16 @@ config-version: 2
 profile: fixture_duckdb
 model-paths: ["models"]
 seed-paths: ["seeds"]
+snapshot-paths: ["snapshots"]
 target-path: target
 clean-targets:
   - target
   - dbt_packages
 seeds:
   +schema: main
+snapshots:
+  domain_d_case_activity:
+    +target_schema: snapshots
 models:
   domain_d_case_activity:
     staging:

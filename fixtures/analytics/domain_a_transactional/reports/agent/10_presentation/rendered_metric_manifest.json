@@ -1,0 +1,172 @@
+{
+  "version": "1",
+  "freshness_timestamp": "2026-07-15T23:08:26+00:00",
+  "metrics": [
+    {
+      "metric_id": "KPI-001",
+      "kpi_id": "KPI-001",
+      "display_name": "Volume KPI",
+      "page_ids": [
+        "executive_overview"
+      ],
+      "visual_ids": [
+        "visual_volume_trend",
+        "card_volume"
+      ],
+      "chart_ids": [
+        "volume_trend"
+      ],
+      "card_ids": [
+        "volume_card"
+      ],
+      "table_ids": [],
+      "query_ids": [
+        "Q-volume_trend",
+        "Q-volume_card"
+      ],
+      "proof_ids": [
+        "PROOF-010_volume"
+      ],
+      "source_resource_ids": [
+        "model.local.fct_events"
+      ],
+      "source_resource_unique_id": "model.local.fct_events",
+      "catalog_refs": [
+        "business_measure_catalog:event_count"
+      ],
+      "time_intelligence_refs": [
+        "KPI-001"
+      ],
+      "dom_item_ids": [
+        "card_volume",
+        "chart_volume_trend"
+      ],
+      "captured_value": "100",
+      "displayed_value": "100",
+      "formatted_value": "100",
+      "formatting_rule": "integer",
+      "format": "integer",
+      "unit": "events",
+      "period_label": "Current month",
+      "refresh_timestamp": "2026-07-15T23:08:26+00:00",
+      "trust_level": "TRUSTED",
+      "validation_status": "PASS",
+      "technical_validation_status": "PASS",
+      "business_approval_status": "APPROVED"
+    },
+    {
+      "metric_id": "KPI-002",
+      "kpi_id": "KPI-002",
+      "display_name": "Completion rate KPI",
+      "page_ids": [
+        "executive_overview"
+      ],
+      "visual_ids": [
+        "visual_completion_rate_trend",
+        "card_completion"
+      ],
+      "chart_ids": [
+        "completion_rate_trend"
+      ],
+      "card_ids": [
+        "completion_card"
+      ],
+      "table_ids": [],
+      "query_ids": [
+        "Q-completion_rate",
+        "Q-completion_card"
+      ],
+      "proof_ids": [
+        "PROOF-020_rate"
+      ],
+      "source_resource_ids": [
+        "model.local.fct_events"
+      ],
+      "source_resource_unique_id": "model.local.fct_events",
+      "catalog_refs": [
+        "business_metric_catalog:completion_rate"
+      ],
+      "time_intelligence_refs": [
+        "KPI-002"
+      ],
+      "dom_item_ids": [
+        "card_completion",
+        "chart_completion_rate_trend"
+      ],
+      "captured_value": "0.8",
+      "displayed_value": "80.0%",
+      "formatted_value": "80.0%",
+      "formatting_rule": "percent",
+      "format": "percent",
+      "period_label": "Current month",
+      "refresh_timestamp": "2026-07-15T23:08:26+00:00",
+      "trust_level": "TRUSTED",
+      "validation_status": "PASS",
+      "technical_validation_status": "PASS",
+      "business_approval_status": "APPROVED"
+    },
+    {
+      "metric_id": "KPI-PENDING-001",
+      "kpi_id": "KPI-PENDING-001",
+      "display_name": "Draft exploratory metric",
+      "page_ids": [
+        "all_metrics"
+      ],
+      "visual_ids": [],
+      "chart_ids": [],
+      "card_ids": [],
+      "table_ids": [],
+      "query_ids": [],
+      "proof_ids": [],
+      "source_resource_ids": [
+        "model.local.fct_events"
+      ],
+      "source_resource_unique_id": "model.local.fct_events",
+      "catalog_refs": [],
+      "time_intelligence_refs": [],
+      "dom_item_ids": [],
+      "captured_value": null,
+      "displayed_value": "Pending",
+      "formatted_value": "Pending",
+      "formatting_rule": "decimal",
+      "format": "decimal",
+      "period_label": "Not approved",
+      "refresh_timestamp": "2026-07-15T23:08:26+00:00",
+      "trust_level": "DRAFT",
+      "validation_status": "PENDING",
+      "technical_validation_status": "PENDING",
+      "business_approval_status": "PENDING",
+      "pending_label": "Pending approval"
+    }
+  ],
+  "measure_board": [
+    {
+      "id": "event_count",
+      "display_name": "Event count",
+      "value": 100,
+      "formatted_value": "100",
+      "group": "Volume",
+      "format": "integer",
+      "unit": "events"
+    }
+  ],
+  "metric_board": [
+    {
+      "id": "completion_rate",
+      "display_name": "Completion rate",
+      "value": 0.8,
+      "formatted_value": "80.0%",
+      "group": "Performance",
+      "format": "percent"
+    },
+    {
+      "id": "draft_exploratory",
+      "display_name": "Draft exploratory metric",
+      "value": null,
+      "formatted_value": "Pending",
+      "group": "Draft",
+      "format": "decimal",
+      "business_approval_status": "PENDING"
+    }
+  ]
+}
