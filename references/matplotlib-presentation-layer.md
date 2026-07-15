@@ -294,7 +294,7 @@ reports/agent/10_presentation/matplotlib/
 | `open_report.sh` | Optional launcher for macOS/Linux |
 | `data_cache/` | Optional cached query results for offline review or static export; must be clearly labeled with generated timestamp |
 | `figures/` | Optional exported SVG/PNG charts aligned to `dashboard_spec.md`; not the primary live rendering path |
-| `sql_verification/` | Exact queries and expected values used to validate each chart aggregate |
+| `sql_verification/` | Exact queries and captured results for **every** RENDERED chart and for All Measures / All Metrics board values; include `_proof_index.md` |
 
 ### Local browser page validation
 
@@ -531,7 +531,7 @@ Before marking Matplotlib presentation work complete:
 10b. Verify the live report includes **All Measures** and **All Metrics** boards (or equivalent named tabs) with **visible live values**: smoke-test must report `measure_cards >= 50` and `metric_cards >= 50` when gold has 3+ facts. Catalog markdown alone does not satisfy this check.
 11. Verify `label_dictionary.md` exists and every categorical chart uses mapped **business labels** on axes/legends. Blank x-axis ticks on `RENDERED` charts are a validation `FAIL`.
 12. Verify `report_theme.md` exists and charts/HTML use the comfortable colorful theme, not default gray matplotlib styling.
-13. Verify every plotted aggregate has a matching **executed** SQL proof in `sql_verification/` with captured result and `PASS`.
+13. Verify every plotted aggregate **and every All Measures / All Metrics board card** has a matching **executed** SQL proof in `sql_verification/` with captured result and `PASS`, and `_proof_index.md` maps RENDERED items to those proofs. One KPI-card proof file is not enough when 50+ measures/metrics are visible.
 14. Verify chart scope matches `dashboard_spec.md` and does not include deferred items from `insight_backlog.md` without a visible blocked note.
 15. Run `python <skill>/scripts/check_presentation_coverage.py --root <project.root>` when available.
 16. Record pass/fail evidence in `reports/agent/10_presentation/presentation_report.md`.

@@ -141,15 +141,27 @@ Forbidden:
 - Marking presentation complete because `kpi_figure_coverage.md` lists RENDERED rows that are not visible in the browser
 - Only printing catalog counts in Report Info without live values
 
-## Rule 6 — Live SQL for every RENDERED chart
+## Rule 6 — Live SQL for every RENDERED chart **and** measure/metric board
 
 Before marking presentation complete:
 
 1. Confirm the gold object exists in the warehouse (`information_schema` / `\dt` / adapter equivalent)
-2. Execute the **exact** presentation SQL used by the chart refresh path
-3. Capture actual row counts / aggregates in `sql_verification/` with PASS
+2. Execute the **exact** presentation SQL used by the chart refresh path **and** the All Measures / All Metrics board queries
+3. Capture actual row counts / aggregates in `sql_verification/` with PASS headers (purpose, expected, captured result, status)
 4. Hit the report refresh/data endpoint (not only HTML shell `/`) and assert no SQL error
 5. Record evidence in `presentation_report.md`
+6. Maintain `sql_verification/_proof_index.md` mapping every RENDERED measure/metric/KPI board card or chart to at least one proof file
+
+Minimum proof set when All Measures / All Metrics boards exist:
+
+| Proof artifact | Covers |
+|---|---|
+| `sql_verification/010_measure_board_*.sql` (or split by group) | Live measure board snapshot values |
+| `sql_verification/020_metric_board_*.sql` (or split by group) | Live metric board rates/shares/averages |
+| Chart-specific proofs | Each major chart SQL used by `serve_report` |
+| `_proof_index.md` | Row → proof path → status |
+
+A single KPI-card proof is **not** enough when 50+ measures and 50+ metrics are RENDERED. `check_presentation_coverage.py` **FAIL**s when RENDERED board density is high and `sql_verification/` has too few executed proofs with captured results.
 
 HTML shell HTTP 200 alone is **not** enough. A missing relation such as `schema.fct_prospect does not exist` is a presentation **FAIL**, not a user environment tip.
 
@@ -174,6 +186,7 @@ Agent recommendation format: concrete expand/build/label/run-SQL action + Accept
 | Presentation | Catalog rows missing from `kpi_figure_coverage.md` |
 | Presentation | Blank categorical axes on RENDERED charts |
 | Presentation | Live SQL / refresh API not proven for RENDERED charts |
+| Presentation | All Measures/Metrics boards RENDERED but `sql_verification/` missing proofs / `_proof_index.md` |
 | Final delivery | User opt-out of privacy ignored; dims still privacy-blocked without ask |
 | Final delivery | OPEN Attention Board / Gap Register privacy rows for phone/IMEI/serial/fingerprint under recorded opt-out |
 | Presentation | Catalogs hit 50+/50+ but live HTML still shows only executive KPI cards (no All Measures / All Metrics boards) |

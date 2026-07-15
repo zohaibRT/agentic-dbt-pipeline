@@ -215,6 +215,7 @@ def main() -> int:
                 )
 
     sql_total, sql_with_result = sql_verification_executed(sql_dir)
+    proof_index = sql_dir / "_proof_index.md"
     if rendered > 0 and sql_total == 0:
         errors.append("RENDERED/TRUSTED charts exist but sql_verification/ has no SQL proof files")
     if rendered > 0 and sql_with_result == 0:
@@ -223,9 +224,33 @@ def main() -> int:
             "(file presence alone is not enough)"
         )
     if rendered > sql_with_result and sql_with_result > 0:
-        warnings.append(
-            f"RENDERED={rendered} but only {sql_with_result}/{sql_total} sql_verification files show captured results"
-        )
+        if proof_index.exists() and (has_measure_board or has_metric_board) and sql_with_result >= 6:
+            warnings.append(
+                f"RENDERED={rendered} tokens vs {sql_with_result} proof files — OK if _proof_index.md maps many cards to group proofs"
+            )
+        else:
+            warnings.append(
+                f"RENDERED={rendered} but only {sql_with_result}/{sql_total} sql_verification files show captured results"
+            )
+
+    if (has_measure_board or has_metric_board) and gold_facts >= 3:
+        if not proof_index.exists():
+            errors.append(
+                "missing sql_verification/_proof_index.md — map each RENDERED measure/metric board card to a SQL proof"
+            )
+        # Board presentations need group proofs, not only one KPI snapshot
+        min_board_proofs = 6
+        if sql_with_result < min_board_proofs:
+            errors.append(
+                f"All Measures/Metrics boards require executed sql_verification proofs "
+                f"(have {sql_with_result} with captured results; need >= {min_board_proofs} "
+                "covering measure groups + metric rates + charts)"
+            )
+        index_text = read_text(proof_index).lower() if proof_index.exists() else ""
+        if proof_index.exists() and ("measure" not in index_text or "metric" not in index_text):
+            errors.append(
+                "sql_verification/_proof_index.md must list measure and metric board mappings to proof files"
+            )
 
     if presentation_report.exists():
         report_text = read_text(presentation_report).lower()
