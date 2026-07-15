@@ -48,47 +48,34 @@ unless the row is explicitly marked `BLOCKED` or `DEFERRED` with evidence in `in
 - Raw warehouse codes on business-facing chart labels without `label_dictionary.md`
 - Promoting every metric to `kpi_catalog.md`
 
-## Do use — table classification first
+## Do use — table classification first (advisory counts)
 
-Classify each included source or gold table, then apply minimum coverage by table type.
+Classify each included source or gold table, then build measures/metrics needed for process completeness. Fixed per-table counts are **advisory planning heuristics only**. Acceptance uses `analytics_policy` process/fact/KPI-contract coverage — not 50+/60+/35+/15 quotas.
 
-| Table type | Examples (illustrative only) | Minimum measures | Minimum metrics | Key performance indicator candidates |
+| Table type | Examples (illustrative only) | Typical measures (advisory) | Typical metrics (advisory) | Key performance indicator candidates |
 |---|---|---:|---:|---:|
-| Fact / event | primary facts evidenced in the project | 5–10 per fact | 3–6 per fact | 2–4 per fact when `HIGH` or approved `MEDIUM` |
-| Dimension | entity and descriptive dims in evidence | 2–4 | 1–3 | 0–1 only if strategic |
-| Bridge | evidenced bridge between facts | 2–3 | 1–2 | 0–1 |
-| Reference / catalog | reference/catalog dims when present | 1–2 | 0–1 | 0 unless business asks |
-| Audit / system | audit, job queue, oauth | 0 business measures | 0 | exclude |
+| Fact / event | primary facts evidenced in the project | grain/volume/value/status/time/quality as applicable | process questions | only `HIGH` or approved `MEDIUM` |
+| Dimension | entity and descriptive dims in evidence | light | optional | 0–1 only if strategic |
+| Bridge | evidenced bridge between facts | relationship health | optional | usually none |
+| Reference / catalog | reference/catalog dims when present | light | usually none | 0 unless business asks |
+| Audit / system | audit, job queue, oauth | 0 business measures | 0 | exclude (use pipeline/DQ catalogs) |
 
-The phrase `5 per table` applies only to **fact/event** tables, not dimensions, bridges, reference tables, or audit tables.
+Do **not** apply a flat `5 per table` quota to dimensions, bridges, reference tables, or audit tables — and do not treat any fixed per-fact quota as a hard gate.
 
-## Business-process minimums
+## Business-process coverage
 
-Before analytics insight reporting can be marked `PASS`, fill catalogs for each supported business process discovered in `business_process_catalog.md`.
+Before analytics insight reporting can be marked `PASS`, fill catalogs for each supported business process discovered in `business_process_catalog.md`, covering applicable analytical families with SQL proof. Do not hardcode one client's process names (including partner/program labels) into the skill.
 
-Use this template:
+| Business process class (illustrative) | Coverage expectation |
+|---|---|
+| Primary lifecycle or core value process | Full applicable families + approved strategic KPIs with proof |
+| Secondary transaction or supporting process | Applicable families; fewer strategic KPIs |
+| Segmentation / entity process | Segmentation + quality; KPIs only when strategic |
+| Data quality / reconciliation process | DQ metrics only — not executive KPI boards |
 
-| Business process | Minimum metrics | Minimum strategic key performance indicators (`HIGH` / approved `MEDIUM` + proof) |
-|---|---:|---:|
-| Primary lifecycle or core revenue process | 8+ | 4+ |
-| Secondary transaction or fulfillment process | 4+ | 2+ |
-| Partner, program, or segmentation process | 4+ | 2+ |
-| Data quality / reconciliation process | 4+ | 0 key performance indicators (metrics only) |
+### Advisory scale examples (never default gates)
 
-Do not hardcode one client's process names into the skill. Record project-specific process names and minimums in `business_process_catalog.md`.
-
-### Example scale for medium projects
-
-When roughly 25–30 validated tables are in scope, a realistic target profile is:
-
-| Catalog | Example target | Rule if short |
-|---|---:|---|
-| `measure_catalog.md` | 60+ measures | Document each shortfall in `insight_backlog.md` |
-| `metric_catalog.md` | 35+ metrics | Document each shortfall with evidence |
-| `kpi_catalog.md` | 15+ approved key performance indicators with SQL proofs | Not `5`; use bounded maximum useful coverage |
-| `insight_backlog.md` | all `LOW` / `BLOCKED` candidates with reason | Required |
-
-For a medium project with about five major facts, a realistic key performance indicator total is often **15–25**, not five.
+When roughly 25–30 validated tables are in scope, some teams optionally track planning examples such as ~60 measures / ~35 metrics / ~15 KPIs. Those numbers are **not** completion criteria unless `analytics_policy.advisory_*_target` is set and advisory checks are intentionally run. Prefer the smallest complete set that answers documented business questions.
 
 ## Required discovery artifacts
 

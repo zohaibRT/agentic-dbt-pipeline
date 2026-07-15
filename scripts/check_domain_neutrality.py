@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Fail when executable skill logic hardcodes industry-specific entities.
 
-Inspects scripts/validators for required industry tokens outside allowed
-contexts (comments/docstrings/tests/fixtures/examples). Documentation examples
-are allowed; executable required lists and hardcoded gates are not.
+Scans scripts, templates, prompts, YAML, SKILL/AGENTS, and requirement
+references. Documentation examples are allowed; executable required lists and
+hardcoded gates are not.
 
 See AGENTS.md Domain neutrality and the upgrade acceptance criteria.
 """
@@ -17,7 +17,6 @@ import sys
 from pathlib import Path
 
 
-# Tokens that must not appear as required executable expectations.
 FORBIDDEN_ENTITY_RES = (
     re.compile(r"\bhospital\b", re.I),
     re.compile(r"\bpatient\b", re.I),
@@ -28,7 +27,6 @@ FORBIDDEN_ENTITY_RES = (
     re.compile(r"\bcrm_tos\b", re.I),
 )
 
-# Broader tokens only flagged in required-list / gate contexts.
 CONTEXT_SENSITIVE = (
     "customer",
     "partner",
@@ -42,14 +40,31 @@ CONTEXT_SENSITIVE = (
     "product",
 )
 
-REQUIRED_LIST_HINTS = (
-    "required",
-    "must build",
-    "mandatory",
-    "min_measures",
-    "default=50",
-    "default = 50",
+REQUIRED_LIST_RES = (
+    re.compile(r"\brequired\b.{0,80}\b(partner|program|product/sku|sku|subscription|hospital|patient)\b", re.I),
+    re.compile(r"\bmust build\b.{0,80}\b(partner|program|product|sku|subscription|hospital|patient|dim_customer|fct_orders)\b", re.I),
+    re.compile(r"\bmandatory\b.{0,80}\b(partner|program|sku|subscription|hospital|patient)\b", re.I),
+    re.compile(r"\bdim_customer\b.*\bmust\b|\bmust\b.*\bdim_customer\b", re.I),
+    re.compile(r"\bfct_orders\b.*\brequired\b|\brequired\b.*\bfct_orders\b", re.I),
 )
+
+HARDCODED_MODEL_REQUIREMENT = re.compile(
+    r"(must build|required model|mandatory model|always create).{0,60}\b(dim_|fct_|mart_)[a-z0-9_]+\b",
+    re.I,
+)
+
+SKIP_DIR_PARTS = {
+    ".git",
+    ".venv",
+    "venv",
+    "node_modules",
+    "__pycache__",
+    "target",
+    "dbt_packages",
+    "logs",
+    "fixtures",
+    ".cursor",
+}
 
 
 def read_text(path: Path) -> str:
@@ -58,17 +73,22 @@ def read_text(path: Path) -> str:
 
 def is_allowed_path(path: Path, skill_root: Path) -> bool:
     rel = path.relative_to(skill_root).as_posix().lower()
-    if rel.startswith("fixtures/") or "/fixtures/" in rel:
+    parts = set(rel.split("/"))
+    if parts & SKIP_DIR_PARTS:
         return True
     if rel.startswith("tests/") or "/tests/" in rel:
         return True
     if "example" in rel or "illustrative" in rel:
         return True
+    if rel.startswith("docs/analytics-product-completeness-migration") or rel.startswith(
+        "docs/production_analytics_upgrade_summary"
+    ):
+        # Historical migration prose may mention removed 50+ behavior.
+        return True
     return False
 
 
 def python_executable_strings(path: Path) -> list[tuple[int, str]]:
-    """Extract string constants likely used in executable comparisons/gates."""
     text = read_text(path)
     out: list[tuple[int, str]] = []
     try:
@@ -78,14 +98,12 @@ def python_executable_strings(path: Path) -> list[tuple[int, str]]:
     for node in ast.walk(tree):
         if isinstance(node, ast.Constant) and isinstance(node.value, str):
             out.append((getattr(node, "lineno", 0), node.value))
-        # Astroid-free fallback for joined lists used as token gates
     return out
 
 
 def scan_python(path: Path, skill_root: Path) -> list[str]:
     if is_allowed_path(path, skill_root):
         return []
-    # This checker necessarily embeds industry tokens inside detection regexes.
     if path.name == "check_domain_neutrality.py":
         return []
     finding: list[str] = []
@@ -93,59 +111,95 @@ def scan_python(path: Path, skill_root: Path) -> list[str]:
     text = read_text(path)
     lower = text.lower()
 
-    # Hard fail: forbidden entities in non-comment default args / token tuples for gates
     for lineno, value in python_executable_strings(path):
         vlower = value.lower()
         for pattern in FORBIDDEN_ENTITY_RES:
             if pattern.search(vlower):
-                # Allow clear instructional error messages about domain neutrality
-                if "domain-neutral" in vlower or "do not hardcode" in vlower or "industry" in vlower:
-                    continue
-                if "illustrative" in vlower or "example" in vlower:
-                    continue
-                # Allow detector pattern strings that mention entities only as forbidden markers
-                if "forbidden" in vlower or "must not" in vlower:
+                if any(
+                    token in vlower
+                    for token in (
+                        "domain-neutral",
+                        "do not hardcode",
+                        "industry",
+                        "illustrative",
+                        "example",
+                        "forbidden",
+                        "must not",
+                        "fixture",
+                        "test",
+                    )
+                ):
                     continue
                 finding.append(f"{rel}:{lineno}: forbidden entity token in executable string: {value!r}")
 
-    # Soft-to-hard: required dimension lists that bake CONTEXT_SENSITIVE nouns
-    for hint in REQUIRED_LIST_HINTS:
-        if hint in lower and any(f"required.*{tok}" in lower or f"{tok}.*," in lower for tok in CONTEXT_SENSITIVE):
-            # Heuristic: partner/program/product required lists
-            if re.search(r"partner.?program.?product|required.*\b(partner|sku|subscription)\b", lower):
-                finding.append(f"{rel}: suspicious industry required-list context near {hint!r}")
+    for pattern in REQUIRED_LIST_RES:
+        if pattern.search(text):
+            finding.append(f"{rel}: suspicious industry required-list regex match: {pattern.pattern}")
 
-    # Default 50+ catalog count gates are forbidden as hard completion mode
     if re.search(r"default\s*=\s*50", text) and "min_measures" in lower:
-        if "advisory" not in lower and path.name == "check_presentation_coverage.py":
-            finding.append(
-                f"{rel}: fixed default min_measures=50 is not allowed as hard completion gate"
-            )
-    if re.search(r"metric_count\s*<\s*50", text) and path.name.endswith("coverage.py"):
+        if "advisory" not in lower:
+            finding.append(f"{rel}: fixed default min_measures=50 is not allowed as hard completion gate")
+    if re.search(r"metric_count\s*<\s*50", text) and "coverage" in path.name:
         finding.append(f"{rel}: hard-coded metric_count < 50 gate is not allowed")
+    if HARDCODED_MODEL_REQUIREMENT.search(text):
+        finding.append(f"{rel}: hardcoded model name requirement detected")
 
     return finding
 
 
-def scan_markdown_requirements(path: Path, skill_root: Path) -> list[str]:
-    """Flag executable-requirement prose that mandates industry entities."""
+def scan_text_requirements(path: Path, skill_root: Path) -> list[str]:
     if is_allowed_path(path, skill_root):
         return []
     rel = path.relative_to(skill_root).as_posix()
     text = read_text(path)
     findings: list[str] = []
-    # Only scan lines that look like hard requirements, not examples
     for i, line in enumerate(text.splitlines(), start=1):
         lower = line.lower().strip()
-        if "illustrative" in lower or "example" in lower or "for example" in lower:
+        if any(token in lower for token in ("illustrative", "example", "for example", "advisory only")):
             continue
         if lower.startswith("|") and "when evidence" in lower:
             continue
-        if re.search(r"must build.*\b(partner|program|product/sku|subscription|hospital|patient)\b", lower):
-            findings.append(f"{rel}:{i}: requirement hardcodes industry entity: {line.strip()}")
-        if re.search(r"required reporting classes.*\b(partner|program|product/sku)\b", lower):
-            findings.append(f"{rel}:{i}: required reporting classes still industry-locked")
+        # Historical "removed 50+" discussion is fine in migration docs; skip pure history lines
+        if "no longer" in lower or "removed" in lower or "not a" in lower and "gate" in lower:
+            continue
+        for pattern in REQUIRED_LIST_RES:
+            if pattern.search(line):
+                findings.append(f"{rel}:{i}: requirement hardcodes industry entity: {line.strip()}")
+                break
+        if HARDCODED_MODEL_REQUIREMENT.search(line):
+            findings.append(f"{rel}:{i}: hardcoded model name requirement: {line.strip()}")
+        if re.search(r"\bhard\s+fail\b.{0,40}\b(50|30)\b|\bfail\b.{0,40}\bbelow\s+50", lower):
+            findings.append(f"{rel}:{i}: fixed-count hard fail rule must not remain: {line.strip()}")
     return findings
+
+
+def iter_scan_files(skill_root: Path) -> list[Path]:
+    patterns = (
+        "scripts/**/*.py",
+        "templates/**/*.*",
+        "references/**/*.md",
+        "agents/**/*.md",
+        "docs/**/*.md",
+    )
+    files: list[Path] = []
+    for pattern in patterns:
+        files.extend(skill_root.glob(pattern))
+    for name in ("SKILL.md", "AGENTS.md", "prompt.md", "project.config.yml", "README.md"):
+        candidate = skill_root / name
+        if candidate.exists():
+            files.append(candidate)
+    # Deduplicate
+    seen: set[Path] = set()
+    unique: list[Path] = []
+    for path in files:
+        if not path.is_file():
+            continue
+        resolved = path.resolve()
+        if resolved in seen:
+            continue
+        seen.add(resolved)
+        unique.append(path)
+    return sorted(unique)
 
 
 def main() -> int:
@@ -161,18 +215,17 @@ def main() -> int:
 
     errors: list[str] = []
     warnings: list[str] = []
+    scanned = 0
 
-    scripts_dir = skill_root / "scripts"
-    for path in sorted(scripts_dir.glob("*.py")):
-        errors.extend(scan_python(path, skill_root))
+    for path in iter_scan_files(skill_root):
+        scanned += 1
+        suffix = path.suffix.lower()
+        if suffix == ".py":
+            errors.extend(scan_python(path, skill_root))
+        elif suffix in {".md", ".yml", ".yaml", ".sql", ".html", ".js", ".ts", ".json"}:
+            errors.extend(scan_text_requirements(path, skill_root))
 
-    refs = skill_root / "references"
-    for path in sorted(refs.glob("*.md")):
-        hits = scan_markdown_requirements(path, skill_root)
-        # Requirements docs may still be migrating; elevate clear must-build lines to errors
-        errors.extend(hits)
-
-    print(f"Domain neutrality scan: root={skill_root}")
+    print(f"Domain neutrality scan: root={skill_root}, files={scanned}")
     for item in warnings:
         print(f"WARN: {item}")
     for item in errors:

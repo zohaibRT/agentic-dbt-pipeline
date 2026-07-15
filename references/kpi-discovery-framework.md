@@ -124,19 +124,19 @@ Trust only the candidates that have grain, formula, allowed dimensions, time fie
 Promote only strategic candidates to key performance indicators.
 ```
 
-Coverage targets when validated gold has multiple facts and dimensions (see [reporting-coverage-requirements.md](reporting-coverage-requirements.md)):
+Coverage targets when validated gold has multiple facts and dimensions (see [reporting-coverage-requirements.md](reporting-coverage-requirements.md) and [analytics-product-completeness.md](analytics-product-completeness.md)):
 
 | Catalog | Target |
 |---|---|
-| `measure_catalog.md` | **50+** supported measures when evidence allows |
-| `metric_catalog.md` | **50+** supported metrics when evidence allows |
-| `kpi_catalog.md` | Strategic subset (rich, not capped at 3–5) |
+| `measure_catalog.md` | Supported measures needed for material facts/processes (no fixed 50+ quota) |
+| `metric_catalog.md` | Contextual metrics needed for process questions (no fixed 50+ quota) |
+| `kpi_catalog.md` | Strategic subset (rich enough for decisions, not capped at 3–5, not padded to 50+) |
 
-Do **not** stop after three to five executive KPIs and leave catalogs empty. Presentation must still cover measures and metrics, not only the executive KPI cards.
+Do **not** stop after three to five executive KPIs and leave catalogs empty when gold supports more analysis. Presentation must still cover published business metrics and KPIs, not only executive cards.
 
-Hard gate: `scripts/check_analytics_coverage.py` **FAIL**s when gold has 3+ facts/marts and `measure_catalog` / `metric_catalog` are below 50 / 30. Thin executive lists are not analytics-complete.
+Hard gate: `scripts/check_analytics_coverage.py` enforces **process/fact/KPI-contract coverage** from `analytics_policy` — **not** fixed 50/30 row counts. Optional advisory targets may be set in `analytics_policy.advisory_*_target`; they are never the default completion mode.
 
-This lets the project expose a rich analysis surface without pretending every metric is a management key performance indicator.
+This lets the project expose a useful analysis surface without pretending every metric is a management key performance indicator and without padding catalogs for volume.
 
 ## Generic Archetypes
 
@@ -234,13 +234,19 @@ Before marking analytics insight reporting `PASS`, run:
 python scripts/validate_kpi_proofs.py --root .
 ```
 
-Use project-scale targets when the business scope is large enough to justify them:
+Default proof validation (no fixed counts):
+
+```bash
+python scripts/validate_kpi_proofs.py --root . --require-sql-proofs
+```
+
+Optional advisory count flags exist for teams that want planning targets; they are **not** required for `PASS` unless the project explicitly configures advisory policy and chooses to run them:
 
 ```bash
 python scripts/validate_kpi_proofs.py --root . --min-measures 60 --min-metrics 35 --min-kpis 15 --require-sql-proofs
 ```
 
-If minimum counts are not met, document each shortfall in `insight_backlog.md` with evidence. Do not mark the phase `PASS` silently.
+If process/fact coverage or critical KPI contracts are incomplete, document shortfalls in `insight_backlog.md` with evidence. Do not mark the phase `PASS` silently.
 
 ## Targeted Questions
 

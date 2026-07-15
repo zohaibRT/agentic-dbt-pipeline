@@ -13,7 +13,7 @@ When the user provides rules like the following, apply them for the whole run an
 2. Build conformed dimensions present in THIS warehouse (entity, date, status, and any other dims with evidence) for slicing.
 3. Do NOT apply privacy minimization unless I explicitly request it.
 4. Use label_dictionary.md — every chart axis must show business names, not blank or raw codes.
-5. Presentation must map published business metrics/KPIs in kpi_figure_coverage.md and use human-readable display names.
+5. Presentation must map published strategic KPIs and recommended business metrics in kpi_figure_coverage.md (dictionary-only rows optional) and use human-readable display names.
 6. Run live SQL for every RENDERED chart before marking presentation complete.
 ```
 
@@ -115,18 +115,21 @@ If labels cannot be resolved:
 
 Presentation is incomplete when any `RENDERED` categorical chart has empty or missing tick labels.
 
-## Rule 5 — Full catalog coverage in presentation
+## Rule 5 — Required presentation mapping (not every catalog row)
 
-`kpi_figure_coverage.md` must contain **every** row from:
+`kpi_figure_coverage.md` must map:
 
-- `measure_catalog.md` (supported/recommended/trusted)
-- `metric_catalog.md` (supported/recommended/trusted)
-- `kpi_catalog.md`
-- `KPI_DEFINITION_CONTRACTS.md` rows that are APPROVED or BLOCKED/DEFERRED
+- **Every strategic KPI** from `kpi_catalog.md` / published `KPI_DEFINITION_CONTRACTS.md` rows (`APPROVED`, `BLOCKED`, or `DEFERRED`)
+- **Every recommended/published business metric** intended for decision pages
+- **Data-quality metrics** → Exceptions / Data Quality surfaces
+- **Pipeline-health metrics** → Pipeline Health surfaces
+- Deferred/backlog items may remain in dictionary/backlog without being RENDERED
 
-Each row: `RENDERED` | `BLOCKED` | `DEFERRED` with reason and (for RENDERED) SQL proof path.
+Technical, exploratory, or dictionary-only catalog rows **may** stay on Metric Dictionary pages without forcing every raw measure onto executive boards. Do **not** pad boards with `dim_*_row_count` or other warehouse inventory as business measures.
 
-Do not only map the executive KPI cards. Supporting tabs must absorb measures and metrics.
+Each mapped row: `RENDERED` | `BLOCKED` | `DEFERRED` with reason and (for RENDERED) SQL proof path.
+
+Do not only map executive KPI cards while omitting published business metrics the report claims to support.
 
 ## Rule 5b — Visible density in the live browser report (hard)
 

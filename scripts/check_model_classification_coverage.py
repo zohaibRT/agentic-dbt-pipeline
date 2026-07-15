@@ -51,16 +51,18 @@ def main() -> int:
     rows = markdown_table_rows(classification)
     classified = {cells[0].lower().replace("`", "") for cells in rows if cells}
     missing = sorted(built - classified)
-    coverage = ratio(len(built) - len(missing), len(built)) if built else 1.0
-    print(f"Model classification: classified={len(classified & built)}/{len(built)} ({coverage:.0%})")
-
-    if coverage < required:
-        errors.append(
-            f"model classification coverage {coverage:.0%} below required {required:.0%}; "
-            f"missing examples: {', '.join(missing[:8])}"
-        )
-    elif missing:
-        warnings.append(f"unclassified models remain: {', '.join(missing[:8])}")
+    coverage = ratio(len(built) - len(missing), len(built))
+    if coverage is None:
+        errors.append("no built models to classify (empty inventory is NOT_APPLICABLE, not 100%)")
+    else:
+        print(f"Model classification: classified={len(classified & built)}/{len(built)} ({coverage:.0%})")
+        if coverage < required:
+            errors.append(
+                f"model classification coverage {coverage:.0%} below required {required:.0%}; "
+                f"missing examples: {', '.join(missing[:8])}"
+            )
+        elif missing:
+            warnings.append(f"unclassified models remain: {', '.join(missing[:8])}")
 
     text = read_text(classification).lower()
     if "class" not in text and "model class" not in text:

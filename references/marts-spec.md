@@ -162,7 +162,7 @@ Create reporting marts only when the required metrics and grain are clear. Do no
 
 - `not_null` + `unique` on dimension and fact primary keys
 - `not_null` and uniqueness on bridge composite keys when bridge tables exist
-- `relationships`: facts -> dimensions (and `fct_order_items` -> `fct_orders`)
+- `relationships`: facts -> dimensions, and child facts -> parent facts when a validated parent-child fact relationship exists
 - `relationships`: bridge keys -> dimensions when bridge tables exist
 - `accepted_values` on boolean flags
 - Use modern generic test `arguments:` nesting when supported by the installed dbt version

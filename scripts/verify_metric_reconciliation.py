@@ -1,39 +1,69 @@
 #!/usr/bin/env python3
-"""Verify KPI contracts and metric reconciliation matrix evidence."""
+"""Verify KPI contracts and metric reconciliation matrix evidence.
+
+Parses Markdown tables by header name. Supports:
+- Legacy contract schema (older templates)
+- Expanded production contract schema from kpi-definition-contract.md
+
+Fixed column positions are intentionally not used.
+"""
 
 from __future__ import annotations
 
 import argparse
 import re
+import sys
 from pathlib import Path
+
+from lib_gate_common import cell, normalize_header, parse_markdown_tables, read_text
 
 
 KPI_CONTRACTS = Path("reports/agent/KPI_DEFINITION_CONTRACTS.md")
 METRIC_MATRIX = Path("reports/agent/METRIC_VERIFICATION_MATRIX.md")
 BAD_STATUSES = {"FAIL", "BLOCKED"}
 VALID_STATUSES = {"PASS", "WARN", "FAIL", "BLOCKED", "DEFERRED", "SKIPPED"}
+VALID_APPROVALS = {"APPROVED", "PROPOSED", "DEFERRED", "BLOCKED", "DRAFT", "PENDING"}
 
 
-def table_rows(text: str, min_columns: int) -> list[list[str]]:
-    rows: list[list[str]] = []
-    for line in text.splitlines():
-        stripped = line.strip()
-        if not stripped.startswith("|") or "---" in stripped:
+def detect_contract_schema(headers: list[str]) -> str:
+    norm = {normalize_header(h) for h in headers}
+    if {"display_name", "business_question", "counting_key", "decision_supported"} & norm:
+        return "expanded"
+    if "sql_proof" in norm or "approval_status" in norm or "approval" in norm:
+        if "verification" in norm or "verification_status" in norm or "expected" in norm or "expected_result" in norm:
+            return "legacy_with_verification"
+        return "legacy"
+    return "unknown"
+
+
+def rows_from_first_matching_table(path: Path, matcher) -> tuple[str, list[dict[str, str]]]:
+    text = read_text(path)
+    for headers, data in parse_markdown_tables(text):
+        schema = matcher(headers)
+        if schema == "unknown":
             continue
-        cells = [cell.strip() for cell in stripped.strip("|").split("|")]
-        if len(cells) < min_columns:
-            continue
-        first = cells[0].lower()
-        if first in {"kpi id", "metric id"}:
-            continue
-        rows.append(cells)
-    return rows
+        norm_headers = [normalize_header(h) for h in headers]
+        rows: list[dict[str, str]] = []
+        for cells in data:
+            if not cells or cells[0].upper() == "TODO":
+                continue
+            row = {
+                norm_headers[i]: (cells[i].strip() if i < len(cells) else "")
+                for i in range(len(norm_headers))
+                if norm_headers[i]
+            }
+            rows.append(row)
+        return schema, rows
+    return "unknown", []
 
 
 def check_refs(root: Path, label: str, text: str, warnings: list[str]) -> None:
     for proof_ref in re.findall(r"reports/agent/[^\s`|,)]+\.sql", text):
-        proof_path = root / Path(proof_ref)
-        if not proof_path.exists():
+        if not (root / Path(proof_ref)).exists():
+            warnings.append(f"{label}: referenced SQL proof not found: {proof_ref}")
+    for proof_ref in re.findall(r"(?<![A-Za-z0-9_./-])([\w./-]*sql_proofs/[\w./-]+\.sql)", text):
+        candidates = [root / proof_ref, root / "reports" / "agent" / proof_ref]
+        if not any(p.exists() for p in candidates):
             warnings.append(f"{label}: referenced SQL proof not found: {proof_ref}")
 
 
@@ -49,53 +79,81 @@ def main() -> int:
     contracts_path = root / KPI_CONTRACTS
     matrix_path = root / METRIC_MATRIX
 
+    schema = "unknown"
+    contracts: list[dict[str, str]] = []
     if not contracts_path.exists():
         errors.append(f"Missing {KPI_CONTRACTS}")
-        contract_rows: list[list[str]] = []
     else:
-        contract_rows = table_rows(contracts_path.read_text(encoding="utf-8", errors="replace"), 16)
+        schema, contracts = rows_from_first_matching_table(contracts_path, detect_contract_schema)
+        if schema == "unknown":
+            errors.append(
+                "KPI_DEFINITION_CONTRACTS.md has no recognizable contract table headers "
+                "(need SQL Proof / Approval columns at minimum)"
+            )
+        elif not contracts:
+            errors.append("KPI definition contracts file has no contract rows")
+        else:
+            print(f"Detected KPI contract schema: {schema}")
 
+    matrix: list[dict[str, str]] = []
     if not matrix_path.exists():
         errors.append(f"Missing {METRIC_MATRIX}")
-        matrix_rows: list[list[str]] = []
     else:
-        matrix_rows = table_rows(matrix_path.read_text(encoding="utf-8", errors="replace"), 13)
+        _schema, matrix = rows_from_first_matching_table(
+            matrix_path,
+            lambda headers: "legacy" if "status" in {normalize_header(h) for h in headers} else "unknown",
+        )
+        if not matrix:
+            errors.append("Metric verification matrix has no metric rows")
 
-    if contracts_path.exists() and not contract_rows:
-        errors.append("KPI definition contracts file has no contract rows")
-    if matrix_path.exists() and not matrix_rows:
-        errors.append("Metric verification matrix has no metric rows")
+    for index, row in enumerate(contracts, start=1):
+        kpi_id = (
+            cell(row, "kpi_id", "kpi", "id", "key_performance_indicator", "display_name")
+            or f"KPI row {index}"
+        )
+        approval = cell(row, "approval", "approval_status", "business_approval_status").upper()
+        verification = cell(row, "verification", "verification_status").upper()
+        # Expanded schema uses Verification; legacy may only have Approval Status
+        if not verification:
+            status_fallback = cell(row, "status").upper()
+            if status_fallback in VALID_STATUSES:
+                verification = status_fallback
+        proof = cell(row, "sql_proof", "verified_by_sql_proof", "proof")
+        expected = cell(row, "expected", "expected_result")
+        actual = cell(row, "actual", "actual_result")
 
-    for index, row in enumerate(contract_rows, start=1):
-        kpi_id = row[0] or f"KPI row {index}"
-        approval_status = row[14].upper() if len(row) > 14 else ""
-        verification_status = row[15].upper() if len(row) > 15 else ""
-        proof = row[10] if len(row) > 10 else ""
-        expected = row[11] if len(row) > 11 else ""
-        actual = row[12] if len(row) > 12 else ""
+        if not verification and approval:
+            if approval in {"APPROVED", "PROPOSED"}:
+                verification = "PASS" if expected and actual and proof else "WARN"
+            elif approval in {"DEFERRED", "BLOCKED", "DRAFT", "PENDING"}:
+                verification = approval if approval in VALID_STATUSES else "DEFERRED"
 
-        if verification_status not in VALID_STATUSES:
-            errors.append(f"{kpi_id}: invalid or missing verification status '{verification_status}'")
-        elif verification_status in BAD_STATUSES:
-            errors.append(f"{kpi_id}: unresolved verification status {verification_status}")
+        if verification not in VALID_STATUSES:
+            errors.append(f"{kpi_id}: invalid or missing verification status '{verification}'")
+        elif verification in BAD_STATUSES:
+            errors.append(f"{kpi_id}: unresolved verification status {verification}")
 
-        if verification_status in {"PASS", "WARN"}:
-            if approval_status not in {"APPROVED", "PROPOSED", "DEFERRED", "BLOCKED"}:
-                errors.append(f"{kpi_id}: invalid or missing approval status '{approval_status}'")
+        if verification in {"PASS", "WARN"}:
+            if approval and approval not in VALID_APPROVALS:
+                errors.append(f"{kpi_id}: invalid approval status '{approval}'")
+            if not approval:
+                errors.append(f"{kpi_id}: missing approval status")
             if not proof or proof.upper() in {"N/A", "TODO"}:
                 errors.append(f"{kpi_id}: missing SQL proof reference")
-            if not expected or not actual:
+            if schema == "expanded" and (not expected or not actual):
                 errors.append(f"{kpi_id}: missing expected or actual result")
+            elif schema != "expanded" and (not expected or not actual):
+                warnings.append(f"{kpi_id}: legacy contract missing expected/actual — add columns when migrating")
 
         check_refs(root, kpi_id, proof, warnings)
 
-    for index, row in enumerate(matrix_rows, start=1):
-        metric_id = row[0] or f"Metric row {index}"
-        status = row[12].upper() if len(row) > 12 else ""
-        source_proof = row[5] if len(row) > 5 else ""
-        mart_proof = row[6] if len(row) > 6 else ""
-        expected = row[9] if len(row) > 9 else ""
-        actual = row[10] if len(row) > 10 else ""
+    for index, row in enumerate(matrix, start=1):
+        metric_id = cell(row, "metric", "metric_id", "id", "kpi") or f"Metric row {index}"
+        status = cell(row, "status", "verification_status").upper()
+        source_proof = cell(row, "source_proof")
+        mart_proof = cell(row, "current_model_proof", "mart_proof", "current_proof")
+        expected = cell(row, "expected_result", "expected")
+        actual = cell(row, "actual_result", "actual")
 
         if status not in VALID_STATUSES:
             errors.append(f"{metric_id}: invalid or missing status '{status}'")
@@ -110,11 +168,12 @@ def main() -> int:
             if not expected or not actual:
                 errors.append(f"{metric_id}: missing expected or actual result")
 
-        check_refs(root, metric_id, " ".join(row), warnings)
+        check_refs(root, metric_id, " ".join(row.values()), warnings)
 
     print("Metric reconciliation summary:")
-    print(f"  KPI contracts checked: {len(contract_rows)}")
-    print(f"  metric matrix rows checked: {len(matrix_rows)}")
+    print(f"  KPI contract schema: {schema}")
+    print(f"  KPI contracts checked: {len(contracts)}")
+    print(f"  metric matrix rows checked: {len(matrix)}")
     print(f"  warnings: {len(warnings)}")
     print(f"  errors: {len(errors)}")
     for warning in warnings[:20]:

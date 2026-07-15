@@ -33,22 +33,25 @@ def main() -> int:
     warnings: list[str] = []
 
     if not coverage.exists():
-        warnings.append(
+        errors.append(
             "missing time_intelligence_coverage.md — evaluate current/prior/trend support per important metric"
         )
         return print_results("Time intelligence coverage check", errors, warnings)
 
     passes, total, unknowns = count_status_rows(coverage)
-    cov = ratio(passes, total) if total else 0.0
-    print(f"Time intelligence coverage: PASS-like={passes}/{total} ({cov:.0%}), unknown={unknowns}")
-
-    if total == 0:
-        warnings.append("time_intelligence_coverage.md has no data rows")
-    elif cov < required:
-        # Insufficient history should be DEFERRED/WARN rows, not silent omission
+    cov = ratio(passes, total)
+    if cov is None:
+        print(f"Time intelligence coverage: PASS-like={passes}/{total}, unknown={unknowns}")
         errors.append(
-            f"applicable time-intelligence coverage {cov:.0%} below required {required:.0%}"
+            "time_intelligence_coverage.md has no applicable rows "
+            "(NOT_APPLICABLE items are excluded; empty applicable set is not 100%)"
         )
+    else:
+        print(f"Time intelligence coverage: PASS-like={passes}/{total} ({cov:.0%}), unknown={unknowns}")
+        if cov < required:
+            errors.append(
+                f"applicable time-intelligence coverage {cov:.0%} below required {required:.0%}"
+            )
 
     text = read_text(coverage).lower()
     for hint in ("reporting period", "prior", "date role", "target"):

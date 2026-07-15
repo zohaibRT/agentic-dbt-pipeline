@@ -222,14 +222,25 @@ def main() -> int:
                 "rates as %, amounts with units/separators (Rule 5c)"
             )
 
-    if gold_facts >= 1 and not has_dq_page:
-        warnings.append("no Exceptions/Data Quality page markers found in presentation surface")
-    if gold_facts >= 1 and not has_pipeline_page:
-        warnings.append("no Pipeline Health page markers found in presentation surface")
+    dq_catalog = root / "reports" / "agent" / "09_analytics_insights" / "kpis" / "data_quality_metric_catalog.md"
+    pipeline_catalog = (
+        root / "reports" / "agent" / "09_analytics_insights" / "kpis" / "pipeline_health_metric_catalog.md"
+    )
+    has_dq_metrics = dq_catalog.exists() and len(read_text(dq_catalog).strip()) > 40
+    has_pipeline_metrics = pipeline_catalog.exists() and len(read_text(pipeline_catalog).strip()) > 40
+
+    if (gold_facts >= 1 or has_dq_metrics) and not has_dq_page:
+        errors.append(
+            "Exceptions/Data Quality page required when gold facts or DQ metric catalog exist"
+        )
+    if (gold_facts >= 1 or has_pipeline_metrics) and not has_pipeline_page:
+        errors.append(
+            "Pipeline Health page required when gold facts or pipeline-health metric catalog exist"
+        )
 
     gold_sql = list((root / "models" / "gold").rglob("dim_*.sql")) if (root / "models" / "gold").exists() else []
     if gold_sql and not has_dim_tab:
-        warnings.append(
+        errors.append(
             "gold dimensions exist but no Dimensions browse tab found — "
             "prefer readable dim tables over dim_*_row_count as business measures"
         )

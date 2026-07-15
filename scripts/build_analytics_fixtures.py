@@ -232,9 +232,28 @@ Within tolerance.
 
 | KPI ID | Display Name | Metric Class | Business Process | Business Question | Decision Supported | Action When Bad | Owner | Formula | Grain | Counting Key | Date Field | Date Role | Included Rows | Excluded Rows | Dimensions | Unit/Currency | Format | Aggregation | Target | Desired Direction | Source Models | Built In | SQL Proof | Expected | Actual | Diff / Tolerance | Approval | Verification | Why Correct / Open Question |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| KPI-001 | Volume KPI | kpi | process | How many events occurred? | Capacity planning | Investigate drop | analytics | count(*) | event | event_id | event_date | occurred | all valid | test rows | status | count | integer | additive | Target not defined | increase | fct | report | proofs/vol.sql | 100 | 100 | 0 | APPROVED | PASS | Matches source |
-| KPI-002 | Completion rate KPI | kpi | process | What share completed? | Process health | Review failures | analytics | completed/total | event | event_id | event_date | completed | non-cancelled | cancelled | status | ratio | percent | ratio | Target not defined | increase | fct | report | proofs/rate.sql | 0.8 | 0.8 | 0 | APPROVED | PASS | Definition approved |
+| KPI-001 | Volume KPI | kpi | process | How many events occurred? | Capacity planning | Investigate drop | analytics | count(*) | event | event_id | event_date | occurred | all valid | test rows | status | count | integer | additive | Target not defined | increase | fct | report | reports/agent/sql_proofs/010_volume.sql | 100 | 100 | 0 | APPROVED | PASS | Matches source |
+| KPI-002 | Completion rate KPI | kpi | process | What share completed? | Process health | Review failures | analytics | completed/total | event | event_id | event_date | completed | non-cancelled | cancelled | status | ratio | percent | ratio | Target not defined | increase | fct | report | reports/agent/sql_proofs/020_rate.sql | 0.8 | 0.8 | 0 | APPROVED | PASS | Definition approved |
 """,
+    )
+    write(
+        base / "reports" / "agent" / "METRIC_VERIFICATION_MATRIX.md",
+        """
+# Metric Verification Matrix (TEST FIXTURE)
+
+| Metric | Source Proof | Current Model Proof | Expected Result | Actual Result | Diff | Status | Notes |
+|---|---|---|---|---|---|---|---|
+| Volume KPI | reports/agent/sql_proofs/010_volume.sql | reports/agent/sql_proofs/010_volume.sql | 100 | 100 | 0 | PASS | Matches |
+| Completion rate KPI | reports/agent/sql_proofs/020_rate.sql | reports/agent/sql_proofs/020_rate.sql | 0.8 | 0.8 | 0 | PASS | Matches |
+""",
+    )
+    write(
+        base / "reports" / "agent" / "sql_proofs" / "010_volume.sql",
+        "-- expected: 100\n-- actual: 100\nselect 100 as volume;\n",
+    )
+    write(
+        base / "reports" / "agent" / "sql_proofs" / "020_rate.sql",
+        "-- expected: 0.8\n-- actual: 0.8\nselect 0.8 as rate;\n",
     )
 
     # Presentation readability surface

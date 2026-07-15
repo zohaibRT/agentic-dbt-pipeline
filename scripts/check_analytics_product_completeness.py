@@ -47,15 +47,19 @@ def main() -> int:
         return print_results("Analytics product completeness check", errors, warnings)
 
     passes, total, unknowns = count_status_rows(matrix)
-    coverage = ratio(passes, total) if total else 0.0
-    print(f"Analytics coverage matrix: PASS-like={passes}/{total} ({coverage:.0%}), unknown={unknowns}")
-
-    if total == 0:
-        errors.append("analytics_coverage_matrix.md has no data rows")
-    elif coverage < required:
+    coverage = ratio(passes, total)
+    if coverage is None:
+        print(f"Analytics coverage matrix: PASS-like={passes}/{total}, unknown={unknowns}")
         errors.append(
-            f"business-process analytical coverage {coverage:.0%} below required {required:.0%}"
+            "analytics_coverage_matrix.md has no applicable data rows "
+            "(empty applicable set is NOT_APPLICABLE, not 100%)"
         )
+    else:
+        print(f"Analytics coverage matrix: PASS-like={passes}/{total} ({coverage:.0%}), unknown={unknowns}")
+        if coverage < required:
+            errors.append(
+                f"business-process analytical coverage {coverage:.0%} below required {required:.0%}"
+            )
 
     if not process_catalog.exists():
         warnings.append("missing business_process_catalog.md — processes should drive metrics and pages")

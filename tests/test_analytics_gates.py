@@ -5,13 +5,17 @@ from __future__ import annotations
 
 import subprocess
 import sys
+import tempfile
 import unittest
 from pathlib import Path
-
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = ROOT / "scripts"
 FIX = ROOT / "fixtures" / "analytics"
+
+sys.path.insert(0, str(SCRIPTS))
+from lib_gate_common import named_status, ratio  # noqa: E402
+from verify_metric_reconciliation import detect_contract_schema  # noqa: E402
 
 
 def run_script(script: str, *args: str, cwd: Path | None = None) -> subprocess.CompletedProcess[str]:
@@ -23,6 +27,120 @@ class DomainNeutralityTests(unittest.TestCase):
     def test_skill_domain_neutrality_passes(self) -> None:
         proc = run_script("check_domain_neutrality.py", "--root", str(ROOT))
         self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+
+    def test_detects_hardcoded_required_model_in_reference(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "references").mkdir()
+            bad = root / "references" / "bad-requirement.md"
+            bad.write_text(
+                "Agents must build dim_customer and fct_orders for every project.\n",
+                encoding="utf-8",
+            )
+            (root / "scripts").mkdir()
+            proc = run_script("check_domain_neutrality.py", "--root", str(root))
+            self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
+            self.assertIn("hardcoded", (proc.stdout + proc.stderr).lower())
+
+
+class SharedHelperTests(unittest.TestCase):
+    def test_empty_ratio_is_not_complete(self) -> None:
+        self.assertIsNone(ratio(0, 0))
+        self.assertEqual(ratio(1, 2), 0.5)
+
+    def test_named_status_ignores_approval_cells(self) -> None:
+        row = {
+            "approval": "APPROVED",
+            "status": "BLOCKED",
+            "notes": "SUPPORTED",
+        }
+        self.assertEqual(named_status(row), "FAIL")
+
+
+class ReconciliationHeaderTests(unittest.TestCase):
+    def test_detects_expanded_schema(self) -> None:
+        headers = [
+            "KPI ID",
+            "Display Name",
+            "Business Question",
+            "Counting Key",
+            "Decision Supported",
+            "SQL Proof",
+            "Expected",
+            "Actual",
+            "Approval",
+            "Verification",
+        ]
+        self.assertEqual(detect_contract_schema(headers), "expanded")
+
+    def test_legacy_schema_detection(self) -> None:
+        headers = [
+            "KPI",
+            "Business meaning",
+            "Source model",
+            "Grain",
+            "SQL proof",
+            "Expected",
+            "Actual",
+            "Approval status",
+            "Verification status",
+        ]
+        self.assertEqual(detect_contract_schema(headers), "legacy_with_verification")
+
+    def test_expanded_contract_passes_reconciliation(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            agent = root / "reports" / "agent"
+            proofs = agent / "sql_proofs"
+            proofs.mkdir(parents=True)
+            (proofs / "a.sql").write_text("select 1;\n", encoding="utf-8")
+            (agent / "KPI_DEFINITION_CONTRACTS.md").write_text(
+                """
+| KPI ID | Display Name | Metric Class | Business Process | Business Question | Decision Supported | Action When Bad | Owner | Formula | Grain | Counting Key | Date Field | Date Role | Included Rows | Excluded Rows | Dimensions | Unit/Currency | Format | Aggregation | Target | Desired Direction | Source Models | Built In | SQL Proof | Expected | Actual | Diff / Tolerance | Approval | Verification | Why Correct / Open Question |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| KPI-1 | Volume | kpi | p | How many? | Plan | Fix | o | count(*) | e | id | d | occurred | all | none | s | count | integer | additive | Target not defined | increase | fct | path | reports/agent/sql_proofs/a.sql | 1 | 1 | 0 | APPROVED | PASS | ok |
+""".strip()
+                + "\n",
+                encoding="utf-8",
+            )
+            (agent / "METRIC_VERIFICATION_MATRIX.md").write_text(
+                """
+| Metric | Source Proof | Current Model Proof | Expected Result | Actual Result | Diff | Status | Notes |
+|---|---|---|---|---|---|---|---|
+| Volume | reports/agent/sql_proofs/a.sql | reports/agent/sql_proofs/a.sql | 1 | 1 | 0 | PASS | ok |
+""".strip()
+                + "\n",
+                encoding="utf-8",
+            )
+            proc = run_script("verify_metric_reconciliation.py", "--root", str(root))
+            self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+            self.assertIn("expanded", proc.stdout)
+
+
+class MetricContractRowAwareTests(unittest.TestCase):
+    def test_split_fields_across_rows_fail(self) -> None:
+        """Global keyword scan would pass; per-row validation must fail."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            agent = root / "reports" / "agent"
+            agent.mkdir(parents=True)
+            (root / "reports" / "agent" / "09_analytics_insights").mkdir(parents=True)
+            (agent / "KPI_DEFINITION_CONTRACTS.md").write_text(
+                """
+| KPI ID | Display Name | Business Question | Decision Supported | Action When Bad | Owner | Grain | Counting Key | SQL Proof | Approval | Verification |
+|---|---|---|---|---|---|---|---|---|---|---|
+| KPI-A | Alpha | What is volume? | | | analytics | event | id | reports/agent/a.sql | APPROVED | PASS |
+| KPI-B | Beta | | Capacity | Investigate | | event | id | reports/agent/b.sql | APPROVED | PASS |
+""".strip()
+                + "\n",
+                encoding="utf-8",
+            )
+            (root / "project.config.yml").write_text(
+                "analytics_policy:\n  critical_kpi_contract_coverage_required: 1.0\n",
+                encoding="utf-8",
+            )
+            proc = run_script("check_metric_contract_completeness.py", "--root", str(root))
+            self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
 
 
 class MultiDomainFixtureTests(unittest.TestCase):
@@ -55,6 +173,7 @@ class MultiDomainFixtureTests(unittest.TestCase):
             "check_report_page_contracts.py",
             "check_report_business_readability.py",
             "check_exposure_coverage.py",
+            "verify_metric_reconciliation.py",
         ]
         for slug in (
             "domain_a_transactional",
@@ -73,10 +192,14 @@ class MultiDomainFixtureTests(unittest.TestCase):
                     )
 
     def test_no_cross_fixture_industry_leak_requirement(self) -> None:
-        """Encounter fixture must not require commerce-only entities."""
-        text = (FIX / "domain_b_encounter" / "reports" / "agent" / "09_analytics_insights" / "analytics_coverage_matrix.md").read_text(
-            encoding="utf-8"
-        ).lower()
+        text = (
+            FIX
+            / "domain_b_encounter"
+            / "reports"
+            / "agent"
+            / "09_analytics_insights"
+            / "analytics_coverage_matrix.md"
+        ).read_text(encoding="utf-8").lower()
         self.assertIn("encounter", text)
         self.assertNotIn("subscription", text)
         self.assertNotIn("sku", text)
@@ -84,7 +207,6 @@ class MultiDomainFixtureTests(unittest.TestCase):
 
 class PresentationReadabilityGateTests(unittest.TestCase):
     def test_legacy_sql_dump_board_fails_readability(self) -> None:
-        # Use a temp-like fixture under fixtures/analytics/_bad_sql_dump
         bad = FIX / "_bad_sql_dump"
         matplotlib = bad / "reports" / "agent" / "10_presentation" / "matplotlib"
         matplotlib.mkdir(parents=True, exist_ok=True)

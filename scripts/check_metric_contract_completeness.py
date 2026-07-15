@@ -1,36 +1,84 @@
 #!/usr/bin/env python3
 """Check KPI / metric contract completeness for published metrics.
 
-Looks for required decision-oriented fields in KPI_DEFINITION_CONTRACTS.md
-and related analytics contract artifacts.
+Validates every published KPI row individually against required headers.
+Coverage = complete critical KPI contracts / total published critical KPIs.
 """
 
 from __future__ import annotations
 
 import argparse
-import re
 import sys
 from pathlib import Path
 
-
-REQUIRED_FIELD_HINTS = (
-    ("business_question", ("business question", "business_question")),
-    ("decision_supported", ("decision supported", "decision_supported", "decisions supported")),
-    ("action_when_bad", ("action when bad", "action_when_bad", "recommended action")),
-    ("owner", ("owner",)),
-    ("display_name", ("display name", "display_name")),
-    ("aggregation_behavior", ("aggregation", "additive", "semi_additive", "non_additive", "aggregation_behavior")),
-    ("desired_direction", ("desired direction", "desired_direction", "increase", "decrease")),
-    ("target_or_not_defined", ("target", "target not defined", "target_source")),
-    ("sql_proof", ("sql proof", "sql_proof", "verified by sql")),
-    ("approval_status", ("approval", "approved", "proposed", "deferred", "blocked")),
+from lib_gate_common import (
+    cell,
+    load_analytics_policy,
+    normalize_header,
+    parse_markdown_tables,
+    print_results,
+    ratio,
+    read_text,
 )
 
 
-def read_text(path: Path) -> str:
-    if not path.exists():
-        return ""
-    return path.read_text(encoding="utf-8", errors="replace")
+CRITICAL_HEADER_GROUPS = (
+    ("kpi_id", ("kpi_id", "kpi", "id", "key_performance_indicator")),
+    ("display_name", ("display_name", "display")),
+    ("business_question", ("business_question",)),
+    ("decision_supported", ("decision_supported", "decisions_supported")),
+    ("action_when_bad", ("action_when_bad", "recommended_action")),
+    ("owner", ("owner",)),
+    ("grain", ("grain",)),
+    ("counting_key", ("counting_key", "count_key")),
+    ("sql_proof", ("sql_proof", "verified_by_sql_proof", "proof")),
+    ("approval", ("approval", "approval_status")),
+    ("verification", ("verification", "verification_status", "status")),
+)
+
+RECOMMENDED_HEADER_GROUPS = (
+    ("aggregation", ("aggregation", "aggregation_behavior")),
+    ("desired_direction", ("desired_direction",)),
+    ("target", ("target", "target_source")),
+    ("format", ("format",)),
+    ("expected", ("expected", "expected_result")),
+    ("actual", ("actual", "actual_result")),
+)
+
+PUBLISHED_APPROVALS = {"APPROVED", "PROPOSED", "BLOCKED", "DEFERRED"}
+
+
+def contract_rows(path: Path) -> list[dict[str, str]]:
+    text = read_text(path)
+    rows: list[dict[str, str]] = []
+    for headers, data in parse_markdown_tables(text):
+        norm = [normalize_header(h) for h in headers]
+        header_set = set(norm)
+        # Prefer expanded or legacy contract tables
+        if not (
+            {"sql_proof", "approval", "approval_status"} & header_set
+            or ("kpi_id" in header_set and "grain" in header_set)
+            or ("kpi" in header_set and "sql_proof" in header_set)
+        ):
+            continue
+        for cells in data:
+            row = {
+                norm[i]: (cells[i].strip() if i < len(cells) else "")
+                for i in range(len(norm))
+                if norm[i]
+            }
+            rows.append(row)
+        if rows:
+            return rows
+    return rows
+
+
+def row_has(row: dict[str, str], aliases: tuple[str, ...]) -> bool:
+    value = cell(row, *aliases)
+    if not value:
+        return False
+    upper = value.strip().upper()
+    return upper not in {"TODO", "N/A", "TBD", "<TODO>", ""}
 
 
 def main() -> int:
@@ -38,70 +86,75 @@ def main() -> int:
     parser.add_argument("--root", type=Path, default=Path("."))
     args = parser.parse_args()
     root = args.root.resolve()
+    policy = load_analytics_policy(root)
+    required_ratio = float(policy.get("critical_kpi_contract_coverage_required", 1.0))
 
     contracts = root / "reports" / "agent" / "KPI_DEFINITION_CONTRACTS.md"
     insights = root / "reports" / "agent" / "09_analytics_insights"
+    errors: list[str] = []
+    warnings: list[str] = []
+
     if not contracts.exists() and not insights.exists():
         print("SKIPPED: no KPI contracts or analytics folder")
         return 0
     if not contracts.exists():
-        print("SKIPPED: KPI_DEFINITION_CONTRACTS.md not found yet")
-        return 0
+        # Analytics started without contracts is incomplete for critical KPI coverage
+        errors.append(
+            "KPI_DEFINITION_CONTRACTS.md missing while analytics insights exist — "
+            "critical KPI contract coverage cannot be verified"
+        )
+        return print_results("Metric contract completeness check", errors, warnings)
 
-    text = read_text(contracts)
-    lower = text.lower()
-    data_rows = 0
-    for line in text.splitlines():
-        stripped = line.strip()
-        if not stripped.startswith("|") or re.match(r"^\|\s*-+", stripped):
+    rows = contract_rows(contracts)
+    print(f"Metric contract completeness: contract_rows={len(rows)}")
+
+    if not rows:
+        errors.append("KPI_DEFINITION_CONTRACTS.md has no data rows")
+        return print_results("Metric contract completeness check", errors, warnings)
+
+    published = 0
+    complete = 0
+    for index, row in enumerate(rows, start=1):
+        kpi_id = cell(row, "kpi_id", "kpi", "id", "display_name") or f"row {index}"
+        approval = cell(row, "approval", "approval_status").upper()
+        if approval and approval not in PUBLISHED_APPROVALS and approval not in {"DRAFT", "PENDING", ""}:
+            warnings.append(f"{kpi_id}: unusual approval status {approval}")
+
+        # Count rows that look like published/critical KPIs (exclude pure drafts without proof intent)
+        is_critical = approval in {"APPROVED", "PROPOSED", "BLOCKED", ""} or not approval
+        if not is_critical:
             continue
-        cells = [c.strip() for c in stripped.strip("|").split("|")]
-        if not cells:
-            continue
-        first = cells[0].lower()
-        if first in {"kpi id", "id", "name", ""} or first.startswith("<"):
-            continue
-        data_rows += 1
 
-    print(f"Metric contract completeness: contract_rows~{data_rows}")
+        published += 1
+        missing_critical: list[str] = []
+        for label, aliases in CRITICAL_HEADER_GROUPS:
+            if not row_has(row, aliases):
+                missing_critical.append(label)
+        missing_recommended: list[str] = []
+        for label, aliases in RECOMMENDED_HEADER_GROUPS:
+            if not row_has(row, aliases):
+                missing_recommended.append(label)
 
-    errors: list[str] = []
-    warnings: list[str] = []
+        if missing_critical:
+            errors.append(f"{kpi_id}: missing critical contract fields: {', '.join(missing_critical)}")
+        else:
+            complete += 1
+        if missing_recommended:
+            warnings.append(
+                f"{kpi_id}: missing recommended contract fields: {', '.join(missing_recommended)}"
+            )
 
-    if data_rows == 0:
-        warnings.append("KPI_DEFINITION_CONTRACTS.md has no data rows yet")
+    cov = ratio(complete, published)
+    if cov is None:
+        errors.append("no published critical KPI rows to score (empty applicable set is NOT_APPLICABLE, not 100%)")
     else:
-        missing = []
-        for label, hints in REQUIRED_FIELD_HINTS:
-            if not any(h in lower for h in hints):
-                missing.append(label)
-        if missing:
-            # Hard fail only for the strongest decision fields when contracts exist
-            critical = {"business_question", "decision_supported", "action_when_bad", "sql_proof", "approval_status"}
-            critical_missing = [m for m in missing if m in critical]
-            other_missing = [m for m in missing if m not in critical]
-            if critical_missing:
-                errors.append(
-                    "KPI contracts missing critical fields: " + ", ".join(critical_missing)
-                )
-            if other_missing:
-                warnings.append(
-                    "KPI contracts missing recommended fields: " + ", ".join(other_missing)
-                )
+        print(f"Critical KPI contract coverage: {complete}/{published} ({cov:.0%})")
+        if cov < required_ratio:
+            errors.append(
+                f"critical KPI contract coverage {cov:.0%} below required {required_ratio:.0%}"
+            )
 
-    for item in warnings:
-        print(f"WARN: {item}")
-    for item in errors:
-        print(f"ERROR: {item}")
-
-    if errors:
-        print("Metric contract completeness check FAILED")
-        return 1
-    if warnings:
-        print("Metric contract completeness check PASSED with warnings")
-        return 0
-    print("Metric contract completeness check PASSED")
-    return 0
+    return print_results("Metric contract completeness check", errors, warnings)
 
 
 if __name__ == "__main__":
