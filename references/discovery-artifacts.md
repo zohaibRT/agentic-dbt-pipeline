@@ -28,6 +28,18 @@ reports/agent/NEXT_PHASE_PROMPT.md
 
 `core_profile.json`, `discovery_raw.json`, and `first_pass_scope.json` are **required**, not optional.
 
+## Keep scripts out of discovery reports
+
+Do **not** store helper Python files or intermediate scratch JSON under `reports/agent/00_discovery/`.
+
+| Put here | Not here |
+|---|---|
+| `<project.root>/scripts/discovery/*.py` | `reports/agent/00_discovery/*.py` |
+| `<project.root>/scripts/discovery/working/_*.json` | `reports/agent/00_discovery/_exact_row_counts.json` and other scratch JSON |
+| `reports/agent/00_discovery/` reports + SQL proofs + canonical JSON | mixed runners + report clutter |
+
+Canonical discovery outputs remain only the mandatory list above plus `sql_proofs/`.
+
 ## Machine-readable JSON files
 
 ### `core_profile.json`

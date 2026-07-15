@@ -3,13 +3,17 @@
 ## Purpose
 
 List KPIs this project **can** deliver once blockers, missing data, or unclear definitions are fixed.  
+For every OPEN row, the agent must recommend a concrete unblock rule (not only ask).  
 Update after every checkpoint. Re-warn the human in chat every time OPEN gaps remain.
 
-Read skill reference: `references/kpi-gap-and-stakeholder-warnings.md`.
+Read skill references:
+
+- `references/kpi-gap-and-stakeholder-warnings.md`
+- `references/recommendation-and-review.md`
 
 ## How To Use
 
-1. Human answers OPEN rows on `HUMAN_ATTENTION_BOARD.md`.
+1. Human accepts, overrides, or defers each OPEN recommendation on `HUMAN_ATTENTION_BOARD.md`.
 2. Agent unlocks matching KPIs with proofs and contracts.
 3. Move unlocked rows to `UNLOCKED` and stop presenting them as blocked.
 4. Keep `IMPOSSIBLE` rows when source data does not exist.
@@ -25,11 +29,11 @@ Read skill reference: `references/kpi-gap-and-stakeholder-warnings.md`.
 
 ## Makeable KPIs Still Blocked
 
-| ID | KPI candidate | Why it matters | Evidence it is makeable | Blocker type | What is missing or confusing | Attention Board ID | Needed human action | Cannot ship until | Status |
-|---|---|---|---|---|---|---|---|---|---|
-| KG-001 | <Active Subscription Count> | <portfolio health> | <fct_subscriptions + status column; proof path> | MISSING_DEFINITION | <Active vs not_deleted unclear> | HA-002 | <Approve Active rule> | <definition approved + reconciled> | OPEN |
+| ID | KPI candidate | Why it matters | Evidence it is makeable | Blocker type | What is missing or confusing | Agent recommendation | Why this recommendation | Alternative rejected | Attention Board ID | Ask from human | Cannot ship until | Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| KG-001 | <Active Subscription Count> | <portfolio health> | <fct_subscriptions + status; proof path> | MISSING_DEFINITION | <Active vs not_deleted unclear> | <status = Active AND not deleted> | <counts / status mix evidence> | <not_deleted only inflates count> | HA-002 | Accept / Override / Defer | <definition approved + reconciled> | OPEN |
 
-If none: write one row `None | No blocked makeable KPIs | n/a | n/a | n/a | n/a | n/a | Continue | n/a | NONE`.
+If none: write one row `None | No blocked makeable KPIs | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | Continue | n/a | NONE`.
 
 ## Impossible Or Out-Of-Scope KPIs
 
@@ -45,18 +49,17 @@ If none: write `None`.
 
 | ID | KPI | Unlocked by decision | Proof / contract | Status |
 |---|---|---|---|---|
-| <KG-00x> | <name> | <HA-00x answer> | <contract + proof path> | UNLOCKED |
+| <KG-00x> | <name> | <Accepted HA-00x recommendation> | <contract + proof path> | UNLOCKED |
 
 ## Chat Reminder Text (copy into every checkpoint summary)
 
 ```text
 ## Still blocked — fix these or these KPIs stay missing
+## Agent recommends (accept or override)
 
-Until OPEN blockers below are fixed, these KPIs will not be delivered.
-
-| Attention ID | Blocker / missing / confusing | KPIs blocked | Status |
-|---|---|---|---|
-| <HA-00x> | <gap> | <KPI names> | OPEN |
+| Attention ID | Agent recommendation | Why | KPIs unlocked if accepted | Status |
+|---|---|---|---|---|
+| <HA-00x> | <concrete rule> | <evidence> | <KPI names> | OPEN |
 
 Trusted now: <list>
 Still blocked: <list>

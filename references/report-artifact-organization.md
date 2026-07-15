@@ -87,6 +87,31 @@ reports/agent/
 
 Use the folder that matches the current phase. Do not put phase-specific files at the root unless the file is one of the root control-plane files.
 
+## Scripts vs reports (mandatory)
+
+`reports/agent/` is for human reports, SQL proofs, and approved JSON evidence only.
+
+| Allowed under `reports/agent/` | Forbidden under `reports/agent/` |
+|---|---|
+| `.md` reports, proof indexes, SQL proofs | Python scripts (`.py`) |
+| Canonical discovery JSON (`core_profile.json`, `discovery_raw.json`, `first_pass_scope.json`) | Scratch/helper JSON such as `_exact_row_counts.json` |
+| Presentation HTML/theme under `10_presentation/` | Ad-hoc runners mixed into phase folders |
+
+Put project-local helper scripts here instead:
+
+```text
+<script_project_root>/scripts/
+  discovery/           # discovery profiling / artifact generators
+  discovery/working/   # intermediate scratch JSON from helpers
+  <phase>/             # optional phase helpers when needed
+```
+
+Skill-owned reusable gates stay in the installed skill `scripts/` folder (`validate_config.py`, acceptance gates, etc.).
+
+Do not invent one-off discovery runners inside `reports/agent/00_discovery/`. If a temporary profiling script is required, create it under `<project.root>/scripts/discovery/`, write scratch outputs to `scripts/discovery/working/`, and publish only canonical reports into `reports/agent/00_discovery/`.
+
+Also read [discovery-artifacts.md](discovery-artifacts.md) for the mandatory discovery report set.
+
 During project setup and configuration, run:
 
 ```powershell

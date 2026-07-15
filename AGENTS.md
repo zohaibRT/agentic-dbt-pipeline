@@ -59,6 +59,7 @@ Do not:
 - Write dbt outputs into the configured source schema.
 - Create gold or marts before bronze/staging and silver/intermediate models are built and validated.
 - Guess business metrics, mappings, relationships, reporting needs, or sensitive-field handling.
+- Store helper Python scripts or scratch `_*.json` under `reports/agent/` (put them in `<project.root>/scripts/` instead; keep reports for markdown, proofs, and canonical JSON only).
 - Mark work complete when dbt tests or warehouse validation failed without documenting the blocker.
 - Mark work complete when `scripts/run_acceptance_gate.py` returns `FAIL` or independent verification returns `FAIL`.
 

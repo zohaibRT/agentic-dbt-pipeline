@@ -279,6 +279,31 @@ def validate_report_index_why(root: Path) -> list[str]:
     return errors
 
 
+def validate_discovery_folder_hygiene(root: Path) -> list[str]:
+    """Keep helper scripts and scratch JSON out of reports/agent/00_discovery."""
+    errors: list[str] = []
+    discovery_dir = root / "reports" / "agent" / "00_discovery"
+    if not discovery_dir.exists():
+        return errors
+
+    allowed_json = {"core_profile.json", "discovery_raw.json", "first_pass_scope.json"}
+    for path in sorted(discovery_dir.iterdir()):
+        if not path.is_file():
+            continue
+        if path.suffix.lower() == ".py":
+            errors.append(
+                f"{path.as_posix()}: Python helpers must live under "
+                "scripts/discovery/, not reports/agent/00_discovery/"
+            )
+        elif path.suffix.lower() == ".json" and path.name not in allowed_json:
+            errors.append(
+                f"{path.as_posix()}: scratch/non-canonical JSON must live under "
+                "scripts/discovery/working/; keep only core_profile.json, "
+                "discovery_raw.json, and first_pass_scope.json in discovery reports"
+            )
+    return errors
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=Path("."))
@@ -297,6 +322,7 @@ def main() -> int:
         if path.exists():
             errors.extend(validate_json(path))
     errors.extend(validate_sql_proof_linkage(root))
+    errors.extend(validate_discovery_folder_hygiene(root))
     errors.extend(validate_status_review_sections(root))
     errors.extend(validate_scope_lock_consistency(root))
     errors.extend(validate_report_index_why(root))

@@ -49,6 +49,39 @@ If a section has no items, write `None found for this phase` instead of omitting
 - Mark low-risk technical defaults as agent-owned, such as derived project name, source name, layer folder names, test selection, and package routing.
 - Mark high-impact choices as user-approved before build, such as fact grain, final metrics, PII/PHI exposure, mappings, table exclusions, schema behavior changes, full refresh, and accepted evaluator warnings.
 
+## Mandatory: recommend before asking
+
+Every OPEN human decision on `HUMAN_ATTENTION_BOARD.md`, every OPEN KPI gap on `KPI_GAP_REGISTER.md`, and every checkpoint chat summary must include a concrete agent recommendation.
+
+Bad (ask-only):
+
+```text
+What should Active mean?
+Pick status vs not_deleted.
+```
+
+Good (recommend, then ask to accept or override):
+
+```text
+Agent recommendation: define Active Subscription Count as
+`status = 'Active' AND deleted = false`.
+Why: status already separates portfolio states; not_deleted alone would count 826 vs 271 Active rows and inflate the KPI.
+Please reply: Accept recommendation / Override with your rule.
+```
+
+Required fields for every OPEN decision:
+
+| Field | Requirement |
+|---|---|
+| Agent recommendation | One concrete rule, mapping, filter, default, or next build path |
+| Why recommended | Evidence from proofs, counts, uniqueness, privacy, or reconciliation |
+| Alternatives considered | At least one rejected option and why it is weaker |
+| Ask from human | Accept recommendation, override with exact rule, or defer with reason |
+
+Never leave Recommendation as empty, `TBD`, `needs discussion`, or `pick one` without choosing a preferred answer first.
+
+Also read [kpi-gap-and-stakeholder-warnings.md](kpi-gap-and-stakeholder-warnings.md) for the required chat **Agent recommends** section.
+
 ## Examples
 
 Good recommendation:
@@ -82,6 +115,8 @@ Good recommendation:
 Bad behavior:
 
 - Asking the user to design all facts and dimensions without a recommendation.
+- Listing blockers without recommending the safest unblock path.
+- Writing Attention Board Recommendation as `pick one`, `TBD`, or only a question.
 - Building gold metrics from ambiguous fields without approval.
 - Treating source discovery as approval to build.
 - Hiding business assumptions only in SQL.

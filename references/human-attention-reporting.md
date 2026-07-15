@@ -78,12 +78,14 @@ Technical PASS evidence stays in proofs and the phase report. Do not flood the h
 
 ## Attention Board row shape
 
-| ID | Need from human | Why it matters | Recommendation | Evidence link | Blocks | Status |
-|---|---|---|---|---|---|---|
-| D-01 | Approve 30-table first pass? | Locks build scope | Approve with conditions | `00_discovery/first_pass_scope.json` | Setup | OPEN |
-| G-02 | Privacy-safe account dim policy? | Enables customer slicing without clear-text PII | Hash keys; exclude names/phones | `05_gold` proof `015` | Complete star / KPIs | OPEN |
+| ID | Need from human | Why it matters | Agent recommendation | Why recommended | Alternative rejected | Evidence link | Blocks | Status |
+|---|---|---|---|---|---|---|---|---|
+| D-01 | Approve 30-table first pass? | Locks build scope | Approve with documented conditions | Priority tables have keys/counts; deferred tables are enrichment-only | Expanding to all adjacent tables before relationships are proven | `00_discovery/first_pass_scope.json` | Setup | OPEN |
+| G-02 | Privacy-safe account dim policy? | Enables customer slicing without clear-text PII | Hash keys; exclude names/phones from gold | Direct identifiers are present in source and unnecessary for first marts | Clear-text gold exposure | `05_gold` proof `015` | Complete star / KPIs | OPEN |
 
 Status values: `OPEN`, `ANSWERED`, `CARRY_FORWARD`, `DEFERRED`.
+
+Every OPEN row must include a concrete agent recommendation. Forbidden recommendation text: `TBD`, `needs discussion`, `pick one`, or an empty cell.
 
 ## Chat and approval behavior
 
@@ -91,14 +93,17 @@ After each checkpoint, the chat control-panel summary should be short but must *
 
 1. What finished
 2. What needs human input now (IDs from the Attention Board)
-3. Mandatory section: **Still blocked — fix these or these KPIs stay missing** (copy OPEN rows from Attention Board + Gap Register; include even if shown before)
-4. Trusted now vs still blocked KPI lists
-5. What the next Yes allows / does not allow (explicitly: next Yes does not unlock blocked KPIs unless OPEN IDs are answered)
-6. Exact next-phase prompt
+3. Mandatory section: **Still blocked — fix these or these KPIs stay missing**
+4. Mandatory section: **Agent recommends (accept or override)** — concrete preferred rule + why + KPIs unlocked for each OPEN ID
+5. Trusted now vs still blocked KPI lists
+6. What the next Yes allows / does not allow (explicitly: next Yes does not unlock blocked KPIs unless OPEN recommendations are accepted or overridden)
+7. Exact next-phase prompt
 
 Do not paste full discovery inventories or full cardinality matrices into chat.
 
 Do not skip the KPI-gap re-warning because the human already approved a technical phase or saw the same blocker earlier.
+
+Do not ask “what should we do?” without a recommended default. Every OPEN row must have Accept / Override / Defer.
 
 ## Maintenance rule
 
@@ -117,5 +122,6 @@ Reporting is unhealthy when:
 - The human cannot find OPEN decisions in under one minute
 - Chat and Attention Board disagree
 - Evidence is only in chat, not in proofs/files
-- Chat omits the repeated **Still blocked — fix these or these KPIs stay missing** warning while OPEN gaps exist
+- Chat omits the repeated **Still blocked** / **Agent recommends** warning while OPEN gaps exist
 - Makeable blocked KPIs are not listed in `KPI_GAP_REGISTER.md`
+- OPEN Attention Board rows lack a concrete agent recommendation (ask-only / pick-one / TBD)

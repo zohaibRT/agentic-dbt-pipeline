@@ -13,10 +13,11 @@ Use this 7-point script in chat after every checkpoint:
 3. **What we proved** — short proof highlights
 4. **What is trusted now** — safe for business use
 5. **What is still blocked** — Attention Board IDs + KPI impact (re-warn every time)
-6. **What next Yes allows / does not allow**
-7. **Decision needed from you** — OPEN rows only
+6. **Agent recommends** — concrete preferred rule per OPEN ID + Accept / Override / Defer
+7. **What next Yes allows / does not allow**
+8. **Decision needed from you** — accept recommendations, override, or defer
 
-Always re-warn: because of these blockers / missing data / unclear definitions, these KPIs stay missing until you fix them. See [kpi-gap-and-stakeholder-warnings.md](kpi-gap-and-stakeholder-warnings.md).
+Always re-warn: because of these blockers / missing data / unclear definitions, these KPIs stay missing until you accept or override the agent recommendations. See [kpi-gap-and-stakeholder-warnings.md](kpi-gap-and-stakeholder-warnings.md) and [recommendation-and-review.md](recommendation-and-review.md).
 
 | Audience | Open first |
 |---|---|

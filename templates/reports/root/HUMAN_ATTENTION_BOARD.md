@@ -5,12 +5,15 @@
 This is the **only** file a human should need for “what do you need from me?”  
 Technical detail stays in phase reports and `sql_proofs/`. Do not duplicate full matrices here.
 
+For every OPEN decision, the agent must recommend a concrete answer first. The human accepts, overrides, or defers.
+
 For KPIs that exist but cannot ship yet, also maintain `KPI_GAP_REGISTER.md` and re-warn in chat after every checkpoint.
 
 Read skill references:
 
 - `references/human-attention-reporting.md`
 - `references/kpi-gap-and-stakeholder-warnings.md`
+- `references/recommendation-and-review.md`
 - `references/stakeholder-layer-and-presentation-guide.md`
 
 ## Current Checkpoint
@@ -27,23 +30,31 @@ Read skill references:
 
 Only decisions that are `OPEN` and require a human answer or approval.
 
-| ID | Need from human | Why it matters (plain language) | Recommendation | Evidence link | Blocks (including KPIs) | Status |
-|---|---|---|---|---|---|---|
-| <D-01> | <one clear question> | <what goes wrong if unanswered> | <safe default or ask> | `<path>` | <phase/output + KPI names> | OPEN |
+| ID | Need from human | Why it matters (plain language) | Agent recommendation | Why recommended | Alternative rejected | Ask from human | Evidence link | Blocks (including KPIs) | Status |
+|---|---|---|---|---|---|---|---|---|---|
+| <D-01> | <one clear question> | <what goes wrong if unanswered> | <concrete preferred rule> | <evidence> | <weaker option + why> | Accept / Override / Defer | `<path>` | <phase/output + KPI names> | OPEN |
 
-If none: write one row `None | No human input required for this checkpoint | n/a | Continue | n/a | n/a | NONE`.
+If none: write one row `None | No human input required for this checkpoint | n/a | Continue | n/a | n/a | n/a | n/a | n/a | NONE`.
+
+Do **not** leave Agent recommendation as `TBD`, `needs discussion`, or `pick one`.
 
 ## KPI Impact Of OPEN Decisions
 
 Re-state every checkpoint. Leaving these unanswered means these KPIs stay missing.
 
-| Attention ID | Missing / confusing / blocked | KPIs we can make after you fix this | Gap Register ID | Status |
+| Attention ID | Agent recommendation | KPIs unlocked if accepted | Gap Register ID | Status |
 |---|---|---|---|---|
-| <HA-002> | <Active definition unclear> | <Active Subscription Count> | <KG-001> | OPEN |
+| <HA-002> | <concrete rule> | <Active Subscription Count> | <KG-001> | OPEN |
 
 If none: write `No open KPI gaps.`
 
 Full matrix: `reports/agent/KPI_GAP_REGISTER.md`.
+
+## Agent Recommendations Summary
+
+Short list for chat copy/paste:
+
+1. `<HA-00x>: recommend <rule> because <why>. Accept / Override / Defer.`
 
 ## Carry-Forward Conditions
 
@@ -63,13 +74,14 @@ Keep these out of the attention board (link only if needed):
 - Software version lists unless they block work
 - Repeated copies of the same WARN essay across many phase files
 
-Chat must still re-warn OPEN KPI gaps every checkpoint even when this board barely changed.
+Chat must still re-warn OPEN KPI gaps and agent recommendations every checkpoint even when this board barely changed.
 
 ## Recommended Next Action
 
-- Next approval: <what Yes means>
+- Preferred path: <agent recommendation for the next checkpoint>
+- Next approval: <what Yes means, including Accept recommendations if bundled>
 - Does not approve: <excluded work>
-- Does **not** unlock blocked KPIs unless matching OPEN IDs above are answered
+- Does **not** unlock blocked KPIs unless matching OPEN recommendations are accepted or overridden
 - Exact prompt: see `reports/agent/NEXT_PHASE_PROMPT.md`
 
 ## Quick Links

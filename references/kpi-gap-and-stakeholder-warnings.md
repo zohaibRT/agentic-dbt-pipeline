@@ -10,10 +10,11 @@ Blockers and missing/confusing definitions hide valuable KPIs. The agent must:
 
 1. Keep a live **KPI Gap Register** that lists KPIs the project **can** support once gaps are fixed.
 2. Tie every blocked KPI to a concrete blocker, missing data, or open human decision.
-3. **Re-warn the human in chat after every checkpoint**, even when the same blocker was shown before.
-4. Tell the human plainly: **you must fix or answer these items, or these KPIs stay missing.**
+3. For every OPEN gap, write a concrete **agent recommendation** (rule + why + alternative rejected), not only “needs human input.”
+4. **Re-warn the human in chat after every checkpoint**, even when the same blocker was shown before.
+5. Tell the human plainly: **accept the recommendation, override it, or these KPIs stay missing.**
 
-Do not treat repeated chat warnings as duplication noise. File reports stay thin (Attention Board + Gap Register). Chat must re-state OPEN gaps every turn so the human cannot miss the cost of leaving blockers open.
+Do not treat repeated chat warnings as duplication noise. File reports stay thin (Attention Board + Gap Register). Chat must re-state OPEN gaps **and agent recommendations** every turn so the human cannot miss the cost of leaving blockers open.
 
 ## Required artifact
 
@@ -36,8 +37,11 @@ Also keep a short **KPI impact** section on `reports/agent/HUMAN_ATTENTION_BOARD
 | Evidence that it is makeable | Tables/models/columns or proofs that exist today |
 | Blocker type | `MISSING_DATA` / `MISSING_DEFINITION` / `PRIVACY` / `UNITS` / `GRAIN` / `MAPPING` / `RELATIONSHIP` / `DIMENSION` / `APPROVAL` |
 | What is missing or confusing | Exact gap |
+| Agent recommendation | Concrete preferred rule (not “pick one”) |
+| Why this recommendation | Proof counts, uniqueness, privacy, or reconciliation evidence |
+| Alternative rejected | Weaker option and why |
 | Attention Board ID | Matching `HA-###` / decision ID when human-owned |
-| Needed human action | What the human must answer or approve |
+| Ask from human | `Accept recommendation` / `Override: <rule>` / `Defer` |
 | Cannot ship until | Plain “blocked until …” |
 | Status | `OPEN` / `ANSWERED` / `UNLOCKED` / `DEFERRED` / `IMPOSSIBLE` |
 
@@ -62,31 +66,39 @@ Every visible Markdown chat control-panel summary **must** include this section,
 ## Still blocked — fix these or these KPIs stay missing
 
 You still have open blockers / missing data / unclear definitions.
-Until you answer or fix them, the pipeline will not deliver the KPIs below.
+Until you accept or override the agent recommendations below, the pipeline will not deliver these KPIs.
 
-| Attention ID | Blocker / missing / confusing | KPIs we can make after you fix this | Status |
-|---|---|---|---|
-| HA-002 | Active subscription definition unclear | Active Subscription Count | OPEN |
-| HA-003 | CRM vs payments-service amount units unconfirmed | Cross-System Revenue, Net Revenue mix | OPEN |
-| HA-004 | Delivered order definition unclear | Delivered Order Count | OPEN |
+## Agent recommends (accept or override)
+
+| Attention ID | Agent recommendation | Why | KPIs unlocked if accepted | Status |
+|---|---|---|---|---|
+| HA-002 | Active = status Active AND not deleted | Status separates states; not_deleted alone inflates 826 vs 271 | Active Subscription Count | OPEN |
+| HA-003 | Keep CRM and payments-service money separate until units confirmed | Amount scales differ (~4k vs ~487k peaks) | Cross-System Revenue | OPEN |
+| HA-004 | Delivered = order status delivered | delivered_on alone can count scheduled/future dates | Delivered Order Count | OPEN |
 
 What you must do now:
-1. Answer each OPEN row on `HUMAN_ATTENTION_BOARD.md`.
-2. Supply missing business definitions, units, privacy policy, or mappings.
+1. For each OPEN row: reply Accept recommendation, Override with your exact rule, or Defer with reason.
+2. Update answers on `HUMAN_ATTENTION_BOARD.md` / confirm in chat.
 3. Confirm when source data simply does not exist (`IMPOSSIBLE` rows).
 
 Trusted now (may present): <list APPROVED KPIs or "none yet">
 Still blocked (do not present as live KPIs): <list OPEN gap KPI names>
 ```
 
+Forbidden chat patterns for OPEN gaps:
+
+- “What should we do?” with no recommendation
+- “Please decide between A and B” with no preferred option
+- Only listing blockers without how the agent would unblock them
+
 Rules:
 
 - If there are no KPI gaps, write exactly: `No open KPI gaps at this checkpoint.`
-- If technical work continues (bronze → silver → gold facts) while gaps remain, say: **Build can continue, but these KPIs remain unavailable until you fix the gaps.**
+- If technical work continues (bronze → silver → gold facts) while gaps remain, say: **Build can continue, but these KPIs remain unavailable until you accept or override the recommendations.**
 - Never bury the warning only inside a report file.
 - Never drop the section because the human approved a technical next phase.
-- Mirror the same OPEN IDs as `HUMAN_ATTENTION_BOARD.md` and `KPI_GAP_REGISTER.md`.
-
+- Mirror the same OPEN IDs, recommendations, and KPI names as `HUMAN_ATTENTION_BOARD.md` and `KPI_GAP_REGISTER.md`.
+- Every OPEN gap row in chat and files must include agent recommendation + why.
 ## Layer speech template (stakeholder)
 
 After every layer, the chat (and phase summary) should also include:
@@ -96,10 +108,11 @@ Layer: <name>   Status: PASS / WARN / BLOCKED
 Built: <what>
 Trusted now: <what business users may rely on>
 Still missing because of blockers: <KPI names>
+Agent recommends: <one-line preferred rule per OPEN ID>
 Attention Board: <OPEN IDs>
 Evidence: <phase report + gap register>
 Next Yes allows: <scope>
-Next Yes does NOT unlock: <blocked KPIs unless IDs are answered>
+Next Yes does NOT unlock: <blocked KPIs unless recommendations accepted/overridden>
 ```
 
 ## Anti-duplication vs re-warning
@@ -108,15 +121,17 @@ Next Yes does NOT unlock: <blocked KPIs unless IDs are answered>
 |---|---|
 | Full KPI gap matrix once in `KPI_GAP_REGISTER.md` | Pasting the same long WARN essay into discovery, silver, gold, pipeline status, and context tree |
 | Short Attention Board KPI impact table | Inventing KPIs with no evidence they are makeable |
-| Re-stating OPEN gaps in **every chat summary** | Claiming “pipeline complete” while OPEN KPI gaps remain unmentioned |
+| Re-stating OPEN gaps + recommendations in **every chat summary** | Claiming “pipeline complete” while OPEN KPI gaps remain unmentioned |
 | Linking proofs | Treating WARN as “ignore and approve” without KPI impact |
+| Concrete agent recommendation on every OPEN row | Ask-only “what should we do?” / “pick one” |
 
 ## Completion check
 
 Checkpoint reporting is incomplete when:
 
 - `KPI_GAP_REGISTER.md` is missing after discovery or any later phase that found candidate metrics
-- Chat summary omits the **Still blocked — fix these or these KPIs stay missing** section
+- Chat summary omits the **Still blocked** or **Agent recommends** sections while OPEN gaps exist
+- OPEN Attention Board decisions have no concrete Recommendation / Why / Ask
 - OPEN Attention Board decisions have no linked blocked KPI names
 - Presentation shows blocked KPIs as live cards
 - Final delivery claims success without listing remaining OPEN KPI gaps
