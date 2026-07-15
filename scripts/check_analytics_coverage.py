@@ -1,128 +1,28 @@
 #!/usr/bin/env python3
 """Evaluate analytics product completeness from process/fact coverage.
 
-Replaces fixed 50+/50+ catalog-row targets with evidence-based coverage:
-- analytics_coverage_matrix.md present and populated when insights exist
-- separated business vs quality/pipeline catalogs preferred
-- per-fact coverage contract evaluated when fact_coverage_contracts.md exists
-- thin catalogs still WARN when rich gold has almost no measures
-
-See references/analytics-product-completeness.md.
+Completion is evidence-based — never fixed catalog count quotas.
+Uses explicit Status / Verification columns via lib_gate_common helpers.
 """
 
 from __future__ import annotations
 
 import argparse
-import re
 import sys
 from pathlib import Path
 
-from lib_gate_common import load_analytics_policy
-
-
-HEADER_TOKENS = {
-    "name",
-    "measure",
-    "metric",
-    "kpi",
-    "id",
-    "measure name",
-    "metric name",
-    "business process",
-    "facts",
-    "fact",
-    "dimensions",
-    "none",
-    "",
-    "---",
-}
-
-
-def read_text(path: Path) -> str:
-    if not path.exists():
-        return ""
-    return path.read_text(encoding="utf-8", errors="replace")
-
-
-def catalog_item_count(path: Path) -> int:
-    if not path.exists():
-        return 0
-    rows = 0
-    for line in read_text(path).splitlines():
-        stripped = line.strip()
-        if not stripped.startswith("|"):
-            continue
-        if re.match(r"^\|\s*-+", stripped):
-            continue
-        cells = [c.strip() for c in stripped.strip("|").split("|")]
-        if not cells:
-            continue
-        first = cells[0].lower()
-        if first in HEADER_TOKENS or first.startswith("<") or first.startswith("kg-"):
-            continue
-        rows += 1
-    return rows
-
-
-def table_data_rows(path: Path) -> list[list[str]]:
-    rows: list[list[str]] = []
-    if not path.exists():
-        return rows
-    for line in read_text(path).splitlines():
-        stripped = line.strip()
-        if not stripped.startswith("|"):
-            continue
-        if re.match(r"^\|\s*-+", stripped):
-            continue
-        cells = [c.strip() for c in stripped.strip("|").split("|")]
-        if not cells:
-            continue
-        first = cells[0].lower()
-        if first in HEADER_TOKENS or first.startswith("<"):
-            continue
-        rows.append(cells)
-    return rows
-
-
-def count_gold_facts(root: Path) -> int:
-    fact_catalog = root / "reports" / "agent" / "09_analytics_insights" / "fact_catalog.md"
-    text = read_text(fact_catalog)
-    if text:
-        count = 0
-        for line in text.splitlines():
-            stripped = line.strip()
-            if not stripped.startswith("|") or re.match(r"^\|\s*-+", stripped):
-                continue
-            cells = [c.strip() for c in stripped.strip("|").split("|")]
-            if not cells:
-                continue
-            name = cells[0].lower()
-            if name in {"fact model", "model", "name", ""}:
-                continue
-            if name.startswith("fct_") or name.startswith("mart_"):
-                count += 1
-        if count:
-            return count
-
-    gold = root / "models" / "gold"
-    if not gold.exists():
-        return 0
-    return sum(1 for path in gold.rglob("*.sql") if path.name.startswith(("fct_", "mart_")))
-
-
-def count_pass_rows(path: Path, status_col_hints: tuple[str, ...] = ("pass", "status")) -> tuple[int, int]:
-    """Return (pass_like_rows, total_data_rows) for a markdown matrix."""
-    rows = table_data_rows(path)
-    if not rows:
-        return 0, 0
-    pass_rows = 0
-    for cells in rows:
-        joined = " ".join(cells).lower()
-        if "pass" in joined and "blocked" not in joined.split("pass")[-1][:12]:
-            pass_rows += 1
-        elif any(c.strip().upper() == "PASS" for c in cells):
-            pass_rows += 1
-    return pass_rows, len(rows)
+from lib_gate_common import (
+    catalog_item_count,
+    cell,
+    count_gold_facts,
+    count_status_rows,
+    load_analytics_policy,
+    named_status,
+    print_results,
+    ratio,
+    read_text,
+    table_dicts,
+)
 
 
 def main() -> int:
@@ -132,13 +32,21 @@ def main() -> int:
         "--min-process-coverage",
         type=float,
         default=None,
-        help="Minimum fraction of analytics_coverage_matrix rows that should be PASS-like",
+        help="Override analytics_policy.business_process_coverage_required",
     )
     args = parser.parse_args()
     root = args.root.resolve()
     policy = load_analytics_policy(root)
-    if args.min_process_coverage is None:
-        args.min_process_coverage = float(policy.get("business_process_coverage_required", 0.9))
+    min_process = (
+        float(args.min_process_coverage)
+        if args.min_process_coverage is not None
+        else float(policy.get("business_process_coverage_required", 0.9))
+    )
+    fact_required = float(policy.get("critical_fact_coverage_required", 1.0))
+    recon_required = float(policy.get("critical_reconciliation_coverage_required", 1.0))
+    time_required = float(policy.get("time_intelligence_coverage_required", 0.8))
+    dq_required = float(policy.get("critical_data_quality_coverage_required", 1.0))
+    trace_required = float(policy.get("report_traceability_required", 1.0))
 
     insights = root / "reports" / "agent" / "09_analytics_insights"
     if not insights.exists():
@@ -154,8 +62,14 @@ def main() -> int:
     pipeline_catalog = kpis / "pipeline_health_metric_catalog.md"
     coverage_matrix = insights / "analytics_coverage_matrix.md"
     fact_contracts = insights / "fact_coverage_contracts.md"
+    time_cov = insights / "time_intelligence_coverage.md"
+    obs_cov = insights / "data_observability_coverage.md"
+    figure_cov = root / "reports" / "agent" / "10_presentation" / "matplotlib" / "kpi_figure_coverage.md"
 
-    if not any(p.exists() for p in (measure_path, metric_path, business_measure, business_metric, coverage_matrix)):
+    if not any(
+        p.exists()
+        for p in (measure_path, metric_path, business_measure, business_metric, coverage_matrix)
+    ):
         print("SKIPPED: analytics catalogs / coverage matrix not found yet")
         return 0
 
@@ -164,11 +78,11 @@ def main() -> int:
     metric_count = catalog_item_count(metric_path) or catalog_item_count(business_metric)
     dq_count = catalog_item_count(dq_catalog)
     pipeline_count = catalog_item_count(pipeline_catalog)
-    coverage_pass, coverage_total = count_pass_rows(coverage_matrix)
-    fact_pass, fact_total = count_pass_rows(fact_contracts)
+    coverage_pass, coverage_total, coverage_unknown = count_status_rows(coverage_matrix)
+    fact_pass, fact_total, fact_unknown = count_status_rows(fact_contracts)
 
     print(
-        "Analytics product coverage: "
+        "Analytics product coverage (informational counts only): "
         f"gold_facts~{gold_facts}, business_measures~{measure_count}, "
         f"business_metrics~{metric_count}, quality_metrics~{dq_count}, "
         f"pipeline_metrics~{pipeline_count}, "
@@ -181,67 +95,107 @@ def main() -> int:
 
     if gold_facts >= 1 and not coverage_matrix.exists():
         errors.append(
-            "missing reports/agent/09_analytics_insights/analytics_coverage_matrix.md — "
-            "process/fact coverage is the primary gate (not fixed 50+ row counts)"
+            "missing analytics_coverage_matrix.md — process/fact coverage is the primary gate"
         )
-    elif coverage_total > 0:
-        ratio = coverage_pass / coverage_total
-        print(f"Business-process coverage: {ratio:.0%} (target >= {args.min_process_coverage:.0%})")
-        if ratio < args.min_process_coverage:
-            errors.append(
-                f"analytics_coverage_matrix.md PASS-like coverage {ratio:.0%} "
-                f"is below target {args.min_process_coverage:.0%}"
-            )
+    else:
+        cov = ratio(coverage_pass, coverage_total)
+        if cov is None:
+            if gold_facts >= 1:
+                errors.append(
+                    "analytics_coverage_matrix.md has no applicable Status rows "
+                    "(empty set is NOT_APPLICABLE, not 100%)"
+                )
+        else:
+            print(f"Business-process coverage: {cov:.0%} (required >= {min_process:.0%})")
+            if coverage_unknown:
+                warnings.append(f"{coverage_unknown} coverage-matrix rows lack explicit Status")
+            if cov < min_process:
+                errors.append(
+                    f"analytics_coverage_matrix coverage {cov:.0%} below required {min_process:.0%}"
+                )
 
     if gold_facts >= 1 and not fact_contracts.exists():
-        warnings.append(
-            "missing fact_coverage_contracts.md — evaluate each fct_/mart_ for volume, value, "
-            "status, time, dimensions, quality, reconciliation, and business questions"
-        )
-    elif fact_total > 0 and fact_pass < fact_total:
-        warnings.append(
-            f"fact_coverage_contracts.md incomplete: {fact_pass}/{fact_total} PASS-like rows"
-        )
+        errors.append("missing fact_coverage_contracts.md for material analytical facts")
+    else:
+        fcov = ratio(fact_pass, fact_total)
+        if fcov is None and gold_facts >= 1:
+            errors.append("fact_coverage_contracts.md has no applicable Status rows")
+        elif fcov is not None:
+            print(f"Fact analytical coverage: {fcov:.0%} (required >= {fact_required:.0%})")
+            if fcov < fact_required:
+                errors.append(f"fact coverage {fcov:.0%} below required {fact_required:.0%}")
 
-    if gold_facts >= 3 and measure_count < 5:
-        errors.append(
-            f"business/measure catalogs have only ~{measure_count} rows while gold has "
-            f"{gold_facts} facts/marts — incomplete analytical coverage for material facts"
-        )
-    elif gold_facts >= 1 and measure_count == 0:
-        warnings.append("no business measures catalogued yet")
+    if time_cov.exists():
+        t_pass, t_total, _ = count_status_rows(time_cov)
+        tcov = ratio(t_pass, t_total)
+        if tcov is not None:
+            print(f"Time-intelligence coverage: {tcov:.0%} (required >= {time_required:.0%})")
+            if tcov < time_required:
+                errors.append(
+                    f"time-intelligence coverage {tcov:.0%} below required {time_required:.0%}"
+                )
+    elif gold_facts >= 1:
+        warnings.append("missing time_intelligence_coverage.md")
 
-    if gold_facts >= 3 and metric_count < 5:
-        warnings.append(
-            f"business/metric catalogs have only ~{metric_count} rows with {gold_facts} gold facts — "
-            "expand rates/shares/trends only where they answer documented business questions"
-        )
+    if obs_cov.exists():
+        o_pass, o_total, _ = count_status_rows(obs_cov)
+        ocov = ratio(o_pass, o_total)
+        if ocov is not None:
+            print(f"Observability domain coverage: {ocov:.0%} (required >= {dq_required:.0%})")
+            if ocov < dq_required:
+                errors.append(f"observability coverage {ocov:.0%} below required {dq_required:.0%}")
+    elif gold_facts >= 1 and dq_count == 0 and not (insights / "data_observability_report.md").exists():
+        errors.append("missing data observability coverage/report and DQ metric catalog")
+
+    # Report traceability when presentation coverage artifact exists
+    if figure_cov.exists():
+        rendered = 0
+        with_proof = 0
+        for row in table_dicts(figure_cov):
+            status = cell(row, "status").upper()
+            if status != "RENDERED":
+                continue
+            rendered += 1
+            proof = cell(row, "proof", "sql_proof", "proof_path")
+            if proof and proof.upper() not in {"N/A", "TODO", ""}:
+                with_proof += 1
+        tcov = ratio(with_proof, rendered)
+        if tcov is not None:
+            print(f"Report traceability (RENDERED->proof): {tcov:.0%} (required >= {trace_required:.0%})")
+            if tcov < trace_required:
+                errors.append(
+                    f"rendered proof traceability {tcov:.0%} below required {trace_required:.0%}"
+                )
+    # Reconciliation coverage is enforced in verify_metric_reconciliation.py using
+    # critical_reconciliation_coverage_required (referenced here for gate visibility).
+    print(f"Policy critical_reconciliation_coverage_required={recon_required:.0%}")
+
+    if gold_facts >= 1 and measure_count == 0 and metric_count == 0:
+        warnings.append("no business measures/metrics catalogued yet (informational)")
 
     if business_measure.exists() or business_metric.exists():
         if measure_path.exists() and metric_path.exists() and dq_count == 0 and pipeline_count == 0:
             warnings.append(
-                "prefer separate data_quality_metric_catalog.md and pipeline_health_metric_catalog.md "
-                "so technical counts do not mix into business pages"
+                "prefer separate data_quality_metric_catalog.md and pipeline_health_metric_catalog.md"
             )
     elif measure_path.exists() and "row_count" in read_text(measure_path).lower():
         warnings.append(
-            "measure_catalog.md appears to mix model row_count / engineering QA with business measures — "
-            "split into business_measure_catalog.md and data_quality_metric_catalog.md"
+            "measure_catalog.md appears to mix model row_count / engineering QA with business measures"
         )
 
-    for item in warnings:
-        print(f"WARN: {item}")
-    for item in errors:
-        print(f"ERROR: {item}")
+    # Advisory-only targets (never hard fail unless explicitly set and mode says so)
+    adv_m = policy.get("advisory_measure_target")
+    adv_t = policy.get("advisory_metric_target")
+    if adv_m is not None and measure_count < int(adv_m):
+        warnings.append(
+            f"advisory measure target {adv_m} not met (have {measure_count}) — not a completion gate"
+        )
+    if adv_t is not None and metric_count < int(adv_t):
+        warnings.append(
+            f"advisory metric target {adv_t} not met (have {metric_count}) — not a completion gate"
+        )
 
-    if errors:
-        print("Analytics coverage check FAILED")
-        return 1
-    if warnings:
-        print("Analytics coverage check PASSED with warnings")
-        return 0
-    print("Analytics coverage check PASSED")
-    return 0
+    return print_results("Analytics coverage check", errors, warnings)
 
 
 if __name__ == "__main__":

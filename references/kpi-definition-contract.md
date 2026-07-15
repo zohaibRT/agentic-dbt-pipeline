@@ -95,6 +95,19 @@ Most important fields:
 
 Without these, the system can calculate a number but cannot justify showing it.
 
+## Validation Type values
+
+When documenting proof or reconciliation expectations, use explicit validation types:
+
+- `numeric_exact` — expected and actual must match exactly
+- `numeric_tolerance` — absolute or relative numeric tolerance applies
+- `ratio_tolerance` — ratio/percent comparison with tolerance
+- `row_count_match` — row-count reconciliation between source and mart
+- `set_match` — categorical/set equality check
+- `acceptance_rule` — human-approved rule documented in the proof
+- `blocked` — cannot verify yet; documented blocker required
+- `deferred` — intentionally postponed with owner and reason
+
 ## Required contract table
 
 ```markdown

@@ -1,0 +1,6 @@
+encounter_id,provider_id,location_id,status_code,encounter_date
+1,P1,L1,O,2024-02-01
+2,P1,L2,C,2024-02-02
+3,P2,L1,O,2024-02-03
+4,P2,L2,C,2024-02-04
+5,P1,L1,O,2024-02-05

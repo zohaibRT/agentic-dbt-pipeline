@@ -1,0 +1,26 @@
+version: 2
+models:
+
+  - name: fct_case_activities
+    description: TEST FIXTURE fact model
+    columns:
+      - name: event_id
+        tests: [not_null, unique]
+
+  - name: dim_people
+    description: TEST FIXTURE dimension model
+    columns:
+      - name: person_id
+        tests: [not_null, unique]
+
+  - name: dim_organizations
+    description: TEST FIXTURE dimension model
+    columns:
+      - name: organization_id
+        tests: [not_null, unique]
+
+  - name: dim_statuses
+    description: TEST FIXTURE dimension model
+    columns:
+      - name: status_code
+        tests: [not_null, unique]

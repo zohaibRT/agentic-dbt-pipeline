@@ -1,0 +1,20 @@
+name: domain_a_transactional
+version: '1.0.0'
+config-version: 2
+profile: fixture_duckdb
+model-paths: ["models"]
+seed-paths: ["seeds"]
+target-path: target
+clean-targets:
+  - target
+  - dbt_packages
+seeds:
+  +schema: main
+models:
+  domain_a_transactional:
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: view
+    gold:
+      +materialized: table

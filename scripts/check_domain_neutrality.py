@@ -53,6 +53,14 @@ HARDCODED_MODEL_REQUIREMENT = re.compile(
     re.I,
 )
 
+KPI_FORMULA_PATTERNS = (
+    re.compile(r"required.*count\s*\(\s*\*\s*\)\s*from\s+orders", re.I),
+    re.compile(r"must\s+use\s+revenue\s*=", re.I),
+    re.compile(r"mandatory\s+page.*sales\s+dashboard", re.I),
+)
+
+REQUIRED_SOURCES_LIST = re.compile(r"required_sources\s*=\s*\[", re.I)
+
 SKIP_DIR_PARTS = {
     ".git",
     ".venv",
@@ -80,7 +88,9 @@ def is_allowed_path(path: Path, skill_root: Path) -> bool:
         return True
     if "example" in rel or "illustrative" in rel:
         return True
-    if rel.startswith("docs/analytics-product-completeness-migration") or rel.startswith(
+    if rel.startswith("docs/analytics-gate-p1-migration") or rel.startswith(
+        "docs/analytics-product-completeness-migration"
+    ) or rel.startswith(
         "docs/production_analytics_upgrade_summary"
     ):
         # Historical migration prose may mention removed 50+ behavior.
@@ -143,6 +153,11 @@ def scan_python(path: Path, skill_root: Path) -> list[str]:
         finding.append(f"{rel}: hard-coded metric_count < 50 gate is not allowed")
     if HARDCODED_MODEL_REQUIREMENT.search(text):
         finding.append(f"{rel}: hardcoded model name requirement detected")
+    for pattern in KPI_FORMULA_PATTERNS:
+        if pattern.search(text):
+            finding.append(f"{rel}: hardcoded KPI formula/page pattern: {pattern.pattern}")
+    if REQUIRED_SOURCES_LIST.search(text):
+        finding.append(f"{rel}: hardcoded required_sources list detected")
 
     return finding
 
@@ -168,6 +183,12 @@ def scan_text_requirements(path: Path, skill_root: Path) -> list[str]:
                 break
         if HARDCODED_MODEL_REQUIREMENT.search(line):
             findings.append(f"{rel}:{i}: hardcoded model name requirement: {line.strip()}")
+        for pattern in KPI_FORMULA_PATTERNS:
+            if pattern.search(line):
+                findings.append(f"{rel}:{i}: hardcoded KPI formula/page pattern: {line.strip()}")
+                break
+        if REQUIRED_SOURCES_LIST.search(line):
+            findings.append(f"{rel}:{i}: hardcoded required_sources list: {line.strip()}")
         if re.search(r"\bhard\s+fail\b.{0,40}\b(50|30)\b|\bfail\b.{0,40}\bbelow\s+50", lower):
             findings.append(f"{rel}:{i}: fixed-count hard fail rule must not remain: {line.strip()}")
     return findings

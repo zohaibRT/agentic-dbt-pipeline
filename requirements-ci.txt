@@ -1,0 +1,4 @@
+# CI and local fixture-build dependencies.
+dbt-core>=1.8,<1.11
+dbt-duckdb>=1.8
+PyYAML>=6.0,<7.0

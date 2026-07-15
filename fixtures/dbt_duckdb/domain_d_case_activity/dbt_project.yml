@@ -1,0 +1,20 @@
+name: domain_d_case_activity
+version: '1.0.0'
+config-version: 2
+profile: fixture_duckdb
+model-paths: ["models"]
+seed-paths: ["seeds"]
+target-path: target
+clean-targets:
+  - target
+  - dbt_packages
+seeds:
+  +schema: main
+models:
+  domain_d_case_activity:
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: view
+    gold:
+      +materialized: table

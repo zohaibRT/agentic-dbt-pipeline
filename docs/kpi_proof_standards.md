@@ -97,17 +97,17 @@ Before analytics insight reporting = `PASS`:
 
 ## Per fact table checklist
 
-For each gold fact, the agent must verify:
+For each gold fact, verify applicability and record status as **SUPPORTED**, **NOT_APPLICABLE**, **BLOCKED**, or **DEFERRED**:
 
-- [ ] Row count and distinct grain key
-- [ ] Status distribution (counts per status with business labels)
-- [ ] Amount sums (gross/net where columns exist)
-- [ ] Date coverage (minimum, maximum, trend by month)
-- [ ] At least one rate or ratio (failure %, conversion %, eligible %, etc.)
-- [ ] At least one dimensional split when dims exist (type, channel, status, entity, etc.)
-- [ ] Source → gold reconciliation for top three measures
+- [ ] Row count and distinct grain key — SUPPORTED / BLOCKED / DEFERRED
+- [ ] Status distribution (counts per status with business labels) — SUPPORTED / NOT_APPLICABLE / BLOCKED / DEFERRED
+- [ ] Amount sums (gross/net where columns exist) — SUPPORTED / NOT_APPLICABLE / BLOCKED / DEFERRED
+- [ ] Date coverage (minimum, maximum, trend by month) — SUPPORTED / NOT_APPLICABLE / BLOCKED / DEFERRED
+- [ ] Rate or ratio metric (failure %, conversion %, eligible %, etc.) — SUPPORTED / NOT_APPLICABLE / BLOCKED / DEFERRED
+- [ ] Dimensional split when dims exist (type, channel, status, entity, etc.) — SUPPORTED / NOT_APPLICABLE / BLOCKED / DEFERRED
+- [ ] Source → gold reconciliation for top measures — SUPPORTED / BLOCKED / DEFERRED
 
-Record pass/fail evidence in `fact_catalog.md` or the phase report.
+Record pass/fail evidence in `fact_catalog.md` or the phase report. **NOT_APPLICABLE** is valid when the fact lacks the underlying columns or the business process does not require that family.
 
 ## SQL proof file standard
 
@@ -137,6 +137,14 @@ Each proof file must include:
 8. `PASS`, `WARN`, `FAIL`, or `BLOCKED` status
 
 Catalog rows must link to the proof file path. Do not paste SQL only in Markdown tables without a proof file.
+
+## Validation Type values
+
+Proof and reconciliation rows may declare a **Validation Type** using:
+
+`numeric_exact`, `numeric_tolerance`, `ratio_tolerance`, `row_count_match`, `set_match`, `acceptance_rule`, `blocked`, `deferred`.
+
+Use `blocked` or `deferred` instead of silent gaps when a proof cannot run yet.
 
 ## Key performance indicator promotion rules
 

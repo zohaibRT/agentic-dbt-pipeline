@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 """Check KPI / metric contract completeness for published metrics.
 
-Validates every published KPI row individually against required headers.
+Validates every published KPI row independently against required headers.
 Coverage = complete critical KPI contracts / total published critical KPIs.
 """
 
 from __future__ import annotations
 
 import argparse
-import sys
 from pathlib import Path
 
 from lib_gate_common import (
@@ -19,33 +18,64 @@ from lib_gate_common import (
     print_results,
     ratio,
     read_text,
+    validate_sql_proof_file,
 )
 
+PUBLISHED_APPROVALS = {"APPROVED", "PROPOSED"}
+BLOCKED_APPROVALS = {"BLOCKED", "DEFERRED"}
 
-CRITICAL_HEADER_GROUPS = (
-    ("kpi_id", ("kpi_id", "kpi", "id", "key_performance_indicator")),
+ALLOWED_PLACEHOLDERS: dict[str, frozenset[str]] = {
+    "owner": frozenset({"owner not assigned"}),
+    "target": frozenset({"target not defined"}),
+    "reason": frozenset({"none"}),
+    "caveats": frozenset({"none"}),
+}
+
+APPROVED_REQUIRED = (
+    ("kpi_id", ("kpi_id", "kpi", "id")),
     ("display_name", ("display_name", "display")),
+    ("metric_class", ("metric_class", "class")),
+    ("business_process", ("business_process", "process")),
     ("business_question", ("business_question",)),
     ("decision_supported", ("decision_supported", "decisions_supported")),
-    ("action_when_bad", ("action_when_bad", "recommended_action")),
+    ("action_when_bad", ("action_when_bad", "action when bad", "recommended_action")),
     ("owner", ("owner",)),
+    ("formula", ("formula", "business_definition", "business definition")),
     ("grain", ("grain",)),
     ("counting_key", ("counting_key", "count_key")),
-    ("sql_proof", ("sql_proof", "verified_by_sql_proof", "proof")),
+    ("source_models", ("source_models", "source models", "source_model", "source model")),
+    ("date_field", ("date_field", "date field")),
+    ("date_role", ("date_role", "date role")),
+    ("included_rows", ("included_rows", "included rows")),
+    ("excluded_rows", ("excluded_rows", "excluded rows")),
+    ("dimensions", ("dimensions",)),
+    ("unit_currency", ("unit_currency", "unit/currency", "unit")),
+    ("format", ("format",)),
+    ("aggregation", ("aggregation", "aggregation_behavior")),
+    ("target", ("target", "target_source")),
+    ("desired_direction", ("desired_direction", "desired direction")),
+    ("sql_proof", ("sql_proof", "sql proof", "proof", "verified_by_sql_proof")),
+    ("expected", ("expected", "expected_result")),
+    ("actual", ("actual", "actual_result")),
     ("approval", ("approval", "approval_status")),
     ("verification", ("verification", "verification_status", "status")),
 )
 
-RECOMMENDED_HEADER_GROUPS = (
-    ("aggregation", ("aggregation", "aggregation_behavior")),
-    ("desired_direction", ("desired_direction",)),
-    ("target", ("target", "target_source")),
-    ("format", ("format",)),
-    ("expected", ("expected", "expected_result")),
-    ("actual", ("actual", "actual_result")),
+BLOCKED_REQUIRED = (
+    ("kpi_id", ("kpi_id", "kpi", "id")),
+    ("display_name", ("display_name", "display")),
+    ("business_process", ("business_process", "process")),
+    ("business_question", ("business_question",)),
+    ("reason", ("reason", "caveats", "reason/caveats", "why correct / open question")),
+    ("approval", ("approval", "approval_status")),
+    ("verification", ("verification", "verification_status", "status")),
 )
 
-PUBLISHED_APPROVALS = {"APPROVED", "PROPOSED", "BLOCKED", "DEFERRED"}
+BLOCKED_PREFERRED = (
+    ("missing_evidence", ("missing evidence", "missing_evidence")),
+    ("next_action", ("next action", "recommended next action", "recommended_action")),
+    ("owner", ("owner",)),
+)
 
 
 def contract_rows(path: Path) -> list[dict[str, str]]:
@@ -54,7 +84,6 @@ def contract_rows(path: Path) -> list[dict[str, str]]:
     for headers, data in parse_markdown_tables(text):
         norm = [normalize_header(h) for h in headers]
         header_set = set(norm)
-        # Prefer expanded or legacy contract tables
         if not (
             {"sql_proof", "approval", "approval_status"} & header_set
             or ("kpi_id" in header_set and "grain" in header_set)
@@ -73,12 +102,18 @@ def contract_rows(path: Path) -> list[dict[str, str]]:
     return rows
 
 
-def row_has(row: dict[str, str], aliases: tuple[str, ...]) -> bool:
+def row_has(row: dict[str, str], aliases: tuple[str, ...], field_key: str | None = None) -> bool:
     value = cell(row, *aliases)
     if not value:
         return False
-    upper = value.strip().upper()
-    return upper not in {"TODO", "N/A", "TBD", "<TODO>", ""}
+    token = value.strip()
+    upper = token.upper()
+    if upper in {"TODO", "N/A", "TBD", "<TODO>", ""}:
+        return False
+    placeholders = ALLOWED_PLACEHOLDERS.get(field_key or "", frozenset())
+    if token.lower() in placeholders:
+        return True
+    return bool(token)
 
 
 def main() -> int:
@@ -98,7 +133,6 @@ def main() -> int:
         print("SKIPPED: no KPI contracts or analytics folder")
         return 0
     if not contracts.exists():
-        # Analytics started without contracts is incomplete for critical KPI coverage
         errors.append(
             "KPI_DEFINITION_CONTRACTS.md missing while analytics insights exist — "
             "critical KPI contract coverage cannot be verified"
@@ -112,41 +146,62 @@ def main() -> int:
         errors.append("KPI_DEFINITION_CONTRACTS.md has no data rows")
         return print_results("Metric contract completeness check", errors, warnings)
 
+    has_validation_type = any("validation_type" in row for row in rows)
+
     published = 0
     complete = 0
     for index, row in enumerate(rows, start=1):
         kpi_id = cell(row, "kpi_id", "kpi", "id", "display_name") or f"row {index}"
         approval = cell(row, "approval", "approval_status").upper()
-        if approval and approval not in PUBLISHED_APPROVALS and approval not in {"DRAFT", "PENDING", ""}:
-            warnings.append(f"{kpi_id}: unusual approval status {approval}")
 
-        # Count rows that look like published/critical KPIs (exclude pure drafts without proof intent)
-        is_critical = approval in {"APPROVED", "PROPOSED", "BLOCKED", ""} or not approval
-        if not is_critical:
+        if approval in BLOCKED_APPROVALS:
+            published += 1
+            missing = [
+                label
+                for label, aliases in BLOCKED_REQUIRED
+                if not row_has(row, aliases, field_key=label)
+            ]
+            if missing:
+                errors.append(f"{kpi_id}: BLOCKED/DEFERRED missing fields: {', '.join(missing)}")
+            else:
+                complete += 1
+            for label, aliases in BLOCKED_PREFERRED:
+                if not row_has(row, aliases, field_key=label):
+                    warnings.append(f"{kpi_id}: missing preferred BLOCKED/DEFERRED field: {label}")
+            continue
+
+        if approval not in PUBLISHED_APPROVALS and approval not in {"", "DRAFT", "PENDING"}:
+            warnings.append(f"{kpi_id}: unusual approval status {approval}")
+            continue
+        if approval in {"", "DRAFT", "PENDING"}:
             continue
 
         published += 1
-        missing_critical: list[str] = []
-        for label, aliases in CRITICAL_HEADER_GROUPS:
-            if not row_has(row, aliases):
-                missing_critical.append(label)
-        missing_recommended: list[str] = []
-        for label, aliases in RECOMMENDED_HEADER_GROUPS:
-            if not row_has(row, aliases):
-                missing_recommended.append(label)
+        missing_critical = [
+            label
+            for label, aliases in APPROVED_REQUIRED
+            if not row_has(row, aliases, field_key=label)
+        ]
+        if has_validation_type and not row_has(row, ("validation_type", "validation type")):
+            missing_critical.append("validation_type")
 
         if missing_critical:
             errors.append(f"{kpi_id}: missing critical contract fields: {', '.join(missing_critical)}")
         else:
-            complete += 1
-        if missing_recommended:
-            warnings.append(
-                f"{kpi_id}: missing recommended contract fields: {', '.join(missing_recommended)}"
-            )
+            proof_ref = cell(row, "sql_proof", "sql proof", "proof")
+            proof_result = validate_sql_proof_file(root, proof_ref)
+            if proof_result.get("errors"):
+                errors.append(
+                    f"{kpi_id}: SQL proof issues: {'; '.join(proof_result['errors'])}"
+                )
+            else:
+                complete += 1
 
     cov = ratio(complete, published)
     if cov is None:
-        errors.append("no published critical KPI rows to score (empty applicable set is NOT_APPLICABLE, not 100%)")
+        errors.append(
+            "no published critical KPI rows to score (empty applicable set is NOT_APPLICABLE, not 100%)"
+        )
     else:
         print(f"Critical KPI contract coverage: {complete}/{published} ({cov:.0%})")
         if cov < required_ratio:

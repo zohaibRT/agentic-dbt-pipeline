@@ -184,15 +184,19 @@ python scripts/validate_kpi_proofs.py --root . --min-measures 60 --min-metrics 3
 
 ## Per fact table checklist
 
-For each gold fact in `fact_catalog.md`, verify:
+For each gold fact in `fact_catalog.md`, verify applicability and record status as **SUPPORTED**, **NOT_APPLICABLE**, **BLOCKED**, or **DEFERRED**:
 
-- Row count and distinct grain key
-- Status distribution with business labels, not raw codes
-- Amount sums where amount columns exist
-- Date coverage and monthly trend
-- At least one rate or ratio
-- At least one dimensional split
-- Source → gold reconciliation for the top three measures
+| Check | When applicable | Status values |
+|---|---|---|
+| Row count and distinct grain key | Always for material facts | SUPPORTED / BLOCKED / DEFERRED |
+| Status distribution with business labels | Status columns exist | SUPPORTED / NOT_APPLICABLE / BLOCKED / DEFERRED |
+| Amount sums | Amount/value columns exist | SUPPORTED / NOT_APPLICABLE / BLOCKED / DEFERRED |
+| Date coverage and monthly trend | Date/timestamp columns exist | SUPPORTED / NOT_APPLICABLE / BLOCKED / DEFERRED |
+| Rate or ratio metric | Process questions need rates | SUPPORTED / NOT_APPLICABLE / BLOCKED / DEFERRED |
+| Dimensional split | Joinable dimensions exist | SUPPORTED / NOT_APPLICABLE / BLOCKED / DEFERRED |
+| Source → gold reconciliation for top measures | Source lineage is known | SUPPORTED / BLOCKED / DEFERRED |
+
+Do not treat missing rate/dimension/reconciliation checks as automatic failures when the fact or process marks them **NOT_APPLICABLE** with evidence.
 
 ## Required discovery artifacts
 

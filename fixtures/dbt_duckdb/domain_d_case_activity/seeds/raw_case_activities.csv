@@ -1,0 +1,6 @@
+activity_id,person_id,organization_id,status_code,activity_date,amount
+1,N1,O1,O,2024-04-01,100
+2,N1,O1,C,2024-04-02,200
+3,N2,O2,O,2024-04-03,50
+4,N2,O2,C,2024-04-04,75
+5,N1,O2,O,2024-04-05,10

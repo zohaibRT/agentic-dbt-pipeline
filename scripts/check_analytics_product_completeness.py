@@ -4,23 +4,32 @@
 from __future__ import annotations
 
 import argparse
-import sys
 from pathlib import Path
 
-from lib_gate_common import count_status_rows, load_analytics_policy, print_results, ratio, read_text
+from lib_gate_common import (
+    cell,
+    load_analytics_policy,
+    named_status,
+    print_results,
+    ratio,
+    read_text,
+    table_dicts,
+)
 
-
-REQUIRED_MODULE_HINTS = (
-    ("architecture", ("architecture", "staging", "fact", "dimension")),
-    ("business_process", ("business process", "process catalog")),
-    ("measures", ("measure",)),
-    ("metrics", ("metric",)),
-    ("kpis", ("kpi", "strategic")),
-    ("time_intelligence", ("time", "trend", "period")),
-    ("segmentation", ("segment", "dimension")),
-    ("data_quality", ("quality", "orphan", "null")),
-    ("reconciliation", ("reconcil",)),
-    ("presentation", ("report page", "presentation")),
+PROCESS_MODULES = (
+    ("facts", ("fact/event models", "facts", "fact", "fact_event_models")),
+    ("dimensions", ("dimensions",)),
+    ("grain", ("grain proven", "grain", "grain_proven")),
+    ("measures", ("measures",)),
+    ("metrics", ("contextual metrics", "metrics", "contextual_metrics")),
+    ("kpis", ("strategic kpis", "kpis", "strategic_kpis")),
+    ("time", ("time intelligence", "time_intelligence", "time")),
+    ("segmentation", ("segmentation",)),
+    ("exceptions", ("exceptions", "exception")),
+    ("quality", ("data quality", "quality", "data_quality")),
+    ("reconciliation", ("reconciliation",)),
+    ("report_page", ("report page", "report_page")),
+    ("owner", ("owner/approval", "owner", "owner_approval")),
 )
 
 
@@ -30,7 +39,8 @@ def main() -> int:
     args = parser.parse_args()
     root = args.root.resolve()
     policy = load_analytics_policy(root)
-    required = float(policy.get("business_process_coverage_required", 0.9))
+    process_required = float(policy.get("business_process_coverage_required", 0.9))
+    module_required = float(policy.get("critical_process_module_coverage_required", 1.0))
 
     insights = root / "reports" / "agent" / "09_analytics_insights"
     if not insights.exists():
@@ -46,19 +56,65 @@ def main() -> int:
         errors.append("missing reports/agent/09_analytics_insights/analytics_coverage_matrix.md")
         return print_results("Analytics product completeness check", errors, warnings)
 
-    passes, total, unknowns = count_status_rows(matrix)
-    coverage = ratio(passes, total)
-    if coverage is None:
-        print(f"Analytics coverage matrix: PASS-like={passes}/{total}, unknown={unknowns}")
+    rows = table_dicts(
+        matrix,
+        required_any_headers=("business process", "status", "business_process"),
+    )
+    if not rows:
+        errors.append("analytics_coverage_matrix.md has no process rows")
+        return print_results("Analytics product completeness check", errors, warnings)
+
+    pass_rows = 0
+    applicable = 0
+    module_complete = 0
+    module_total = 0
+
+    for index, row in enumerate(rows, start=1):
+        process = cell(row, "business process", "business_process", "process") or f"row {index}"
+        status = named_status(row)
+        if status == "NOT_APPLICABLE":
+            continue
+        applicable += 1
+        if status == "PASS":
+            pass_rows += 1
+        elif status == "UNKNOWN":
+            warnings.append(f"{process}: unclear Status in analytics_coverage_matrix.md")
+
+        if status != "PASS":
+            continue
+
+        missing_modules = [
+            label
+            for label, aliases in PROCESS_MODULES
+            if not cell(row, *aliases)
+        ]
+        module_total += 1
+        if missing_modules:
+            errors.append(
+                f"{process}: PASS row missing module cells: {', '.join(missing_modules)}"
+            )
+        else:
+            module_complete += 1
+
+    process_cov = ratio(pass_rows, applicable)
+    if process_cov is None:
         errors.append(
             "analytics_coverage_matrix.md has no applicable data rows "
             "(empty applicable set is NOT_APPLICABLE, not 100%)"
         )
     else:
-        print(f"Analytics coverage matrix: PASS-like={passes}/{total} ({coverage:.0%}), unknown={unknowns}")
-        if coverage < required:
+        print(f"Business-process coverage: PASS={pass_rows}/{applicable} ({process_cov:.0%})")
+        if process_cov < process_required:
             errors.append(
-                f"business-process analytical coverage {coverage:.0%} below required {required:.0%}"
+                f"business-process analytical coverage {process_cov:.0%} below required {process_required:.0%}"
+            )
+
+    module_cov = ratio(module_complete, module_total)
+    if module_total > 0 and module_cov is not None:
+        print(f"Process module coverage: {module_complete}/{module_total} ({module_cov:.0%})")
+        if module_cov < module_required:
+            errors.append(
+                f"critical process module coverage {module_cov:.0%} below required {module_required:.0%}"
             )
 
     if not process_catalog.exists():
@@ -67,16 +123,6 @@ def main() -> int:
         text = read_text(process_catalog).lower()
         if "business question" not in text and "question" not in text:
             warnings.append("business_process_catalog.md should document supported business questions")
-
-    matrix_text = read_text(matrix).lower()
-    missing_modules = []
-    for label, hints in REQUIRED_MODULE_HINTS:
-        if not any(h in matrix_text for h in hints):
-            missing_modules.append(label)
-    if missing_modules:
-        warnings.append(
-            "analytics_coverage_matrix.md may be missing modules: " + ", ".join(missing_modules)
-        )
 
     return print_results("Analytics product completeness check", errors, warnings)
 

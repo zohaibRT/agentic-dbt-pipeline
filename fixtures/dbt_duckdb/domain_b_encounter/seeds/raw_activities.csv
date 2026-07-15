@@ -1,0 +1,6 @@
+activity_id,encounter_id,provider_id,location_id,activity_type,activity_date
+1,1,P1,L1,check-in,2024-02-01
+2,1,P1,L1,review,2024-02-01
+3,2,P1,L2,check-out,2024-02-02
+4,3,P2,L1,check-in,2024-02-03
+5,4,P2,L2,review,2024-02-04

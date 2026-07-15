@@ -1,0 +1,26 @@
+version: 2
+models:
+
+  - name: fct_events
+    description: TEST FIXTURE fact model
+    columns:
+      - name: event_id
+        tests: [not_null, unique]
+
+  - name: dim_entities
+    description: TEST FIXTURE dimension model
+    columns:
+      - name: entity_id
+        tests: [not_null, unique]
+
+  - name: dim_catalog_items
+    description: TEST FIXTURE dimension model
+    columns:
+      - name: item_id
+        tests: [not_null, unique]
+
+  - name: dim_statuses
+    description: TEST FIXTURE dimension model
+    columns:
+      - name: status_code
+        tests: [not_null, unique]

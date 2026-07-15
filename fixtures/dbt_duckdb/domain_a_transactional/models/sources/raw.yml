@@ -1,0 +1,14 @@
+version: 2
+sources:
+  - name: raw
+    description: TEST FIXTURE raw source tables (loaded from seeds)
+    schema: main
+    tables:
+      - name: raw_statuses
+        description: TEST FIXTURE seed table
+      - name: raw_entities
+        description: TEST FIXTURE seed table
+      - name: raw_catalog_items
+        description: TEST FIXTURE seed table
+      - name: raw_events
+        description: TEST FIXTURE seed table

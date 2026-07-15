@@ -1,0 +1,10 @@
+version: 2
+exposures:
+  - name: browser_report
+    type: dashboard
+    maturity: high
+    description: TEST FIXTURE browser report for Case activity lifecycle
+    depends_on:
+      - ref('fct_case_activities')
+    owner:
+      name: analytics

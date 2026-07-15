@@ -12,9 +12,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = ROOT / "scripts"
 FIX = ROOT / "fixtures" / "analytics"
+DBT_FIX = ROOT / "fixtures" / "dbt_duckdb"
 
 sys.path.insert(0, str(SCRIPTS))
-from lib_gate_common import named_status, ratio  # noqa: E402
+from lib_gate_common import named_status, ratio, list_gold_fact_names  # noqa: E402
 from verify_metric_reconciliation import detect_contract_schema  # noqa: E402
 
 
@@ -93,7 +94,10 @@ class ReconciliationHeaderTests(unittest.TestCase):
             agent = root / "reports" / "agent"
             proofs = agent / "sql_proofs"
             proofs.mkdir(parents=True)
-            (proofs / "a.sql").write_text("select 1;\n", encoding="utf-8")
+            (proofs / "a.sql").write_text(
+                "-- purpose: test\n-- expected result: 1\n-- captured result: 1\n-- status: PASS\nselect 1;\n",
+                encoding="utf-8",
+            )
             (agent / "KPI_DEFINITION_CONTRACTS.md").write_text(
                 """
 | KPI ID | Display Name | Metric Class | Business Process | Business Question | Decision Supported | Action When Bad | Owner | Formula | Grain | Counting Key | Date Field | Date Role | Included Rows | Excluded Rows | Dimensions | Unit/Currency | Format | Aggregation | Target | Desired Direction | Source Models | Built In | SQL Proof | Expected | Actual | Diff / Tolerance | Approval | Verification | Why Correct / Open Question |
@@ -190,6 +194,11 @@ class MultiDomainFixtureTests(unittest.TestCase):
                         0,
                         f"{slug} {script}\n{proc.stdout}\n{proc.stderr}",
                     )
+            report_html = root / "reports" / "agent" / "10_presentation" / "matplotlib" / "report.html"
+            if report_html.exists():
+                with self.subTest(fixture=slug, script="validate_rendered_report_content.py"):
+                    proc = run_script("validate_rendered_report_content.py", "--root", str(root))
+                    self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
 
     def test_no_cross_fixture_industry_leak_requirement(self) -> None:
         text = (
@@ -230,6 +239,52 @@ class PresentationReadabilityGateTests(unittest.TestCase):
         (matplotlib / "report_builder.py").write_text("tabs = ['All Measures']\n", encoding="utf-8")
         proc = run_script("check_report_business_readability.py", "--root", str(bad))
         self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
+
+
+class DuckDbFixtureTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        proc = run_script("build_dbt_duckdb_fixtures.py", cwd=ROOT)
+        if proc.returncode != 0:
+            raise RuntimeError(proc.stdout + proc.stderr)
+
+    def test_dbt_fixtures_exist(self) -> None:
+        for slug in (
+            "domain_a_transactional",
+            "domain_b_encounter",
+            "domain_c_asset_events",
+            "domain_d_case_activity",
+        ):
+            self.assertTrue((DBT_FIX / slug / "dbt_project.yml").exists(), slug)
+
+    def test_activity_events_fact_detected_in_domain_b(self) -> None:
+        facts = list_gold_fact_names(DBT_FIX / "domain_b_encounter")
+        self.assertIn("activity_events", facts)
+        self.assertIn("fct_encounters", facts)
+
+    def test_dbt_validators_pass_each_fixture(self) -> None:
+        checks = [
+            "check_fact_analytical_coverage.py",
+            "check_metric_contract_completeness.py",
+            "check_model_classification_coverage.py",
+            "verify_metric_reconciliation.py",
+            "validate_rendered_report_content.py",
+        ]
+        for slug in (
+            "domain_a_transactional",
+            "domain_b_encounter",
+            "domain_c_asset_events",
+            "domain_d_case_activity",
+        ):
+            root = DBT_FIX / slug
+            for script in checks:
+                with self.subTest(fixture=slug, script=script):
+                    proc = run_script(script, "--root", str(root))
+                    self.assertEqual(
+                        proc.returncode,
+                        0,
+                        f"{slug} {script}\n{proc.stdout}\n{proc.stderr}",
+                    )
 
 
 if __name__ == "__main__":

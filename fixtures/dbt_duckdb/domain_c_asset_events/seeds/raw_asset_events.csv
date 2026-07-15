@@ -1,0 +1,6 @@
+event_id,asset_id,status_code,event_date,signal_value
+1,A1,O,2024-03-01,10.1
+2,A1,C,2024-03-02,20.2
+3,A2,O,2024-03-03,5.5
+4,A2,C,2024-03-04,8.8
+5,A1,O,2024-03-05,1.1

@@ -2,6 +2,6 @@
 
 | Item | Proof | Status |
 |---|---|---|
-| Volume KPI measure | 010_volume.sql | PASS |
-| Completion rate metric | 020_rate.sql | PASS |
+| Volume KPI | 010_volume.sql | PASS |
+| Completion rate KPI | 020_rate.sql | PASS |
 | Orphan rate | 030_dq.sql | PASS |

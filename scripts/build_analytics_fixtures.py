@@ -11,10 +11,29 @@ import subprocess
 import sys
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[1]
 FIX = ROOT / "fixtures" / "analytics"
 SCRIPTS = ROOT / "scripts"
+
+sys.path.insert(0, str(SCRIPTS))
+from lib_gate_common import REQUIRED_OBSERVABILITY_DOMAINS  # noqa: E402
+
+TIME_INTEL_METRICS = [
+    "KPI-001",
+    "Volume KPI",
+    "KPI-002",
+    "Completion rate KPI",
+    "volume_kpi",
+    "completion_kpi",
+    "completion_rate",
+    "Completion rate",
+    "failure_rate",
+    "Failure rate",
+    "avg_amount",
+    "Average amount",
+    "mom_volume_change",
+    "Month-over-month volume change",
+]
 
 
 def write(path: Path, content: str) -> None:
@@ -22,25 +41,76 @@ def write(path: Path, content: str) -> None:
     path.write_text(content.strip() + "\n", encoding="utf-8")
 
 
+def observability_coverage_table() -> str:
+    na_domains = {
+        "consistency",
+        "freshness",
+        "incident history",
+        "mean time to detect",
+        "mean time to resolve",
+    }
+    rows = []
+    for domain in sorted(REQUIRED_OBSERVABILITY_DOMAINS):
+        if domain in na_domains:
+            status = "NOT_APPLICABLE"
+            notes = "Fixture has no second source or incident system"
+        else:
+            status = "PASS"
+            notes = "Checked in fixture"
+        rows.append(f"| {domain} | evidence | analytics | {status} | {notes} |")
+    header = (
+        "# Data Observability Coverage (TEST FIXTURE)\n\n"
+        "| Domain | Evidence | Owner | Status | Notes |\n"
+        "|---|---|---|---|---|\n"
+    )
+    return header + "\n".join(rows)
+
+
+def time_intelligence_table() -> str:
+    rows = [
+        f"| {metric} | event_date | occurred | yes | yes | yes | yes | yes | Target not defined | PASS |"
+        for metric in TIME_INTEL_METRICS
+    ]
+    header = (
+        "# Time Intelligence Coverage (TEST FIXTURE)\n\n"
+        "Reporting period labeling is required on KPI cards.\n\n"
+        "| Metric ID | Date field | Date role | Current period | Prior period | MoM/YoY | MTD/QTD/YTD | Rolling | Target/baseline | Status |\n"
+        "|---|---|---|---|---|---|---|---|---|---|\n"
+    )
+    return header + "\n".join(rows)
+
+
 def common_project(slug: str, process: str, fact: str, dims: list[str]) -> Path:
     base = FIX / slug
     write(
         base / "project.config.yml",
-        """
+        f"""
 project:
-  name: fixture_%s
+  name: fixture_{slug}
 analytics_policy:
   completion_mode: process_coverage
   advisory_measure_target: null
   advisory_metric_target: null
+  critical_fact_coverage_required: 1.0
+  critical_kpi_contract_coverage_required: 1.0
+  critical_reconciliation_coverage_required: 1.0
   business_process_coverage_required: 0.9
   time_intelligence_coverage_required: 0.8
-  critical_fact_coverage_required: 1.0
   model_classification_coverage_required: 1.0
-"""
-        % slug,
+  business_label_coverage_required: 1.0
+  report_traceability_required: 1.0
+  rendered_proof_coverage_required: 1.0
+  report_page_contract_coverage_required: 1.0
+  observability_domain_coverage_required: 1.0
+  critical_data_quality_coverage_required: 1.0
+  critical_process_module_coverage_required: 1.0
+  production_exposure_coverage_required: 1.0
+  fail_on_warning_at_final: true
+acceptance_policy:
+  final_fail_on_warning: true
+  require_explicit_warning_acceptance: true
+""",
     )
-    # Minimal models for classification coverage
     write(base / "models" / "gold" / f"{fact}.sql", f"-- TEST FIXTURE ONLY\nselect 1 as id\n")
     for dim in dims:
         write(base / "models" / "gold" / f"{dim}.sql", f"-- TEST FIXTURE ONLY\nselect 1 as id\n")
@@ -92,19 +162,7 @@ analytics_policy:
             for dim in dims
         ),
     )
-    write(
-        insights / "time_intelligence_coverage.md",
-        f"""
-# Time Intelligence Coverage (TEST FIXTURE)
-
-Reporting period labeling is required on KPI cards.
-
-| Metric / KPI | Date field | Date role | Current period | Prior period | MoM/YoY | MTD/QTD/YTD | Rolling | Target/baseline | Status |
-|---|---|---|---|---|---|---|---|---|---|
-| Volume KPI | event_date | occurred | yes | yes | yes | yes | yes | Target not defined | PASS |
-| Completion rate | event_date | completed | yes | yes | no | yes | yes | Target not defined | PASS |
-""",
-    )
+    write(insights / "time_intelligence_coverage.md", time_intelligence_table())
     write(
         insights / "exposure_coverage.md",
         f"""
@@ -112,9 +170,10 @@ Reporting period labeling is required on KPI cards.
 
 | Exposure | Type | Owner | Dependent Models | Dependent Metrics | Refresh | Business Purpose | Criticality | Validation Status |
 |---|---|---|---|---|---|---|---|---|
-| browser_report | browser report | analytics | {fact} | Volume KPI | daily | process overview | high | PASS |
+| browser_report | browser report | analytics | {fact} | Volume KPI | daily | {process} overview | high | PASS |
 """,
     )
+    write(insights / "data_observability_coverage.md", observability_coverage_table())
     write(
         insights / "data_observability_report.md",
         """
@@ -227,13 +286,13 @@ Within tolerance.
     )
     write(
         base / "reports" / "agent" / "KPI_DEFINITION_CONTRACTS.md",
-        """
+        f"""
 # Key Performance Indicator Definition Contracts (TEST FIXTURE)
 
-| KPI ID | Display Name | Metric Class | Business Process | Business Question | Decision Supported | Action When Bad | Owner | Formula | Grain | Counting Key | Date Field | Date Role | Included Rows | Excluded Rows | Dimensions | Unit/Currency | Format | Aggregation | Target | Desired Direction | Source Models | Built In | SQL Proof | Expected | Actual | Diff / Tolerance | Approval | Verification | Why Correct / Open Question |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| KPI-001 | Volume KPI | kpi | process | How many events occurred? | Capacity planning | Investigate drop | analytics | count(*) | event | event_id | event_date | occurred | all valid | test rows | status | count | integer | additive | Target not defined | increase | fct | report | reports/agent/sql_proofs/010_volume.sql | 100 | 100 | 0 | APPROVED | PASS | Matches source |
-| KPI-002 | Completion rate KPI | kpi | process | What share completed? | Process health | Review failures | analytics | completed/total | event | event_id | event_date | completed | non-cancelled | cancelled | status | ratio | percent | ratio | Target not defined | increase | fct | report | reports/agent/sql_proofs/020_rate.sql | 0.8 | 0.8 | 0 | APPROVED | PASS | Definition approved |
+| KPI ID | Display Name | Metric Class | Business Process | Business Question | Decision Supported | Action When Bad | Owner | Formula | Grain | Counting Key | Date Field | Date Role | Included Rows | Excluded Rows | Dimensions | Unit/Currency | Format | Aggregation | Target | Desired Direction | Source Models | Built In | Validation Type | SQL Proof | Expected | Actual | Diff / Tolerance | Approval | Verification | Why Correct / Open Question |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| KPI-001 | Volume KPI | kpi | {process} | How many events occurred? | Capacity planning | Investigate drop | analytics | count(*) | event | event_id | event_date | occurred | all valid | test rows | status | count | integer | additive | Target not defined | increase | {fact} | report | numeric_tolerance | reports/agent/sql_proofs/010_volume.sql | 100 | 100 | 0 | APPROVED | PASS | Matches source |
+| KPI-002 | Completion rate KPI | kpi | {process} | What share completed? | Process health | Review failures | analytics | completed/total | event | event_id | event_date | completed | non-cancelled | cancelled | status | ratio | percent | ratio | Target not defined | increase | {fact} | report | numeric_tolerance | reports/agent/sql_proofs/020_rate.sql | 0.8 | 0.8 | 0 | APPROVED | PASS | Definition approved |
 """,
     )
     write(
@@ -249,26 +308,39 @@ Within tolerance.
     )
     write(
         base / "reports" / "agent" / "sql_proofs" / "010_volume.sql",
-        "-- expected: 100\n-- actual: 100\nselect 100 as volume;\n",
+        """
+-- purpose: volume KPI
+-- expected result: 100
+-- captured result: 100
+-- status: PASS
+select 100 as volume;
+""",
     )
     write(
         base / "reports" / "agent" / "sql_proofs" / "020_rate.sql",
-        "-- expected: 0.8\n-- actual: 0.8\nselect 0.8 as rate;\n",
+        """
+-- purpose: completion rate KPI
+-- expected result: 0.8
+-- captured result: 0.8
+-- status: PASS
+select 0.8 as rate;
+""",
     )
 
-    # Presentation readability surface
     matplotlib = base / "reports" / "agent" / "10_presentation" / "matplotlib"
     write(
         base / "reports" / "agent" / "10_presentation" / "report_page_contracts.md",
         f"""
 # Report Page Contracts (TEST FIXTURE)
 
-| Page Name | Audience | Business Purpose | Decisions Supported | Primary KPIs | Time Period | Exceptions | Recommended Actions | Status |
-|---|---|---|---|---|---|---|---|---|
-| Executive Overview | leadership | Summarize {process} | Prioritize interventions | Volume KPI, Completion rate KPI | Current month | Open exceptions listed | Act on failure spike | PASS |
-| Exceptions and Data Quality | data engineering | Separate DQ from business KPIs | Fix pipeline issues | Orphan rate | All time | Source/transform issues | Repair orphans | PASS |
-| Pipeline Health | platform | Monitor delivery | Restore SLA | Build success rate | Current week | Failed tests | Rerun failed models | PASS |
-| Metric Dictionary | analysts | Explore definitions | Trace metrics | n/a | n/a | n/a | Use contracts | PASS |
+| Page ID | Page Name | Audience | Business Purpose | Decisions Supported | Primary KPIs | Time Period | Exceptions | Recommended Actions | Status |
+|---|---|---|---|---|---|---|---|---|---|
+| executive_overview | Executive Overview | leadership | Summarize {process} | Prioritize interventions | Volume KPI, Completion rate KPI | Current month | Open exceptions listed | Act on failure spike | PASS |
+| exceptions_and_data_quality | Exceptions and Data Quality | data engineering | Separate DQ from business KPIs | Fix pipeline issues | Orphan rate | All time | Source/transform issues | Repair orphans | PASS |
+| pipeline_health | Pipeline Health | platform | Monitor delivery | Restore SLA | Build success rate | Current week | Failed tests | Rerun failed models | PASS |
+| all_measures | All Measures | analysts | Browse measures | Trace definitions | n/a | All time | none | Use dictionary | PASS |
+| all_metrics | All Metrics | analysts | Browse metrics | Trace definitions | n/a | All time | none | Use dictionary | PASS |
+| all_dimensions | Dimensions | analysts | Browse dimension values | Understand segments | n/a | All time | none | Filter reports | PASS |
 """,
     )
     write(
@@ -327,9 +399,9 @@ TABS = ["Executive Overview", "Exceptions and Data Quality", "Pipeline Health", 
 <tr><td>Event count</td><td>100</td></tr>
 <tr><td>Completion rate</td><td>80.0%</td></tr>
 </table>
-<section id="dimensions"><h2>Dimensions</h2><table><tr><th>Status</th></tr><tr><td>Completed</td></tr></table></section>
-<section id="quality"><h2>Data Quality</h2></section>
-<section id="pipeline"><h2>Pipeline Health</h2></section>
+<section id="all_dimensions"><h2>Dimensions</h2><table><tr><th>Status</th></tr><tr><td>Completed</td></tr></table></section>
+<section id="exceptions_and_data_quality"><h2>Data Quality</h2></section>
+<section id="pipeline_health"><h2>Pipeline Health</h2></section>
 </body></html>
 """,
     )
@@ -370,8 +442,8 @@ select 0;
 
 | Item | Proof | Status |
 |---|---|---|
-| Volume KPI measure | 010_volume.sql | PASS |
-| Completion rate metric | 020_rate.sql | PASS |
+| Volume KPI | 010_volume.sql | PASS |
+| Completion rate KPI | 020_rate.sql | PASS |
 | Orphan rate | 030_dq.sql | PASS |
 """,
     )
@@ -417,7 +489,6 @@ def main() -> int:
         path = common_project(slug, process, fact, dims)
         print(f"Wrote fixture {path}")
 
-    # Run validators against each fixture
     checks = [
         "check_analytics_coverage.py",
         "check_analytics_product_completeness.py",
@@ -430,6 +501,7 @@ def main() -> int:
         "check_report_page_contracts.py",
         "check_report_business_readability.py",
         "check_exposure_coverage.py",
+        "validate_rendered_report_content.py",
     ]
     failures = 0
     for slug, _, _, _ in fixtures:

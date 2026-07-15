@@ -1,0 +1,11 @@
+version: 2
+exposures:
+  - name: browser_report
+    type: dashboard
+    maturity: high
+    description: TEST FIXTURE browser report for Encounter lifecycle
+    depends_on:
+      - ref('fct_encounters')
+      - ref('activity_events')
+    owner:
+      name: analytics

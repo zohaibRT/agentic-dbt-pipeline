@@ -1,0 +1,45 @@
+name: Analytics Gates
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  analytics-gates:
+    name: Analytics gates and fixtures
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install CI dependencies
+        run: pip install -r requirements-ci.txt
+
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -p "test_*.py" -v
+
+      - name: Check domain neutrality
+        run: python scripts/check_domain_neutrality.py --root .
+
+      - name: Build analytics fixtures
+        run: python scripts/build_analytics_fixtures.py
+
+      - name: Build DuckDB dbt fixtures
+        run: python scripts/build_dbt_duckdb_fixtures.py
+
+      - name: Upload reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: analytics-gate-reports
+          path: |
+            fixtures/analytics/**/reports/agent/**
+            fixtures/dbt_duckdb/**/reports/agent/**
+            fixtures/dbt_duckdb/**/target/**

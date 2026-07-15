@@ -89,6 +89,17 @@ analytics_policy:
   model_classification_coverage_required: 1.0
   business_label_coverage_required: 1.0
   report_traceability_required: 1.0
+  rendered_proof_coverage_required: 1.0
+  report_page_contract_coverage_required: 1.0
+  observability_domain_coverage_required: 1.0
+  critical_data_quality_coverage_required: 1.0
+  critical_process_module_coverage_required: 1.0
+  production_exposure_coverage_required: 1.0
+  fail_on_warning_at_final: true
+
+acceptance_policy:
+  final_fail_on_warning: true
+  require_explicit_warning_acceptance: true
 
 layer_names:
   ask_user: false
