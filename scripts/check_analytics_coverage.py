@@ -106,7 +106,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=Path("."))
     parser.add_argument("--min-measures", type=int, default=50)
-    parser.add_argument("--min-metrics", type=int, default=30)
+    parser.add_argument("--min-metrics", type=int, default=50)
     parser.add_argument("--min-gold-facts", type=int, default=3)
     args = parser.parse_args()
     root = args.root.resolve()

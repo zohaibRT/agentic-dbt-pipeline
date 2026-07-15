@@ -60,7 +60,7 @@ Do not:
 - Create gold or marts before bronze/staging and silver/intermediate models are built and validated.
 - Guess business metrics, mappings, relationships, reporting needs, or sensitive-field handling.
 - Store helper Python scripts or scratch `_*.json` under `reports/agent/` (put them in `<project.root>/scripts/` instead; keep reports for markdown, proofs, and canonical JSON only).
-- Mark presentation complete after only an HTML shell loads; require live SQL for every RENDERED chart and business labels on categorical axes.
+- Mark presentation complete after only an HTML shell loads; require live SQL for every RENDERED chart, business labels on categorical axes, and visible **All Measures / All Metrics** boards (50+/30+ live values when gold supports it), not catalogs alone.
 - Do **not** apply privacy minimization after the user explicitly opts out, except for secrets/OTP/bank dumps/PHI which still need an explicit ask.
 - Mark work complete when dbt tests or warehouse validation failed without documenting the blocker.
 - Mark work complete when `scripts/run_acceptance_gate.py` returns `FAIL` or independent verification returns `FAIL`.

@@ -141,8 +141,8 @@ def main() -> int:
             errors.append(msg)
         else:
             warnings.append(msg)
-    if metric_count < 30:
-        msg = f"metric_catalog.md has ~{metric_count} table rows; target is 30+ when gold supports it"
+    if metric_count < 50:
+        msg = f"metric_catalog.md has ~{metric_count} table rows; target is 50+ when gold supports it"
         if gold_facts >= 3:
             errors.append(msg)
         else:
@@ -164,6 +164,55 @@ def main() -> int:
         warnings.append(
             "label_dictionary.md should map status/partner/category codes to business labels for chart axes"
         )
+
+    # Visible density: catalogs in Markdown are not enough — HTML/builder must expose boards
+    builder_text = "\n".join(
+        read_text(p)
+        for p in (
+            presentation / "report_builder.py",
+            presentation / "data_access.py",
+            presentation / "serve_report.py",
+            presentation / "report.html",
+        )
+        if p.exists()
+    ).lower()
+    has_measure_board = any(
+        token in builder_text
+        for token in (
+            "all measures",
+            "measure_board",
+            "measure_cards",
+            "data-tab=\"measures\"",
+            "id=\"measures\"",
+        )
+    )
+    has_metric_board = any(
+        token in builder_text
+        for token in (
+            "all metrics",
+            "metric_board",
+            "metric_cards",
+            "data-tab=\"metrics\"",
+            "id=\"metrics\"",
+        )
+    )
+    if gold_facts >= 3:
+        if measure_count >= args.min_measures and not has_measure_board:
+            errors.append(
+                "measure_catalog has 50+ rows but live HTML/Python has no All Measures board "
+                "(user must see live measure cards/tables in the browser, not only Markdown catalogs)"
+            )
+        if metric_count >= 30 and not has_metric_board:
+            errors.append(
+                "metric_catalog is populated but live HTML/Python has no All Metrics board "
+                "(user must see live metric values in the browser)"
+            )
+        card_hits = len(re.findall(r"kpi-card|measure-card|metric-card", builder_text))
+        if has_measure_board and "measure_board" not in builder_text and "measure_cards" not in builder_text:
+            if card_hits < 40:
+                warnings.append(
+                    "All Measures tab may exist but card density looks low — smoke-test should assert measure_cards>=50"
+                )
 
     sql_total, sql_with_result = sql_verification_executed(sql_dir)
     if rendered > 0 and sql_total == 0:

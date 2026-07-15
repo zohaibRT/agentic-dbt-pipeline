@@ -223,7 +223,7 @@ When gold has **3+** `fct_` / `mart_` models, analytics is incomplete until:
 | Catalog | Minimum |
 |---|---|
 | `measure_catalog.md` | **50+** supported rows |
-| `metric_catalog.md` | **30+** supported rows |
+| `metric_catalog.md` | **50+** supported rows |
 | `kpi_catalog.md` | Strategic subset (often 10–25; not a substitute for the above) |
 
 Generation recipe (do not stop at executive cards):

@@ -59,7 +59,9 @@ Default tab or section order:
 | Tab / section | Content |
 |---|---|
 | Overview | Report purpose, audience, data source, refresh time, caveats, and navigation |
-| Executive key performance indicators | Trusted strategic key performance indicators from `KPI_DEFINITION_CONTRACTS.md`, `METRIC_VERIFICATION_MATRIX.md`, and `kpi_catalog.md` |
+| Executive key performance indicators | Trusted strategic key performance indicators from `KPI_DEFINITION_CONTRACTS.md`, `METRIC_VERIFICATION_MATRIX.md`, and `kpi_catalog.md` (top 5–8 cards) |
+| **All Measures** | **Required when gold has 3+ facts:** live board of **50+** measure values (cards and/or table) from `measure_catalog.md` via warehouse SQL — not catalog counts alone |
+| **All Metrics** | **Required when gold has 3+ facts:** live board of **50+** metric values from `metric_catalog.md` |
 | Trends and variance | Time showcase, period comparisons, and variance views |
 | Operations and activity | Volumes, statuses, workflow movement, and operational metrics |
 | Segmentation and performance | Department, product, provider, location, channel, or other approved dimensions |
@@ -67,6 +69,8 @@ Default tab or section order:
 | Exceptions and data quality | Coverage gaps, blocked visuals, mapping gaps, and validation notes |
 | Blocked and deferred | Items from `insight_backlog.md` and unreconciled metrics |
 | Report information | Metric definitions, filters, privacy handling, SQL verification summary |
+
+Do **not** ship an Overview with only eight executive cards when `measure_catalog.md` lists 50+. Humans must open the browser and *see* the full measure/metric surface. See Rule 5b in [reporting-coverage-requirements.md](reporting-coverage-requirements.md).
 
 Each tab or section must:
 
@@ -522,7 +526,8 @@ Before marking Matplotlib presentation work complete:
 7. If `generate_report.py` exists for snapshot export, verify it runs without error or document the exact blocker.
 8. Verify the local web report contains the classified tabs/sections defined in `report_spec.md`.
 9. Verify `open_report.bat` exists on Windows-focused projects or document the equivalent open command, and confirm it points to the same validated server entrypoint.
-10. Verify every `RENDERED` row in `kpi_figure_coverage.md` appears in the correct HTML tab/section through SVG/HTML/JSON chart output or has a documented static export fallback.
+10. Verify every `RENDERED` row in `kpi_figure_coverage.md` appears in the correct HTML tab/section through SVG/HTML/JSON chart output, measure/metric board cards, or has a documented static export fallback.
+10b. Verify the live report includes **All Measures** and **All Metrics** boards (or equivalent named tabs) with **visible live values**: smoke-test must report `measure_cards >= 50` and `metric_cards >= 50` when gold has 3+ facts. Catalog markdown alone does not satisfy this check.
 11. Verify `label_dictionary.md` exists and every categorical chart uses mapped **business labels** on axes/legends. Blank x-axis ticks on `RENDERED` charts are a validation `FAIL`.
 12. Verify `report_theme.md` exists and charts/HTML use the comfortable colorful theme, not default gray matplotlib styling.
 13. Verify every plotted aggregate has a matching **executed** SQL proof in `sql_verification/` with captured result and `PASS`.

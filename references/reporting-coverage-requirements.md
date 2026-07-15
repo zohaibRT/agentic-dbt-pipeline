@@ -24,9 +24,11 @@ Treat that block as approved requirements. Do not re-ask for privacy minimizatio
 | Catalog | Target when gold has multiple facts and dims | Hard rule |
 |---|---|---|
 | `measure_catalog.md` | **50+ supported** rows when evidence allows | Do not stop at 3–5 |
-| `metric_catalog.md` | **30+ supported** contextual metrics when evidence allows | Promote measures with time/dim/ratio context |
+| `metric_catalog.md` | **50+ supported** contextual metrics when evidence allows | Promote measures with time/dim/ratio/share/trend context |
 | `kpi_catalog.md` | Strategic subset (often 10–25) | Decision KPIs only, but still rich |
-| Presentation | Render measures + metrics + KPIs across tabs | Executive tab shows top 5–8; other tabs show the rest |
+| Presentation | **Visible** measures + metrics + KPIs in the live browser report | Executive tab shows top 5–8; dedicated **All Measures** and **All Metrics** tabs show **50+ live values each** when gold supports it |
+
+Thin catalogs with rich gold are a **FAIL**. Cataloguing 50+ rows in Markdown while the browser only shows ~8 executive cards is also a **FAIL**.
 
 If catalogs fall below the target while many gold facts/dims have unmapped counts/amounts/status mixes:
 
@@ -114,6 +116,30 @@ Each row: `RENDERED` | `BLOCKED` | `DEFERRED` with reason and (for RENDERED) SQL
 
 Do not only map the executive KPI cards. Supporting tabs must absorb measures and metrics.
 
+## Rule 5b — Visible density in the live browser report (hard)
+
+Catalogs and `kpi_figure_coverage.md` alone are **not** enough. The refreshable web report the human opens must **show** the coverage:
+
+| Surface | Minimum when gold has 3+ facts/marts |
+|---|---|
+| Executive / Overview | Top strategic KPIs (cards) |
+| **All Measures** tab (or equivalent) | **50+** live measure values as cards and/or a filterable table (name + value + group) |
+| **All Metrics** tab (or equivalent) | **50+** live metric values as cards and/or a table |
+| Charts | Status/partner/product/time visuals plus quality callouts |
+
+Required implementation pattern:
+
+1. `data_access.py` (or equivalent) runs live SQL that returns a **measure board** list of 50+ `{name, value, group}` rows and a **metric board** of 30+ rows.
+2. `report_builder.py` / HTML renders those boards in dedicated tabs the user can click — not only buried in Report Info prose.
+3. `serve_report.py --smoke-test` asserts visible card/table counts (`measure_cards >= 50`, `metric_cards >= 50`) before presentation passes.
+4. `check_presentation_coverage.py` **FAIL**s when the presentation Python/HTML has no All Measures / All Metrics board, or smoke density checks fail.
+
+Forbidden:
+
+- “75 measures in measure_catalog.md” while Overview still shows only 8 cards
+- Marking presentation complete because `kpi_figure_coverage.md` lists RENDERED rows that are not visible in the browser
+- Only printing catalog counts in Report Info without live values
+
 ## Rule 6 — Live SQL for every RENDERED chart
 
 Before marking presentation complete:
@@ -149,6 +175,7 @@ Agent recommendation format: concrete expand/build/label/run-SQL action + Accept
 | Presentation | Live SQL / refresh API not proven for RENDERED charts |
 | Final delivery | User opt-out of privacy ignored; dims still privacy-blocked without ask |
 | Final delivery | OPEN Attention Board / Gap Register privacy rows for phone/IMEI/serial/fingerprint under recorded opt-out |
+| Presentation | Catalogs hit 50+/30+ but live HTML still shows only executive KPI cards (no All Measures / All Metrics boards) |
 
 ## Related references
 

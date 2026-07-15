@@ -129,7 +129,7 @@ Coverage targets when validated gold has multiple facts and dimensions (see [rep
 | Catalog | Target |
 |---|---|
 | `measure_catalog.md` | **50+** supported measures when evidence allows |
-| `metric_catalog.md` | **30+** supported metrics when evidence allows |
+| `metric_catalog.md` | **50+** supported metrics when evidence allows |
 | `kpi_catalog.md` | Strategic subset (rich, not capped at 3–5) |
 
 Do **not** stop after three to five executive KPIs and leave catalogs empty. Presentation must still cover measures and metrics, not only the executive KPI cards.
