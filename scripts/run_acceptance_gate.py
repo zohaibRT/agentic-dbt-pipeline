@@ -53,6 +53,7 @@ PROJECT_VALIDATION_SCRIPTS = [
     ("check_layer_proof_coverage.py", ["--root", "{root}"]),
     ("verify_metric_reconciliation.py", ["--root", "{root}"]),
     ("check_presentation_coverage.py", ["--root", "{root}"]),
+    ("check_privacy_opt_out.py", ["--root", "{root}"]),
     ("validate_powerbi_pbip.py", []),
     (
         "validate_local_web_report.py",

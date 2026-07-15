@@ -73,6 +73,10 @@ Then:
 | Still never invent | Still do not expose secrets, passwords, OTP, full bank/IBAN dumps, or PHI without explicit ask |
 | Documentation | Record opt-out in requirements, Context Tree, gold plan, and presentation caveats |
 | Recommend, don't block | Mention residual risk once; do not block gold dims for privacy after opt-out |
+| Attention Board | Close privacy rows for tier-2 identifiers; no OPEN `Exclude phone/IMEI/serial/...` blockers |
+| Gap Register | No OPEN `PRIVACY` blockers for tier-2 identifiers when opt-out is recorded |
+
+Still document tier-1 exclusions once as `CARRY_FORWARD` (secrets, OTP, full IBAN/bank dumps, national IDs, PHI). Do not treat tier-1 as OPEN blockers that stop gold dims or KPI catalogs unless presentation would expose them without user ask.
 
 Still ask once if national IDs, bank accounts, OTP, or medical identifiers would be placed on presentation charts — recommend exclude those columns even under opt-out. Everything else used for slicing proceeds.
 
@@ -143,6 +147,7 @@ Agent recommendation format: concrete expand/build/label/run-SQL action + Accept
 | Presentation | Blank categorical axes on RENDERED charts |
 | Presentation | Live SQL / refresh API not proven for RENDERED charts |
 | Final delivery | User opt-out of privacy ignored; dims still privacy-blocked without ask |
+| Final delivery | OPEN Attention Board / Gap Register privacy rows for phone/IMEI/serial/fingerprint under recorded opt-out |
 
 ## Related references
 

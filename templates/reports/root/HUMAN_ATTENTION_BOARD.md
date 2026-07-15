@@ -7,6 +7,8 @@ Technical detail stays in phase reports and `sql_proofs/`. Do not duplicate full
 
 For every OPEN decision, the agent must recommend a concrete answer first. The human accepts, overrides, or defers.
 
+**Privacy opt-out:** When requirements record `Do NOT apply privacy minimization unless I explicitly request it` (or equivalent), do **not** keep OPEN rows that block gold for phone/IMEI/serial/fingerprint. Record tier-1 exclusions (secrets/OTP/full IBAN/national ID/PHI) as `CARRY_FORWARD` only. See `references/privacy-and-unknown-fields.md`.
+
 For KPIs that exist but cannot ship yet, also maintain `KPI_GAP_REGISTER.md` and re-warn in chat after every checkpoint.
 
 Read skill references:

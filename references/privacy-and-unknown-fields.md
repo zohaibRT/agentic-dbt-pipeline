@@ -17,8 +17,32 @@ When the user says any of: `Do NOT apply privacy minimization unless I explicitl
 3. Still exclude secrets, passwords, OTP codes, full bank/IBAN dumps, and medical identifiers from presentation unless the user explicitly asks to expose them — recommend exclude those columns once.
 4. Record the opt-out in `requirements.md`, `CONTEXT_TREE.md`, gold plan, and presentation caveats.
 5. Do not re-ask for privacy minimization on every later phase after opt-out is recorded.
+6. Do **not** keep OPEN Attention Board or KPI Gap Register rows that block gold/marts for phone, IMEI, serial, fingerprint, email, address, or other commercial/operational identifiers. Record the opt-out as `CARRY_FORWARD` / `ANSWERED` and proceed with reporting dimensions.
 
 Also read [reporting-coverage-requirements.md](reporting-coverage-requirements.md).
+
+## Identifier tiers (use with opt-out)
+
+| Tier | Examples | Under privacy opt-out | Without opt-out |
+|---|---|---|---|
+| **Always exclude** | secrets, passwords, OTP, API tokens, full IBAN/account dumps, national IDs, PHI/medical record numbers | Exclude from gold and presentation; document once as `CARRY_FORWARD`, not an OPEN blocker | Same |
+| **Reporting operational** | phone, IMEI, serial, fingerprint, device id, email, address for ops/support analytics | May land in gold/marts when needed for joins or slicing; exclude from presentation charts unless user asks | Exclude/mask/hash from gold by default |
+| **Business descriptive** | partner name, program name, SKU name, status labels | **BUILD** in gold dimensions | May use `BUILD_PRIVACY_SAFE` |
+
+When opt-out is recorded, the agent must **not** recommend `Exclude phone/IMEI/serial/IBAN/fingerprint from gold` as an OPEN decision. Split the rule:
+
+- **IBAN / bank account numbers** → always exclude (tier 1), note in presentation caveats only.
+- **Phone / IMEI / serial / fingerprint** → allow in gold if useful; do not block KPIs or dims for privacy.
+
+Forbidden under opt-out:
+
+- OPEN Attention Board row: `Direct identifiers | Exclude phone/IMEI/serial/... from gold | Privacy default`
+- OPEN KPI Gap Register row with blocker type `PRIVACY` for commercial identifiers
+- Re-asking the human to approve privacy minimization on every checkpoint
+
+Allowed under opt-out:
+
+- One `CARRY_FORWARD` note: user opted out; secrets/OTP/full IBAN/national ID/PHI excluded from presentation unless explicitly requested.
 
 ## Safe default by layer
 
@@ -27,7 +51,7 @@ Also read [reporting-coverage-requirements.md](reporting-coverage-requirements.m
 | Sources | Document the fields and source table only | Document values and frequency profile without claiming meaning |
 | Bronze / staging | Preserve source-shaped fields when needed for traceability, but mark them as sensitive or unclear | Preserve as raw code columns with clear descriptions such as "raw unmapped code" |
 | Silver / intermediate | Keep only when needed for joins, validation, or approved business logic | Join mapping seeds or reference tables only when definitions are provided |
-| Gold / marts | Exclude, mask, or hash by default unless the user explicitly approves clear-text exposure **or** has opted out of privacy minimization for reporting | Exclude by default, or expose as raw audit fields only when the user explicitly approves |
+| Gold / marts | Exclude, mask, or hash by default unless the user explicitly approves clear-text exposure **or** has opted out of privacy minimization for reporting (then tier-2 operational fields may proceed; tier-1 always excluded) | Exclude by default, or expose as raw audit fields only when the user explicitly approves |
 | Semantic layer | Do not define metrics or dimensions on direct identifiers or unknown codes unless user opt-out / approval allows descriptive attributes | Do not create semantic dimensions from unknown code fields without definitions or label dictionaries |
 
 ## Privacy recommendation pattern
@@ -35,9 +59,11 @@ Also read [reporting-coverage-requirements.md](reporting-coverage-requirements.m
 When fields such as patient names, member numbers, medical record numbers, email addresses, phone numbers, addresses, national identifiers, insurance identifiers, birth dates, or clinical identifiers are found, include a recommendation like:
 
 ```text
-Recommendation: keep these fields available only in bronze/staging for traceability, keep them out of gold/marts by default, and use masked or hashed versions only when downstream analysis needs stable identifiers.
+Recommendation (default, no opt-out): keep these fields available only in bronze/staging for traceability, keep them out of gold/marts by default, and use masked or hashed versions only when downstream analysis needs stable identifiers.
 
-Needs your approval:
+Recommendation (privacy opt-out recorded): build reporting dimensions with business labels; allow tier-2 operational identifiers in gold when needed for joins/slicing; exclude tier-1 secrets/OTP/full IBAN/national ID/PHI from presentation unless the user explicitly requests exposure. Do not leave an OPEN privacy blocker for phone/IMEI/serial/fingerprint.
+
+Needs your approval (only when opt-out is NOT recorded):
 - Approve the safe default: exclude clear-text patient identifiers from gold/marts.
 - Or tell me which identifiers may be exposed, masked, or hashed for this local development run.
 ```

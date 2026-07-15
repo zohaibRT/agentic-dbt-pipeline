@@ -61,7 +61,7 @@ Do not:
 - Guess business metrics, mappings, relationships, reporting needs, or sensitive-field handling.
 - Store helper Python scripts or scratch `_*.json` under `reports/agent/` (put them in `<project.root>/scripts/` instead; keep reports for markdown, proofs, and canonical JSON only).
 - Mark presentation complete after only an HTML shell loads; require live SQL for every RENDERED chart and business labels on categorical axes.
-- Apply privacy minimization after the user explicitly opts out, except for secrets/OTP/bank dumps/PHI which still need an explicit ask.
+- Do **not** apply privacy minimization after the user explicitly opts out, except for secrets/OTP/bank dumps/PHI which still need an explicit ask.
 - Mark work complete when dbt tests or warehouse validation failed without documenting the blocker.
 - Mark work complete when `scripts/run_acceptance_gate.py` returns `FAIL` or independent verification returns `FAIL`.
 
@@ -79,5 +79,6 @@ After dbt model or YAML changes, run the smallest useful validation first, then 
 - `python <installed-skill-path>/scripts/check_layer_proof_coverage.py --root <project.root>`
 - `python <installed-skill-path>/scripts/verify_metric_reconciliation.py --root <project.root>`
 - `python <installed-skill-path>/scripts/check_presentation_coverage.py --root <project.root>`
+- `python <installed-skill-path>/scripts/check_privacy_opt_out.py --root <project.root>`
 
 Document validation commands, failures, fixes, skips, and remaining risks in the phase report.

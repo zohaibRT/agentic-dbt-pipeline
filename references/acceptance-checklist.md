@@ -208,7 +208,8 @@ Verify before marking the dbt pipeline workflow complete.
 - [ ] Source freshness added only when a reliable loaded-at timestamp exists
 - [ ] Exposures added or recommended for known dashboards and downstream consumers
 - [ ] Sensitive fields reviewed before reaching marts
-- [ ] Direct identifiers and sensitive fields were excluded, masked, hashed, or explicitly approved before reaching gold/marts
+- [ ] Direct identifiers and sensitive fields were excluded, masked, hashed, explicitly approved, or allowed under a recorded privacy minimization opt-out before reaching gold/marts; tier-1 secrets/OTP/full IBAN/national ID/PHI were not exposed on presentation without explicit ask
+- [ ] When privacy minimization opt-out is recorded, `HUMAN_ATTENTION_BOARD.md` and `KPI_GAP_REGISTER.md` have no OPEN privacy blockers for phone/IMEI/serial/fingerprint and `check_privacy_opt_out.py` passes
 - [ ] Unclear coded fields were passed through bronze/staging as raw unmapped codes, mapped from approved definitions, or explicitly approved for raw audit exposure
 - [ ] Ambiguous, placeholder, abbreviated, generic, or poorly named fields were not renamed unless the user approved exact final names after value-pattern review
 - [ ] The agent recommended safe defaults for sensitive and unclear fields instead of only asking the user what to do

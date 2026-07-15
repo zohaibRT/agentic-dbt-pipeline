@@ -71,8 +71,8 @@ Only promote a row to the Attention Board when the human must choose, approve, o
 
 | Promote | Examples |
 |---|---|
-| Yes | Scope approval, privacy policy, currency units, lifecycle mappings, dim build vs defer, next-phase approval |
-| No | Exact row counts already proven PASS, template boilerplate, repeated inventory lists, software versions unless blocked |
+| Yes | Scope approval, currency units, lifecycle mappings, dim build vs defer, next-phase approval, **privacy policy only when opt-out is NOT recorded** |
+| No | Exact row counts already proven PASS, template boilerplate, repeated inventory lists, software versions unless blocked, **OPEN privacy blockers for phone/IMEI/serial when user opted out** |
 
 Technical PASS evidence stays in proofs and the phase report. Do not flood the human with PASS noise.
 
@@ -81,7 +81,7 @@ Technical PASS evidence stays in proofs and the phase report. Do not flood the h
 | ID | Need from human | Why it matters | Agent recommendation | Why recommended | Alternative rejected | Evidence link | Blocks | Status |
 |---|---|---|---|---|---|---|---|---|
 | D-01 | Approve 30-table first pass? | Locks build scope | Approve with documented conditions | Priority tables have keys/counts; deferred tables are enrichment-only | Expanding to all adjacent tables before relationships are proven | `00_discovery/first_pass_scope.json` | Setup | OPEN |
-| G-02 | Privacy-safe account dim policy? | Enables customer slicing without clear-text PII | Hash keys; exclude names/phones from gold | Direct identifiers are present in source and unnecessary for first marts | Clear-text gold exposure | `05_gold` proof `015` | Complete star / KPIs | OPEN |
+| G-02 | Privacy-safe account dim policy? | Enables customer slicing | **If no opt-out:** hash keys; exclude names/phones from gold. **If opt-out recorded:** BUILD dim with business labels; CARRY_FORWARD tier-1 exclusions only | Direct identifiers in source | Clear-text gold without opt-out | `05_gold` proof `015` | Complete star / KPIs | OPEN only when opt-out **not** recorded |
 
 Status values: `OPEN`, `ANSWERED`, `CARRY_FORWARD`, `DEFERRED`.
 
