@@ -80,6 +80,7 @@ After dbt model or YAML changes, run the smallest useful validation first, then 
 - `python <installed-skill-path>/scripts/verify_metric_reconciliation.py --root <project.root>`
 - `python <installed-skill-path>/scripts/check_analytics_coverage.py --root <project.root>`
 - `python <installed-skill-path>/scripts/check_presentation_coverage.py --root <project.root>`
+- `python <installed-skill-path>/scripts/check_presentation_hardcodes.py --root <project.root>`
 - `python <installed-skill-path>/scripts/check_privacy_opt_out.py --root <project.root>`
 
 Document validation commands, failures, fixes, skips, and remaining risks in the phase report.

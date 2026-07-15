@@ -195,6 +195,23 @@ Required packages:
 | Optional browser chart library | Plotly, Chart.js, Vega-Lite, or similar only when explicitly useful for interactivity; document why it was added |
 | Warehouse/query helper | Use the project's existing dbt profile adapter client when available, such as `psycopg2` or `psycopg2-binary` for PostgreSQL/Redshift, `snowflake-connector-python` for Snowflake, `google-cloud-bigquery` for BigQuery, or `databricks-sql-connector` for Databricks |
 
+### Connection rule (no hardcodes)
+
+Presentation Python must **not** hardcode:
+
+- passwords / `pass` / tokens
+- host, user, or database string defaults copied from another machine
+- absolute paths like `C:\codebase\...` or `/Users/...`
+- schema names copied from a different `agentic_dbt_*` project
+
+Resolve connection from:
+
+1. `DBT_PROFILE_NAME` in workspace `.env` or `profile:` in `dbt_project.yml`
+2. `~/.dbt/profiles.yml` (or `DBT_PROFILES_DIR`) for host/port/user/dbname/`pass`
+3. Non-secret `DBT_GOLD_SCHEMA` / `PRESENTATION_GOLD_SCHEMA` when the gold schema is not derivable
+
+Run `python <skill>/scripts/check_presentation_hardcodes.py --root <project.root>` before marking presentation complete.
+
 Install workflow:
 
 1. Detect the active environment: prefer the project `.venv` when it exists; otherwise use the current `python` on PATH.

@@ -54,6 +54,7 @@ PROJECT_VALIDATION_SCRIPTS = [
     ("verify_metric_reconciliation.py", ["--root", "{root}"]),
     ("check_analytics_coverage.py", ["--root", "{root}"]),
     ("check_presentation_coverage.py", ["--root", "{root}"]),
+    ("check_presentation_hardcodes.py", ["--root", "{root}"]),
     ("check_privacy_opt_out.py", ["--root", "{root}"]),
     ("validate_powerbi_pbip.py", []),
     (
@@ -269,6 +270,9 @@ def run_validation_scripts(root: Path, report: GateReport, timeout: int) -> None
             continue
         if script_name == "check_presentation_coverage.py" and not (root / "reports" / "agent" / "10_presentation" / "matplotlib").exists():
             report.add(CheckResult("Validation script: " + script_name, "SKIPPED", "no Matplotlib presentation folder"))
+            continue
+        if script_name == "check_presentation_hardcodes.py" and not (root / "reports" / "agent" / "10_presentation").exists():
+            report.add(CheckResult("Validation script: " + script_name, "SKIPPED", "no presentation folder"))
             continue
         resolved_args = []
         for item in script_args:

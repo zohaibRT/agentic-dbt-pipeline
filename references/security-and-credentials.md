@@ -2,7 +2,8 @@
 
 ## Never
 
-- Hardcode passwords, tokens, or private keys in `SKILL.md`, SQL, YAML, or commits.
+- Hardcode passwords, tokens, or private keys in `SKILL.md`, SQL, YAML, presentation Python, or commits.
+- Copy credential defaults (`user="postgres"`, `password="postgres"`, machine paths, other projects' schemas) into presentation `data_access.py` or similar helpers.
 - Paste full `profiles.yml` contents with passwords into prompts or issue comments.
 - Commit `.env`, `profiles.yml`, or credential files. Commit `.env.example` only when it contains no secrets.
 - Print secrets in terminal output or chat summaries.

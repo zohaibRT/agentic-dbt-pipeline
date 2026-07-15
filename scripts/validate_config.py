@@ -76,6 +76,7 @@ REQUIRED_REPO_FILES = {
     "scripts/check_gold_star_shape.py",
     "scripts/check_analytics_coverage.py",
     "scripts/check_presentation_coverage.py",
+    "scripts/check_presentation_hardcodes.py",
     "scripts/check_privacy_opt_out.py",
     "templates/reports/00_discovery/core_profile.json",
     "templates/reports/00_discovery/discovery_raw.json",
