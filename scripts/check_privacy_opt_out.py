@@ -143,6 +143,33 @@ def find_open_privacy_blockers(root: Path) -> list[str]:
     return findings
 
 
+FORBIDDEN_AVOID_COPY = (
+    r"avoids?\s+phone",
+    r"avoids?\s+imei",
+    r"avoid rendering phone",
+    r"keep identifiers off",
+    r"this report avoids",
+)
+
+
+def find_presentation_privacy_avoid_copy(root: Path) -> list[str]:
+    findings: list[str] = []
+    presentation = root / "reports" / "agent" / "10_presentation"
+    if not presentation.exists():
+        return findings
+    for path in presentation.rglob("*"):
+        if path.suffix.lower() not in {".md", ".py", ".html"}:
+            continue
+        if "__pycache__" in path.parts:
+            continue
+        lower = read_text(path).lower()
+        for pattern in FORBIDDEN_AVOID_COPY:
+            if re.search(pattern, lower):
+                findings.append(f"{path.relative_to(root).as_posix()}: matches /{pattern}/")
+                break
+    return findings
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=Path("."))
@@ -155,17 +182,28 @@ def main() -> int:
         return 0
 
     print(f"Privacy opt-out recorded in: {', '.join(sources)}")
-    blockers = find_open_privacy_blockers(root)
-    if not blockers:
-        print("Privacy opt-out check PASSED — no OPEN commercial-identifier privacy blockers")
+    errors: list[str] = []
+    for item in find_open_privacy_blockers(root):
+        errors.append(f"OPEN privacy blocker conflicts with user opt-out — {item}")
+    for item in find_presentation_privacy_avoid_copy(root):
+        errors.append(
+            f"presentation still minimizes identifiers after opt-out — {item} "
+            "(show phone/IMEI/serial when in gold; remove ‘avoids phone/IMEI’ copy)"
+        )
+
+    if not errors:
+        print(
+            "Privacy opt-out check PASSED — no OPEN commercial-identifier blockers "
+            "and no presentation ‘avoid phone/IMEI’ copy"
+        )
         return 0
 
     print("Privacy opt-out check FAILED")
-    for item in blockers:
-        print(f"ERROR: OPEN privacy blocker conflicts with user opt-out — {item}")
+    for item in errors:
+        print(f"ERROR: {item}")
     print(
-        "Fix: close these rows (CARRY_FORWARD/ANSWERED) and allow reporting dims; "
-        "only secrets/OTP/full IBAN/national ID/PHI stay excluded from presentation."
+        "Fix: close OPEN privacy rows; allow tier-2 identifiers on the report; "
+        "only secrets/OTP/full IBAN/national ID/PHI stay excluded unless the user asks."
     )
     return 1
 

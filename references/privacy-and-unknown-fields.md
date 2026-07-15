@@ -14,10 +14,11 @@ When the user says any of: `Do NOT apply privacy minimization unless I explicitl
 
 1. Do **not** exclude, hash, or drop reporting dimensions for privacy by default.
 2. Build conformed dimensions with business labels (partner name, program name, product/SKU name, status labels) needed for charts and slicing.
-3. Still exclude secrets, passwords, OTP codes, full bank/IBAN dumps, and medical identifiers from presentation unless the user explicitly asks to expose them — recommend exclude those columns once.
-4. Record the opt-out in `requirements.md`, `CONTEXT_TREE.md`, gold plan, and presentation caveats.
+3. Still exclude **only** secrets, passwords, OTP codes, full bank/IBAN dumps, national IDs, and PHI/medical identifiers from presentation unless the user explicitly asks to expose them — document once as `CARRY_FORWARD`.
+4. Record the opt-out in `requirements.md` and `CONTEXT_TREE.md` (short note — not a recurring caution).
 5. Do not re-ask for privacy minimization on every later phase after opt-out is recorded.
-6. Do **not** keep OPEN Attention Board or KPI Gap Register rows that block gold/marts for phone, IMEI, serial, fingerprint, email, address, or other commercial/operational identifiers. Record the opt-out as `CARRY_FORWARD` / `ANSWERED` and proceed with reporting dimensions.
+6. Do **not** keep OPEN Attention Board or KPI Gap Register rows that block gold/marts for phone, IMEI, serial, fingerprint, email, address, or other commercial/operational identifiers.
+7. **Presentation under opt-out:** show the full reporting surface. Phone, IMEI, serial, fingerprint, email, address, and device attributes that exist in gold **may appear** on charts, tables, and detail tabs when useful. Do **not** hide them “to be safe,” and do **not** write Report Info lines like `this report avoids phone/IMEI on charts`.
 
 Also read [reporting-coverage-requirements.md](reporting-coverage-requirements.md).
 
@@ -26,23 +27,26 @@ Also read [reporting-coverage-requirements.md](reporting-coverage-requirements.m
 | Tier | Examples | Under privacy opt-out | Without opt-out |
 |---|---|---|---|
 | **Always exclude** | secrets, passwords, OTP, API tokens, full IBAN/account dumps, national IDs, PHI/medical record numbers | Exclude from gold and presentation; document once as `CARRY_FORWARD`, not an OPEN blocker | Same |
-| **Reporting operational** | phone, IMEI, serial, fingerprint, device id, email, address for ops/support analytics | May land in gold/marts when needed for joins or slicing; exclude from presentation charts unless user asks | Exclude/mask/hash from gold by default |
-| **Business descriptive** | partner name, program name, SKU name, status labels | **BUILD** in gold dimensions | May use `BUILD_PRIVACY_SAFE` |
+| **Reporting operational** | phone, IMEI, serial, fingerprint, device id, email, address | **BUILD in gold and show on presentation** when present (ops/detail tabs, labels, device boards) | Exclude/mask/hash from gold by default |
+| **Business descriptive** | partner name, program name, SKU name, status labels | **BUILD** in gold dimensions and charts | May use `BUILD_PRIVACY_SAFE` |
 
 When opt-out is recorded, the agent must **not** recommend `Exclude phone/IMEI/serial/IBAN/fingerprint from gold` as an OPEN decision. Split the rule:
 
-- **IBAN / bank account numbers** → always exclude (tier 1), note in presentation caveats only.
-- **Phone / IMEI / serial / fingerprint** → allow in gold if useful; do not block KPIs or dims for privacy.
+- **Full IBAN / bank dumps / OTP / secrets / national ID / PHI** → tier 1, exclude unless user explicitly asks.
+- **Phone / IMEI / serial / fingerprint / email / address** → allowed in gold **and** on the presentation report; do not minimize.
 
 Forbidden under opt-out:
 
 - OPEN Attention Board row: `Direct identifiers | Exclude phone/IMEI/serial/... from gold | Privacy default`
 - OPEN KPI Gap Register row with blocker type `PRIVACY` for commercial identifiers
 - Re-asking the human to approve privacy minimization on every checkpoint
+- Presentation copy such as “privacy minimization OFF; this report avoids phone/IMEI on charts”
+- Silently stripping phone/IMEI/serial from charts/tables after the user opted out
 
 Allowed under opt-out:
 
-- One `CARRY_FORWARD` note: user opted out; secrets/OTP/full IBAN/national ID/PHI excluded from presentation unless explicitly requested.
+- One short `CARRY_FORWARD` note: user opted out of privacy minimization; only secrets/OTP/full IBAN/national ID/PHI stay off the report unless explicitly requested.
+- Report Info may say: `Privacy minimization: OFF (user rule). Operational identifiers may appear on this report.` — then stop repeating privacy warnings.
 
 ## Safe default by layer
 
@@ -61,7 +65,7 @@ When fields such as patient names, member numbers, medical record numbers, email
 ```text
 Recommendation (default, no opt-out): keep these fields available only in bronze/staging for traceability, keep them out of gold/marts by default, and use masked or hashed versions only when downstream analysis needs stable identifiers.
 
-Recommendation (privacy opt-out recorded): build reporting dimensions with business labels; allow tier-2 operational identifiers in gold when needed for joins/slicing; exclude tier-1 secrets/OTP/full IBAN/national ID/PHI from presentation unless the user explicitly requests exposure. Do not leave an OPEN privacy blocker for phone/IMEI/serial/fingerprint.
+Recommendation (privacy opt-out recorded): build reporting dimensions with business labels; allow tier-2 operational identifiers in gold **and on the presentation report** when useful; exclude only tier-1 secrets/OTP/full IBAN/national ID/PHI unless the user explicitly requests exposure. Do not leave OPEN privacy blockers and do not write “this report avoids phone/IMEI”.
 
 Needs your approval (only when opt-out is NOT recorded):
 - Approve the safe default: exclude clear-text patient identifiers from gold/marts.
