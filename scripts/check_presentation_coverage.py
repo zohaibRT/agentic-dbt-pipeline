@@ -121,15 +121,32 @@ def main() -> int:
     rendered, blocked, deferred, _trusted_legacy = coverage_has_status_rows(coverage) if coverage.exists() else (0, 0, 0, 0)
     coverage_total = rendered + blocked + deferred
 
+    fact_catalog = insights / "fact_catalog.md"
+    gold_facts = 0
+    if fact_catalog.exists():
+        for line in read_text(fact_catalog).splitlines():
+            stripped = line.strip()
+            if not stripped.startswith("|") or re.match(r"^\|\s*-+", stripped):
+                continue
+            cells = [c.strip() for c in stripped.strip("|").split("|")]
+            if cells and (cells[0].lower().startswith("fct_") or cells[0].lower().startswith("mart_")):
+                gold_facts += 1
+
     if measure_count < args.min_measures:
-        warnings.append(
+        msg = (
             f"measure_catalog.md has ~{measure_count} table rows; target is {args.min_measures}+ when gold supports it "
-            "(see reporting-coverage-requirements.md)"
+            "(see reporting-coverage-requirements.md / check_analytics_coverage.py)"
         )
+        if gold_facts >= 3:
+            errors.append(msg)
+        else:
+            warnings.append(msg)
     if metric_count < 30:
-        warnings.append(
-            f"metric_catalog.md has ~{metric_count} table rows; target is 30+ when gold supports it"
-        )
+        msg = f"metric_catalog.md has ~{metric_count} table rows; target is 30+ when gold supports it"
+        if gold_facts >= 3:
+            errors.append(msg)
+        else:
+            warnings.append(msg)
 
     catalog_rows = measure_count + metric_count + kpi_count
     if catalog_rows > 0 and coverage_total < max(catalog_rows * 0.5, kpi_count if kpi_count else 1):

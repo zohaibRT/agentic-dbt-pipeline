@@ -52,6 +52,7 @@ PROJECT_VALIDATION_SCRIPTS = [
     ("check_requirement_traceability.py", ["--root", "{root}"]),
     ("check_layer_proof_coverage.py", ["--root", "{root}"]),
     ("verify_metric_reconciliation.py", ["--root", "{root}"]),
+    ("check_analytics_coverage.py", ["--root", "{root}"]),
     ("check_presentation_coverage.py", ["--root", "{root}"]),
     ("check_privacy_opt_out.py", ["--root", "{root}"]),
     ("validate_powerbi_pbip.py", []),
@@ -262,6 +263,9 @@ def run_validation_scripts(root: Path, report: GateReport, timeout: int) -> None
             continue
         if script_name == "validate_local_web_report.py" and not (root / "reports" / "agent" / "10_presentation" / "matplotlib" / "serve_report.py").exists():
             report.add(CheckResult("Validation script: " + script_name, "SKIPPED", "no local web report server found"))
+            continue
+        if script_name == "check_analytics_coverage.py" and not (root / "reports" / "agent" / "09_analytics_insights").exists():
+            report.add(CheckResult("Validation script: " + script_name, "SKIPPED", "no analytics insight folder"))
             continue
         if script_name == "check_presentation_coverage.py" and not (root / "reports" / "agent" / "10_presentation" / "matplotlib").exists():
             report.add(CheckResult("Validation script: " + script_name, "SKIPPED", "no Matplotlib presentation folder"))

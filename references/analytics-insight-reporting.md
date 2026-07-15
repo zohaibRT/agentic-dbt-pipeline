@@ -216,6 +216,27 @@ Document safe slicers, labels, drill-downs, and segmentation fields.
 |---|---|---|---:|---|---|---|---|---|---|---|
 | `<dimension_model>` | `<entity>` | `<key>` | `<count>` | `<label>` | `<fields>` | `<fields>` | `<facts>` | `<safe/masked/blocked>` | `<path>` | `<PASS/WARN/BLOCKED>` |
 
+### Coverage gate (mandatory before presentation)
+
+When gold has **3+** `fct_` / `mart_` models, analytics is incomplete until:
+
+| Catalog | Minimum |
+|---|---|
+| `measure_catalog.md` | **50+** supported rows |
+| `metric_catalog.md` | **30+** supported rows |
+| `kpi_catalog.md` | Strategic subset (often 10–25; not a substitute for the above) |
+
+Generation recipe (do not stop at executive cards):
+
+1. For each gold fact/mart: add volume counts (all + current), each amount/quantity sum, min/max dates when useful.
+2. For each status/type field: add count-by-status measures (or one measure per major status).
+3. For each quality flag: orphan counts, null-key counts, match/mismatch counts.
+4. Promote to metrics with partner, program, product, and month slices (shares, rates, trends).
+5. Put only decision KPIs in `kpi_catalog.md`; keep the rest as measures/metrics for presentation tabs.
+6. Run `python <skill>/scripts/check_analytics_coverage.py --root <project.root>` — must PASS (or document why 50+ is impossible).
+
+Thin catalogs with rich gold are a **FAIL**, not a soft WARN. Presentation must not be marked complete until this gate passes.
+
 ### `measure_catalog.md`
 
 Populate from [kpi-discovery-framework.md](kpi-discovery-framework.md). Include broad, validated raw measures even when they are not strategic key performance indicators.

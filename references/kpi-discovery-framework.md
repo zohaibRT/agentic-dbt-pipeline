@@ -134,6 +134,8 @@ Coverage targets when validated gold has multiple facts and dimensions (see [rep
 
 Do **not** stop after three to five executive KPIs and leave catalogs empty. Presentation must still cover measures and metrics, not only the executive KPI cards.
 
+Hard gate: `scripts/check_analytics_coverage.py` **FAIL**s when gold has 3+ facts/marts and `measure_catalog` / `metric_catalog` are below 50 / 30. Thin executive lists are not analytics-complete.
+
 This lets the project expose a rich analysis surface without pretending every metric is a management key performance indicator.
 
 ## Generic Archetypes

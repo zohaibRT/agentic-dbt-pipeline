@@ -33,8 +33,9 @@ If catalogs fall below the target while many gold facts/dims have unmapped count
 1. Document the shortfall in `insight_backlog.md` and analytics report with exact missing proofs
 2. Mark analytics / presentation status `WARN` or `BLOCKED`
 3. Re-warn on the Attention Board / Gap Register with an agent recommendation to expand coverage
+4. Acceptance gate must run `scripts/check_analytics_coverage.py` — **FAIL** when gold has 3+ facts/marts and catalogs are below target (unless shortfall is explicitly documented as impossible)
 
-`kpi_catalog` staying smaller is fine. Thin `measure_catalog` / `metric_catalog` while gold can support more is not.
+`kpi_catalog` staying smaller is fine. Thin `measure_catalog` / `metric_catalog` while gold can support more is not. Do not treat a 10–15 measure executive list as analytics complete.
 
 Also read [kpi-discovery-framework.md](kpi-discovery-framework.md) and [universal-analytics-framework.md](universal-analytics-framework.md).
 
