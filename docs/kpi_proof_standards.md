@@ -54,10 +54,10 @@ Classify each included source or gold table, then apply minimum coverage by tabl
 
 | Table type | Examples (illustrative only) | Minimum measures | Minimum metrics | Key performance indicator candidates |
 |---|---|---:|---:|---:|
-| Fact / event | subscriptions, orders, payments, order items | 5–10 per fact | 3–6 per fact | 2–4 per fact when `HIGH` or approved `MEDIUM` |
-| Dimension | customer, partner, program | 2–4 | 1–3 | 0–1 only if strategic |
-| Bridge | subscription-payment link | 2–3 | 1–2 | 0–1 |
-| Reference / catalog | SKU, country, pricing | 1–2 | 0–1 | 0 unless business asks |
+| Fact / event | primary facts evidenced in the project | 5–10 per fact | 3–6 per fact | 2–4 per fact when `HIGH` or approved `MEDIUM` |
+| Dimension | entity and descriptive dims in evidence | 2–4 | 1–3 | 0–1 only if strategic |
+| Bridge | evidenced bridge between facts | 2–3 | 1–2 | 0–1 |
+| Reference / catalog | reference/catalog dims when present | 1–2 | 0–1 | 0 unless business asks |
 | Audit / system | audit, job queue, oauth | 0 business measures | 0 | exclude |
 
 The phrase `5 per table` applies only to **fact/event** tables, not dimensions, bridges, reference tables, or audit tables.
@@ -117,7 +117,7 @@ For each gold fact, the agent must verify:
 - [ ] Amount sums (gross/net where columns exist)
 - [ ] Date coverage (minimum, maximum, trend by month)
 - [ ] At least one rate or ratio (failure %, conversion %, eligible %, etc.)
-- [ ] At least one dimensional split (partner, program, type, channel, etc.)
+- [ ] At least one dimensional split when dims exist (type, channel, status, entity, etc.)
 - [ ] Source → gold reconciliation for top three measures
 
 Record pass/fail evidence in `fact_catalog.md` or the phase report.

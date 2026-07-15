@@ -63,9 +63,9 @@ Pick status vs not_deleted.
 Good (recommend, then ask to accept or override):
 
 ```text
-Agent recommendation: define Active Subscription Count as
+Agent recommendation: define Active Entity Count as
 `status = 'Active' AND deleted = false`.
-Why: status already separates portfolio states; not_deleted alone would count 826 vs 271 Active rows and inflate the KPI.
+Why: status already separates lifecycle states; soft-delete alone would inflate the KPI versus the Active status count in proofs.
 Please reply: Accept recommendation / Override with your rule.
 ```
 
@@ -92,24 +92,24 @@ Good recommendation:
 - Why: Source profiling found stable primary keys and populated source tables, but some ambiguous or poorly named fields have no clear business definition.
 
 ### What Looks Right
-- Appointments can be the first fact area because row counts, date fields, status values, and patient/provider keys are present.
-- Providers and patients are strong dimension candidates because their keys are non-null and referenced by appointments.
+- The named first-pass process can be the first fact area because row counts, date fields, status values, and entity keys are present.
+- Core entity tables are strong dimension candidates because their keys are non-null and referenced by facts.
 
 ### What Is Not Ready Yet
-- Claims metrics should wait if claims are empty or billing definitions are missing.
+- Secondary process metrics should wait if those tables are empty or business definitions are missing.
 - Placeholder fields should not be promoted into gold without a definition.
 
 ### Confidence
-- Confident about: table inventory, source grains, tested key integrity, appointment/provider/patient relationships, and the first-pass star-schema shape.
+- Confident about: table inventory, source grains, tested key integrity, evidenced fact/entity relationships, and the first-pass star-schema shape.
 - Less confident about: business meaning of ambiguous source fields, whether direct identifiers should appear in gold, which date drives each metric, and whether to rebuild from scratch or align with existing warehouse models.
 
 ### Needs Data Engineer Approval
-- Whether patient names or insurance fields may appear in gold models.
-- Whether appointment status `Completed` is the only attended appointment definition.
+- Whether direct identifiers may appear in gold models.
+- Whether status value `Completed` (or the project’s equivalent) is the only success definition.
 
 ### Not Deciding Alone
-- PHI/PII exposure in marts.
-- Final revenue metric definitions.
+- Sensitive-field exposure in marts.
+- Final amount/revenue metric definitions.
 ```
 
 Bad behavior:

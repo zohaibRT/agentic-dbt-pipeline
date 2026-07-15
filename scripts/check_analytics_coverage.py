@@ -150,7 +150,7 @@ def main() -> int:
     if rich_gold and metric_count < args.min_metrics:
         msg = (
             f"metric_catalog.md has ~{metric_count} rows; target is {args.min_metrics}+ "
-            "with ratios, shares, trends, and partner/program/product slices."
+            "with ratios, shares, trends, and dimension slices supported by this project's gold evidence."
         )
         if shortfall_documented(root):
             warnings.append(msg + " (documented shortfall — WARN only)")

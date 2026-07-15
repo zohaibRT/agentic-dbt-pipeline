@@ -10,14 +10,16 @@ When the user provides rules like the following, apply them for the whole run an
 
 ```text
 1. Maximize supported KPIs/metrics from validated gold — target 50+ in measure/metric catalogs.
-2. Build conformed dimensions (partner, program, product/SKU, date, status) for slicing.
+2. Build conformed dimensions present in THIS warehouse (entity, date, status, and any channel/product/geography tables with evidence) for slicing.
 3. Do NOT apply privacy minimization unless I explicitly request it.
 4. Use label_dictionary.md — every chart axis must show business names, not blank or raw codes.
 5. Presentation must map every measure_catalog + metric_catalog + kpi_catalog row in kpi_figure_coverage.md.
 6. Run live SQL for every RENDERED chart before marking presentation complete.
 ```
 
-Treat that block as approved requirements. Do not re-ask for privacy minimization after the user opts out. Do not silently shrink catalogs to three to five executive KPIs.
+If the user names **project-specific** dimension types (for example partners or SKUs), apply those names for that run only. Do **not** treat any industry’s entity list as a global skill default.
+
+Treat the block as approved requirements when the user states it. Do not re-ask for privacy minimization after the user opts out. Do not silently shrink catalogs to three to five executive KPIs.
 
 ## Rule 1 — Maximum useful measures and metrics (50+ target)
 
@@ -43,19 +45,20 @@ Also read [kpi-discovery-framework.md](kpi-discovery-framework.md) and [universa
 
 ## Rule 2 — Conformed dimensions for slicing
 
-When source/bronze/silver evidence exists, gold must evaluate and preferably **BUILD** these classes:
+Gold must evaluate and preferably **BUILD** every dimension class that **this project’s** source/bronze/silver evidence supports. There is no universal industry entity list.
 
-| Dimension class | Examples |
+| Dimension class | When to build |
 |---|---|
-| Partner / channel | channel partners, stores, sales channels |
-| Program / corporate | programs, corporate companies, employee programs |
-| Product / SKU | master SKUs, partner SKUs, plans, durations |
-| Date | date dimension / time spine from fact dates |
-| Status / lifecycle | order, subscription, payment, invoice statuses (code dims or mapped labels) |
+| Entity / party | Accounts, customers, counterparties, vendors, employees, or similar when evidence exists |
+| Date | Date dimension / time spine whenever facts have usable dates |
+| Status / lifecycle | Low-cardinality codes used by facts (with business labels) |
+| Product / offer / catalog | Only when product/plan/SKU/catalog tables exist in scope |
+| Channel / location / org | Only when channel, store, site, department, or org tables exist in scope |
+| Other descriptive dims | Any included lookup/entity proven unique and useful for slicing |
 
-Do not deliver fact-only gold with blank categorical charts. Prefer dimensions over dropping slicers. See [gold-dimension-completeness.md](gold-dimension-completeness.md).
+Do not invent partner/program/SKU (or healthcare/retail) dimensions when the warehouse has none. Do not deliver fact-only gold with blank categorical charts when labels exist. See [gold-dimension-completeness.md](gold-dimension-completeness.md).
 
-If a class cannot be built, register `BLOCKED` / `DEFERRED` with proof — still list the blocked KPIs/slices on the Gap Register.
+If a evidenced class cannot be built, register `BLOCKED` / `DEFERRED` with proof — still list the blocked KPIs/slices on the Gap Register.
 
 ## Rule 3 — Privacy minimization opt-out
 
@@ -79,7 +82,7 @@ Then:
 | Attention Board | Close privacy-minimization rows for reporting attributes; no OPEN privacy blockers after opt-out |
 | Gap Register | No OPEN `PRIVACY` minimization blockers for reporting attributes when opt-out is recorded |
 | Presentation | **Show** reporting attributes that exist in gold; forbid copy that the report still avoids/hides identifiers after opt-out |
-| Gates / scripts | Stay **domain-neutral** — do not hardcode industry fields (phone, IMEI, merchant, …) into checkers |
+| Gates / scripts | Stay **domain-neutral** — discover fields and dims from project evidence; never hardcode industry column or brand names into checkers |
 
 Still document always-exclude classes once as `CARRY_FORWARD` (secrets, OTP, full bank dumps, national IDs, PHI). Do not treat those as OPEN blockers that stop gold dims or KPI catalogs.
 
@@ -182,7 +185,7 @@ Agent recommendation format: concrete expand/build/label/run-SQL action + Accept
 
 | Checkpoint | Incomplete when |
 |---|---|
-| Gold | Missing partner/program/product/date/status dims without BLOCKED register |
+| Gold | Missing evidenced entity/date/status (or other discovered dim classes) without BLOCKED register |
 | Analytics | `measure_catalog` thin vs available gold; coverage not attempted |
 | Presentation | Catalog rows missing from `kpi_figure_coverage.md` |
 | Presentation | Blank categorical axes on RENDERED charts |

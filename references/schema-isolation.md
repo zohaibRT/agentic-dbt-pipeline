@@ -69,16 +69,16 @@ Example:
 
 | Input | Good physical prefix |
 |---|---|
-| `domain: hospital`, `source_name: dh`, no better source/project identifier | `hospital` |
-| `source_schema: doctors_hospital_src`, no useful domain | `doctors_hospital` |
-| `source_name: doctors_hospital_src`, no useful domain/schema | `doctors_hospital` |
-| `DBT_DOMAIN: real_estate_house_building`, `source_schema: property_sales_src` | `property_sales` |
+| `domain: ops`, `source_name: ao`, no better source/project identifier | `ops` |
+| `source_schema: acme_ops_src`, no useful domain | `acme_ops` |
+| `source_name: acme_ops_src`, no useful domain/schema | `acme_ops` |
+| `DBT_DOMAIN: long_business_context_name`, `source_schema: property_sales_src` | `property_sales` |
 
-The dbt source name may still be short, such as `dh`, for model names like `stg_dh__appointments`. That does not require physical schemas like `dh_bronze`.
+The dbt source name may still be short, such as `ao`, for model names like `stg_ao__events`. That does not require physical schemas like `ao_bronze`.
 
 If old schemas already exist from a previous prefix, do not create another medallion set silently. Reuse the intended prefix or ask before changing it.
 
-When multiple medallion prefix sets exist, such as `dh_bronze/dh_silver/dh_gold` and `hospital_bronze/hospital_silver/hospital_gold`, stop and ask which prefix is canonical before the next build. Do not drop the older schemas without explicit approval.
+When multiple medallion prefix sets exist, such as `ao_bronze/ao_silver/ao_gold` and `acme_bronze/acme_silver/acme_gold`, stop and ask which prefix is canonical before the next build. Do not drop the older schemas without explicit approval.
 
 ## Profile target schema
 

@@ -46,7 +46,7 @@ Re-state every checkpoint. Leaving these unanswered means these KPIs stay missin
 
 | Attention ID | Agent recommendation | KPIs unlocked if accepted | Gap Register ID | Status |
 |---|---|---|---|---|
-| <HA-002> | <concrete rule> | <Active Subscription Count> | <KG-001> | OPEN |
+| <HA-002> | <concrete rule> | <Active Entity Count> | <KG-001> | OPEN |
 
 If none: write `No open KPI gaps.`
 

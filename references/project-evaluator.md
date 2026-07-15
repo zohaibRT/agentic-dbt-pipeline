@@ -58,7 +58,7 @@ For new projects, make the staging subfolder source-specific when possible:
 models/<layer_1_name>/<source_folder>/stg_<source_name>__table.sql
 ```
 
-Derive `source_folder` from `source_name` or `source_schema`. If an existing project already uses a domain folder such as `models/bronze/hospital/`, keep it unless the user approves a move. Document any remaining evaluator directory warnings.
+Derive `source_folder` from `source_name` or `source_schema`. If an existing project already uses a domain folder such as `models/bronze/acme/`, keep it unless the user approves a move. Document any remaining evaluator directory warnings.
 
 Intermediate and gold folders may stay domain-oriented:
 

@@ -144,8 +144,8 @@ The first three digits are proof categories, not a simple counter.
 
 Example:
 
-- `010_crm_tos_subscriptions_row_count.sql` = row-count proof for subscriptions
-- `011_crm_tos_devices_row_count.sql` = another row-count proof in the same band
+- `010_fct_orders_row_count.sql` = row-count proof for a fact model in this project
+- `011_dim_status_row_count.sql` = another row-count proof in the same band
 
 ## Automated commands
 

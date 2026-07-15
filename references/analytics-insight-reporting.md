@@ -231,7 +231,7 @@ Generation recipe (do not stop at executive cards):
 1. For each gold fact/mart: add volume counts (all + current), each amount/quantity sum, min/max dates when useful.
 2. For each status/type field: add count-by-status measures (or one measure per major status).
 3. For each quality flag: orphan counts, null-key counts, match/mismatch counts.
-4. Promote to metrics with partner, program, product, and month slices (shares, rates, trends).
+4. Promote to metrics with dimension and time slices supported by this gold (shares, rates, trends).
 5. Put only decision KPIs in `kpi_catalog.md`; keep the rest as measures/metrics for presentation tabs.
 6. Run `python <skill>/scripts/check_analytics_coverage.py --root <project.root>` — must PASS (or document why 50+ is impossible).
 

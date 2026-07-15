@@ -13,7 +13,7 @@ Do not infer private-field exposure or business-code meanings from column names 
 When the user says any of: `Do NOT apply privacy minimization unless I explicitly request it`, `no privacy until specifically asked`, or equivalent project rules:
 
 1. Do **not** exclude, hash, or drop reporting dimensions for privacy by default.
-2. Build conformed dimensions with business labels (partner name, program name, product/SKU name, status labels) needed for charts and slicing.
+2. Build conformed dimensions with business labels from **this project’s** evidence (entity names, statuses, and any product/channel/org labels present) needed for charts and slicing.
 3. Still exclude **only** secrets, passwords, OTP codes, full bank/IBAN dumps, national IDs, and PHI/medical identifiers from presentation unless the user explicitly asks to expose them — document once as `CARRY_FORWARD`.
 4. Record the opt-out in `requirements.md` and `CONTEXT_TREE.md` (short note — not a recurring caution).
 5. Do not re-ask for privacy minimization on every later phase after opt-out is recorded.
@@ -29,8 +29,8 @@ Use **classes**, not a hardcoded industry field list. Discover actual columns fr
 | Tier | Meaning | Under privacy opt-out | Without opt-out |
 |---|---|---|---|
 | **Always exclude** | Secrets, passwords, OTP, API tokens, full bank/IBAN dumps, national IDs, PHI/medical record numbers | Exclude from gold and presentation; document once as `CARRY_FORWARD` | Same |
-| **Reporting operational** | Clear attributes needed for ops/slicing/detail reporting (examples vary by domain: contact fields, device ids, account labels, counterparties, etc.) | **BUILD in gold and show on presentation** when present | Exclude/mask/hash from gold by default |
-| **Business descriptive** | Names/labels/status values for partner, product, program, account, etc. | **BUILD** in gold and charts | May use `BUILD_PRIVACY_SAFE` |
+| **Reporting operational** | Clear attributes needed for ops/slicing/detail reporting (discover columns from this warehouse; do not assume an industry field list) | **BUILD in gold and show on presentation** when present | Exclude/mask/hash from gold by default |
+| **Business descriptive** | Names/labels/status values for entities, products, channels, accounts, etc. when present | **BUILD** in gold and charts | May use `BUILD_PRIVACY_SAFE` |
 
 When opt-out is recorded, the agent must **not** open a privacy decision to exclude reporting attributes from gold/presentation. Split the rule:
 
@@ -42,7 +42,7 @@ Forbidden under opt-out:
 - OPEN Attention Board / Gap Register privacy-minimization blockers for reporting attributes
 - Re-asking privacy minimization every checkpoint
 - Presentation copy that the report still avoids/hides identifiers after opt-out
-- Hardcoding skill gates or scripts to industry-specific field names (phone, IMEI, SKU, merchant, …)
+- Hardcoding skill gates or scripts to industry-specific field or brand names
 
 Allowed under opt-out:
 
@@ -61,7 +61,7 @@ Allowed under opt-out:
 
 ## Privacy recommendation pattern
 
-When fields such as patient names, member numbers, medical record numbers, email addresses, phone numbers, addresses, national identifiers, insurance identifiers, birth dates, or clinical identifiers are found, include a recommendation like:
+When discovery finds clear direct identifiers or sensitive personal fields (whatever columns this domain uses), include a recommendation like:
 
 ```text
 Recommendation (default, no opt-out): keep these fields available only in bronze/staging for traceability, keep them out of gold/marts by default, and use masked or hashed versions only when downstream analysis needs stable identifiers.
@@ -69,7 +69,7 @@ Recommendation (default, no opt-out): keep these fields available only in bronze
 Recommendation (privacy opt-out recorded): build reporting dimensions with business labels; allow reporting attributes from this project’s gold evidence on the presentation report when useful; exclude only always-exclude classes (secrets/OTP/full bank dumps/national ID/PHI) unless the user explicitly requests exposure. Do not leave OPEN privacy-minimization blockers and do not write “this report avoids identifiers” copy.
 
 Needs your approval (only when opt-out is NOT recorded):
-- Approve the safe default: exclude clear-text patient identifiers from gold/marts.
+- Approve the safe default: exclude clear-text direct identifiers from gold/marts.
 - Or tell me which identifiers may be exposed, masked, or hashed for this local development run.
 ```
 

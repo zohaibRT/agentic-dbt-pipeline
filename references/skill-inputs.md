@@ -102,15 +102,15 @@ If the user changes scope, models, key performance indicators, privacy, schemas,
 ## Optional overrides (user prompt wins)
 
 ```text
-dbt_project_name: hospital_analytics     # optional; otherwise derived from source/project signals
-dbt_project_root: hospital_analytics     # optional; defaults to dbt_project_name
-dbt_profile_name: hospital_analytics     # profile key from ~/.dbt/profiles.yml
-domain: hospital                         # business and modeling context only
+dbt_project_name: acme_analytics         # optional; otherwise derived from source/project signals
+dbt_project_root: acme_analytics         # optional; defaults to dbt_project_name
+dbt_profile_name: acme_analytics         # profile key from ~/.dbt/profiles.yml
+domain: <your_domain>                    # business and modeling context only (any industry)
 business_description: "..."              # optional plain-English client/business context
-source_schema: hospital_raw              # warehouse schema to inspect with codegen
-source_name: hospital                    # optional; otherwise derived from source_schema
-project_slug: hospital                   # optional; otherwise derived from source/project signals for folder paths
-layer_schema_prefix: hospital            # optional; otherwise derived from existing schemas/source schema/project slug/descriptive source name
+source_schema: ops_raw                   # warehouse schema to inspect with codegen
+source_name: ops                         # optional; otherwise derived from source_schema
+project_slug: acme                       # optional; otherwise derived from source/project signals for folder paths
+layer_schema_prefix: acme                # optional; otherwise derived from existing schemas/source schema/project slug/descriptive source name
 project_rules:                           # optional business/modeling rules
   field_mappings: []
   joins: []

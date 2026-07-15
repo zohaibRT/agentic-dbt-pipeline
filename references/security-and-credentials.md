@@ -17,7 +17,7 @@
   - Local: `~/.dbt/profiles.yml`
   - CI: GitHub Actions secrets
   - Agents Schema: `WAREHOUSE_CREDENTIALS` secret (YAML in GitHub)
-- Ask for the dbt profile key, such as `dbt_profile_name: hospital_analytics`, instead of asking for passwords.
+- Ask for the dbt profile key, such as `dbt_profile_name: acme_analytics`, instead of asking for passwords.
 - When listing available dbt profiles, show only profile name, adapter, and non-secret notes such as host kind, database, target, or schema. Never show passwords, `pass` values, tokens, private keys, full connection strings, or the full `profiles.yml`.
 - When connecting outside dbt, treat dbt's `pass` field as the password source. Also accept `password` if present. See [profile-credential-keys.md](profile-credential-keys.md). Do not report “password missing” only because the key is named `pass`.
 - If authentication says “no password supplied”, first check whether `pass` exists and remap it. Ask whether the user meant the dbt `pass` field only as a field-name clarification, never as a request to paste the secret.

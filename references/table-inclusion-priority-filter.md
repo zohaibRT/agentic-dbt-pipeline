@@ -23,8 +23,8 @@ Use this checklist on every discovery run. Copy the same decisions into `discove
 
 | # | Rule | Required action | Pass condition |
 |---|---|---|---|
-| 1 | **Keep fact/event tables on the main process** | Identify the first-pass business process, then include its core facts/events (orders, subscriptions, payments, claims, tickets, etc.) | Every included fact/event is on the named process path |
-| 2 | **Keep related dimensions/lookups** | For each included fact, include the minimum related entities and lookups needed for grain, joins, and metrics (accounts, customers, items, programs, SKUs, pricing, statuses) | Included facts are not orphaned from required parents/lookups |
+| 1 | **Keep fact/event tables on the main process** | Identify the first-pass business process from evidence, then include its core facts/events | Every included fact/event is on the named process path |
+| 2 | **Keep related dimensions/lookups** | For each included fact, include the minimum related entities and lookups needed for grain, joins, and metrics | Included facts are not orphaned from required parents/lookups |
 | 3 | **Exclude audit/log/platform/empty** | Exclude platform, framework, audit, loader, sync, temp, backup, and empty tables unless the user explicitly needs them | Excluded groups are listed with reasons |
 | 4 | **Require an `inclusion_reason` for every table** | Set `inclusion_status` = `included` / `deferred` / `excluded` and write `inclusion_reason` for every table in `discovery_raw.json` | No table is missing status or reason |
 | 5 | **Ask the user if process scope is unclear** | If multiple processes are plausible, or scope would surprise the business, stop and ask before deep proofs / first-pass modeling | Scope is approved, or uncertainty is marked `BLOCKED` |
@@ -79,7 +79,7 @@ Run these steps in order and document them.
 
 State the process in plain language before filtering, for example:
 
-- subscription management
+- the first-pass business process named from warehouse evidence
 - order-to-cash
 - claims adjudication
 - ticket lifecycle
@@ -119,7 +119,7 @@ If a fact/event table is included, also include the minimum related tables neede
 
 - parent entities (account, customer, subscriber)
 - child/detail lines (order items, invoice lines)
-- required lookups (program, SKU, duration, pricing)
+- required lookups evidenced for the facts (statuses, catalogs, pricing, etc.)
 - payment or status companions on the same process path
 
 Do not include every neighbor table. Include only what first-pass grain, joins, and metrics need.
@@ -174,7 +174,7 @@ Also keep the Source Inventory table with an inclusion column (`yes` / `defer` /
 
 Good:
 
-> First-pass process is subscription management. Included 16 tables on the subscription/order/payment path. Excluded 270 platform, audit, operational, or empty tables outside first pass. Deferred adjacent tables for later phase discovery.
+> First-pass process is <named from evidence>. Included 16 tables on that process path. Excluded 270 platform, audit, operational, or empty tables outside first pass. Deferred adjacent tables for later phase discovery.
 
 Bad:
 

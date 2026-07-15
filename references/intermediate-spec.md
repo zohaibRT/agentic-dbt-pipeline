@@ -41,7 +41,7 @@ Use these patterns:
 
 ## Lookup and entity promotion (mandatory)
 
-Discovery-included entity and lookup tables (accounts, partners, programs, SKUs, methods, durations, pricing references, etc.) must not disappear between bronze and silver without a written reason.
+Discovery-included entity and lookup tables must not disappear between bronze and silver without a written reason.
 
 | Silver decision | When to use |
 |---|---|

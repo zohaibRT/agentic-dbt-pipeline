@@ -60,20 +60,19 @@ Create broad raw measures where grain and SQL proof are clear:
 | Service | tickets, calls, complaints, resolutions, first response time, resolution time, satisfaction |
 | Marketing or funnel | impressions, clicks, leads, conversions, campaign cost, conversion rate |
 
-Add domain-specific families only when source evidence supports them, such as healthcare visits and claims, travel bookings and refunds, real estate leads and purchase orders, or software subscriptions and payments.
+Add process-specific families only when source evidence supports them for **this** warehouse. Do not import another industry’s KPI family when the tables are absent.
 
 ## Universal dimensions
 
-Consider these as slicers, grouping fields, drill-downs, or report page filters when validated and safe:
+Consider these as slicers, grouping fields, drill-downs, or report page filters when validated and present in evidence:
 
 ```text
-Date, time, customer, patient, account, product, service, employee,
-provider, department, location, city, country, branch, supplier,
-category, status, stage, channel, payment method, currency, salesperson,
-region, source system
+Date, time, customer/account/counterparty, product/service, employee,
+department, location, city, country, branch, supplier, category, status,
+stage, channel, payment method, currency, salesperson, region, source system
 ```
 
-Do not expose direct identifiers, protected health information, personally identifiable information, or sensitive business fields without approval.
+Do not expose direct identifiers or sensitive business fields without approval (or under a recorded privacy opt-out for reporting attributes — see [privacy-and-unknown-fields.md](privacy-and-unknown-fields.md)).
 
 ## Report result maximization
 
@@ -106,7 +105,7 @@ Build the richest useful dashboard design the validated data can support. Recomm
 | Trends and Variance | Time showcase, period movement, year to date, last 12 months, month-over-month, year-over-year when supported |
 | Financial or Value | Revenue, cost, payment, balance, outstanding, margin, average value, or equivalent value metrics |
 | Operations and Activity | Volumes, statuses, workflow movement, backlog, completions, failures |
-| Entity Performance | Customer, patient, provider, employee, product, supplier, department, location, or account performance |
+| Entity Performance | Customer, employee, product, supplier, department, location, account, or other entity performance when dimensions exist |
 | Segmentation and Drivers | Safe dimensions that explain variance, outliers, or concentration |
 | Quality and Exceptions | Missing values, duplicates, orphan records, invalid statuses, failed events, outliers |
 | Detail and Drill-Down | Operational matrix or table for safe investigation |
@@ -151,10 +150,10 @@ Classify each included source or gold table before writing catalogs. Apply minim
 
 | Table type | Illustrative examples | Minimum measures | Minimum metrics | Key performance indicator candidates |
 |---|---|---:|---:|---:|
-| Fact / event | subscription, order, payment, order-item facts | 5–10 per fact | 3–6 per fact | 2–4 per fact when `HIGH` or approved `MEDIUM` |
-| Dimension | customer, partner, program dimensions | 2–4 | 1–3 | 0–1 only if strategic |
-| Bridge | subscription-payment bridge | 2–3 | 1–2 | 0–1 |
-| Reference / catalog | SKU, country, pricing reference | 1–2 | 0–1 | 0 unless business asks |
+| Fact / event | primary facts evidenced in the project | 5–10 per fact | 3–6 per fact | 2–4 per fact when `HIGH` or approved `MEDIUM` |
+| Dimension | entity and descriptive dimensions evidenced in the project | 2–4 | 1–3 | 0–1 only if strategic |
+| Bridge | evidenced bridge between facts | 2–3 | 1–2 | 0–1 |
+| Reference / catalog | reference/catalog dims when present | 1–2 | 0–1 | 0 unless business asks |
 | Audit / system | audit, job queue, oauth tables | 0 business measures | 0 | exclude |
 
 Practical note: for about five major facts, a realistic key performance indicator total is often **15–25**, with most analytical depth living in `measure_catalog.md` and `metric_catalog.md`.

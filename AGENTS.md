@@ -34,6 +34,16 @@ Verification must not depend only on the builder agent or the same chat window.
 
 See `references/independent-verification-governance.md` and `docs/how-to-verify-generated-project.md`.
 
+## Domain neutrality
+
+This skill must work for any industry. Infer processes, entities, dimensions, KPIs, and sensitive fields from **this warehouse’s evidence** and the user’s written rules for that run.
+
+Do not:
+
+- Hardcode industry column names, brand names, or entity types (for example hospital, retail, subscription, device) into gates or scripts
+- Require partner/program/SKU (or any other industry shape) when those tables are not in scope
+- Copy KPI or privacy examples from another domain into blockers for the current project
+
 ## Before Editing
 
 - Read `project.config.yml`.

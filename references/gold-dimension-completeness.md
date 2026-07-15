@@ -4,7 +4,7 @@ Use this during gold/marts discovery and build. Also read [marts-spec.md](marts-
 
 ## Problem this prevents
 
-A gold layer with only facts and a bridge is **not** a complete star schema. If bronze has accounts, partners, programs, SKUs, payment methods, or other entities, gold must either:
+A gold layer with only facts and a bridge is **not** a complete star schema. If bronze has entity/lookup tables that describe the facts (whatever that domain uses), gold must either:
 
 1. Build privacy-safe dimensions, or
 2. Register each missing dimension as `BLOCKED` / `DEFERRED` with proof and a required user decision
@@ -23,18 +23,19 @@ Every included first-pass entity/lookup table from discovery should appear at le
 
 ## Default dimension classes to evaluate
 
-| Class | Typical sources | Default when evidence exists |
+Evaluate classes from **this warehouse’s evidence only**. Do not assume an industry shape.
+
+| Class | Typical sources (examples only) | Default when evidence exists |
 |---|---|---|
-| Entity dimensions | accounts, customers, subscribers, partners, programs, companies | `BUILD_PRIVACY_SAFE` if PII; else `BUILD`. If user opted out of privacy minimization, prefer `BUILD` with slicing attributes |
-| Partner / channel | channel partners, partner locations | `BUILD` with business name for chart labels |
-| Program / corporate | programs, corporate companies | `BUILD` when unique |
-| Product / offer dimensions | SKUs, products, pricing plans, durations, protection plans | `BUILD` when unique grain proven; else `BLOCKED` with proof |
-| Method / channel dimensions | payment methods, sales channels | `BUILD` when unique |
+| Entity dimensions | accounts, customers, counterparties, vendors, employees, orgs | `BUILD_PRIVACY_SAFE` if PII; else `BUILD`. If user opted out of privacy minimization, prefer `BUILD` with slicing attributes |
+| Channel / location / org | channels, sites, departments, regions — when present | `BUILD` with business name for chart labels |
+| Product / offer / catalog | products, plans, SKUs, catalogs — when present | `BUILD` when unique grain proven; else `BLOCKED` with proof |
+| Method / type dimensions | payment methods, transaction types, categories — when present | `BUILD` when unique |
 | Status / type dimensions | low-cardinality codes used by facts | `BUILD` as code dimensions **with labels** for presentation, or keep as degenerate attributes with `label_dictionary.md` |
 | Date dimension | any fact date/timestamp | `BUILD` when any fact has usable dates — mandatory for trend KPIs |
-| Degenerate dimensions | invoice numbers, order numbers kept on fact | Document as degenerate; not a separate dim |
+| Degenerate dimensions | document numbers, external ids kept on fact | Document as degenerate; not a separate dim |
 
-Required reporting classes (when evidence exists): **partner, program, product/SKU, date, status**. See [reporting-coverage-requirements.md](reporting-coverage-requirements.md).
+Required when evidence exists: **entity (or equivalent), date, status/labels**, plus any other descriptive classes proven in discovery. See [reporting-coverage-requirements.md](reporting-coverage-requirements.md).
 
 ## Privacy-safe dimension pattern (mandatory option)
 
@@ -43,7 +44,7 @@ When entity keys are sensitive but structurally unique:
 1. Do **not** drop the dimension entirely as the first choice.
 2. Prefer `BUILD_PRIVACY_SAFE`:
    - surrogate or hashed business key
-   - exclude clear-text names, phones, emails, national ids, bank details, addresses, device identifiers
+   - exclude clear-text direct identifiers and always-exclude classes (see [privacy-and-unknown-fields.md](privacy-and-unknown-fields.md)); discover actual sensitive columns from this project
    - keep only safe descriptive attributes needed for slicing
 3. Keep foreign keys on facts as hashed/pseudonymized keys that match the dimension key, or document an unknown-member row for unmatched keys.
 4. Ask the user only when hashing policy or attribute allowlist is unclear.
@@ -60,7 +61,7 @@ Silver must not silently drop lookup/entity tables that discovery marked `includ
 | Keep as reference-only | Temporary, with gold dimension plan pointing at them |
 | Exclude from silver | Only with explicit defer/blocked reason and discovery alignment |
 
-If silver has facts but omitted partners/programs/SKUs that were included in discovery, gold planning must call that out as a silver gap before “no dimensions available.”
+If silver has facts but omitted entity/lookup tables that discovery marked included, gold planning must call that out as a silver gap before “no dimensions available.”
 
 ## Fact-first builds
 

@@ -60,7 +60,7 @@ def copy_template(template_root: Path, output_root: Path, project_name: str, dis
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Create a Power BI PBIP project from the bundled neutral template")
-    parser.add_argument("--name", required=True, help="PBIP project folder/file base name, for example hospital_analytics")
+    parser.add_argument("--name", required=True, help="PBIP project folder/file base name, for example acme_analytics")
     parser.add_argument("--output-dir", required=True, type=Path, help="Parent folder where the PBIP project folder will be created")
     parser.add_argument("--display-name", help="Human-facing report display name")
     parser.add_argument(

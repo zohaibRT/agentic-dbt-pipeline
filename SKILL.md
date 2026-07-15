@@ -215,13 +215,17 @@ Approval is controlled by workflow checkpoint. Never treat a user response at on
 
 Read [subagent-workflow.md](references/subagent-workflow.md) when source profiling, mapping review, model planning, documentation, or evaluator review can safely run in parallel. The main agent decides when to delegate and keeps dbt commands, shared file edits, commits, pushes, and final decisions.
 
-## Step 0.1 - Security
+## Step 0.1 - Domain neutrality
+
+This skill is industry-agnostic. Processes, entities, dimensions, measures, and sensitive fields come from **this warehouse’s evidence** and the user’s project rules. Do not hardcode industry column names, brands, or entity catalogs into plans, gates, or scripts. Do not require a commerce/healthcare/subscription shape when those tables are absent. Examples in reference docs are illustrative only.
+
+## Step 0.2 - Security
 
 Read [security-and-credentials.md](references/security-and-credentials.md).
 
 Never hardcode secrets. Ask before production changes.
 
-## Step 0.2 - Data engineering guardrails
+## Step 0.3 - Data engineering guardrails
 
 Read [data-engineering-best-practices.md](references/data-engineering-best-practices.md) and [principal-data-engineering-standards.md](references/principal-data-engineering-standards.md) before model design and again before final delivery. Apply grain, test, incremental, snapshot, documentation, lineage, directed acyclic graph, freshness, macros, packages, build process, privacy, performance, state-based continuous integration, contracts/versioning, SQL style, warehouse optimization, modern table format, and downstream presentation guardrails.
 
@@ -427,8 +431,8 @@ Read [analytics-insight-reporting.md](references/analytics-insight-reporting.md)
 - Do not apply `5 key performance indicators per table` to dimensions, bridges, reference tables, or audit tables.
 - Do not publish catalog numbers without linked `sql_proofs/*.sql` files per [docs/kpi_proof_standards.md](docs/kpi_proof_standards.md).
 - Maximum means maximum useful business insight supported by validated data: business areas, processes, facts, dimensions, measures, metrics, strategic key performance indicators, report pages, and deferred opportunities with proof status, not maximum number of dashboards.
-- Target **50+** supported rows in `measure_catalog.md` and **50+** in `metric_catalog.md` when gold evidence allows; do not stop at three to five executive KPIs. Read [reporting-coverage-requirements.md](references/reporting-coverage-requirements.md). Run `python <skill>/scripts/check_analytics_coverage.py --root <project.root>` before presentation — **FAIL** if catalogs are thin while gold has 3+ facts/marts. Expand every `fct_` / `mart_` into counts, amounts, status mixes, quality flags, and partner/program/product/date slices; keep `kpi_catalog` as the smaller strategic subset.
-- Build conformed dimensions (partner, program, product/SKU, date, status) when source evidence exists; blank categorical chart axes are a presentation failure.
+- Target **50+** supported rows in `measure_catalog.md` and **50+** in `metric_catalog.md` when gold evidence allows; do not stop at three to five executive KPIs. Read [reporting-coverage-requirements.md](references/reporting-coverage-requirements.md). Run `python <skill>/scripts/check_analytics_coverage.py --root <project.root>` before presentation — **FAIL** if catalogs are thin while gold has 3+ facts/marts. Expand every `fct_` / `mart_` into counts, amounts, status mixes, quality flags, and dimension slices supported by this project's gold; keep `kpi_catalog` as the smaller strategic subset.
+- Build conformed dimensions that **this warehouse** evidence supports (entity, date, status/labels, and any product/channel/org dims present); blank categorical chart axes are a presentation failure. Do not invent industry-specific dim types.
 - Presentation `kpi_figure_coverage.md` must map every `measure_catalog` + `metric_catalog` + `kpi_catalog` row as `RENDERED`, `BLOCKED`, or `DEFERRED`.
 - The live Matplotlib report must include **All Measures** and **All Metrics** tabs that display **50+ live values each** when gold supports it — every analytics catalog insight must appear as a visible card/table value in the browser, not only in Markdown. See [reporting-coverage-requirements.md](references/reporting-coverage-requirements.md) Rule 5b.
 - Presentation `sql_verification/` must contain executed proofs with captured results for board measures/metrics and charts, plus `_proof_index.md` mapping RENDERED items to those proofs.

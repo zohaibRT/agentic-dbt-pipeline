@@ -203,7 +203,7 @@ Available profiles in your `profiles.yml`:
 
 Please also provide:
 
-- DBT_DOMAIN: <business domain, for example hospital, retail, or real estate>
+- DBT_DOMAIN: <business domain for this project; any industry>
 - DBT_SOURCE_SCHEMA: <raw/source schema to inspect>
 
 Optional:

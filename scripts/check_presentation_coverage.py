@@ -59,10 +59,26 @@ def coverage_has_status_rows(path: Path) -> tuple[int, int, int, int]:
 
 
 def label_dictionary_maps_categories(path: Path) -> bool:
+    """True when the dictionary maps codes/keys to human labels (domain-neutral)."""
     if not path.exists():
         return False
-    lower = read_text(path).lower()
-    return any(token in lower for token in ("expired", "delivered", "partner", "jarir", "status", "tos"))
+    text = read_text(path)
+    lower = text.lower()
+    # Structural signal: markdown table with a label-like column, or explicit map wording.
+    has_table = bool(re.search(r"^\|.+\|$", text, re.M)) and "---" in text
+    has_label_col = any(
+        token in lower
+        for token in (
+            "business label",
+            "display label",
+            "label",
+            "code",
+            "maps to",
+            "meaning",
+            "description",
+        )
+    )
+    return has_table and has_label_col
 
 
 def sql_verification_executed(sql_dir: Path) -> tuple[int, int]:
@@ -162,7 +178,7 @@ def main() -> int:
 
     if label_dict.exists() and not label_dictionary_maps_categories(label_dict):
         warnings.append(
-            "label_dictionary.md should map status/partner/category codes to business labels for chart axes"
+            "label_dictionary.md should map codes/keys to business labels for chart axes"
         )
 
     # Visible density: catalogs in Markdown are not enough — HTML/builder must expose boards

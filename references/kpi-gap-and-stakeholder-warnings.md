@@ -86,9 +86,9 @@ Until you accept or override the agent recommendations below, the pipeline will 
 
 | Attention ID | Agent recommendation | Why | KPIs unlocked if accepted | Status |
 |---|---|---|---|---|
-| HA-002 | Active = status Active AND not deleted | Status separates states; not_deleted alone inflates 826 vs 271 | Active Subscription Count | OPEN |
-| HA-003 | Keep CRM and payments-service money separate until units confirmed | Amount scales differ (~4k vs ~487k peaks) | Cross-System Revenue | OPEN |
-| HA-004 | Delivered = order status delivered | delivered_on alone can count scheduled/future dates | Delivered Order Count | OPEN |
+| HA-002 | Active = status Active AND not deleted | Status separates states; soft-delete alone inflates count | Active Entity Count | OPEN |
+| HA-003 | Keep system A and system B amounts separate until units/currency confirmed | Amount scales differ across sources | Cross-System Amount | OPEN |
+| HA-004 | Completed = lifecycle status completed | Timestamp alone can count scheduled/future events | Completed Event Count | OPEN |
 
 What you must do now:
 1. For each OPEN row: reply Accept recommendation, Override with your exact rule, or Defer with reason.

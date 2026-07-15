@@ -1,6 +1,6 @@
 # dbt Analytics Engineer
 
-`dbt Analytics Engineer` is a generic, domain-neutral agent skill for setting up and maintaining dbt analytics-engineering projects with a structured, agent-assisted workflow. It is not ecommerce-only; ecommerce, hospital, finance, customer relationship management, operations, and other examples are examples only.
+`dbt Analytics Engineer` is a generic, domain-neutral agent skill for setting up and maintaining dbt analytics-engineering projects with a structured, agent-assisted workflow. It is not tied to any industry; infer processes and entities from each warehouse’s evidence.
 
 It helps an agent start with read-only source discovery, initialize a dbt project, configure sources, build bronze/silver/gold medallion layers, add semantic layer assets, run quality checks, generate documentation, design analytics insight reporting outputs, recommend a presentation layer, optionally create a Power BI handoff after approval, create continuous integration workflows, publish dbt metadata to Agents Schema, write per-phase status reports, commit each stage separately, and finish with a clear user-facing run summary. It also requires explicit data-engineering decisions before each build phase, so the agent does not silently guess grain, joins, metrics, privacy, or materialization.
 

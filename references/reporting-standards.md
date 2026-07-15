@@ -192,7 +192,7 @@ Power BI page rules:
 - Use bar or column charts for ranked comparison across categories.
 - Use matrix visuals for operational detail and apply conditional formatting when it helps users spot exceptions.
 - Add report page tooltips for important charts when the PBIP/report format supports them.
-- Add drill-through pages for important entities such as customer, patient, provider, product, location, department, account, or order when safe and useful.
+- Add drill-through pages for important entities evidenced in the project (for example customer, product, location, department, account, or order) when safe and useful.
 - Hide technical fields from the report canvas and report view unless they are needed for investigation.
 - Document any missing layout element in `reports/agent/10_presentation/presentation_report.md` with the reason, such as unsupported by current PBIP generation, missing dimension, or privacy risk.
 

@@ -42,12 +42,12 @@ Choose:
 
 Create as many credible dimensions, facts, bridge tables, reporting marts, and metrics as the source data and approved requirements support. Do not force five dimensions, two facts, two reporting marts, or any other fixed model count. Do not invent unsupported models just to increase coverage.
 
-**Hard completeness rule:** a fact-only gold layer is incomplete unless [gold-dimension-completeness.md](gold-dimension-completeness.md) is followed. If bronze/silver contains entity or lookup tables (accounts, partners, programs, SKUs, methods, etc.), gold must build privacy-safe dimensions where possible, or register each omission as `BLOCKED` / `DEFERRED` with proof. Do not mark gold complete with zero dimensions and no register.
+**Hard completeness rule:** a fact-only gold layer is incomplete unless [gold-dimension-completeness.md](gold-dimension-completeness.md) is followed. If bronze/silver contains entity or lookup tables, gold must build privacy-safe dimensions where possible, or register each omission as `BLOCKED` / `DEFERRED` with proof. Do not mark gold complete with zero dimensions and no register.
 
 Also evaluate and usually build:
 
 - A date dimension / time spine when facts have usable dates
-- Non-PII descriptive dimensions (partner, program, product/SKU when grain is unique)
+- Non-PII descriptive dimensions evidenced in the project (when grain is unique)
 - Privacy-safe entity dimensions (hashed keys + safe attributes) instead of dropping customer/subscriber dimensions entirely
 
 Read [gold-dimension-completeness.md](gold-dimension-completeness.md) before approving gold discovery or marking gold complete.

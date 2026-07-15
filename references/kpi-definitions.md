@@ -64,9 +64,9 @@ For financial or operational metrics:
 - State the currency or unit when available.
 - Do not use proxy fields as final business metrics without naming the caveat.
 
-For healthcare, finance, people, or other sensitive domains:
+For sensitive domains or tables with direct identifiers:
 
-- Avoid direct identifier dimensions unless approved.
+- Avoid direct identifier dimensions unless approved (or privacy opt-out allows reporting attributes).
 - Prefer aggregate key performance indicators over record-level personal reporting.
 
 ## Universal key performance indicator types
@@ -75,10 +75,10 @@ These categories apply across domains. Use them as candidates only when the sour
 
 | Category | Candidate metrics |
 |---|---|
-| Volume metrics | Total records, total transactions, total users, total customers, total patients, total employees, total appointments, total orders, total bookings |
-| Revenue metrics | Gross revenue, net revenue, paid amount, pending amount, refunded amount, outstanding amount |
+| Volume metrics | Total records, total transactions, total users/customers/accounts, total employees, total events/orders/bookings when those entities exist |
+| Revenue metrics | Gross revenue, net revenue, paid amount, pending amount, refunded amount, outstanding amount (when amount fields exist) |
 | Operational metrics | Completed count, cancelled count, pending count, success rate, failure rate, average processing time, average waiting time |
-| Performance metrics | Department performance, employee performance, provider performance, agent performance, product performance, service performance, location-wise performance |
+| Performance metrics | Entity/department/employee/product/service/location performance when those dimensions exist |
 | Time metrics | Daily trend, weekly trend, monthly trend, year-over-year comparison |
 | Quality metrics | Missing values, duplicate records, invalid statuses, failed relationships, stale source data |
 

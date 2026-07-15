@@ -134,7 +134,7 @@ Every approved presentation artifact must separate these two visual layers inste
 
 | Visual layer | What it is | Examples |
 |---|---|---|
-| Domain key performance indicators | Business-defined measures that use approved flags, filters, and semantic definitions | Active subscriptions, payment success rate, reportable orders |
+| Domain key performance indicators | Business-defined measures that use approved flags, filters, and semantic definitions | Active entity counts, success rates, reportable volumes from this project’s evidence |
 | Standard time showcase | Reusable trend and period visuals driven by fact date columns | Orders by year, payments by month, last calendar year total, year-to-date total, last 12 months total |
 
 The presentation layer is incomplete if it includes only domain key performance indicator cards and omits the standard time showcase, unless the user explicitly declines trend reporting.
@@ -169,7 +169,7 @@ Default report page set, included only when the validated data supports it:
 | Financial or Value | Amount, revenue, payment, claim, order value, cost, or balance facts exist | Gross, net, paid, pending, refunded, outstanding, margin, or value trend views |
 | Operations or Activity | Event, workflow, status, or lifecycle facts exist | Volumes, completed/cancelled/pending counts, success/failure rate, funnel or process movement |
 | Insights and Attribution | Useful dimensions or segment fields exist | Top and bottom entities, driver breakdowns, segment changes, anomaly explanations, root-cause hypotheses with confidence |
-| Entity Performance and Segmentation | Useful dimensions exist | Breakdown by customer, patient, provider, product, department, location, team, agent, service, status, channel, category, geography, type, or plan |
+| Entity Performance and Segmentation | Useful dimensions exist | Breakdown by the entity and attribute dimensions evidenced in this project (for example customer, product, department, location, status, channel, category, geography, type, or plan) |
 | Exceptions and Data Quality | Important warnings, empty facts, unknown mappings, stale sources, or privacy constraints exist | Data coverage, missing values, invalid statuses, failed relationships, open decisions, blocked visuals |
 | Recommendations and Next Steps | Any business-facing report is created | Actions, decisions needed, risks, resource needs, and next approval checkpoint |
 | Detail or Drillthrough | Row-level investigation is safe and useful | Approved non-sensitive detail tables, drillthrough filters, investigation fields, and supporting context |
@@ -222,7 +222,7 @@ Example mapping, to be used only when these fields exist in the current project'
 |---|---|---|
 | Orders fact | `order_created_at` | Reportable order count |
 | Payments fact | `payment_created_at` | Payment amount collected |
-| Subscriptions fact | `service_start_date` or `subscription_created_at` | Active subscriptions |
+| Primary fact (when present) | Primary business date or created_at | Active / volume KPIs defined for that fact |
 | Payment transactions fact | `transaction_created_at` | Transaction count or collected amount |
 
 ## Artifact type distinction
@@ -469,7 +469,7 @@ When creating PBIP:
 - Create report definition files for the approved pages and visuals when the user asked for clickable/openable Power BI pages. Do not replace report pages with `dashboard_pages.md`.
 - Use parameters for host, database, schema, warehouse, or equivalent connection values instead of hardcoding environment-specific values where practical.
 - Define relationships from the approved star schema and avoid ambiguous relationship paths. Prefer one active route from each dimension to each fact area. Avoid convenience relationships from a dimension directly to a lower-grain fact when that lower-grain fact is already reachable through its parent fact.
-- Do not add a direct active relationship when an active indirect relationship path already exists between the same entities. For example, if `subscriptions -> orders -> customers` is active, do not also keep `subscriptions -> customers` active unless the shortcut is made inactive and a documented measure pattern needs it.
+- Do not add a direct active relationship when an active indirect relationship path already exists between the same entities. For example, if `fact_a -> fact_b -> dim_entity` is active, do not also keep `fact_a -> dim_entity` active unless the shortcut is made inactive and a documented measure pattern needs it.
 - For parent-child fact designs, connect lower-grain satellite facts to the parent fact only when that is the approved canonical route, and do not also add direct active dimension shortcuts that create ambiguous paths.
 - Use inactive relationships only for approved role-playing dates or alternate analysis paths, and document the measure pattern needed to activate them.
 - Include approved bridge tables and their relationship directions when the gold layer contains bridge models or the approved presentation scope requires many-to-many analysis.

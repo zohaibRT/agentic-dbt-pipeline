@@ -100,8 +100,8 @@ Examples:
 
 | Source schema | Domain | Derived source name |
 |---|---|---|
-| `doctors_hospital_src` | `hospital` | `doctors_hospital` |
-| `hospital_raw` | `hospital` | `hospital` |
+| `acme_ops_src` | `ops` | `acme_ops` |
+| `ops_raw` | `ops` | `ops` |
 | `raw` | `finance` | `finance` |
 
 ## Source profiling

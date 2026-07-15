@@ -71,7 +71,7 @@ Should I switch to this candidate and run read-only discovery there?
 
 ```text
 The command is still running:
-dbt build --select +path:models/gold/hospital
+dbt build --select +path:models/gold/<project_slug>
 
 Should I wait, stop it, or inspect logs in a new terminal?
 ```

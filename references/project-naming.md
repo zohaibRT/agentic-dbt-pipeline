@@ -46,11 +46,11 @@ Examples:
 
 | Input | Use? | Reason |
 |---|---|---|
-| `doctors_hospital_src` | Yes | descriptive source schema |
-| `dh_` | No | abbreviated and produces awkward model names |
+| `acme_ops_src` | Yes | descriptive source schema |
+| `ao_` | No | abbreviated and produces awkward model names |
 | `raw` | No | too generic |
 | `source` | No | too generic |
-| `hospital` | Yes | descriptive enough |
+| `acme` | Yes | descriptive enough |
 
 ## Normalize names
 
@@ -68,12 +68,12 @@ Examples:
 
 | Inputs | Result |
 |---|---|
-| `github_repo_name: hospital-analytics` | `hospital_analytics` |
-| `source_schema: doctors_hospital_src` | `doctors_hospital_analytics` |
-| `source_name: doctors_hospital_src` | `doctors_hospital_analytics` |
-| `domain: hospital` only | `hospital_analytics` |
+| `github_repo_name: acme-analytics` | `acme_analytics` |
+| `source_schema: acme_ops_src` | `acme_ops_analytics` |
+| `source_name: acme_ops_src` | `acme_ops_analytics` |
+| `domain: ops` only | `ops_analytics` |
 | `source_schema: raw`, `domain: finance` only | `finance_analytics` |
-| `DBT_DOMAIN=real_estate_house_building`, `source_schema=property_sales_src` | `property_sales_analytics` with `project_slug=property_sales` |
+| `DBT_DOMAIN=long_business_context_name`, `source_schema=property_sales_src` | `property_sales_analytics` with `project_slug=property_sales` |
 
 ## Folder paths
 

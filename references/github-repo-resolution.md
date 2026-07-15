@@ -28,7 +28,7 @@ If `gh` is not authenticated -> ask user to run `gh auth login`, then retry.
 3. **Ask user only for the repository name** (slug), not the full URL, when no repo was provided:
 
 ```text
-Which GitHub repository name should I use? (e.g. analytics, hospital-analytics, finance-dbt)
+Which GitHub repository name should I use? (e.g. analytics, acme-analytics, finance-dbt)
 Owner will be: {owner from gh}
 ```
 

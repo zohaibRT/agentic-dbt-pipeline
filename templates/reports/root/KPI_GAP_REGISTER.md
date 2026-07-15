@@ -31,7 +31,7 @@ Read skill references:
 
 | ID | KPI candidate | Why it matters | Evidence it is makeable | Blocker type | What is missing or confusing | Agent recommendation | Why this recommendation | Alternative rejected | Attention Board ID | Ask from human | Cannot ship until | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| KG-001 | <Active Subscription Count> | <portfolio health> | <fct_subscriptions + status; proof path> | MISSING_DEFINITION | <Active vs not_deleted unclear> | <status = Active AND not deleted> | <counts / status mix evidence> | <not_deleted only inflates count> | HA-002 | Accept / Override / Defer | <definition approved + reconciled> | OPEN |
+| KG-001 | <Active Entity Count> | <portfolio health> | <fct_* + status; proof path> | MISSING_DEFINITION | <Active vs soft-delete unclear> | <status = Active AND not deleted> | <counts / status mix evidence> | <soft-delete alone inflates count> | HA-002 | Accept / Override / Defer | <definition approved + reconciled> | OPEN |
 
 If none: write one row `None | No blocked makeable KPIs | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | Continue | n/a | NONE`.
 

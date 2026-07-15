@@ -39,7 +39,7 @@ Classify each relevant table before deciding facts, dimensions, reports, or meas
 
 | Table Type | Meaning | Key Performance Indicator Potential |
 |---|---|---|
-| Entity or master table | Customers, patients, products, houses, suppliers, doctors, employees, accounts | Dimensions and entity counts |
+| Entity or master table | Customers, products, suppliers, employees, accounts, counterparties, or other masters present in evidence | Dimensions and entity counts |
 | Transaction or event table | Orders, appointments, invoices, settlements, payments, visits, bookings | Facts and primary metrics |
 | Status or history table | Status changes, workflow movement, logs, lifecycle events | Funnel, aging, conversion, and backlog metrics |
 | Bridge or link table | Many-to-many relationships | Segmentation and relationship analysis |
