@@ -60,17 +60,18 @@ Default tab or section order:
 |---|---|
 | Overview | Report purpose, audience, data source, refresh time, caveats, and navigation |
 | Executive key performance indicators | Trusted strategic key performance indicators from `KPI_DEFINITION_CONTRACTS.md`, `METRIC_VERIFICATION_MATRIX.md`, and `kpi_catalog.md` (top 5–8 cards) |
-| **All Measures** | **Required when gold has 3+ facts:** live board of **50+** measure values (cards and/or table) from `measure_catalog.md` via warehouse SQL — not catalog counts alone |
-| **All Metrics** | **Required when gold has 3+ facts:** live board of **50+** metric values from `metric_catalog.md` |
+| **All Measures** | Optional Metric Dictionary page: live measure values with **business display names** and **formatted values** — never snake_case SQL ids as primary labels |
+| **All Metrics** | Optional Metric Dictionary page: live metric values with business titles and formatted rates/amounts |
+| **Dimensions** | **Required when gold has dimensions:** one readable table (or card) per important `dim_*` showing business columns (names, statuses, labels) — not only `dim_*_row_count` on the measures board |
 | Trends and variance | Time showcase, period comparisons, and variance views |
 | Operations and activity | Volumes, statuses, workflow movement, and operational metrics |
-| Segmentation and performance | Department, product, provider, location, channel, or other approved dimensions |
+| Segmentation and performance | Entity, product, location, channel, or other approved dimensions |
 | Financial or value | Amount, revenue, payment, cost, or value views when supported |
-| Exceptions and data quality | Coverage gaps, blocked visuals, mapping gaps, and validation notes |
+| Exceptions and data quality | Coverage gaps, blocked visuals, mapping gaps, validation notes, and engineering QA counts (`*_row_count`, null/orphan checks) |
 | Blocked and deferred | Items from `insight_backlog.md` and unreconciled metrics |
 | Report information | Metric definitions, filters, privacy handling, SQL verification summary |
 
-Do **not** ship an Overview with only eight executive cards when `measure_catalog.md` lists 50+. Humans must open the browser and *see* the full measure/metric surface. See Rule 5b in [reporting-coverage-requirements.md](reporting-coverage-requirements.md).
+Do **not** ship an Overview with only thin executive cards when analytics catalogs list many published business metrics. Humans must open the browser and *see* the published business surface, with readable labels. Dictionary pages are secondary to process pages. See Rules 5b–5c in [reporting-coverage-requirements.md](reporting-coverage-requirements.md).
 
 Each tab or section must:
 
@@ -357,23 +358,69 @@ Each `report_pages/*.py` module should:
 
 Use one `Figure` or figure group per chart, but group related charts under the same page module when they belong to the same business tab. Prefer returning SVG/HTML strings or JSON chart specs for the browser over writing PNG files.
 
-## Business-friendly labels (no raw codes on charts)
+## Business-friendly labels (no SQL dumps on business tabs)
 
-Charts must use **business-facing names**, not raw warehouse codes, unless the code itself is the approved business label.
+The report must read like **business reporting**, not like a SQL client. Charts **and** All Measures / All Metrics / Dimensions boards must use **business-facing names** and **formatted values**.
+
+### Boards must not look like warehouse dumps
+
+| Wrong (FAIL) | Right (PASS) |
+|---|---|
+| Name = `dim_programs_row_count` | Dimensions tab table titled **Programs** with business columns |
+| Name = `active_operating_share_of_subscriptions` | **Active operating share of subscriptions** |
+| Value = `0.2611111111111111` | **26.1%** |
+| Value = `4037.6045379548` | **4,037.60 SAR** (or project currency) |
+| Leading All Measures with ten `dim_*_row_count` rows | Put dimension browse tables on **Dimensions**; put model QA counts on Exceptions / Report Info |
+
+Required board row shape from `data_access` / refresh JSON:
+
+```text
+{
+  "id": "avg_order_amount_sar",          # technical, for proofs/SQL only
+  "display_name": "Average order amount (SAR)",
+  "value": 4037.60,
+  "formatted_value": "4,037.60 SAR",
+  "group": "Financial",
+  "format": "currency"
+}
+```
+
+HTML tables must show **Display name** (or Title) and **Formatted value** columns to end users. Technical `id` may appear in a collapsed “Technical id” column, tooltip, or Report Information — never as the primary Name.
+
+Value formatting rules:
+
+| Format | Display rule |
+|---|---|
+| `percent` / rate / share | Multiply by 100 when stored 0–1; show 1–2 decimals + `%` |
+| `currency` / amount | Thousands separators + currency/unit from catalog or gold |
+| `integer` / count | Whole numbers with thousands separators |
+| `decimal` / average | 2 decimals unless the catalog says otherwise |
+
+### Dimensions tab (required when gold dims exist)
+
+For each important gold dimension (programs, statuses, partners, products, dates when useful, etc.):
+
+1. Run a small read-only SQL selecting business label columns (not only `count(*)`).
+2. Render a titled HTML table (for example **Programs**, **Subscription statuses**) with human column headers.
+3. Cap preview rows (for example top 50) with a note when truncated.
+4. Do **not** treat `select count(*) from dim_*` as the primary way dimensions appear in the report.
+
+### Charts and categorical labels
 
 Do not plot axis labels, legends, bar categories, or table rows using:
 
 - Status codes such as `A`, `P`, `C`, `1`, `2`
 - Type codes, reason codes, department codes, or plan codes
 - Surrogate keys, hash keys, or technical column names
+- Snake_case measure ids as chart titles
 - Abbreviations that only engineers understand
 
 Instead, resolve labels from approved sources in this order:
 
 | Label source | Use for |
 |---|---|
-| `KPI_DEFINITION_CONTRACTS.md`, `METRIC_VERIFICATION_MATRIX.md`, `kpi_catalog.md`, and `metric_catalog.md` | Metric titles, card labels, chart titles, proof status, expected result, and actual result |
-| Gold dimension name/description columns | Entity, product, provider, department, location, and status names |
+| Catalog **Display name** columns + `KPI_DEFINITION_CONTRACTS.md` / `kpi_catalog.md` / `metric_catalog.md` | Board titles, card labels, chart titles |
+| Gold dimension name/description columns | Entity, product, department, location, and status names |
 | Mapping seeds and reference tables from dbt | Code-to-label translations |
 | `label_dictionary.md` | Explicit code-to-business-label mappings used by the report pack |
 | User-approved requirements or business rules | Company names, brand names, and approved terminology |
@@ -388,16 +435,17 @@ Hard label rules:
 
 - If a code has no approved business label, do not render that category on a business-facing chart. Move it to Blocked/Deferred with the reason `Missing business label mapping`.
 - If only some codes are mapped, show mapped categories only and list unmapped codes in the Exceptions tab.
-- Chart titles, axis labels, legends, HTML tab names, and KPI cards must use the same business label wording.
-- Company, client, department, product, provider, and status names must come from governed dimension fields or approved mappings, not from raw code values.
-- Technical field names may appear only in `sql_verification/` or Report Information, not on business-facing chart axes.
+- Chart titles, axis labels, legends, HTML tab names, KPI cards, and board display names must use the same business label wording.
+- Entity, product, and status names must come from governed dimension fields or approved mappings, not from raw code values.
+- Technical field names and snake_case ids may appear only in `sql_verification/`, tooltips, or Report Information — not as the primary text on business tabs.
 
 Before saving a figure or HTML section, run a label check:
 
 1. Every categorical axis value has a mapped business label or the chart is deferred.
-2. Every metric name matches `kpi_catalog.md`, `metric_catalog.md`, or an approved alias in `report_spec.md`.
-3. `label_dictionary.md` documents any code translation used in the report pack.
-4. Categorical labels are **trimmed** before plotting (`strip()` in Python, `trim()`/`btrim()` in SQL). Fixed-width `char`/`varchar` fields from Postgres often return padded values that push matplotlib tick labels off-chart and look blank in the browser.
+2. Every visible board title is a Display name (not only a snake_case id).
+3. Every visible board value is `formatted_value` appropriate to its format.
+4. `label_dictionary.md` documents any code translation used in the report pack.
+5. Categorical labels are **trimmed** before plotting (`strip()` in Python, `trim()`/`btrim()` in SQL). Fixed-width `char`/`varchar` fields from Postgres often return padded values that push matplotlib tick labels off-chart and look blank in the browser.
 
 ### Generator script location
 
@@ -528,12 +576,14 @@ Before marking Matplotlib presentation work complete:
 8. Verify the local web report contains the classified tabs/sections defined in `report_spec.md`.
 9. Verify `open_report.bat` exists on Windows-focused projects or document the equivalent open command, and confirm it points to the same validated server entrypoint.
 10. Verify every `RENDERED` row in `kpi_figure_coverage.md` appears in the correct HTML tab/section through SVG/HTML/JSON chart output, measure/metric board cards, or has a documented static export fallback.
-10b. Verify the live report includes **All Measures** and **All Metrics** boards (or equivalent named tabs) with **visible live values**: smoke-test must report `measure_cards >= 50` and `metric_cards >= 50` when gold has 3+ facts. Catalog markdown alone does not satisfy this check.
+10b. Verify decision-oriented business pages render with display names and formatted values. All Measures / All Metrics may exist as dictionary pages but are not required to hit a fixed card count.
+10c. Verify boards show **Display name** + **formatted_value** — primary columns must not be snake_case SQL ids or raw floats (`0.261111…`). Engineering `dim_*_row_count` / null-counts belong on Exceptions or Report Info.
+10d. When gold dimensions exist, verify a **Dimensions** tab (or equivalent) renders readable tables of business columns per dim — not only counts.
 11. Verify `label_dictionary.md` exists and every categorical chart uses mapped **business labels** on axes/legends. Blank x-axis ticks on `RENDERED` charts are a validation `FAIL`.
 12. Verify `report_theme.md` exists and charts/HTML use the comfortable colorful theme, not default gray matplotlib styling.
-13. Verify every plotted aggregate **and every All Measures / All Metrics board card** has a matching **executed** SQL proof in `sql_verification/` with captured result and `PASS`, and `_proof_index.md` maps RENDERED items to those proofs. One KPI-card proof file is not enough when 50+ measures/metrics are visible.
+13. Verify every plotted aggregate **and every RENDERED board/chart item** has a matching **executed** SQL proof in `sql_verification/` with captured result and `PASS`, and `_proof_index.md` maps RENDERED items to those proofs. One KPI-card proof file is not enough when many items are RENDERED.
 14. Verify chart scope matches `dashboard_spec.md` and does not include deferred items from `insight_backlog.md` without a visible blocked note.
-15. Run `python <skill>/scripts/check_presentation_coverage.py --root <project.root>` when available.
+15. Run `python <skill>/scripts/check_presentation_coverage.py --root <project.root>` when available — must FAIL on missing display_name / value formatting when boards exist.
 16. Record pass/fail evidence in `reports/agent/10_presentation/presentation_report.md`.
 
 HTML shell load alone is never enough to mark presentation complete.

@@ -52,10 +52,20 @@ PROJECT_VALIDATION_SCRIPTS = [
     ("check_requirement_traceability.py", ["--root", "{root}"]),
     ("check_layer_proof_coverage.py", ["--root", "{root}"]),
     ("verify_metric_reconciliation.py", ["--root", "{root}"]),
+    ("check_model_classification_coverage.py", ["--root", "{root}"]),
     ("check_analytics_coverage.py", ["--root", "{root}"]),
+    ("check_analytics_product_completeness.py", ["--root", "{root}"]),
+    ("check_fact_analytical_coverage.py", ["--root", "{root}"]),
+    ("check_metric_contract_completeness.py", ["--root", "{root}"]),
+    ("check_time_intelligence_coverage.py", ["--root", "{root}"]),
+    ("check_data_observability_coverage.py", ["--root", "{root}"]),
     ("check_presentation_coverage.py", ["--root", "{root}"]),
+    ("check_report_page_contracts.py", ["--root", "{root}"]),
+    ("check_report_business_readability.py", ["--root", "{root}"]),
+    ("check_exposure_coverage.py", ["--root", "{root}"]),
     ("check_presentation_hardcodes.py", ["--root", "{root}"]),
     ("check_privacy_opt_out.py", ["--root", "{root}"]),
+    ("check_domain_neutrality.py", ["--root", "{skill_root}"]),
     ("validate_powerbi_pbip.py", []),
     (
         "validate_local_web_report.py",
@@ -254,32 +264,62 @@ def check_operational_gaps(root: Path, report: GateReport) -> None:
 
 def run_validation_scripts(root: Path, report: GateReport, timeout: int) -> None:
     script_dir = Path(__file__).resolve().parent
+    skill_root = script_dir.parent
+    insights = root / "reports" / "agent" / "09_analytics_insights"
+    presentation = root / "reports" / "agent" / "10_presentation"
+    matplotlib_dir = presentation / "matplotlib"
+
+    analytics_scripts = {
+        "check_analytics_coverage.py",
+        "check_analytics_product_completeness.py",
+        "check_fact_analytical_coverage.py",
+        "check_model_classification_coverage.py",
+        "check_metric_contract_completeness.py",
+        "check_time_intelligence_coverage.py",
+        "check_data_observability_coverage.py",
+        "check_exposure_coverage.py",
+    }
+    presentation_scripts = {
+        "check_presentation_coverage.py",
+        "check_report_page_contracts.py",
+        "check_report_business_readability.py",
+    }
+
     for script_name, script_args in PROJECT_VALIDATION_SCRIPTS:
         script_path = script_dir / script_name
         if not script_path.exists():
             report.add(CheckResult("Validation script: " + script_name, "FAIL", f"skill script not found at {script_path}"))
             continue
-        if script_name == "validate_powerbi_pbip.py" and not list((root / "reports" / "agent" / "10_presentation").glob("**/*.pbip")):
+        if script_name == "validate_powerbi_pbip.py" and not list(presentation.glob("**/*.pbip")):
             report.add(CheckResult("Validation script: " + script_name, "SKIPPED", "no PBIP found"))
             continue
-        if script_name == "validate_local_web_report.py" and not (root / "reports" / "agent" / "10_presentation" / "matplotlib" / "serve_report.py").exists():
+        if script_name == "validate_local_web_report.py" and not (matplotlib_dir / "serve_report.py").exists():
             report.add(CheckResult("Validation script: " + script_name, "SKIPPED", "no local web report server found"))
             continue
-        if script_name == "check_analytics_coverage.py" and not (root / "reports" / "agent" / "09_analytics_insights").exists():
+        if script_name in analytics_scripts and not insights.exists():
             report.add(CheckResult("Validation script: " + script_name, "SKIPPED", "no analytics insight folder"))
             continue
-        if script_name == "check_presentation_coverage.py" and not (root / "reports" / "agent" / "10_presentation" / "matplotlib").exists():
+        if script_name == "check_presentation_coverage.py" and not matplotlib_dir.exists():
             report.add(CheckResult("Validation script: " + script_name, "SKIPPED", "no Matplotlib presentation folder"))
             continue
-        if script_name == "check_presentation_hardcodes.py" and not (root / "reports" / "agent" / "10_presentation").exists():
+        if script_name in presentation_scripts - {"check_presentation_coverage.py"} and not presentation.exists():
+            report.add(CheckResult("Validation script: " + script_name, "SKIPPED", "no presentation folder"))
+            continue
+        if script_name == "check_presentation_hardcodes.py" and not presentation.exists():
             report.add(CheckResult("Validation script: " + script_name, "SKIPPED", "no presentation folder"))
             continue
         resolved_args = []
         for item in script_args:
-            value = item.replace("{root}", str(root)) if "{root}" in item else item
+            value = item
+            if "{root}" in value:
+                value = value.replace("{root}", str(root))
+            if "{skill_root}" in value:
+                value = value.replace("{skill_root}", str(skill_root))
             resolved_args.append(value)
         command = [sys.executable, str(script_path), *resolved_args]
-        report.add(run_command(command, root, timeout))
+        # Domain neutrality validates the skill repo, not the generated project cwd
+        cwd = skill_root if script_name == "check_domain_neutrality.py" else root
+        report.add(run_command(command, cwd, timeout))
 
 
 def run_dbt(root: Path, report: GateReport, timeout: int, skip_dbt: bool) -> None:

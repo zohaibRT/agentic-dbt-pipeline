@@ -430,13 +430,32 @@ Read [analytics-insight-reporting.md](references/analytics-insight-reporting.md)
 - Do not invent targets, benchmarks, attribution, or recommendations without evidence.
 - Do not apply `5 key performance indicators per table` to dimensions, bridges, reference tables, or audit tables.
 - Do not publish catalog numbers without linked `sql_proofs/*.sql` files per [docs/kpi_proof_standards.md](docs/kpi_proof_standards.md).
-- Maximum means maximum useful business insight supported by validated data: business areas, processes, facts, dimensions, measures, metrics, strategic key performance indicators, report pages, and deferred opportunities with proof status, not maximum number of dashboards.
-- Target **50+** supported rows in `measure_catalog.md` and **50+** in `metric_catalog.md` when gold evidence allows; do not stop at three to five executive KPIs. Read [reporting-coverage-requirements.md](references/reporting-coverage-requirements.md). Run `python <skill>/scripts/check_analytics_coverage.py --root <project.root>` before presentation — **FAIL** if catalogs are thin while gold has 3+ facts/marts. Expand every `fct_` / `mart_` into counts, amounts, status mixes, quality flags, and dimension slices supported by this project's gold; keep `kpi_catalog` as the smaller strategic subset.
-- Build conformed dimensions that **this warehouse** evidence supports (entity, date, status/labels, and any product/channel/org dims present); blank categorical chart axes are a presentation failure. Do not invent industry-specific dim types.
-- Presentation `kpi_figure_coverage.md` must map every `measure_catalog` + `metric_catalog` + `kpi_catalog` row as `RENDERED`, `BLOCKED`, or `DEFERRED`.
-- The live Matplotlib report must include **All Measures** and **All Metrics** tabs that display **50+ live values each** when gold supports it — every analytics catalog insight must appear as a visible card/table value in the browser, not only in Markdown. See [reporting-coverage-requirements.md](references/reporting-coverage-requirements.md) Rule 5b.
+- Maximum means maximum useful business insight supported by validated data: business areas, processes, facts, dimensions, measures, metrics, strategic key performance indicators, report pages, and deferred opportunities with proof status, not maximum number of dashboards or arbitrary catalog row counts.
+- Do **not** optimize for fixed 50+/100+ measure or metric counts. Generate complete analytical coverage for each validated business process. Coverage is complete when every material fact has appropriate volume, value, status, time, quality, segmentation, exception and lifecycle analysis, and every published result answers a documented business or engineering question. Read [analytics-product-completeness.md](references/analytics-product-completeness.md) and [reporting-coverage-requirements.md](references/reporting-coverage-requirements.md). Run `python <skill>/scripts/check_analytics_coverage.py --root <project.root>` and related completeness scripts before presentation.
+- Maintain separate catalogs for business measures, contextual metrics, strategic KPIs, data-quality metrics, and pipeline-health metrics. Keep technical model row counts out of executive business pages.
+- Create `analytics_coverage_matrix.md`, `fact_coverage_contracts.md`, `model_classification.md`, and `business_process_catalog.md` as primary gates.
+- Build conformed dimensions that **this warehouse** evidence supports (entity, date, status/labels, and any other dims present); blank categorical chart axes are a presentation failure. Do not invent industry-specific dim types.
+- Presentation `kpi_figure_coverage.md` must map published business metrics/KPIs as `RENDERED`, `BLOCKED`, or `DEFERRED`. Full raw dictionaries may live under Metric Dictionary pages.
+- The live Matplotlib report must use **business display names** and **formatted values** on all business pages. All Measures / All Metrics may exist as dictionary pages but must not be SQL dumps of snake_case ids / raw floats. Add process-based pages from discovered processes, plus Dimensions / Data Quality / Pipeline Health when supported. See Rules 5b–5c and [report-page-contract.md](references/report-page-contract.md).
 - Presentation `sql_verification/` must contain executed proofs with captured results for board measures/metrics and charts, plus `_proof_index.md` mapping RENDERED items to those proofs.
 - Run live warehouse SQL for every `RENDERED` chart and prove the report refresh path; HTML shell HTTP 200 alone is not completion.
+
+### Production analytics product completeness
+
+Analytics completeness is based on supported business and engineering coverage, not a fixed number of catalog rows.
+
+Before analytics insight reporting can pass:
+
+1. Classify every in-scope model (see [universal-model-classification.md](references/universal-model-classification.md)).
+2. Create `analytics_coverage_matrix.md` mapping every material business process to facts, dimensions, measures, metrics, KPIs, time analysis, segmentation, quality checks, reconciliations, report pages, and status.
+3. Evaluate each validated fact for volume, value/quantity/duration, status/lifecycle, time trend/period comparison, dimensional segmentation, data quality, exceptions/aging, source reconciliation, and supported business questions.
+4. Maintain separate catalogs for business measures, contextual business metrics, strategic KPIs, data-quality metrics, and pipeline-health metrics.
+5. Keep technical model row counts, null checks, orphan counts and pipeline statistics out of executive business pages.
+6. Every published KPI must include business question, decision supported, action when bad, owner, definition, formula, grain/counting key, included/excluded records, date field/role, dimensions, unit/currency/format, aggregation behavior, target or target-not-defined, desired direction, validation source, reconciliation tolerance, SQL proof, and approval/confidence status.
+7. Every strategic KPI must be evaluated for time intelligence per [time-intelligence-standard.md](references/time-intelligence-standard.md); implement only comparisons supported by date coverage.
+8. Every report page must declare a page contract per [report-page-contract.md](references/report-page-contract.md).
+9. Treat raw technical names, blank labels, raw decimal ratios, unlabeled currency, KPIs without periods, unsupported additive totals, deleted-record definitions on executive pages, technical row counts as business KPIs, and charts without comparison/question/caption as presentation failures.
+10. SQL execution is not sufficient business validation. Critical KPIs require reconciliation and business-owner approval or explicit pending-approval status.
 
 After this phase, run `python <installed-skill-path>/scripts/validate_kpi_proofs.py --root <project.root>` and `python <installed-skill-path>/scripts/verify_metric_reconciliation.py --root <project.root>`, then record the results in the phase report. For medium projects with broad table scope, use project-scale targets or document each shortfall in `insight_backlog.md`. Update `reports/agent/09_analytics_insights/analytics_insight_reporting_report.md`, `reports/agent/PIPELINE_STATUS.md`, and `reports/agent/CONTEXT_TREE.md`, then stop at the presentation-layer gate unless the user already approved presentation work.
 
@@ -632,7 +651,13 @@ For the final response, use [final-delivery.md](references/final-delivery.md) in
 | [data-engineering-best-practices.md](references/data-engineering-best-practices.md) | Grain, tests, history, contracts, privacy, operations |
 | [principal-data-engineering-standards.md](references/principal-data-engineering-standards.md) | Principal-level dbt, Power BI, storage, warehouse, and SQL standards |
 | [privacy-and-unknown-fields.md](references/privacy-and-unknown-fields.md) | Safe defaults for sensitive fields and unclear coded fields; user privacy opt-out |
-| [reporting-coverage-requirements.md](references/reporting-coverage-requirements.md) | 50+ measures/metrics, required dims, labels, full presentation coverage, live SQL gates |
+| [reporting-coverage-requirements.md](references/reporting-coverage-requirements.md) | Process-driven coverage, readable presentation, live SQL gates |
+| [analytics-product-completeness.md](references/analytics-product-completeness.md) | Analytics product modules, metric families, fact contracts |
+| [time-intelligence-standard.md](references/time-intelligence-standard.md) | Period comparisons and KPI card period/target display |
+| [report-page-contract.md](references/report-page-contract.md) | Decision-oriented report page contracts |
+| [universal-model-classification.md](references/universal-model-classification.md) | Domain-neutral model class register |
+| [data-observability-standard.md](references/data-observability-standard.md) | DQ and pipeline-health observability |
+| [exposure-coverage.md](references/exposure-coverage.md) | Downstream consumer / exposure coverage |
 | [security-and-credentials.md](references/security-and-credentials.md) | Secrets & gitignore |
 | [project-initialization.md](references/project-initialization.md) | venv, dbt init, debug, software prerequisite check |
 | [warehouse-schema-setup.md](references/warehouse-schema-setup.md) | Warehouse schemas |

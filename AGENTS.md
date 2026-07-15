@@ -70,7 +70,7 @@ Do not:
 - Create gold or marts before bronze/staging and silver/intermediate models are built and validated.
 - Guess business metrics, mappings, relationships, reporting needs, or sensitive-field handling.
 - Store helper Python scripts or scratch `_*.json` under `reports/agent/` (put them in `<project.root>/scripts/` instead; keep reports for markdown, proofs, and canonical JSON only).
-- Mark presentation complete after only an HTML shell loads; require live SQL for every RENDERED chart, business labels on categorical axes, and visible **All Measures / All Metrics** boards (50+/30+ live values when gold supports it), not catalogs alone.
+- Mark presentation complete after only an HTML shell loads; require live SQL for every RENDERED chart, business labels on categorical axes, visible **All Measures / All Metrics** boards with **human display names and formatted values** (not snake_case SQL dumps), and a **Dimensions** browse tab when gold dims exist.
 - Do **not** apply privacy minimization after the user explicitly opts out. Show reporting attributes that exist in gold on the presentation when useful. Only secrets/OTP/full bank dumps/national ID/PHI still need an explicit ask. Do not hardcode industry field lists into gates or scripts.
 - Mark work complete when dbt tests or warehouse validation failed without documenting the blocker.
 - Mark work complete when `scripts/run_acceptance_gate.py` returns `FAIL` or independent verification returns `FAIL`.
@@ -89,8 +89,11 @@ After dbt model or YAML changes, run the smallest useful validation first, then 
 - `python <installed-skill-path>/scripts/check_layer_proof_coverage.py --root <project.root>`
 - `python <installed-skill-path>/scripts/verify_metric_reconciliation.py --root <project.root>`
 - `python <installed-skill-path>/scripts/check_analytics_coverage.py --root <project.root>`
+- `python <installed-skill-path>/scripts/check_analytics_product_completeness.py --root <project.root>`
 - `python <installed-skill-path>/scripts/check_presentation_coverage.py --root <project.root>`
+- `python <installed-skill-path>/scripts/check_report_business_readability.py --root <project.root>`
 - `python <installed-skill-path>/scripts/check_presentation_hardcodes.py --root <project.root>`
 - `python <installed-skill-path>/scripts/check_privacy_opt_out.py --root <project.root>`
+- `python <installed-skill-path>/scripts/check_domain_neutrality.py` (skill repo)
 
 Document validation commands, failures, fixes, skips, and remaining risks in the phase report.

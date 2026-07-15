@@ -75,6 +75,21 @@ business_context:
 project_slug: auto           # stable folder slug derived by references/project-naming.md
 schema_prefix: auto          # physical warehouse prefix derived by references/schema-isolation.md
 
+# Analytics completion policy (domain-neutral; process coverage by default).
+# Fixed catalog counts are advisory only when set; null disables count gates.
+analytics_policy:
+  completion_mode: process_coverage
+  advisory_measure_target: null
+  advisory_metric_target: null
+  critical_fact_coverage_required: 1.0
+  critical_kpi_contract_coverage_required: 1.0
+  critical_reconciliation_coverage_required: 1.0
+  business_process_coverage_required: 0.9
+  time_intelligence_coverage_required: 0.8
+  model_classification_coverage_required: 1.0
+  business_label_coverage_required: 1.0
+  report_traceability_required: 1.0
+
 layer_names:
   ask_user: false
   layer_1: bronze

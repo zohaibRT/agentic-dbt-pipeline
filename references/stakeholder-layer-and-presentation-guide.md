@@ -75,10 +75,12 @@ Use the five report pillars. Organize by business purpose, not table names.
 
 Hard requirements from [reporting-coverage-requirements.md](reporting-coverage-requirements.md):
 
-1. Maximize measures/metrics (50+/30+ targets when gold allows).
+1. Maximize useful measures/metrics for each material business process (no fixed count gate).
 2. Build conformed dimensions present in this warehouse (entity, date, status, and any channel/product/org dims with evidence) for slicing.
 3. Honor privacy opt-out when the user stated it.
 4. Every categorical axis must show business names via `label_dictionary.md` — blank ticks are a FAIL.
+5. All Measures / All Metrics boards must show **Display name** + formatted values (%, currency, integers) — snake_case SQL ids and raw floats on business tabs are a FAIL.
+6. When gold dimensions exist, add a Dimensions tab with readable entity/status tables — not only `dim_*_row_count` on measures.
 5. Map every measure/metric/kpi catalog row in `kpi_figure_coverage.md`.
 6. Live SQL for every RENDERED chart before presentation complete.
 

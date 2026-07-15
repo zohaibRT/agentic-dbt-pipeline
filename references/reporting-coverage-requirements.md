@@ -9,39 +9,46 @@ These requirements are **hard defaults** whenever the user states them (or paste
 When the user provides rules like the following, apply them for the whole run and write them into `reports/agent/00_discovery/requirements.md`, `CONTEXT_TREE.md`, and `AGENT_PLAN.md`:
 
 ```text
-1. Maximize supported KPIs/metrics from validated gold — target 50+ in measure/metric catalogs.
-2. Build conformed dimensions present in THIS warehouse (entity, date, status, and any channel/product/geography tables with evidence) for slicing.
+1. Maximize useful KPIs/metrics from validated gold for each material business process (no fixed minimum count).
+2. Build conformed dimensions present in THIS warehouse (entity, date, status, and any other dims with evidence) for slicing.
 3. Do NOT apply privacy minimization unless I explicitly request it.
 4. Use label_dictionary.md — every chart axis must show business names, not blank or raw codes.
-5. Presentation must map every measure_catalog + metric_catalog + kpi_catalog row in kpi_figure_coverage.md.
+5. Presentation must map published business metrics/KPIs in kpi_figure_coverage.md and use human-readable display names.
 6. Run live SQL for every RENDERED chart before marking presentation complete.
 ```
 
-If the user names **project-specific** dimension types (for example partners or SKUs), apply those names for that run only. Do **not** treat any industry’s entity list as a global skill default.
+If the user names **project-specific** dimension types (illustrative only — do not treat as required model names: partners, SKUs), apply those names for that run only. Do **not** treat any industry’s entity list as a global skill default.
 
 Treat the block as approved requirements when the user states it. Do not re-ask for privacy minimization after the user opts out. Do not silently shrink catalogs to three to five executive KPIs.
 
-## Rule 1 — Maximum useful measures and metrics (50+ target)
+## Rule 1 — Analytical completeness (process-driven, not fixed counts)
 
-| Catalog | Target when gold has multiple facts and dims | Hard rule |
+Analytics completion is based on **business-process and fact coverage**, not a fixed number of catalog rows.
+
+Do **not** optimize for 50+, 100+, or any other arbitrary measure/metric count. Those numbers may appear only as **optional advisory examples** for medium/large projects when configured under `analytics_policy.advisory_*_target`.
+
+| Catalog / artifact | Role | Hard rule |
 |---|---|---|
-| `measure_catalog.md` | **50+ supported** rows when evidence allows | Do not stop at 3–5 |
-| `metric_catalog.md` | **50+ supported** contextual metrics when evidence allows | Promote measures with time/dim/ratio/share/trend context |
-| `kpi_catalog.md` | Strategic subset (often 10–25) | Decision KPIs only, but still rich |
-| Presentation | **Visible** measures + metrics + KPIs in the live browser report | Executive tab shows top 5–8; dedicated **All Measures** and **All Metrics** tabs show **50+ live values each** when gold supports it |
+| `business_process_catalog.md` | Processes drive metrics and pages | Required when analytics phase runs |
+| `analytics_coverage_matrix.md` | Primary coverage gate | Process coverage target from `analytics_policy` (default >= 90%) |
+| `fact_coverage_contracts.md` | Per-fact analytical evaluation | Critical fact coverage default 100% |
+| `business_measure_catalog.md` / `measure_catalog.md` | Business measures only | Complete for material facts; no fixed row floor |
+| `business_metric_catalog.md` / `metric_catalog.md` | Contextual metrics | Complete where questions exist; no fixed row floor |
+| `kpi_catalog.md` | Strategic KPI subset | Every published KPI has a full contract |
+| `data_quality_metric_catalog.md` | DQ family | Separate from business pages |
+| `pipeline_health_metric_catalog.md` | Pipeline family | Separate from business pages |
+| Presentation | Readable business pages | Rules 5b–5c; dictionary pages optional |
 
-Thin catalogs with rich gold are a **FAIL**. Cataloguing 50+ rows in Markdown while the browser only shows ~8 executive cards is also a **FAIL**.
+Thin catalogs that leave material facts without volume/value/status/time/quality evaluation are a **FAIL**. A small project with complete process coverage can PASS with far fewer than 50 metrics.
 
-If catalogs fall below the target while many gold facts/dims have unmapped counts/amounts/status mixes:
+If coverage is incomplete:
 
-1. Document the shortfall in `insight_backlog.md` and analytics report with exact missing proofs
+1. Document gaps in `insight_backlog.md` and the coverage matrix with exact missing proofs
 2. Mark analytics / presentation status `WARN` or `BLOCKED`
-3. Re-warn on the Attention Board / Gap Register with an agent recommendation to expand coverage
-4. Acceptance gate must run `scripts/check_analytics_coverage.py` — **FAIL** when gold has 3+ facts/marts and catalogs are below target (unless shortfall is explicitly documented as impossible)
+3. Re-warn on the Attention Board / Gap Register with an agent recommendation
+4. Acceptance gate runs process/fact/KPI contract checkers — **not** a hardcoded 50+ row counter
 
-`kpi_catalog` staying smaller is fine. Thin `measure_catalog` / `metric_catalog` while gold can support more is not. Do not treat a 10–15 measure executive list as analytics complete.
-
-Also read [kpi-discovery-framework.md](kpi-discovery-framework.md) and [universal-analytics-framework.md](universal-analytics-framework.md).
+Also read [analytics-product-completeness.md](analytics-product-completeness.md), [kpi-discovery-framework.md](kpi-discovery-framework.md), and [universal-analytics-framework.md](universal-analytics-framework.md).
 
 ## Rule 2 — Conformed dimensions for slicing
 
@@ -127,23 +134,44 @@ Catalogs and `kpi_figure_coverage.md` alone are **not** enough. The refreshable 
 
 | Surface | Minimum when gold has 3+ facts/marts |
 |---|---|
-| Executive / Overview | Top strategic KPIs (cards) |
-| **All Measures** tab (or equivalent) | **50+** live measure values as cards and/or a filterable table (name + value + group) |
-| **All Metrics** tab (or equivalent) | **50+** live metric values as cards and/or a table |
-| Charts | Status/partner/product/time visuals plus quality callouts |
+| Executive / Overview | Top strategic KPIs (cards) with period/context |
+| Process / business pages | Pages derived from discovered processes (not fixed industry titles) |
+| **Metric Dictionary** (optional) | All Measures / All Metrics exploration pages with display names + formatting |
+| **Dimensions** tab (or equivalent) | Readable tables per built gold dimension when dims exist |
+| Charts | Status/entity/time visuals plus quality callouts |
 
 Required implementation pattern:
 
-1. `data_access.py` (or equivalent) runs live SQL that returns a **measure board** list of 50+ `{name, value, group}` rows and a **metric board** of 30+ rows.
-2. `report_builder.py` / HTML renders those boards in dedicated tabs the user can click — not only buried in Report Info prose.
-3. `serve_report.py --smoke-test` asserts visible card/table counts (`measure_cards >= 50`, `metric_cards >= 50`) before presentation passes.
-4. `check_presentation_coverage.py` **FAIL**s when the presentation Python/HTML has no All Measures / All Metrics board, or smoke density checks fail.
+1. `data_access.py` (or equivalent) returns boards as `{id, display_name, value, formatted_value, group, format}` — not raw SQL identifiers alone.
+2. `report_builder.py` / HTML renders decision-oriented pages first; dictionary boards are secondary.
+3. `serve_report.py --smoke-test` asserts pages render and formatted values appear for RENDERED items.
+4. `check_presentation_coverage.py` **FAIL**s when business readability / proofs / page contracts are incomplete.
 
 Forbidden:
 
 - “75 measures in measure_catalog.md” while Overview still shows only 8 cards
 - Marking presentation complete because `kpi_figure_coverage.md` lists RENDERED rows that are not visible in the browser
 - Only printing catalog counts in Report Info without live values
+
+## Rule 5c — Business-facing boards (not SQL dumps)
+
+The live report is for **humans who are not data engineers**. All Measures / All Metrics / Dimensions must look like business reporting, not a warehouse query tool.
+
+| Element | Required | Forbidden on business tabs |
+|---|---|---|
+| Measure / metric title | Sentence case or Title Case business name (`Active operating share`, `Average order amount (SAR)`) | Snake_case IDs (`active_operating_share_of_subscriptions`, `avg_order_amount_sar`) |
+| Stable technical id | May exist in JSON/API payload as `id` for SQL/proof mapping | Shown as the only visible Name column |
+| Values | Formatted for type: integers with thousands separators; rates/shares as `%` (1–2 decimals); amounts with currency/unit when known; averages rounded | Raw float dumps (`0.2611111111111111`, `4037.6045379548`) |
+| Dimension coverage | Dedicated **Dimensions** tab: for each `dim_*` with business labels, show a small table of rows (key + business name/status label columns from gold) | Leading the All Measures board with `dim_programs_row_count`, `dim_dates_row_count`, etc. as if those were business KPIs |
+| Engineering QA counts | Model row counts, null counts, orphan rates may live under **Exceptions / data quality** or Report Information | Dominating the first screen of All Measures |
+
+Catalogs must carry a **Display name** (and preferably **Format**: `integer` / `percent` / `currency` / `decimal` / `count`) so presentation does not invent labels at render time from the technical id alone.
+
+`check_presentation_coverage.py` **FAIL**s when:
+
+- Builder/HTML board payloads lack `display_name` (or equivalent) alongside values
+- No value-formatting helper is present (`format_value`, `formatted_value`, percent/currency formatting)
+- Sampled board Name cells are mostly `snake_case` technical ids with no human title mapping
 
 ## Rule 6 — Live SQL for every RENDERED chart **and** measure/metric board
 
@@ -165,7 +193,7 @@ Minimum proof set when All Measures / All Metrics boards exist:
 | Chart-specific proofs | Each major chart SQL used by `serve_report` |
 | `_proof_index.md` | Row → proof path → status |
 
-A single KPI-card proof is **not** enough when 50+ measures and 50+ metrics are RENDERED. `check_presentation_coverage.py` **FAIL**s when RENDERED board density is high and `sql_verification/` has too few executed proofs with captured results.
+A single KPI-card proof is **not** enough when many measures/metrics are RENDERED. `check_presentation_coverage.py` **FAIL**s when RENDERED board density is high and `sql_verification/` has too few executed proofs with captured results.
 
 HTML shell HTTP 200 alone is **not** enough. A missing relation such as `schema.fct_prospect does not exist` is a presentation **FAIL**, not a user environment tip.
 
@@ -193,7 +221,9 @@ Agent recommendation format: concrete expand/build/label/run-SQL action + Accept
 | Presentation | All Measures/Metrics boards RENDERED but `sql_verification/` missing proofs / `_proof_index.md` |
 | Final delivery | User opt-out of privacy ignored; dims still privacy-blocked without ask |
 | Final delivery | OPEN Attention Board / Gap Register privacy-minimization rows under recorded opt-out |
-| Presentation | Catalogs hit 50+/50+ but live HTML still shows only executive KPI cards (no All Measures / All Metrics boards) |
+| Presentation | Rich catalogs exist but live HTML shows only executive cards without dictionary or process pages |
+| Presentation | All Measures/Metrics show snake_case SQL ids or raw unformatted floats as the primary user-facing columns |
+| Presentation | Gold dimensions exist but only appear as `dim_*_row_count` on measures — no Dimensions browse tables |
 | Presentation | Privacy opt-out recorded but report still says it avoids/hides identifiers or applies privacy minimization |
 
 ## Related references

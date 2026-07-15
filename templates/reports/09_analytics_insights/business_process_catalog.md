@@ -1,15 +1,7 @@
 # Business Process Catalog
 
-## Purpose
+Processes drive facts, metrics, pages, and coverage validation. Infer names from warehouse evidence only.
 
-Identify the business processes supported by validated marts and semantic metrics.
-
-| Business Process | Supporting Facts | Supporting Dimensions | Primary Dates | Measures Available | Confidence | Evidence |
-|---|---|---|---|---|---|---|
-| TODO | TODO | TODO | TODO | TODO | TODO | TODO |
-
-## Deferred Processes
-
-| Process | Reason Deferred | Missing Evidence | Recommended Next Step |
-|---|---|---|---|
-| None | Not applicable | Not applicable | Not applicable |
+| Process | Source Models | Event Measured | Grain | Start Event | Intermediate States | Terminal State | Owner | Value Fields | Quantity Fields | Duration Fields | Status Fields | Important Dates | Candidate Dimensions | Exceptions | Reconciliation Source | Business Questions | Confidence | Approval | Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| <process> | <models> | <event> | <grain> | <start> | <states> | <end> | <owner or unknown> | <fields or n/a> | <fields or n/a> | <fields or n/a> | <fields> | <dates> | <dims> | <exceptions> | <source> | <questions> | HIGH/MEDIUM/LOW | APPROVED/PENDING | PASS/WARN/BLOCKED/DEFERRED |

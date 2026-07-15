@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
-"""Check presentation coverage, labels, and live SQL proof discipline.
+"""Check presentation coverage for business pages, proofs, and readability.
 
-Enforces reporting-coverage-requirements.md for Matplotlib presentation projects.
+Completion is evidence-based — not fixed 50+/50+ catalog or card counts.
+All Measures / All Metrics may exist as dictionary pages but are not required
+to hit an arbitrary size. See reporting-coverage-requirements.md Rules 5b–5c
+and report-page-contract.md.
 """
 
 from __future__ import annotations
@@ -11,72 +14,35 @@ import re
 import sys
 from pathlib import Path
 
-
-CATALOG_NAMES = (
-    "measure_catalog.md",
-    "metric_catalog.md",
-    "kpi_catalog.md",
+from lib_gate_common import (
+    catalog_item_count,
+    count_gold_facts,
+    load_analytics_policy,
+    print_results,
+    read_text,
 )
 
 
-def read_text(path: Path) -> str:
-    return path.read_text(encoding="utf-8", errors="replace")
-
-
-def catalog_item_count(path: Path) -> int:
+def coverage_has_status_rows(path: Path) -> tuple[int, int, int]:
     if not path.exists():
-        return 0
-    text = read_text(path)
-    # Count markdown table data rows after a header separator
-    rows = 0
-    for line in text.splitlines():
-        stripped = line.strip()
-        if not stripped.startswith("|"):
-            continue
-        if re.match(r"^\|\s*-+", stripped):
-            continue
-        cells = [c.strip() for c in stripped.strip("|").split("|")]
-        if not cells:
-            continue
-        first = cells[0].lower()
-        if first in {"name", "measure", "metric", "kpi", "id", "measure name", "metric name"}:
-            continue
-        if first in {"", "---", "none"}:
-            continue
-        rows += 1
-    return rows
-
-
-def coverage_has_status_rows(path: Path) -> tuple[int, int, int, int]:
-    if not path.exists():
-        return 0, 0, 0, 0
+        return 0, 0, 0
     text = read_text(path).upper()
     rendered = len(re.findall(r"\bRENDERED\b", text))
     trusted = len(re.findall(r"\bTRUSTED\b", text))
     blocked = len(re.findall(r"\bBLOCKED\b", text))
     deferred = len(re.findall(r"\bDEFERRED\b", text))
-    return rendered + trusted, blocked, deferred, trusted
+    return rendered + trusted, blocked, deferred
 
 
 def label_dictionary_maps_categories(path: Path) -> bool:
-    """True when the dictionary maps codes/keys to human labels (domain-neutral)."""
     if not path.exists():
         return False
     text = read_text(path)
     lower = text.lower()
-    # Structural signal: markdown table with a label-like column, or explicit map wording.
     has_table = bool(re.search(r"^\|.+\|$", text, re.M)) and "---" in text
     has_label_col = any(
         token in lower
-        for token in (
-            "business label",
-            "display label",
-            "label",
-            "code",
-            "maps to",
-            "meaning",
-            "description",
-        )
+        for token in ("business label", "display label", "label", "code", "maps to", "meaning", "description")
     )
     return has_table and has_label_col
 
@@ -94,17 +60,36 @@ def sql_verification_executed(sql_dir: Path) -> tuple[int, int]:
     return total, with_result
 
 
+def collect_builder_text(presentation: Path) -> str:
+    return "\n".join(
+        read_text(p)
+        for p in (
+            presentation / "report_builder.py",
+            presentation / "data_access.py",
+            presentation / "serve_report.py",
+            presentation / "report.html",
+            presentation / "report_spec.md",
+        )
+        if p.exists()
+    ).lower()
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=Path("."))
     parser.add_argument(
-        "--min-measures",
+        "--advisory-measure-target",
         type=int,
-        default=50,
-        help="Warn when measure_catalog supported-looking rows are below this and coverage is thin.",
+        default=None,
+        help="Optional advisory catalog size warning only (never hard FAIL by default).",
     )
     args = parser.parse_args()
     root = args.root.resolve()
+    policy = load_analytics_policy(root)
+    advisory_measures = args.advisory_measure_target
+    if advisory_measures is None:
+        advisory_measures = policy.get("advisory_measure_target")
+    advisory_metrics = policy.get("advisory_metric_target")
 
     errors: list[str] = []
     warnings: list[str] = []
@@ -121,6 +106,7 @@ def main() -> int:
     label_dict = presentation / "label_dictionary.md"
     sql_dir = presentation / "sql_verification"
     presentation_report = root / "reports" / "agent" / "10_presentation" / "presentation_report.md"
+    page_contracts = root / "reports" / "agent" / "10_presentation" / "report_page_contracts.md"
 
     if not coverage.exists():
         errors.append("missing reports/agent/10_presentation/matplotlib/kpi_figure_coverage.md")
@@ -130,105 +116,123 @@ def main() -> int:
         label_text = read_text(label_dict).strip()
         if len(label_text) < 40:
             errors.append("label_dictionary.md exists but is too short to map chart labels")
+        elif not label_dictionary_maps_categories(label_dict):
+            warnings.append("label_dictionary.md should map codes/keys to business labels for chart axes")
 
-    measure_count = catalog_item_count(kpis / "measure_catalog.md")
-    metric_count = catalog_item_count(kpis / "metric_catalog.md")
-    kpi_count = catalog_item_count(kpis / "kpi_catalog.md")
-    rendered, blocked, deferred, _trusted_legacy = coverage_has_status_rows(coverage) if coverage.exists() else (0, 0, 0, 0)
-    coverage_total = rendered + blocked + deferred
-
-    fact_catalog = insights / "fact_catalog.md"
-    gold_facts = 0
-    if fact_catalog.exists():
-        for line in read_text(fact_catalog).splitlines():
-            stripped = line.strip()
-            if not stripped.startswith("|") or re.match(r"^\|\s*-+", stripped):
-                continue
-            cells = [c.strip() for c in stripped.strip("|").split("|")]
-            if cells and (cells[0].lower().startswith("fct_") or cells[0].lower().startswith("mart_")):
-                gold_facts += 1
-
-    if measure_count < args.min_measures:
-        msg = (
-            f"measure_catalog.md has ~{measure_count} table rows; target is {args.min_measures}+ when gold supports it "
-            "(see reporting-coverage-requirements.md / check_analytics_coverage.py)"
-        )
-        if gold_facts >= 3:
-            errors.append(msg)
-        else:
-            warnings.append(msg)
-    if metric_count < 50:
-        msg = f"metric_catalog.md has ~{metric_count} table rows; target is 50+ when gold supports it"
-        if gold_facts >= 3:
-            errors.append(msg)
-        else:
-            warnings.append(msg)
-
-    catalog_rows = measure_count + metric_count + kpi_count
-    if catalog_rows > 0 and coverage_total < max(catalog_rows * 0.5, kpi_count if kpi_count else 1):
-        errors.append(
-            "kpi_figure_coverage.md does not appear to cover most measure/metric/kpi catalog rows "
-            f"(catalog~{catalog_rows}, coverage status tokens={coverage_total})"
-        )
-
-    if rendered == 0 and coverage.exists():
-        errors.append(
-            "kpi_figure_coverage.md has no RENDERED/TRUSTED rows; mark each catalog item RENDERED, BLOCKED, or DEFERRED"
-        )
-
-    if label_dict.exists() and not label_dictionary_maps_categories(label_dict):
+    if not page_contracts.exists():
         warnings.append(
-            "label_dictionary.md should map codes/keys to business labels for chart axes"
+            "missing reports/agent/10_presentation/report_page_contracts.md — "
+            "each page should declare audience, purpose, KPIs, period, and actions"
         )
 
-    # Visible density: catalogs in Markdown are not enough — HTML/builder must expose boards
-    builder_text = "\n".join(
-        read_text(p)
-        for p in (
-            presentation / "report_builder.py",
-            presentation / "data_access.py",
-            presentation / "serve_report.py",
-            presentation / "report.html",
+    measure_count = catalog_item_count(kpis / "measure_catalog.md") or catalog_item_count(
+        kpis / "business_measure_catalog.md"
+    )
+    metric_count = catalog_item_count(kpis / "metric_catalog.md") or catalog_item_count(
+        kpis / "business_metric_catalog.md"
+    )
+    kpi_count = catalog_item_count(kpis / "kpi_catalog.md")
+    rendered, blocked, deferred = coverage_has_status_rows(coverage) if coverage.exists() else (0, 0, 0)
+    coverage_total = rendered + blocked + deferred
+    gold_facts = count_gold_facts(root)
+
+    print(
+        f"Presentation coverage: measures~{measure_count}, metrics~{metric_count}, kpis~{kpi_count}; "
+        f"coverage RENDERED/TRUSTED={rendered} BLOCKED={blocked} DEFERRED={deferred}; gold_facts~{gold_facts}"
+    )
+
+    # Advisory counts only — never the default hard gate
+    if advisory_measures and measure_count < int(advisory_measures) and gold_facts >= 3:
+        warnings.append(
+            f"advisory: measure_catalog ~{measure_count} below configured advisory_measure_target={advisory_measures}"
         )
-        if p.exists()
-    ).lower()
+    if advisory_metrics and metric_count < int(advisory_metrics) and gold_facts >= 3:
+        warnings.append(
+            f"advisory: metric_catalog ~{metric_count} below configured advisory_metric_target={advisory_metrics}"
+        )
+
+    if coverage.exists() and coverage_total == 0:
+        errors.append(
+            "kpi_figure_coverage.md has no RENDERED/BLOCKED/DEFERRED rows; map published report items"
+        )
+    if coverage.exists() and rendered == 0 and coverage_total > 0:
+        warnings.append("kpi_figure_coverage.md has no RENDERED/TRUSTED rows yet")
+
+    # Traceability: published catalogs should mostly appear as coverage rows
+    catalog_rows = measure_count + metric_count + kpi_count
+    if catalog_rows > 0 and coverage_total > 0:
+        # Prefer process coverage over forcing 50% of every catalog row onto a page
+        if coverage_total < max(kpi_count, 1) and kpi_count > 0:
+            errors.append(
+                f"kpi_figure_coverage.md under-covers strategic KPIs (kpis~{kpi_count}, coverage rows~{coverage_total})"
+            )
+        elif coverage_total < max(int(catalog_rows * 0.25), 1):
+            warnings.append(
+                f"kpi_figure_coverage.md covers few catalog rows (catalog~{catalog_rows}, coverage~{coverage_total}) — "
+                "ensure business pages map published metrics; full raw catalogs may live under Metric Dictionary"
+            )
+
+    builder_text = collect_builder_text(presentation)
     has_measure_board = any(
         token in builder_text
-        for token in (
-            "all measures",
-            "measure_board",
-            "measure_cards",
-            "data-tab=\"measures\"",
-            "id=\"measures\"",
-        )
+        for token in ("all measures", "measure_board", "measure_cards", 'data-tab="measures"', 'id="measures"')
     )
     has_metric_board = any(
         token in builder_text
+        for token in ("all metrics", "metric_board", "metric_cards", 'data-tab="metrics"', 'id="metrics"')
+    )
+    has_dq_page = any(
+        token in builder_text
+        for token in ("data quality", "exceptions", "observability", 'data-tab="quality"', 'id="quality"')
+    )
+    has_pipeline_page = any(
+        token in builder_text
+        for token in ("pipeline health", "pipeline", 'data-tab="pipeline"', 'id="pipeline"')
+    )
+    has_dim_tab = any(
+        token in builder_text
         for token in (
-            "all metrics",
-            "metric_board",
-            "metric_cards",
-            "data-tab=\"metrics\"",
-            "id=\"metrics\"",
+            "all dimensions",
+            "dimensions tab",
+            'data-tab="dimensions"',
+            'id="dimensions"',
+            "dimension_board",
+            "dim_preview",
         )
     )
-    if gold_facts >= 3:
-        if measure_count >= args.min_measures and not has_measure_board:
+
+    # Boards optional as dictionary pages; if present, must be human-readable
+    if has_measure_board or has_metric_board:
+        has_display_name = any(
+            token in builder_text
+            for token in ("display_name", "display name", "formatted_value", "formatted value", "business_label")
+        )
+        has_formatter = any(
+            token in builder_text
+            for token in ("format_value", "formatted_value", "format_percent", ":.1%", ":.2%", "currency", "thousands")
+        )
+        if not has_display_name:
             errors.append(
-                "measure_catalog has 50+ rows but live HTML/Python has no All Measures board "
-                "(user must see live measure cards/tables in the browser, not only Markdown catalogs)"
+                "measure/metric boards lack display_name/formatted_value — "
+                "show business titles, not snake_case SQL ids (Rule 5c)"
             )
-        if metric_count >= 30 and not has_metric_board:
+        if not has_formatter:
             errors.append(
-                "metric_catalog is populated but live HTML/Python has no All Metrics board "
-                "(user must see live metric values in the browser)"
+                "presentation code has no value formatting helper — "
+                "rates as %, amounts with units/separators (Rule 5c)"
             )
-        card_hits = len(re.findall(r"kpi-card|measure-card|metric-card", builder_text))
-        if has_measure_board and "measure_board" not in builder_text and "measure_cards" not in builder_text:
-            if card_hits < 40:
-                warnings.append(
-                    "All Measures tab may exist but card density looks low — smoke-test should assert measure_cards>=50"
-                )
+
+    if gold_facts >= 1 and not has_dq_page:
+        warnings.append("no Exceptions/Data Quality page markers found in presentation surface")
+    if gold_facts >= 1 and not has_pipeline_page:
+        warnings.append("no Pipeline Health page markers found in presentation surface")
+
+    gold_sql = list((root / "models" / "gold").rglob("dim_*.sql")) if (root / "models" / "gold").exists() else []
+    if gold_sql and not has_dim_tab:
+        warnings.append(
+            "gold dimensions exist but no Dimensions browse tab found — "
+            "prefer readable dim tables over dim_*_row_count as business measures"
+        )
 
     sql_total, sql_with_result = sql_verification_executed(sql_dir)
     proof_index = sql_dir / "_proof_index.md"
@@ -236,72 +240,36 @@ def main() -> int:
         errors.append("RENDERED/TRUSTED charts exist but sql_verification/ has no SQL proof files")
     if rendered > 0 and sql_with_result == 0:
         errors.append(
-            "RENDERED charts need executed live SQL proofs with captured results in sql_verification/ "
-            "(file presence alone is not enough)"
+            "RENDERED charts need executed live SQL proofs with captured results in sql_verification/"
         )
-    if rendered > sql_with_result and sql_with_result > 0:
-        if proof_index.exists() and (has_measure_board or has_metric_board) and sql_with_result >= 6:
-            warnings.append(
-                f"RENDERED={rendered} tokens vs {sql_with_result} proof files — OK if _proof_index.md maps many cards to group proofs"
-            )
-        else:
-            warnings.append(
-                f"RENDERED={rendered} but only {sql_with_result}/{sql_total} sql_verification files show captured results"
-            )
-
-    if (has_measure_board or has_metric_board) and gold_facts >= 3:
+    if (has_measure_board or has_metric_board) and gold_facts >= 1:
         if not proof_index.exists():
             errors.append(
-                "missing sql_verification/_proof_index.md — map each RENDERED measure/metric board card to a SQL proof"
+                "missing sql_verification/_proof_index.md — map RENDERED board/chart items to SQL proofs"
             )
-        # Board presentations need group proofs, not only one KPI snapshot
-        min_board_proofs = 6
-        if sql_with_result < min_board_proofs:
+        if sql_with_result < 3:
             errors.append(
-                f"All Measures/Metrics boards require executed sql_verification proofs "
-                f"(have {sql_with_result} with captured results; need >= {min_board_proofs} "
-                "covering measure groups + metric rates + charts)"
+                f"boards/charts require executed sql_verification proofs "
+                f"(have {sql_with_result} with captured results; need >= 3)"
             )
         index_text = read_text(proof_index).lower() if proof_index.exists() else ""
-        if proof_index.exists() and ("measure" not in index_text or "metric" not in index_text):
-            errors.append(
-                "sql_verification/_proof_index.md must list measure and metric board mappings to proof files"
-            )
+        if proof_index.exists() and "measure" not in index_text and "metric" not in index_text and "kpi" not in index_text:
+            warnings.append("_proof_index.md should map measure/metric/KPI items to proof files")
 
     if presentation_report.exists():
         report_text = read_text(presentation_report).lower()
         if "live sql" not in report_text and "sql verification" not in report_text and "refresh" not in report_text:
-            warnings.append(
-                "presentation_report.md should record live SQL / refresh validation evidence"
-            )
+            warnings.append("presentation_report.md should record live SQL / refresh validation evidence")
     else:
         warnings.append("missing reports/agent/10_presentation/presentation_report.md")
 
-    # Soft check for blank-label language in report assets
     for name in ("report_spec.md", "README.md"):
         path = presentation / name
         if path.exists() and "blank" in read_text(path).lower() and "label" in read_text(path).lower():
             warnings.append(f"{name} mentions blank labels — confirm categorical axes are labeled")
 
-    print(
-        f"Catalogs: measures~{measure_count}, metrics~{metric_count}, kpis~{kpi_count}; "
-        f"coverage RENDERED/TRUSTED={rendered} BLOCKED={blocked} DEFERRED={deferred}; "
-        f"sql_verification={sql_with_result}/{sql_total} with captured results"
-    )
-
-    for item in warnings:
-        print(f"WARN: {item}")
-    for item in errors:
-        print(f"ERROR: {item}")
-
-    if errors:
-        print("Presentation coverage check FAILED")
-        return 1
-    if warnings:
-        print("Presentation coverage check PASSED with warnings")
-        return 0
-    print("Presentation coverage check PASSED")
-    return 0
+    print(f"sql_verification={sql_with_result}/{sql_total} with captured results")
+    return print_results("Presentation coverage check", errors, warnings)
 
 
 if __name__ == "__main__":

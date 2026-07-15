@@ -1,0 +1,10 @@
+project:
+  name: fixture_domain_d_case_activity
+analytics_policy:
+  completion_mode: process_coverage
+  advisory_measure_target: null
+  advisory_metric_target: null
+  business_process_coverage_required: 0.9
+  time_intelligence_coverage_required: 0.8
+  critical_fact_coverage_required: 1.0
+  model_classification_coverage_required: 1.0

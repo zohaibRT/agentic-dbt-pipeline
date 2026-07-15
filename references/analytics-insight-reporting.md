@@ -218,40 +218,45 @@ Document safe slicers, labels, drill-downs, and segmentation fields.
 
 ### Coverage gate (mandatory before presentation)
 
-When gold has **3+** `fct_` / `mart_` models, analytics is incomplete until:
+Analytics is incomplete until process/fact coverage artifacts pass — **not** until an arbitrary catalog row count is reached.
 
-| Catalog | Minimum |
+| Artifact | Requirement |
 |---|---|
-| `measure_catalog.md` | **50+** supported rows |
-| `metric_catalog.md` | **50+** supported rows |
-| `kpi_catalog.md` | Strategic subset (often 10–25; not a substitute for the above) |
+| `business_process_catalog.md` | Material processes cataloged from evidence |
+| `analytics_coverage_matrix.md` | Primary gate; default >= 90% PASS-like process coverage |
+| `fact_coverage_contracts.md` | Every material fact evaluated (SUPPORTED / NOT_APPLICABLE / BLOCKED / DEFERRED) |
+| `model_classification.md` | Every in-scope built model classified |
+| Business measure / metric catalogs | Complete for material facts and documented questions |
+| `kpi_catalog.md` + KPI contracts | Every published KPI has a complete decision-oriented contract |
+| DQ / pipeline catalogs | Separated from business pages |
 
-Generation recipe (do not stop at executive cards):
+Generation recipe (do not stop at executive cards; do not pad catalogs for volume):
 
-1. For each gold fact/mart: add volume counts (all + current), each amount/quantity sum, min/max dates when useful.
-2. For each status/type field: add count-by-status measures (or one measure per major status).
-3. For each quality flag: orphan counts, null-key counts, match/mismatch counts.
-4. Promote to metrics with dimension and time slices supported by this gold (shares, rates, trends).
-5. Put only decision KPIs in `kpi_catalog.md`; keep the rest as measures/metrics for presentation tabs.
-6. Run `python <skill>/scripts/check_analytics_coverage.py --root <project.root>` — must PASS (or document why 50+ is impossible).
+1. Discover business processes from evidence.
+2. For each material fact: evaluate grain, volume, value, status, time, dimensions, quality, exceptions, reconciliation, and business questions.
+3. Promote contextual metrics only where they answer documented questions.
+4. Put only decision KPIs in `kpi_catalog.md`; keep engineering QA in `data_quality_metric_catalog.md`.
+5. Run `python <skill>/scripts/check_analytics_coverage.py --root <project.root>` and product-completeness validators — must PASS.
 
-Thin catalogs with rich gold are a **FAIL**, not a soft WARN. Presentation must not be marked complete until this gate passes.
+Incomplete process/fact coverage is a **FAIL**. Presentation must not be marked complete until this gate passes.
 
 ### `measure_catalog.md`
 
 Populate from [kpi-discovery-framework.md](kpi-discovery-framework.md). Include broad, validated raw measures even when they are not strategic key performance indicators.
 
-| Measure | Measure Type | Source Model | Grain | Formula | Time Field | Allowed Dimensions | SQL Proof File | Captured Result | Status | Caveats |
-|---|---|---|---|---|---|---|---|---|---|---|
-| `<measure_name>` | `<count/amount/quantity/date/status/quality>` | `<model>` | `<grain>` | `<formula>` | `<time_field_or_not_applicable>` | `<dimensions>` | `<path_or_not_ready>` | `<captured_result_or_reason>` | `<ready/deferred/blocked>` | `<caveats>` |
+| Measure | Display name | Format | Measure Type | Source Model | Grain | Formula | Time Field | Allowed Dimensions | SQL Proof File | Captured Result | Status | Caveats |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `<technical_id>` | `<Human title>` | `<integer/percent/currency/decimal/count>` | `<count/amount/quantity/date/status/quality>` | `<model>` | `<grain>` | `<formula>` | `<time_field_or_not_applicable>` | `<dimensions>` | `<path_or_not_ready>` | `<captured_result_or_reason>` | `<ready/deferred/blocked>` | `<caveats>` |
+
+Use **Display name** on presentation boards. Keep the Measure column as a stable technical id for SQL proofs. Prefer business measures on the All Measures board; put `*_row_count` model QA and null/orphan engineering checks on Exceptions / data quality unless the business asked for them as KPIs.
 
 ### `metric_catalog.md`
 
 Promote supported measures into contextual metrics. A metric may be useful for reports even when it is not a strategic key performance indicator.
 
-| Metric | Metric Type | Business Question | Source Measures | Source Model | Grain | Formula | Time Field | Allowed Dimensions | Filters | SQL Proof File | Captured Result | Confidence | Caveats | Promotion Status |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `<metric_name>` | `<time/dimension/ratio/average/ranking/aging/quality>` | `<question>` | `<measures>` | `<model>` | `<grain>` | `<formula>` | `<time_field>` | `<dimensions>` | `<filters>` | `<path_or_not_ready>` | `<captured_result_or_reason>` | `<HIGH/MEDIUM/LOW/BLOCKED>` | `<caveats>` | `<report_metric/kpi_candidate/deferred/blocked>` |
+| Metric | Display name | Format | Metric Type | Business Question | Source Measures | Source Model | Grain | Formula | Time Field | Allowed Dimensions | Filters | SQL Proof File | Captured Result | Confidence | Caveats | Promotion Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `<technical_id>` | `<Human title>` | `<percent/currency/decimal/integer>` | `<time/dimension/ratio/average/ranking/aging/quality>` | `<question>` | `<measures>` | `<model>` | `<grain>` | `<formula>` | `<time_field>` | `<dimensions>` | `<filters>` | `<path_or_not_ready>` | `<captured_result_or_reason>` | `<HIGH/MEDIUM/LOW/BLOCKED>` | `<caveats>` | `<report_metric/kpi_candidate/deferred/blocked>` |
 
 ### `kpi_discovery_matrix.md`
 
@@ -400,7 +405,9 @@ python scripts/validate_kpi_proofs.py --root .
 For medium projects with broad table scope, also validate example scale targets or document each shortfall in `insight_backlog.md`:
 
 ```bash
-python scripts/validate_kpi_proofs.py --root . --min-measures 60 --min-metrics 35 --min-kpis 15 --require-sql-proofs
+python scripts/validate_kpi_proofs.py --root . --require-sql-proofs
+# Optional advisory targets only when explicitly configured for a large project:
+# python scripts/validate_kpi_proofs.py --root . --min-measures 60 --min-metrics 35 --min-kpis 15 --require-sql-proofs
 ```
 
 2. Write `reports/agent/09_analytics_insights/analytics_insight_reporting_report.md` using [phase-completion-report.md](phase-completion-report.md).
