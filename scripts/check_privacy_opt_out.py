@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
-"""Verify privacy opt-out is honored in attention board and gap register.
+"""Verify privacy opt-out is honored without assuming industry field names.
 
-When the user opts out of privacy minimization, OPEN privacy blockers for
-commercial/operational identifiers (phone, IMEI, serial, fingerprint, etc.)
-must not remain. Only always-exclude fields (secrets, OTP, full bank dumps,
-national IDs, PHI) may stay as CARRY_FORWARD notes — not OPEN KPI blockers.
+When the user opts out of privacy minimization:
+- OPEN Attention Board / Gap Register rows must not keep blocking reporting for
+  privacy minimization (exclude/mask/hash of reporting attributes).
+- Presentation must not keep saying it hides or avoids identifiers after opt-out.
+
+Do **not** hardcode industry fields (phone, IMEI, device, merchant, etc.).
+Field examples belong in policy docs only. This script stays domain-neutral.
 """
 
 from __future__ import annotations
@@ -24,20 +27,8 @@ OPT_OUT_PATTERNS = (
     r"privacy opt-out",
 )
 
-# Fields that may proceed to gold/marts when user opted out of privacy minimization.
-REPORTING_ALLOWED_UNDER_OPT_OUT = (
-    r"\bphone\b",
-    r"\bimei\b",
-    r"\bserial\b",
-    r"\bfingerprint\b",
-    r"\bemail\b",
-    r"\baddress\b",
-    r"\bdevice id\b",
-    r"\bclear-text\b",
-    r"\bdirect identifiers?\b",
-)
-
-# Still exclude even under opt-out — should be CARRY_FORWARD, not OPEN blockers.
+# Still exclude even under opt-out — OPEN blockers for these alone are not the focus;
+# they should be CARRY_FORWARD, but we do not require industry attribute names.
 ALWAYS_EXCLUDE_MARKERS = (
     r"\bsecret\b",
     r"\bpassword\b",
@@ -51,8 +42,22 @@ ALWAYS_EXCLUDE_MARKERS = (
     r"\bmedical identifier\b",
 )
 
+# Generic "still minimizing after opt-out" copy — no industry field names.
+FORBIDDEN_MINIMIZATION_COPY = (
+    r"keep identifiers off",
+    r"identifiers? (are )?(not |never )?(shown|rendered|displayed|included)",
+    r"this report avoids",
+    r"avoid rendering .{0,60}identifiers?",
+    r"privacy minimization .{0,40}(avoid|hide|off the report|not shown)",
+    r"report avoids .{0,40}(identifier|pii|personal)",
+)
+
 OPEN_STATUS_RE = re.compile(r"\bOPEN\b", re.I)
 PRIVACY_BLOCKER_RE = re.compile(r"\bPRIVACY\b", re.I)
+MINIMIZE_RE = re.compile(
+    r"\b(exclude|mask|hash|minimization|minimise|minimize|keep out|keep off|do not (include|expose|show))\b",
+    re.I,
+)
 
 
 def read_text(path: Path) -> str:
@@ -108,22 +113,19 @@ def row_is_open(row: str) -> bool:
     return bool(OPEN_STATUS_RE.search(row))
 
 
-def row_mentions_reporting_allowed_privacy_block(row: str) -> bool:
+def row_is_open_privacy_minimization_blocker(row: str) -> bool:
+    """OPEN privacy-minimization blocker for reporting attributes (domain-neutral)."""
+    if not row_is_open(row):
+        return False
     lower = row.lower()
-    if not any(re.search(pattern, lower) for pattern in REPORTING_ALLOWED_UNDER_OPT_OUT):
+    privacy_signal = bool(PRIVACY_BLOCKER_RE.search(row)) or "privacy" in lower or "pii" in lower
+    if not privacy_signal:
         return False
-    if any(re.search(pattern, lower) for pattern in ALWAYS_EXCLUDE_MARKERS):
+    if not MINIMIZE_RE.search(row):
         return False
-    privacy_signals = (
-        "privacy",
-        "exclude",
-        "mask",
-        "hash",
-        "pii",
-        "identifier",
-        "direct ident",
-    )
-    return any(token in lower for token in privacy_signals) or bool(PRIVACY_BLOCKER_RE.search(row))
+    # If the row is only about always-exclude secret classes, treat as CARRY_FORWARD material —
+    # still fail OPEN so agents move them off OPEN blockers.
+    return True
 
 
 def find_open_privacy_blockers(root: Path) -> list[str]:
@@ -136,23 +138,12 @@ def find_open_privacy_blockers(root: Path) -> list[str]:
         if not path.exists():
             continue
         for row in table_rows(read_text(path)):
-            if not row_is_open(row):
-                continue
-            if row_mentions_reporting_allowed_privacy_block(row):
+            if row_is_open_privacy_minimization_blocker(row):
                 findings.append(f"{rel}: {row[:220]}")
     return findings
 
 
-FORBIDDEN_AVOID_COPY = (
-    r"avoids?\s+phone",
-    r"avoids?\s+imei",
-    r"avoid rendering phone",
-    r"keep identifiers off",
-    r"this report avoids",
-)
-
-
-def find_presentation_privacy_avoid_copy(root: Path) -> list[str]:
+def find_presentation_privacy_minimization_copy(root: Path) -> list[str]:
     findings: list[str] = []
     presentation = root / "reports" / "agent" / "10_presentation"
     if not presentation.exists():
@@ -163,7 +154,7 @@ def find_presentation_privacy_avoid_copy(root: Path) -> list[str]:
         if "__pycache__" in path.parts:
             continue
         lower = read_text(path).lower()
-        for pattern in FORBIDDEN_AVOID_COPY:
+        for pattern in FORBIDDEN_MINIMIZATION_COPY:
             if re.search(pattern, lower):
                 findings.append(f"{path.relative_to(root).as_posix()}: matches /{pattern}/")
                 break
@@ -184,17 +175,17 @@ def main() -> int:
     print(f"Privacy opt-out recorded in: {', '.join(sources)}")
     errors: list[str] = []
     for item in find_open_privacy_blockers(root):
-        errors.append(f"OPEN privacy blocker conflicts with user opt-out — {item}")
-    for item in find_presentation_privacy_avoid_copy(root):
+        errors.append(f"OPEN privacy-minimization blocker conflicts with user opt-out — {item}")
+    for item in find_presentation_privacy_minimization_copy(root):
         errors.append(
-            f"presentation still minimizes identifiers after opt-out — {item} "
-            "(show phone/IMEI/serial when in gold; remove ‘avoids phone/IMEI’ copy)"
+            f"presentation still applies privacy minimization after opt-out — {item} "
+            "(show reporting attributes that exist in gold; do not hide for privacy)"
         )
 
     if not errors:
         print(
-            "Privacy opt-out check PASSED — no OPEN commercial-identifier blockers "
-            "and no presentation ‘avoid phone/IMEI’ copy"
+            "Privacy opt-out check PASSED — no OPEN privacy-minimization blockers "
+            "and no presentation minimization copy"
         )
         return 0
 
@@ -202,8 +193,9 @@ def main() -> int:
     for item in errors:
         print(f"ERROR: {item}")
     print(
-        "Fix: close OPEN privacy rows; allow tier-2 identifiers on the report; "
-        "only secrets/OTP/full IBAN/national ID/PHI stay excluded unless the user asks."
+        "Fix: close OPEN privacy-minimization rows (CARRY_FORWARD / ANSWERED); "
+        "present attributes that exist in gold. Only secrets/OTP/full bank dumps/"
+        "national ID/PHI need an explicit ask — do not hardcode industry field lists in gates."
     )
     return 1
 

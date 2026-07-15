@@ -53,13 +53,13 @@ When `requirements.md` or `CONTEXT_TREE.md` records a privacy minimization opt-o
 
 | Required | Forbidden |
 |---|---|
-| Close OPEN `PRIVACY` rows for phone, IMEI, serial, fingerprint, email, address, and other tier-2 operational identifiers | OPEN row: `Direct identifiers \| Exclude phone/IMEI/serial/IBAN/fingerprint from gold \| Privacy default` |
+| Close OPEN `PRIVACY` / privacy-minimization rows for reporting attributes found in this project | OPEN privacy-minimization blockers that keep useful gold/presentation attributes out after opt-out |
 | Record opt-out once as `CARRY_FORWARD` on the Attention Board | Re-asking privacy approval every checkpoint |
-| Exclude tier-1 fields (secrets, OTP, full IBAN dumps, national IDs, PHI) from **presentation** with a one-line caveat | Blocking partner/program/product/status dims for privacy |
+| Exclude always-exclude classes (secrets, OTP, full bank dumps, national IDs, PHI) from **presentation** with a one-line caveat | Hardcoding industry field names into blockers, recommendations, or gate scripts |
 
-Use blocker type `PRIVACY` only when the user has **not** opted out, or when tier-1 secrets would reach presentation without explicit approval. Under opt-out, product-key, payment-reconciliation, and mapping gaps stay OPEN; privacy on commercial identifiers does not.
+Use blocker type `PRIVACY` only when the user has **not** opted out, or when always-exclude classes would reach presentation without explicit approval. Under opt-out, product-key, payment-reconciliation, and mapping gaps stay OPEN; privacy minimization for reporting attributes does not.
 
-Run `python <skill>/scripts/check_privacy_opt_out.py --root <project.root>` before final delivery when opt-out is recorded.
+Run `python <skill>/scripts/check_privacy_opt_out.py --root <project.root>` before final delivery when opt-out is recorded. The script is **domain-neutral** (no phone/IMEI/merchant field hardcodes).
 
 ## When to update
 

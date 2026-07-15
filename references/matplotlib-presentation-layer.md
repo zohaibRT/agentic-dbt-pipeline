@@ -508,7 +508,7 @@ Every chart must answer one business question from `reporting_catalog.md` or `da
 - Do not fabricate data, targets, benchmarks, or trend lines without evidence.
 - Reconcile every plotted aggregate to SQL before marking the chart trusted.
 - Do not expose secrets, passwords, OTP, full bank/IBAN dumps, national IDs, or protected health information in chart labels, tables, or annotations unless the user explicitly asks.
-- When the user has opted out of privacy minimization, **do** show phone, IMEI, serial, fingerprint, email, address, and other tier-2 operational attributes from gold on presentation tabs when useful. Do not add “this report avoids phone/IMEI” caveats.
+- When the user has opted out of privacy minimization, **do** show reporting attributes from gold on presentation tabs when useful. Discover columns from this project — do not assume industry field lists. Do not add “this report avoids identifiers” caveats after opt-out.
 - Do not put raw codes, surrogate keys, or technical column names on business-facing chart axes, legends, or HTML tab content.
 - Prefer a small set of high-value charts over many weak charts.
 - Maximum means maximum useful business insight supported by validated data, not maximum number of figures.

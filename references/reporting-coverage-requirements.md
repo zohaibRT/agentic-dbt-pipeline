@@ -76,13 +76,14 @@ Then:
 | Still never invent | Still do not expose secrets, passwords, OTP, full bank/IBAN dumps, or PHI without explicit ask |
 | Documentation | Record opt-out once in requirements / Context Tree |
 | Recommend, don't block | Do not block gold dims or presentation for privacy after opt-out |
-| Attention Board | Close privacy rows for tier-2 identifiers; no OPEN `Exclude phone/IMEI/serial/...` blockers |
-| Gap Register | No OPEN `PRIVACY` blockers for tier-2 identifiers when opt-out is recorded |
-| Presentation | **Show** phone/IMEI/serial/email/address when in gold; forbid “avoids phone/IMEI on charts” copy |
+| Attention Board | Close privacy-minimization rows for reporting attributes; no OPEN privacy blockers after opt-out |
+| Gap Register | No OPEN `PRIVACY` minimization blockers for reporting attributes when opt-out is recorded |
+| Presentation | **Show** reporting attributes that exist in gold; forbid copy that the report still avoids/hides identifiers after opt-out |
+| Gates / scripts | Stay **domain-neutral** — do not hardcode industry fields (phone, IMEI, merchant, …) into checkers |
 
-Still document tier-1 exclusions once as `CARRY_FORWARD` (secrets, OTP, full IBAN/bank dumps, national IDs, PHI). Do not treat tier-1 as OPEN blockers that stop gold dims or KPI catalogs.
+Still document always-exclude classes once as `CARRY_FORWARD` (secrets, OTP, full bank dumps, national IDs, PHI). Do not treat those as OPEN blockers that stop gold dims or KPI catalogs.
 
-Under opt-out, do **not** ask again whether phone/IMEI may appear on presentation — they may. Ask only if national IDs, bank accounts, OTP, or medical identifiers would be placed on charts.
+Under opt-out, do **not** re-ask whether reporting attributes from this warehouse may appear on presentation — they may when present in gold. Ask only about always-exclude classes (national IDs, bank dumps, OTP, PHI) if those would be placed on charts.
 
 Update [privacy-and-unknown-fields.md](privacy-and-unknown-fields.md) behavior: user opt-out overrides the gold “exclude/mask/hash by default” row for reporting dimensions.
 
@@ -188,9 +189,9 @@ Agent recommendation format: concrete expand/build/label/run-SQL action + Accept
 | Presentation | Live SQL / refresh API not proven for RENDERED charts |
 | Presentation | All Measures/Metrics boards RENDERED but `sql_verification/` missing proofs / `_proof_index.md` |
 | Final delivery | User opt-out of privacy ignored; dims still privacy-blocked without ask |
-| Final delivery | OPEN Attention Board / Gap Register privacy rows for phone/IMEI/serial/fingerprint under recorded opt-out |
+| Final delivery | OPEN Attention Board / Gap Register privacy-minimization rows under recorded opt-out |
 | Presentation | Catalogs hit 50+/50+ but live HTML still shows only executive KPI cards (no All Measures / All Metrics boards) |
-| Presentation | Privacy opt-out recorded but report still says it “avoids phone/IMEI” or hides tier-2 identifiers |
+| Presentation | Privacy opt-out recorded but report still says it avoids/hides identifiers or applies privacy minimization |
 
 ## Related references
 
