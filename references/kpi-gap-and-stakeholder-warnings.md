@@ -59,7 +59,7 @@ When `requirements.md` or `CONTEXT_TREE.md` records a privacy minimization opt-o
 
 Use blocker type `PRIVACY` only when the user has **not** opted out, or when always-exclude classes would reach presentation without explicit approval. Under opt-out, product-key, payment-reconciliation, and mapping gaps stay OPEN; privacy minimization for reporting attributes does not.
 
-Run `python <skill>/scripts/check_privacy_opt_out.py --root <project.root>` before final delivery when opt-out is recorded. The script is **domain-neutral** (no phone/IMEI/merchant field hardcodes).
+Run `python <skill>/scripts/check_privacy_opt_out.py --root <project.root>` before final delivery when opt-out is recorded. The script is **domain-neutral** (no project-specific column-name hardcodes).
 
 ## When to update
 

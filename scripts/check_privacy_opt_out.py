@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""Verify privacy opt-out is honored without assuming industry field names.
+"""Verify privacy opt-out is honored without assuming warehouse column names.
 
 When the user opts out of privacy minimization:
-- OPEN Attention Board / Gap Register rows must not keep blocking reporting for
+- OPEN Attention Board / Gap Register rows must not keep blocking reporting via
   privacy minimization (exclude/mask/hash of reporting attributes).
 - Presentation must not keep saying it hides or avoids identifiers after opt-out.
 
-Do **not** hardcode industry fields (phone, IMEI, device, merchant, etc.).
-Field examples belong in policy docs only. This script stays domain-neutral.
+Stay domain-neutral: do not hardcode industry- or project-specific field names.
+Discover attributes from each project's evidence; this gate only checks policy behavior.
 """
 
 from __future__ import annotations
@@ -195,7 +195,7 @@ def main() -> int:
     print(
         "Fix: close OPEN privacy-minimization rows (CARRY_FORWARD / ANSWERED); "
         "present attributes that exist in gold. Only secrets/OTP/full bank dumps/"
-        "national ID/PHI need an explicit ask — do not hardcode industry field lists in gates."
+        "national ID/PHI need an explicit ask — keep gates domain-neutral."
     )
     return 1
 
