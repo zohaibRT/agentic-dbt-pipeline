@@ -25,12 +25,16 @@ Every included first-pass entity/lookup table from discovery should appear at le
 
 | Class | Typical sources | Default when evidence exists |
 |---|---|---|
-| Entity dimensions | accounts, customers, subscribers, partners, programs, companies | `BUILD_PRIVACY_SAFE` if PII; else `BUILD` |
+| Entity dimensions | accounts, customers, subscribers, partners, programs, companies | `BUILD_PRIVACY_SAFE` if PII; else `BUILD`. If user opted out of privacy minimization, prefer `BUILD` with slicing attributes |
+| Partner / channel | channel partners, partner locations | `BUILD` with business name for chart labels |
+| Program / corporate | programs, corporate companies | `BUILD` when unique |
 | Product / offer dimensions | SKUs, products, pricing plans, durations, protection plans | `BUILD` when unique grain proven; else `BLOCKED` with proof |
 | Method / channel dimensions | payment methods, sales channels | `BUILD` when unique |
-| Status / type dimensions | low-cardinality codes used by facts | `BUILD` as code dimensions, or keep as degenerate attributes with note |
-| Date dimension | any fact date/timestamp | `BUILD` when any fact has usable dates |
+| Status / type dimensions | low-cardinality codes used by facts | `BUILD` as code dimensions **with labels** for presentation, or keep as degenerate attributes with `label_dictionary.md` |
+| Date dimension | any fact date/timestamp | `BUILD` when any fact has usable dates — mandatory for trend KPIs |
 | Degenerate dimensions | invoice numbers, order numbers kept on fact | Document as degenerate; not a separate dim |
+
+Required reporting classes (when evidence exists): **partner, program, product/SKU, date, status**. See [reporting-coverage-requirements.md](reporting-coverage-requirements.md).
 
 ## Privacy-safe dimension pattern (mandatory option)
 

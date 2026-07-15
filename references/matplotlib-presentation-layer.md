@@ -376,6 +376,11 @@ Before saving a figure or HTML section, run a label check:
 1. Every categorical axis value has a mapped business label or the chart is deferred.
 2. Every metric name matches `kpi_catalog.md`, `metric_catalog.md`, or an approved alias in `report_spec.md`.
 3. `label_dictionary.md` documents any code translation used in the report pack.
+4. Categorical labels are **trimmed** before plotting (`strip()` in Python, `trim()`/`btrim()` in SQL). Fixed-width `char`/`varchar` fields from Postgres often return padded values that push matplotlib tick labels off-chart and look blank in the browser.
+
+### Generator script location
+
+Keep presentation generator, refresh, and validation helper scripts under `<project.root>/scripts/presentation/` (or another `scripts/` subfolder). Do not store `.py` helpers under `reports/agent/10_presentation/` — that folder is for markdown reports, SQL proofs, HTML/SVG assets, and launchers only. See [report-artifact-organization.md](report-artifact-organization.md).
 
 ## Visual comfort and colorful design
 
@@ -493,18 +498,22 @@ Before marking Matplotlib presentation work complete:
 
 1. Verify `matplotlib`, `numpy`, and `pandas` import successfully or document the exact install blocker and commands attempted.
 2. Verify `requirements-matplotlib.txt` exists and matches the installed packages.
-3. Verify `kpi_figure_coverage.md` includes **every key performance indicator in `KPI_DEFINITION_CONTRACTS.md` and `kpi_catalog.md`** plus recommended measures and metrics from the broader catalogs, each with `RENDERED`, `BLOCKED`, or `DEFERRED` status.
+3. Verify `kpi_figure_coverage.md` includes **every row** from `measure_catalog.md`, `metric_catalog.md`, `kpi_catalog.md`, and `KPI_DEFINITION_CONTRACTS.md` (supported/recommended/trusted or contract rows), each with `RENDERED`, `BLOCKED`, or `DEFERRED` status. See [reporting-coverage-requirements.md](reporting-coverage-requirements.md).
 4. Verify `serve_report.py --smoke-test` or the documented server smoke test runs without error.
-5. Verify the local report page itself with `scripts/validate_local_web_report.py`, proving that `http://127.0.0.1:<port>/` returns HTTP 200 and non-empty HTML. This catches browser failures such as `ERR_EMPTY_RESPONSE`.
-6. If `generate_report.py` exists for snapshot export, verify it runs without error or document the exact blocker.
-7. Verify the local web report contains the classified tabs/sections defined in `report_spec.md`.
-8. Verify `open_report.bat` exists on Windows-focused projects or document the equivalent open command, and confirm it points to the same validated server entrypoint.
-9. Verify every `RENDERED` row in `kpi_figure_coverage.md` appears in the correct HTML tab/section through SVG/HTML/JSON chart output or has a documented static export fallback.
-10. Verify `label_dictionary.md` exists and every categorical chart uses mapped business labels, not raw codes.
-11. Verify `report_theme.md` exists and charts/HTML use the comfortable colorful theme, not default gray matplotlib styling.
-12. Verify every plotted aggregate has a matching SQL proof in `sql_verification/`.
-13. Verify chart scope matches `dashboard_spec.md` and does not include deferred items from `insight_backlog.md` without a visible blocked note.
-14. Record pass/fail evidence in `reports/agent/10_presentation/presentation_report.md`.
+5. Verify the local report page itself with `scripts/validate_local_web_report.py --report-dir <matplotlib_dir>`, proving that `http://127.0.0.1:<port>/` returns HTTP 200 and non-empty HTML. This catches browser failures such as `ERR_EMPTY_RESPONSE`.
+6. Verify the **data refresh path** used by the report (refresh control / data API / chart JSON endpoint). Run live warehouse SQL for every `RENDERED` chart. A missing relation such as `schema.fct_* does not exist` is presentation `FAIL`, not a tip for the user.
+7. If `generate_report.py` exists for snapshot export, verify it runs without error or document the exact blocker.
+8. Verify the local web report contains the classified tabs/sections defined in `report_spec.md`.
+9. Verify `open_report.bat` exists on Windows-focused projects or document the equivalent open command, and confirm it points to the same validated server entrypoint.
+10. Verify every `RENDERED` row in `kpi_figure_coverage.md` appears in the correct HTML tab/section through SVG/HTML/JSON chart output or has a documented static export fallback.
+11. Verify `label_dictionary.md` exists and every categorical chart uses mapped **business labels** on axes/legends. Blank x-axis ticks on `RENDERED` charts are a validation `FAIL`.
+12. Verify `report_theme.md` exists and charts/HTML use the comfortable colorful theme, not default gray matplotlib styling.
+13. Verify every plotted aggregate has a matching **executed** SQL proof in `sql_verification/` with captured result and `PASS`.
+14. Verify chart scope matches `dashboard_spec.md` and does not include deferred items from `insight_backlog.md` without a visible blocked note.
+15. Run `python <skill>/scripts/check_presentation_coverage.py --root <project.root>` when available.
+16. Record pass/fail evidence in `reports/agent/10_presentation/presentation_report.md`.
+
+HTML shell load alone is never enough to mark presentation complete.
 
 ## Done gate
 

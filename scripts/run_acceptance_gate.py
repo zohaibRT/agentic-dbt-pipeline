@@ -52,8 +52,15 @@ PROJECT_VALIDATION_SCRIPTS = [
     ("check_requirement_traceability.py", ["--root", "{root}"]),
     ("check_layer_proof_coverage.py", ["--root", "{root}"]),
     ("verify_metric_reconciliation.py", ["--root", "{root}"]),
+    ("check_presentation_coverage.py", ["--root", "{root}"]),
     ("validate_powerbi_pbip.py", []),
-    ("validate_local_web_report.py", []),
+    (
+        "validate_local_web_report.py",
+        [
+            "--report-dir",
+            "{root}/reports/agent/10_presentation/matplotlib",
+        ],
+    ),
 ]
 
 DBT_COMMANDS = [
@@ -255,7 +262,13 @@ def run_validation_scripts(root: Path, report: GateReport, timeout: int) -> None
         if script_name == "validate_local_web_report.py" and not (root / "reports" / "agent" / "10_presentation" / "matplotlib" / "serve_report.py").exists():
             report.add(CheckResult("Validation script: " + script_name, "SKIPPED", "no local web report server found"))
             continue
-        resolved_args = [str(root) if item == "{root}" else item for item in script_args]
+        if script_name == "check_presentation_coverage.py" and not (root / "reports" / "agent" / "10_presentation" / "matplotlib").exists():
+            report.add(CheckResult("Validation script: " + script_name, "SKIPPED", "no Matplotlib presentation folder"))
+            continue
+        resolved_args = []
+        for item in script_args:
+            value = item.replace("{root}", str(root)) if "{root}" in item else item
+            resolved_args.append(value)
         command = [sys.executable, str(script_path), *resolved_args]
         report.add(run_command(command, root, timeout))
 

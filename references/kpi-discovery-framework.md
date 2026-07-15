@@ -124,6 +124,16 @@ Trust only the candidates that have grain, formula, allowed dimensions, time fie
 Promote only strategic candidates to key performance indicators.
 ```
 
+Coverage targets when validated gold has multiple facts and dimensions (see [reporting-coverage-requirements.md](reporting-coverage-requirements.md)):
+
+| Catalog | Target |
+|---|---|
+| `measure_catalog.md` | **50+** supported measures when evidence allows |
+| `metric_catalog.md` | **30+** supported metrics when evidence allows |
+| `kpi_catalog.md` | Strategic subset (rich, not capped at 3–5) |
+
+Do **not** stop after three to five executive KPIs and leave catalogs empty. Presentation must still cover measures and metrics, not only the executive KPI cards.
+
 This lets the project expose a rich analysis surface without pretending every metric is a management key performance indicator.
 
 ## Generic Archetypes

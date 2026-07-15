@@ -73,6 +73,15 @@ Show: `final_delivery.md`, Attention Board, Gap Register, verification guide.
 
 Use the five report pillars. Organize by business purpose, not table names.
 
+Hard requirements from [reporting-coverage-requirements.md](reporting-coverage-requirements.md):
+
+1. Maximize measures/metrics (50+/30+ targets when gold allows).
+2. Build partner, program, product/SKU, date, status dimensions for slicing.
+3. Honor privacy opt-out when the user stated it.
+4. Every categorical axis must show business names via `label_dictionary.md` — blank ticks are a FAIL.
+5. Map every measure/metric/kpi catalog row in `kpi_figure_coverage.md`.
+6. Live SQL for every RENDERED chart before presentation complete.
+
 | Page / tab | Show | Do not show |
 |---|---|---|
 | Cover / context | Domain, date range, refresh, validation status | Schema dumps |
