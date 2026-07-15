@@ -26,6 +26,7 @@ Semantic layer, project evaluator, analytics insight reporting, presentation lay
 Verification must not depend only on the builder agent or the same chat window.
 
 - Builder agent writes evidence to `reports/agent/`, SQL proofs, and dbt artifacts.
+- Keep `reports/agent/HUMAN_ATTENTION_BOARD.md` and `reports/agent/KPI_GAP_REGISTER.md` current; chat must re-warn OPEN KPI gaps after every checkpoint.
 - Run `python <installed-skill-path>/scripts/run_acceptance_gate.py --root <project.root>` before final delivery.
 - Run `python <installed-skill-path>/scripts/check_requirement_traceability.py --root <project.root>`, `python <installed-skill-path>/scripts/check_layer_proof_coverage.py --root <project.root>`, and `python <installed-skill-path>/scripts/verify_metric_reconciliation.py --root <project.root>` before final delivery.
 - Run a fresh verifier agent with `agents/dbt-verifier-agent.md` for an independent audit report.

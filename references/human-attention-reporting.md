@@ -2,7 +2,9 @@
 
 Use this to keep reports readable. Humans should not re-read the same WARN across eight files.
 
-Also read [report-artifact-organization.md](report-artifact-organization.md), [human-review.md](human-review.md), and [phase-completion-report.md](phase-completion-report.md).
+Also read [report-artifact-organization.md](report-artifact-organization.md), [human-review.md](human-review.md), [phase-completion-report.md](phase-completion-report.md), [kpi-gap-and-stakeholder-warnings.md](kpi-gap-and-stakeholder-warnings.md), and [stakeholder-layer-and-presentation-guide.md](stakeholder-layer-and-presentation-guide.md).
+
+Important: anti-duplication applies to **files**. Chat must still **re-warn every checkpoint** about OPEN blockers and the KPIs those blockers keep missing.
 
 ## Goal
 
@@ -28,11 +30,18 @@ Update it after every checkpoint. It must contain only:
 
 1. Current checkpoint and overall status
 2. Decisions waiting on the human (OPEN / NEEDED NOW)
-3. Conditions already accepted that still constrain later work (CARRY FORWARD)
-4. Recommended next action and exact approval scope
-5. Links to proof/report evidence (do not paste full tables again)
+3. KPI impact of OPEN decisions (which makeable KPIs stay missing)
+4. Conditions already accepted that still constrain later work (CARRY FORWARD)
+5. Recommended next action and exact approval scope
+6. Links to proof/report evidence and `KPI_GAP_REGISTER.md` (do not paste full matrices again)
 
 Do **not** put full source inventories, full relationship matrices, or full SQL results on this board.
+
+Maintain the full makeable-but-blocked KPI matrix in:
+
+```text
+reports/agent/KPI_GAP_REGISTER.md
+```
 
 ## Anti-repetition rules
 
@@ -42,7 +51,7 @@ Do **not** put full source inventories, full relationship matrices, or full SQL 
 | Evidence stays in proofs | Put numbers in `sql_proofs/` headers; link from the board |
 | Phase report is the detailed narrative | `discovery_report.md`, `gold_report.md`, etc. hold detail |
 | Control files point, they do not clone | `PIPELINE_STATUS`, `CONTEXT_TREE`, `REPORT_INDEX` summarize and link |
-| Chat summary mirrors the board | Chat shows the same OPEN decisions, not a second invented list |
+| Chat summary mirrors the board | Chat shows the same OPEN decisions and **re-warns KPI gaps every checkpoint** |
 
 Forbidden:
 
@@ -78,28 +87,35 @@ Status values: `OPEN`, `ANSWERED`, `CARRY_FORWARD`, `DEFERRED`.
 
 ## Chat and approval behavior
 
-After each checkpoint, the chat control-panel summary should be short:
+After each checkpoint, the chat control-panel summary should be short but must **repeat** open KPI warnings:
 
 1. What finished
 2. What needs human input now (IDs from the Attention Board)
-3. What the next Yes allows / does not allow
-4. Exact next-phase prompt
+3. Mandatory section: **Still blocked — fix these or these KPIs stay missing** (copy OPEN rows from Attention Board + Gap Register; include even if shown before)
+4. Trusted now vs still blocked KPI lists
+5. What the next Yes allows / does not allow (explicitly: next Yes does not unlock blocked KPIs unless OPEN IDs are answered)
+6. Exact next-phase prompt
 
 Do not paste full discovery inventories or full cardinality matrices into chat.
+
+Do not skip the KPI-gap re-warning because the human already approved a technical phase or saw the same blocker earlier.
 
 ## Maintenance rule
 
 When updating an open decision:
 
 1. Change the Attention Board row
-2. Update `PIPELINE_STATUS` Current Approval Gate to point at those IDs
-3. Keep specialized reports as evidence owners; do not rewrite every file with the same paragraph
+2. Update matching `KPI_GAP_REGISTER.md` rows and KPI impact section
+3. Update `PIPELINE_STATUS` Current Approval Gate to point at those IDs
+4. Keep specialized reports as evidence owners; do not rewrite every file with the same paragraph
 
 ## Completion check
 
 Reporting is unhealthy when:
 
-- The same decision text appears in 3+ root/phase files
+- The same long decision essay appears in 3+ root/phase files
 - The human cannot find OPEN decisions in under one minute
 - Chat and Attention Board disagree
 - Evidence is only in chat, not in proofs/files
+- Chat omits the repeated **Still blocked — fix these or these KPIs stay missing** warning while OPEN gaps exist
+- Makeable blocked KPIs are not listed in `KPI_GAP_REGISTER.md`

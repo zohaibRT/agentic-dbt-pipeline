@@ -27,9 +27,12 @@ reports/agent/PIPELINE_STATUS.md
 reports/agent/CONTEXT_TREE.md
 reports/agent/NEXT_PHASE_PROMPT.md
 reports/agent/REPORT_INDEX.md
+reports/agent/HUMAN_ATTENTION_BOARD.md
+reports/agent/KPI_GAP_REGISTER.md
 reports/agent/HUMAN_VERIFICATION_GUIDE.md
 ```
 
+After every checkpoint, also follow [kpi-gap-and-stakeholder-warnings.md](kpi-gap-and-stakeholder-warnings.md): update the Gap Register and re-warn OPEN blocked makeable KPIs in the chat summary.
 Phase reports should be written to the canonical phase folder from [report-artifact-organization.md](report-artifact-organization.md). Examples:
 
 ```text

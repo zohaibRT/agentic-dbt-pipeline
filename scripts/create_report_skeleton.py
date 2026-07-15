@@ -32,12 +32,13 @@ PLAIN_FOLDERS = [
 ]
 
 ROOT_FILES = {
-    "HUMAN_ATTENTION_BOARD.md": "# Human Attention Board\n\nUse this file for OPEN human decisions only. Keep evidence in phase reports and sql_proofs.\n",
+    "HUMAN_ATTENTION_BOARD.md": "# Human Attention Board\n\nUse this file for OPEN human decisions and KPI impact only. Keep evidence in phase reports and sql_proofs. Pair with KPI_GAP_REGISTER.md.\n",
+    "KPI_GAP_REGISTER.md": "# KPI Gap Register\n\nList makeable KPIs blocked by missing data, unclear definitions, privacy, units, or open approvals. Re-warn OPEN gaps in every chat checkpoint summary.\n",
     "REPORT_INDEX.md": "# Report Index\n\nUse this file to list each report, status, purpose, and what the data engineer should verify.\n",
     "PIPELINE_STATUS.md": "# Pipeline Status\n\nUse this file to track the current pipeline checkpoint, status, validation, and next action.\n",
     "CONTEXT_TREE.md": "# Context Tree\n\nUse this file to track reusable project context, decisions, open questions, and deferred scope.\n",
     "NEXT_PHASE_PROMPT.md": "# Next Phase Prompt\n\nUse this file to store the exact next checkpoint prompt after a phase completes.\n",
-    "HUMAN_VERIFICATION_GUIDE.md": "# Human Verification Guide\n\nStart with HUMAN_ATTENTION_BOARD.md. Use this file for broader verification paths.\n",
+    "HUMAN_VERIFICATION_GUIDE.md": "# Human Verification Guide\n\nStart with HUMAN_ATTENTION_BOARD.md and KPI_GAP_REGISTER.md. Use this file for broader verification paths.\n",
     "REQUIREMENTS_TRACEABILITY_MATRIX.md": """# Requirements Traceability Matrix
 
 | Requirement ID | Requirement / Rule | Source | Business Area | Layer Impact | Implementation Artifact | Verification Artifact | Presentation / Output Artifact | Status | Notes |

@@ -6,7 +6,7 @@ Use this whenever the skill writes files under `reports/agent/`.
 
 Keep reports easy for a data engineer to review. Do not dump every artifact into one flat folder. Use a small root control plane plus phase folders, and write an index that explains where to look.
 
-**Human focus:** keep one live attention surface — `HUMAN_ATTENTION_BOARD.md` — for decisions that need human input. Do not repeat the same WARN/decision across many files. See [human-attention-reporting.md](human-attention-reporting.md).
+**Human focus:** keep one live attention surface — `HUMAN_ATTENTION_BOARD.md` — for decisions that need human input, plus `KPI_GAP_REGISTER.md` for makeable KPIs still blocked. Do not repeat the same WARN/decision essay across many phase files. Chat must still re-warn OPEN KPI gaps after every checkpoint. See [human-attention-reporting.md](human-attention-reporting.md) and [kpi-gap-and-stakeholder-warnings.md](kpi-gap-and-stakeholder-warnings.md).
 
 ## Root Control Plane
 
@@ -15,6 +15,7 @@ Keep only these high-level files at `reports/agent/`:
 ```text
 reports/agent/
   HUMAN_ATTENTION_BOARD.md
+  KPI_GAP_REGISTER.md
   PIPELINE_STATUS.md
   CONTEXT_TREE.md
   NEXT_PHASE_PROMPT.md
@@ -31,7 +32,9 @@ reports/agent/
   final_delivery.md
 ```
 
-`HUMAN_ATTENTION_BOARD.md` is the first file a human should open. It lists only OPEN decisions and carry-forward conditions, with links to evidence. It is mandatory after discovery and must be updated after every checkpoint.
+`HUMAN_ATTENTION_BOARD.md` is the first file a human should open. It lists only OPEN decisions, KPI impact of those decisions, and carry-forward conditions, with links to evidence. It is mandatory after discovery and must be updated after every checkpoint.
+
+`KPI_GAP_REGISTER.md` lists KPIs the project can make once blockers/missing data/unclear definitions are fixed, plus impossible/out-of-scope KPIs. It is mandatory after discovery once candidate metrics exist, and must be updated whenever a layer finds or removes a KPI gap.
 
 `REPORT_INDEX.md` is mandatory after the first phase report. It must group reports by phase and include the path, status, purpose, **why this status was used**, and what the human should check. Prefer short Why text plus an Attention Board ID (`see D-03`) instead of pasting full matrices.
 
@@ -42,9 +45,10 @@ The traceability, ledger, contract, metric matrix, acceptance gate, and independ
 ## Anti-repetition
 
 1. Write each human decision once on `HUMAN_ATTENTION_BOARD.md`.
-2. Keep full inventories, cardinality matrices, and proof result tables in their specialized files / `sql_proofs/`.
-3. `PIPELINE_STATUS`, `CONTEXT_TREE`, and phase reports may summarize and link; they must not clone the full Attention Board.
-4. Chat summaries must mirror the Attention Board OPEN rows, not invent a longer parallel list.
+2. Write the full blocked-makeable KPI matrix once on `KPI_GAP_REGISTER.md`.
+3. Keep full inventories, cardinality matrices, and proof result tables in their specialized files / `sql_proofs/`.
+4. `PIPELINE_STATUS`, `CONTEXT_TREE`, and phase reports may summarize and link; they must not clone the full Attention Board.
+5. Chat summaries must mirror Attention Board OPEN rows **and** re-warn OPEN Gap Register KPI impact every checkpoint, even if the human saw the same warning before.
 
 ## Canonical Folder Layout
 
