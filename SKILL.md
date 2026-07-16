@@ -28,13 +28,17 @@ references/
 scripts/
 agents/
 templates/
+templates/reports/09_analytics_insights/
+templates/reports/10_presentation/
 docs/
 project.config.yml
 prompt.md
 .env.example
 ```
 
-If any are missing, hydrate the installed skill folder from the repository before continuing. Use the directory containing this `SKILL.md` as `{skill_dir}`. Do not hydrate into the user's dbt project root.
+If any are missing (including a partial `templates/` tree after a failed multi-agent Windows install), hydrate the installed skill folder from the repository before continuing. Use the directory containing this `SKILL.md` as `{skill_dir}`. Do not hydrate into the user's dbt project root.
+
+On Windows, prefer `npx skills add zohaibRT/agentic-dbt-pipeline --agent cursor -y` so the installer does not race mkdir across many agent copies.
 
 PowerShell:
 

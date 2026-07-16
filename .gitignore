@@ -9,3 +9,18 @@ dbt_packages/
 .env
 profiles.yml
 /reports/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*.pyo
+
+# dbt local user config (never commit)
+.user.yml
+
+# Local command dump logs at repo root
+/reports_*.txt
+
+# Live browser failure dumps (keep intentional pass evidence)
+**/live_browser_artifacts/screenshots/*_fail.png
+**/live_browser_artifacts/traces/*_fail.zip
