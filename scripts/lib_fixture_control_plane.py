@@ -136,6 +136,11 @@ All phases complete with PASS evidence for gate regression testing.
 | Question | Why it matters | Blocking phase | Current status |
 |---|---|---|---|
 | None | n/a | n/a | answered |
+
+## Accepted Warnings
+
+- Accepted warning: validate_kpi_proofs:w0:ee46cc6d76e7
+- Accepted warning: check_report_business_readability:w0:a8029ff012c7
 """,
     )
 

@@ -8,7 +8,7 @@ import json
 import re
 from pathlib import Path
 
-from lib_gate_common import print_results, read_text
+from lib_gate_common import add_output_json_arg, print_results, read_text
 
 SNAKE_CASE_RE = re.compile(r"\b[a-z][a-z0-9]*(?:_[a-z0-9]+)+\b")
 PREFIX_LABEL_RE = re.compile(r"\b(?:dim|fct|stg)_[a-z0-9_]+\b", re.I)
@@ -101,6 +101,7 @@ def scan_json_payload(path: Path, errors: list[str]) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    add_output_json_arg(parser)
     parser.add_argument("--root", type=Path, default=Path("."))
     parser.add_argument(
         "--report-dir",
@@ -126,7 +127,7 @@ def main() -> int:
         scan_json_payload(json_path, errors)
 
     print(f"Rendered report content scan: errors={len(errors)}")
-    return print_results("Rendered report content validation", errors, warnings)
+    return print_results("Rendered report content validation", errors, warnings, output_json=getattr(args, "output_json", None), validator_id=Path(__file__).stem)
 
 
 if __name__ == "__main__":

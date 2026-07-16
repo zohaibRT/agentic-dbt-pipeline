@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "validator_id": "validate_live_report_dom",
+  "status": "PASS",
+  "errors": [],
+  "warnings": [],
+  "details": {},
+  "checked_at": "2026-07-16T07:48:06.527781+00:00",
+  "warning_ids": [],
+  "applicability": ""
+}

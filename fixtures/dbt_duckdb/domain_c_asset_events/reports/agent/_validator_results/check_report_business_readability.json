@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0",
+  "validator_id": "check_report_business_readability",
+  "status": "WARN",
+  "errors": [],
+  "warnings": [
+    {
+      "warning_id": "check_report_business_readability:w0:a8029ff012c7",
+      "message": "high-precision raw floats present \u2014 ensure UI shows formatted_value (%, currency, rounded decimals)"
+    }
+  ],
+  "details": {},
+  "checked_at": "2026-07-16T07:44:32.186675+00:00",
+  "warning_ids": [
+    "check_report_business_readability:w0:a8029ff012c7"
+  ],
+  "applicability": ""
+}

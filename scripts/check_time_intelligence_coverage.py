@@ -7,6 +7,7 @@ import argparse
 from pathlib import Path
 
 from lib_gate_common import (
+    add_output_json_arg,
     cell,
     load_analytics_policy,
     named_status,
@@ -57,6 +58,7 @@ def coverage_display_name(row: dict[str, str]) -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    add_output_json_arg(parser)
     parser.add_argument("--root", type=Path, default=Path("."))
     args = parser.parse_args()
     root = args.root.resolve()
@@ -83,7 +85,7 @@ def main() -> int:
         errors.append(
             "missing time_intelligence_coverage.md — evaluate current/prior/trend support per important metric"
         )
-        return print_results("Time intelligence coverage check", errors, warnings)
+        return print_results("Time intelligence coverage check", errors, warnings, output_json=getattr(args, "output_json", None), validator_id=Path(__file__).stem)
 
     rows = table_dicts(
         coverage,
@@ -138,7 +140,7 @@ def main() -> int:
                     f"applicable time-intelligence coverage {cov:.0%} below required {required:.0%}"
                 )
 
-    return print_results("Time intelligence coverage check", errors, warnings)
+    return print_results("Time intelligence coverage check", errors, warnings, output_json=getattr(args, "output_json", None), validator_id=Path(__file__).stem)
 
 
 if __name__ == "__main__":

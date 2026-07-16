@@ -25,7 +25,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from lib_gate_common import compare_formatted_values, print_results
+from lib_gate_common import add_output_json_arg, compare_formatted_values, print_results
 
 VIEWPORTS: dict[str, dict[str, int]] = {
     "desktop": {"width": 1440, "height": 900},
@@ -602,48 +602,86 @@ def validate_viewport(
 
             tooltip = container.locator(".chart-tooltip")
             tooltip_text = ""
-
-            try:
-                if viewport_name == "mobile":
-                    # Tap provides the same information as hover
-                    box = point.bounding_box()
-                    if box:
-                        page.touchscreen.tap(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2)
-                    else:
-                        point.dispatch_event("touchstart")
-                        point.dispatch_event("touchend")
-                    page.wait_for_timeout(200)
-                else:
-                    point.hover(timeout=5000)
-                    page.wait_for_timeout(150)
-                    point.focus()
-                    page.wait_for_timeout(100)
-            except Exception as exc:  # noqa: BLE001
-                # Fallback: read data-tooltip without pointer interaction
-                tooltip_text = point.get_attribute("data-tooltip") or ""
-                if not tooltip_text:
-                    result.fail(f"{viewport_name}: chart {chart_id}: hover/tap failed: {exc}")
-                    details["charts"].append(chart_detail)
-                    continue
-
+            was_visible_before = False
             if tooltip.count() > 0:
                 try:
-                    # Force show if SVG path left it hidden but data-tooltip exists
-                    if tooltip.is_hidden():
-                        data_tip = point.get_attribute("data-tooltip") or ""
-                        if data_tip:
-                            page.evaluate(
-                                """([sel, text]) => {
-                                  const tip = document.querySelector(sel + ' .chart-tooltip');
-                                  if (tip) { tip.hidden = false; tip.textContent = text; }
-                                }""",
-                                [f'[data-chart-id="{chart_id}"]', data_tip],
-                            )
-                    tooltip_text = tooltip.inner_text(timeout=1500)
+                    was_visible_before = not tooltip.first.is_hidden()
                 except Exception:
-                    tooltip_text = point.get_attribute("data-tooltip") or ""
-            else:
-                tooltip_text = point.get_attribute("data-tooltip") or ""
+                    was_visible_before = False
+
+            interaction_ok = False
+            try:
+                if viewport_name == "mobile":
+                    # Genuine tap: prefer locator.tap (fires pointer + click), then touchscreen
+                    try:
+                        point.tap(timeout=5000)
+                    except Exception:
+                        box = point.bounding_box()
+                        if box:
+                            page.touchscreen.tap(
+                                box["x"] + box["width"] / 2,
+                                box["y"] + box["height"] / 2,
+                            )
+                        else:
+                            point.click(timeout=5000, force=True)
+                    page.wait_for_timeout(300)
+                else:
+                    point.hover(timeout=5000)
+                    page.wait_for_timeout(200)
+                    try:
+                        point.focus()
+                        page.wait_for_timeout(100)
+                    except Exception:
+                        pass
+                interaction_ok = True
+            except Exception as exc:  # noqa: BLE001
+                # Diagnostic only — data-tooltip without visible interaction is NOT production PASS
+                diagnostic = point.get_attribute("data-tooltip") or ""
+                result.fail(
+                    f"{viewport_name}: chart {chart_id}: genuine hover/tap failed ({exc}); "
+                    f"data-tooltip diagnostic={'present' if diagnostic else 'missing'} (not accepted as PASS)"
+                )
+                details["charts"].append(chart_detail)
+                continue
+
+            # Require tooltip to become visible after interaction (not force-shown)
+            if tooltip.count() == 0:
+                result.fail(f"{viewport_name}: chart {chart_id}: missing tooltip element")
+                details["charts"].append(chart_detail)
+                continue
+
+            try:
+                # Wait for visibility from real interaction — do NOT programmatically force show
+                page.wait_for_function(
+                    """(sel) => {
+                      const tip = document.querySelector(sel + ' .chart-tooltip');
+                      if (!tip) return false;
+                      if (tip.hasAttribute('hidden')) return false;
+                      const style = window.getComputedStyle(tip);
+                      return style.display !== 'none' && style.visibility !== 'hidden' && tip.textContent.trim().length > 0;
+                    }""",
+                    arg=f'[data-chart-id="{chart_id}"]',
+                    timeout=3000,
+                )
+            except Exception:
+                diagnostic = point.get_attribute("data-tooltip") or ""
+                result.fail(
+                    f"{viewport_name}: chart {chart_id}: tooltip not visible after genuine "
+                    f"{'tap' if viewport_name == 'mobile' else 'hover'} "
+                    f"(diagnostic data-tooltip={'present' if diagnostic else 'missing'}; "
+                    f"forced reveal is not accepted as PASS)"
+                )
+                details["charts"].append(chart_detail)
+                continue
+
+            if was_visible_before and interaction_ok:
+                # Still verify content after interaction
+                pass
+
+            try:
+                tooltip_text = tooltip.inner_text(timeout=1500)
+            except Exception:
+                tooltip_text = ""
 
             if not tooltip_text.strip():
                 result.fail(f"{viewport_name}: chart {chart_id}: missing tooltip")
@@ -885,6 +923,7 @@ def write_reports(root: Path, payload: dict[str, Any], artifacts_dir: Path) -> t
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    add_output_json_arg(parser)
     parser.add_argument("--root", type=Path, default=Path("."))
     parser.add_argument("--report-dir", type=Path, default=None)
     parser.add_argument("--port", type=int, default=None, help="Fixed port (default: ephemeral)")
@@ -1006,7 +1045,7 @@ def main() -> int:
     # Avoid Windows console UnicodeEncodeError on tooltip glyphs
     safe_errors = [e.encode("ascii", "replace").decode("ascii") for e in result.errors]
     safe_warnings = [w.encode("ascii", "replace").decode("ascii") for w in result.warnings]
-    return print_results("Live report DOM validation", safe_errors, safe_warnings)
+    return print_results("Live report DOM validation", safe_errors, safe_warnings, output_json=getattr(args, "output_json", None), validator_id=Path(__file__).stem)
 
 
 if __name__ == "__main__":

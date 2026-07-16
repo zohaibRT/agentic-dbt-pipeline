@@ -12,6 +12,7 @@ import sys
 from pathlib import Path
 
 from lib_gate_common import (
+    add_output_json_arg,
     catalog_item_count,
     cell,
     count_gold_facts,
@@ -27,6 +28,7 @@ from lib_gate_common import (
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    add_output_json_arg(parser)
     parser.add_argument("--root", type=Path, default=Path("."))
     parser.add_argument(
         "--min-process-coverage",
@@ -204,7 +206,7 @@ def main() -> int:
         else:
             warnings.append(msg + " — not a completion gate under process_coverage")
 
-    return print_results("Analytics coverage check", errors, warnings)
+    return print_results("Analytics coverage check", errors, warnings, output_json=getattr(args, "output_json", None), validator_id=Path(__file__).stem)
 
 
 if __name__ == "__main__":

@@ -143,149 +143,149 @@
       "return_code": null
     },
     {
-      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_discovery_artifacts.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events",
+      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_discovery_artifacts.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_discovery_artifacts.json",
       "status": "PASS",
-      "detail": "Discovery artifact validation passed",
-      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_discovery_artifacts.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events",
+      "detail": "STATUS: PASS\nDiscovery artifact validation PASSED",
+      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_discovery_artifacts.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_discovery_artifacts.json",
       "return_code": 0
     },
     {
-      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_gold_star_shape.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events",
+      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_gold_star_shape.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_gold_star_shape.json",
       "status": "PASS",
-      "detail": "Models root: C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\models\\gold\nFacts: 1 | Dimensions: 2 | Bridges: 0\nFact models: fct_asset_events\nDimension models: dim_assets, dim_statuses\nPASS | gold/marts has both facts and dimensions",
-      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_gold_star_shape.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events",
+      "detail": "Models root: C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\models\\gold\nFacts: 1 | Dimensions: 2 | Bridges: 0\nFact models: fct_asset_events\nDimension models: dim_assets, dim_statuses\nSTATUS: PASS\nGold star shape check PASSED",
+      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_gold_star_shape.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_gold_star_shape.json",
       "return_code": 0
     },
     {
-      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\validate_kpi_proofs.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events",
-      "status": "PASS",
-      "detail": "Optional catalogs present: dimension_catalog.md\nKPI proof validation summary:\n  measures: 6\n  metrics: 8\n  kpis: 2\n  sql proof files: 2\n  referenced proofs: 0\nWARN: Catalogs do not reference sql_proofs/*.sql paths explicitly\nKPI proof validation PASSED with warnings",
-      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\validate_kpi_proofs.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events",
+      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\validate_kpi_proofs.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\validate_kpi_proofs.json",
+      "status": "WARN",
+      "detail": "Catalogs do not reference sql_proofs/*.sql paths explicitly; warning_ids=validate_kpi_proofs:w0:ee46cc6d76e7",
+      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\validate_kpi_proofs.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\validate_kpi_proofs.json",
       "return_code": 0
     },
     {
-      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_requirement_traceability.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events",
+      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_requirement_traceability.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_requirement_traceability.json",
       "status": "PASS",
-      "detail": "Requirement traceability summary:\n  requirements checked: 5\n  warnings: 0\n  errors: 0",
-      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_requirement_traceability.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events",
+      "detail": "STATUS: PASS\nRequirement traceability PASSED",
+      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_requirement_traceability.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_requirement_traceability.json",
       "return_code": 0
     },
     {
-      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_layer_proof_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events",
+      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_layer_proof_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_layer_proof_coverage.json",
       "status": "PASS",
-      "detail": "Layer proof coverage summary:\n  rows checked: 7\n  warnings: 0\n  errors: 0",
-      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_layer_proof_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events",
+      "detail": "STATUS: PASS\nLayer proof coverage PASSED",
+      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_layer_proof_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_layer_proof_coverage.json",
       "return_code": 0
     },
     {
-      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\verify_metric_reconciliation.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events",
+      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\verify_metric_reconciliation.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\verify_metric_reconciliation.json",
       "status": "PASS",
-      "detail": "Detected KPI contract schema: expanded\nMetric reconciliation summary:\n  KPI contract schema: expanded\n  KPI contracts checked: 2\n  metric matrix rows checked: 2\n  blocked/deferred KPIs: 0\n  critical reconciliation coverage: 2/2 (100%)\n  matrix reconciled: 2/2\n  warnings: 0\n  errors: 0",
-      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\verify_metric_reconciliation.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events",
+      "detail": "Detected KPI contract schema: expanded\nMetric reconciliation summary:\n  KPI contract schema: expanded\n  KPI contracts checked: 2\n  metric matrix rows checked: 2\n  blocked/deferred KPIs: 0\n  critical reconciliation coverage: 2/2 (100%)\n  matrix reconciled: 2/2\nSTATUS: PASS\nMetric reconciliation PASSED",
+      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\verify_metric_reconciliation.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\verify_metric_reconciliation.json",
       "return_code": 0
     },
     {
-      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_model_classification_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --phase final",
+      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_model_classification_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --phase final --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_model_classification_coverage.json",
       "status": "PASS",
-      "detail": "Model classification (manifest): classified=7/7 (100%) unique_id_denominator=yes\nModel classification coverage check PASSED",
-      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_model_classification_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --phase final",
+      "detail": "Model classification (manifest): classified=7/7 (100%) unique_id_denominator=yes\nSTATUS: PASS\nModel classification coverage check PASSED",
+      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_model_classification_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --phase final --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_model_classification_coverage.json",
       "return_code": 0
     },
     {
-      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_analytics_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events",
+      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_analytics_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_analytics_coverage.json",
       "status": "PASS",
-      "detail": "Analytics product coverage (informational counts only): gold_facts~1, business_measures~6, business_metrics~4, quality_metrics~2, pipeline_metrics~2, coverage_matrix=1/1, fact_contracts=1/1\nBusiness-process coverage: 100% (required >= 90%)\nFact analytical coverage: 100% (required >= 100%)\nTime-intelligence coverage: 100% (required >= 80%)\nObservability domain coverage: 100% (required >= 100%)\nReport traceability (RENDERED->proof): 100% (required >= 100%)\nPolicy critical_reconciliation_coverage_required=100%\nAnalytics coverage check PASSED",
-      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_analytics_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events",
+      "detail": "Analytics product coverage (informational counts only): gold_facts~1, business_measures~6, business_metrics~4, quality_metrics~2, pipeline_metrics~2, coverage_matrix=1/1, fact_contracts=1/1\nBusiness-process coverage: 100% (required >= 90%)\nFact analytical coverage: 100% (required >= 100%)\nTime-intelligence coverage: 100% (required >= 80%)\nObservability domain coverage: 100% (required >= 100%)\nReport traceability (RENDERED->proof): 100% (required >= 100%)\nPolicy critical_reconciliation_coverage_required=100%\nSTATUS: PASS\nAnalytics coverage check PASSED",
+      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_analytics_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_analytics_coverage.json",
       "return_code": 0
     },
     {
-      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_analytics_product_completeness.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events",
+      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_analytics_product_completeness.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_analytics_product_completeness.json",
       "status": "PASS",
-      "detail": "Business-process coverage: PASS=1/1 (100%)\nProcess module coverage: 1/1 (100%)\nAnalytics product completeness check PASSED",
-      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_analytics_product_completeness.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events",
+      "detail": "Business-process coverage: PASS=1/1 (100%)\nProcess module coverage: 1/1 (100%)\nSTATUS: PASS\nAnalytics product completeness check PASSED",
+      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_analytics_product_completeness.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_analytics_product_completeness.json",
       "return_code": 0
     },
     {
-      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_fact_analytical_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events",
+      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_fact_analytical_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_fact_analytical_coverage.json",
       "status": "PASS",
-      "detail": "Fact coverage contracts: rows=1, gold_facts=1, unique_ids=1\nCritical fact coverage: 1/1 (100%)\nFact analytical coverage check PASSED",
-      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_fact_analytical_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events",
+      "detail": "Fact coverage contracts: rows=1, gold_facts=1, unique_ids=1\nCritical fact coverage: 1/1 (100%)\nSTATUS: PASS\nFact analytical coverage check PASSED",
+      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_fact_analytical_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_fact_analytical_coverage.json",
       "return_code": 0
     },
     {
-      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_metric_contract_completeness.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events",
+      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_metric_contract_completeness.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_metric_contract_completeness.json",
       "status": "PASS",
-      "detail": "Metric contract completeness: schema=expanded contract_rows=2\nCritical KPI contract coverage: 2/2 (100%)\nMetric contract completeness check PASSED",
-      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_metric_contract_completeness.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events",
+      "detail": "Metric contract completeness: schema=expanded contract_rows=2\nCritical KPI contract coverage: 2/2 (100%)\nSTATUS: PASS\nMetric contract completeness check PASSED",
+      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_metric_contract_completeness.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_metric_contract_completeness.json",
       "return_code": 0
     },
     {
-      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_human_approval_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --phase final",
+      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_human_approval_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --phase final --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_human_approval_coverage.json",
       "status": "PASS",
-      "detail": "Human approval coverage: 2/2 (phase=final)\nHuman approval coverage check PASSED",
-      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_human_approval_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --phase final",
+      "detail": "Human approval coverage: 2/2 (phase=final, obligations=2)\nSTATUS: PASS\nHuman approval coverage check PASSED",
+      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_human_approval_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --phase final --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_human_approval_coverage.json",
       "return_code": 0
     },
     {
-      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_time_intelligence_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events",
+      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_time_intelligence_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_time_intelligence_coverage.json",
       "status": "PASS",
-      "detail": "Time intelligence coverage: supported=8, applicable=8 (100%)\nTime intelligence coverage check PASSED",
-      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_time_intelligence_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events",
+      "detail": "Time intelligence coverage: supported=8, applicable=8 (100%)\nSTATUS: PASS\nTime intelligence coverage check PASSED",
+      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_time_intelligence_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_time_intelligence_coverage.json",
       "return_code": 0
     },
     {
-      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_data_observability_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events",
+      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_data_observability_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_data_observability_coverage.json",
       "status": "PASS",
-      "detail": "Observability domain coverage: 18/18 (100%)\nData observability coverage check PASSED",
-      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_data_observability_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events",
+      "detail": "Observability domain coverage: 18/18 (100%)\nSTATUS: PASS\nData observability coverage check PASSED",
+      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_data_observability_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_data_observability_coverage.json",
       "return_code": 0
     },
     {
-      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_presentation_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events",
+      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_presentation_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_presentation_coverage.json",
       "status": "PASS",
-      "detail": "Presentation coverage: measures~6, metrics~4, kpis~2; RENDERED/TRUSTED=3; gold_facts~1\nRendered proof coverage: 3/3 (100%)\nPresentation coverage check PASSED",
-      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_presentation_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events",
+      "detail": "Presentation coverage: measures~6, metrics~4, kpis~2; RENDERED/TRUSTED=3; gold_facts~1\nRendered proof coverage: 3/3 (100%)\nSTATUS: PASS\nPresentation coverage check PASSED",
+      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_presentation_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_presentation_coverage.json",
       "return_code": 0
     },
     {
-      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_report_page_contracts.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --phase final",
+      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_report_page_contracts.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --phase final --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_report_page_contracts.json",
       "status": "PASS",
-      "detail": "Report page contracts: rows=6, rendered_pages~13\nReport page contract field coverage: 6/6 (100%)\nReport page contracts check PASSED",
-      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_report_page_contracts.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --phase final",
+      "detail": "Report page contracts: rows=6, rendered_pages~13\nReport page contract field coverage: 6/6 (100%)\nSTATUS: PASS\nReport page contracts check PASSED",
+      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_report_page_contracts.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --phase final --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_report_page_contracts.json",
       "return_code": 0
     },
     {
-      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_report_business_readability.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events",
-      "status": "PASS",
-      "detail": "Business readability: files=12, tech_name_hits~911, dim_row_count_hits~0, raw_float_hits~245, display_hints=True, label_coverage=100% (required=100%)\nWARN: high-precision raw floats present \u00e2\u20ac\u201d ensure UI shows formatted_value (%, currency, rounded decimals)\nReport business readability check PASSED with warnings",
-      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_report_business_readability.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events",
+      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_report_business_readability.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_report_business_readability.json",
+      "status": "WARN",
+      "detail": "high-precision raw floats present \u2014 ensure UI shows formatted_value (%, currency, rounded decimals); warning_ids=check_report_business_readability:w0:a8029ff012c7",
+      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_report_business_readability.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_report_business_readability.json",
       "return_code": 0
     },
     {
-      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_exposure_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --phase final",
+      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_exposure_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --phase final --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_exposure_coverage.json",
       "status": "PASS",
-      "detail": "Exposure discovery: source=manifest inventory=manifest count=1\nProduction exposure coverage: 1/1 (100%)\nExposure coverage check PASSED",
-      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_exposure_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --phase final",
+      "detail": "Exposure discovery: source=manifest inventory=manifest count=1\nProduction exposure coverage: 1/1 (100%)\nSTATUS: PASS\nExposure coverage check PASSED",
+      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_exposure_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --phase final --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_exposure_coverage.json",
       "return_code": 0
     },
     {
-      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_presentation_hardcodes.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events",
+      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_presentation_hardcodes.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_presentation_hardcodes.json",
       "status": "PASS",
-      "detail": "Checked 4 presentation Python file(s)\nPresentation hardcode check PASSED",
-      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_presentation_hardcodes.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events",
+      "detail": "Checked 4 presentation Python file(s)\nSTATUS: PASS\nPresentation hardcode check PASSED",
+      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_presentation_hardcodes.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_presentation_hardcodes.json",
       "return_code": 0
     },
     {
-      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_privacy_opt_out.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events",
-      "status": "PASS",
-      "detail": "SKIPPED: no recorded privacy minimization opt-out in requirements/context/plan",
-      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_privacy_opt_out.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events",
+      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_privacy_opt_out.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_privacy_opt_out.json",
+      "status": "SKIPPED",
+      "detail": "SKIPPED: no recorded privacy minimization opt-out in requirements/context/plan\nSTATUS: SKIPPED",
+      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_privacy_opt_out.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_privacy_opt_out.json",
       "return_code": 0
     },
     {
       "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_domain_neutrality.py --root C:\\codebase\\agentic-dbt-pipeline",
       "status": "PASS",
-      "detail": "Domain neutrality scan: root=C:\\codebase\\agentic-dbt-pipeline, files=246\nDomain neutrality check PASSED",
+      "detail": "Domain neutrality scan: root=C:\\codebase\\agentic-dbt-pipeline, files=249\nDomain neutrality check PASSED",
       "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_domain_neutrality.py --root C:\\codebase\\agentic-dbt-pipeline",
       "return_code": 0
     },
@@ -299,43 +299,43 @@
     {
       "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\validate_local_web_report.py --report-dir C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events/reports/agent/10_presentation/matplotlib",
       "status": "PASS",
-      "detail": "Local web report validation passed: http://127.0.0.1:61320/ returned 47122 bytes of HTML.",
+      "detail": "Local web report validation passed: http://127.0.0.1:60068/ returned 47369 bytes of HTML.",
       "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\validate_local_web_report.py --report-dir C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events/reports/agent/10_presentation/matplotlib",
       "return_code": 0
     },
     {
-      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\validate_rendered_report_content.py --report-dir C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events/reports/agent/10_presentation/matplotlib",
+      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\validate_rendered_report_content.py --report-dir C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events/reports/agent/10_presentation/matplotlib --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\validate_rendered_report_content.json",
       "status": "PASS",
-      "detail": "Rendered report content scan: errors=0\nRendered report content validation PASSED",
-      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\validate_rendered_report_content.py --report-dir C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events/reports/agent/10_presentation/matplotlib",
+      "detail": "Rendered report content scan: errors=0\nSTATUS: PASS\nRendered report content validation PASSED",
+      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\validate_rendered_report_content.py --report-dir C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events/reports/agent/10_presentation/matplotlib --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\validate_rendered_report_content.json",
       "return_code": 0
     },
     {
-      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\validate_chart_registry.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events",
+      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\validate_chart_registry.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\validate_chart_registry.json",
       "status": "PASS",
-      "detail": "Chart registry validation: charts=2 errors=0\nChart registry validation PASSED",
-      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\validate_chart_registry.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events",
+      "detail": "Chart registry validation: charts=2 errors=0\nSTATUS: PASS\nChart registry validation PASSED",
+      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\validate_chart_registry.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\validate_chart_registry.json",
       "return_code": 0
     },
     {
-      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_presentation_traceability.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --phase final",
+      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_presentation_traceability.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --phase final --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_presentation_traceability.json",
       "status": "PASS",
-      "detail": "Presentation traceability: metrics=3 visuals~8 proofs~2 errors=0\nWARN: metric KPI-PENDING-001: no visual_ids/chart_ids/card_ids mapped\nWARN: metric KPI-PENDING-001: missing query_id mapping\nPresentation traceability check PASSED with warnings",
-      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_presentation_traceability.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --phase final",
+      "detail": "Presentation traceability: metrics=3 visuals~8 proofs~2 errors=0\nSTATUS: PASS\nPresentation traceability check PASSED",
+      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_presentation_traceability.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --phase final --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_presentation_traceability.json",
       "return_code": 0
     },
     {
-      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\validate_live_report_dom.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --desktop --tablet --mobile --allow-skip",
+      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\validate_live_report_dom.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --desktop --tablet --mobile --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\validate_live_report_dom.json",
       "status": "PASS",
-      "detail": "Wrote C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\10_presentation\\LIVE_REPORT_DOM_REPORT.json\nWrote C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\10_presentation\\LIVE_REPORT_DOM_REPORT.md\nLive report DOM validation PASSED",
-      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\validate_live_report_dom.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --desktop --tablet --mobile --allow-skip",
+      "detail": "Wrote C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\10_presentation\\LIVE_REPORT_DOM_REPORT.json\nWrote C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\10_presentation\\LIVE_REPORT_DOM_REPORT.md\nSTATUS: PASS\nLive report DOM validation PASSED",
+      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\validate_live_report_dom.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --desktop --tablet --mobile --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\validate_live_report_dom.json",
       "return_code": 0
     },
     {
-      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\run_independent_verifier.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --skip-live",
+      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\run_independent_verifier.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --phase final --strict",
       "status": "PASS",
-      "detail": "check_model_classification_coverage.py: PASS (exit 0)\ncheck_fact_analytical_coverage.py: PASS (exit 0)\ncheck_metric_contract_completeness.py: PASS (exit 0)\nverify_metric_reconciliation.py: PASS (exit 0)\ncheck_human_approval_coverage.py: PASS (exit 0)\ncheck_time_intelligence_coverage.py: PASS (exit 0)\ncheck_data_observability_coverage.py: PASS (exit 0)\ncheck_exposure_coverage.py: PASS (exit 0)\ncheck_report_page_contracts.py: PASS (exit 0)\ncheck_presentation_traceability.py: PASS (exit 0)\nvalidate_rendered_report_content.py: PASS (exit 0)\nvalidate_chart_registry.py: PASS (exit 0)\ncheck_report_business_readability.py: PASS (exit 0)\nvalidate_kpi_proofs.py: PASS (exit 0)\ncheck_layer_proof_coverage.py: PASS (exit 0)\ncheck_requirement_traceability.py: PASS (exit 0)\ncheck_presentation_coverage.py: PASS (exit 0)\nvalidate_live_report_dom.py: SKIPPED\nIndependent verification overall status: PASS\nWrote reports/agent/INDEPENDENT_VERIFICATION_REPORT.md\nWrote reports/agent/INDEPENDENT_VERIFICATION_REPORT.json",
-      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\run_independent_verifier.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --skip-live",
+      "detail": "independent verifier overall_status=PASS",
+      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\run_independent_verifier.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --phase final --strict",
       "return_code": 0
     },
     {
@@ -353,9 +353,27 @@
       "return_code": null
     }
   ],
-  "warnings": [],
-  "warning_records": [],
+  "warnings": [
+    "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\validate_kpi_proofs.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\validate_kpi_proofs.json: Catalogs do not reference sql_proofs/*.sql paths explicitly; warning_ids=validate_kpi_proofs:w0:ee46cc6d76e7",
+    "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_report_business_readability.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_report_business_readability.json: high-precision raw floats present \u2014 ensure UI shows formatted_value (%, currency, rounded decimals); warning_ids=check_report_business_readability:w0:a8029ff012c7"
+  ],
+  "warning_records": [
+    {
+      "warning_id": "validate_kpi_proofs:w0:ee46cc6d76e7",
+      "message": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\validate_kpi_proofs.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\validate_kpi_proofs.json: Catalogs do not reference sql_proofs/*.sql paths explicitly; warning_ids=validate_kpi_proofs:w0:ee46cc6d76e7",
+      "accepted": true
+    },
+    {
+      "warning_id": "check_report_business_readability:w0:a8029ff012c7",
+      "message": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_report_business_readability.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_report_business_readability.json: high-precision raw floats present \u2014 ensure UI shows formatted_value (%, currency, rounded decimals); warning_ids=check_report_business_readability:w0:a8029ff012c7",
+      "accepted": true
+    }
+  ],
   "failures": [],
   "enforce_warning_policy": true,
-  "accepted_warning_tokens": []
+  "accepted_warning_tokens": [
+    "accepted",
+    "check_report_business_readability:w0:a8029ff012c7",
+    "validate_kpi_proofs:w0:ee46cc6d76e7"
+  ]
 }

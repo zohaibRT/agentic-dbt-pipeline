@@ -90,7 +90,7 @@ class FactCoverageStatusAliasTests(unittest.TestCase):
             out = (proc.stdout + proc.stderr).lower()
             # status_distribution must be taken from the first Status=SUPPORTED column
             self.assertIn("status_distribution", out)
-            self.assertIn("supported requires evidence", out)
+            self.assertIn("supported requires family-specific proof", out)
             # Must not claim status_distribution is missing (that would mean overall PASS was ignored
             # and the first Status column was dropped)
             self.assertNotIn("missing applicability for status_distribution", out)

@@ -266,11 +266,22 @@ def stamp_manifest_identities(base: Path) -> None:
             "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|",
         ]
         for resource in fact_models:
+            name = resource.get("name")
             contract_lines.append(
-                f"| {resource.get('unique_id')} | {resource.get('name')} | one row per event | event_id | event_date | "
-                "SUPPORTED | SUPPORTED | NOT_APPLICABLE | SUPPORTED | SUPPORTED | SUPPORTED | "
-                "SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | NOT_APPLICABLE | SUPPORTED | volume and completion | "
-                "Fixture | PASS |"
+                f"| {resource.get('unique_id')} | {name} | one row per event | event_id | event_date | "
+                f"SUPPORTED: sql_proofs/{name}_volume.sql | "
+                f"SUPPORTED: sql_proofs/{name}_amount.sql | "
+                f"NOT_APPLICABLE: no duration measures at this grain | "
+                f"SUPPORTED: sql_proofs/{name}_status.sql | "
+                f"SUPPORTED: sql_proofs/{name}_lifecycle.sql | "
+                f"SUPPORTED: sql_proofs/{name}_dims.sql | "
+                f"SUPPORTED: sql_proofs/{name}_trends.sql | "
+                f"SUPPORTED: sql_proofs/{name}_period.sql | "
+                f"SUPPORTED: sql_proofs/{name}_quality.sql | "
+                f"SUPPORTED: sql_proofs/{name}_exceptions.sql | "
+                f"NOT_APPLICABLE: aging not in first-pass scope | "
+                f"SUPPORTED: sql_proofs/{name}_recon.sql | "
+                f"volume and completion | Fixture notes | PASS |"
             )
         write(contracts, "# Fact Coverage Contracts (TEST FIXTURE)\n\n" + "\n".join(contract_lines) + "\n")
 
@@ -397,7 +408,20 @@ acceptance_policy:
     fact_catalog_rows = []
     for fact in facts:
         fact_contract_rows.append(
-            f"| {fact} | one row per event | event_id | event_date | SUPPORTED | SUPPORTED | NOT_APPLICABLE | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | NOT_APPLICABLE | SUPPORTED | volume and completion | Fixture | PASS |"
+            f"| {fact} | one row per event | event_id | event_date | "
+            f"SUPPORTED: sql_proofs/{fact}_volume.sql | "
+            f"SUPPORTED: sql_proofs/{fact}_amount.sql | "
+            f"NOT_APPLICABLE: no duration measures at this grain | "
+            f"SUPPORTED: sql_proofs/{fact}_status.sql | "
+            f"SUPPORTED: sql_proofs/{fact}_lifecycle.sql | "
+            f"SUPPORTED: sql_proofs/{fact}_dims.sql | "
+            f"SUPPORTED: sql_proofs/{fact}_trends.sql | "
+            f"SUPPORTED: sql_proofs/{fact}_period.sql | "
+            f"SUPPORTED: sql_proofs/{fact}_quality.sql | "
+            f"SUPPORTED: sql_proofs/{fact}_exceptions.sql | "
+            f"NOT_APPLICABLE: aging not in first-pass scope | "
+            f"SUPPORTED: sql_proofs/{fact}_recon.sql | "
+            f"volume and completion | Fixture notes | PASS |"
         )
         fact_catalog_rows.append(f"| {fact} | event | PASS |")
 
@@ -1269,7 +1293,7 @@ def main() -> int:
         root = FIX / domain["slug"]
         for script_name, extra_args in (
             ("run_acceptance_gate.py", ["--phase", "final", "--strict", "--skip-dbt"]),
-            ("run_independent_verifier.py", []),
+            ("run_independent_verifier.py", ["--phase", "final"]),
         ):
             cmd = [sys.executable, str(SCRIPTS / script_name), "--root", str(root), *extra_args]
             proc = subprocess.run(cmd, cwd=str(SCRIPTS), capture_output=True, text=True)

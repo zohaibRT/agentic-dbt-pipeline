@@ -31,9 +31,13 @@ if str(SCRIPT_DIR) not in sys.path:
 from lib_gate_common import (  # noqa: E402
     compare_formatted_values,
     inventory_from_manifest,
+    load_accepted_warnings,
     load_analytics_policy,
+    load_presentation_policy,
+    load_validator_result_json,
     parse_markdown_tables,
     read_text,
+    VALIDATOR_RESULT_SCHEMA_VERSION,
 )
 
 # Deterministic validators — never include run_acceptance_gate or this script.
@@ -105,8 +109,9 @@ class VerificationReport:
 
     def add_child(self, result: ChildResult) -> None:
         self.results.append(result)
-        if result.status == "FAIL":
-            self.failures.append(f"{result.script} [{result.category}]: exit {result.return_code}")
+        if result.status in {"FAIL", "BLOCKED"}:
+            self.failures.append(f"{result.script} [{result.category}]: {result.status} exit {result.return_code}")
+        # WARN is recorded in results; overall_status handles escalation — never convert to PASS
 
     def add_local(self, check: LocalCheck) -> None:
         self.local_checks.append(check)
@@ -127,13 +132,18 @@ def run_child(
     timeout: int,
     *,
     allow_skip_live: bool,
+    require_live: bool = False,
 ) -> ChildResult:
     script_path = SCRIPT_DIR / script
     if not script_path.exists():
         return ChildResult(script=script, category=category, status="SKIPPED", return_code=0)
 
+    result_dir = root / "reports" / "agent" / "_validator_results"
+    result_dir.mkdir(parents=True, exist_ok=True)
+    result_json = result_dir / f"independent_{Path(script).stem}.json"
+
     cmd = [sys.executable, str(script_path), "--root", str(root), *args]
-    if script == "validate_live_report_dom.py" and allow_skip_live:
+    if script == "validate_live_report_dom.py" and allow_skip_live and not require_live:
         cmd.append("--allow-skip")
     # validate_rendered_report_content accepts --root; prefer report-dir when present
     if script == "validate_rendered_report_content.py":
@@ -142,6 +152,10 @@ def run_child(
             cmd = [sys.executable, str(script_path), "--report-dir", str(report_dir)]
         else:
             return ChildResult(script=script, category=category, status="SKIPPED", return_code=0)
+
+    # Prefer machine-readable results when supported
+    if "--output-json" not in cmd:
+        cmd.extend(["--output-json", str(result_json)])
 
     try:
         completed = subprocess.run(
@@ -162,14 +176,52 @@ def run_child(
             stderr="timeout",
         )
 
-    # Live DOM may SKIP when playwright missing and allow-skip
     out = (completed.stdout or "") + (completed.stderr or "")
-    if completed.returncode == 0 and "SKIPPED:" in out and script == "validate_live_report_dom.py":
-        status = "SKIPPED"
-    elif completed.returncode == 0:
-        status = "PASS"
+    status = None
+    if result_json.exists():
+        try:
+            payload = load_validator_result_json(result_json)
+            status = payload.status
+            # Contradiction checks
+            if status in {"FAIL", "BLOCKED"} and completed.returncode == 0:
+                status = "FAIL"
+                out = f"JSON status {payload.status} contradicts exit 0\n" + out
+            elif status == "PASS" and completed.returncode != 0:
+                status = "FAIL"
+                out = f"JSON status PASS contradicts exit {completed.returncode}\n" + out
+        except Exception as exc:  # noqa: BLE001
+            return ChildResult(
+                script=script,
+                category=category,
+                status="FAIL",
+                return_code=completed.returncode,
+                stdout=(completed.stdout or "")[-2000:],
+                stderr=f"malformed validator result JSON: {exc}",
+            )
     else:
+        # Missing JSON is a failure for production validators (not optional skip)
+        if "--output-json" in cmd:
+            return ChildResult(
+                script=script,
+                category=category,
+                status="FAIL",
+                return_code=completed.returncode,
+                stdout=(completed.stdout or "")[-2000:],
+                stderr=f"missing validator result JSON: {result_json}",
+            )
+
+    if status is None:
+        if completed.returncode == 0 and "SKIPPED:" in out:
+            status = "SKIPPED"
+        elif completed.returncode == 0:
+            status = "PASS"
+        else:
+            status = "FAIL"
+
+    # Required live browser SKIPPED is FAIL
+    if script == "validate_live_report_dom.py" and require_live and status == "SKIPPED":
         status = "FAIL"
+        out = "live browser SKIPPED is not allowed when interactive report requires Playwright\n" + out
 
     return ChildResult(
         script=script,
@@ -413,21 +465,46 @@ def main() -> int:
     parser.add_argument("--root", type=Path, default=Path("."))
     parser.add_argument("--timeout", type=int, default=900)
     parser.add_argument(
+        "--phase",
+        default="analytics",
+        help="Verification phase. final/presentation enforce live browser when interactive.",
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Treat like final for live-browser enforcement when an interactive report exists.",
+    )
+    parser.add_argument(
         "--allow-skip-live",
         action="store_true",
-        help="Allow live browser check to SKIP when Playwright is unavailable (non-CI).",
+        help="Allow live browser check to SKIP when Playwright is unavailable (non-final/dev only).",
     )
     parser.add_argument(
         "--skip-live",
         action="store_true",
-        help="Skip live browser validation (still records SKIPPED).",
+        help="Skip live browser validation (still records SKIPPED). Rejected at final/strict.",
     )
     args = parser.parse_args()
 
     root = args.root.resolve()
-    allow_skip_live = args.allow_skip_live or (
-        os.environ.get("CI", "").lower() not in {"1", "true", "yes"}
-    )
+    presentation_policy = load_presentation_policy(root)
+    interactive = (
+        root / "reports" / "agent" / "10_presentation" / "matplotlib" / "report.html"
+    ).exists()
+    phase = str(args.phase or "analytics").strip().lower()
+    final_like = phase in {"final", "acceptance"} or bool(args.strict)
+    policy_require = bool(presentation_policy.get("require_live_browser_validation", True))
+    require_at_final = bool(presentation_policy.get("require_live_browser_at_final", True))
+    # Live is mandatory for interactive reports at final/strict when policy requires it.
+    require_live = bool(interactive and policy_require and final_like and require_at_final)
+    if args.skip_live and require_live:
+        print(
+            "ERROR: --skip-live rejected when interactive report requires live browser "
+            "validation at final/strict"
+        )
+        return 1
+    # Development-only: explicit skip flags record SKIPPED and never claim PASS for live.
+    allow_skip_live = (bool(args.allow_skip_live) or bool(args.skip_live)) and not require_live
 
     report = VerificationReport(
         checked_at=datetime.now(timezone.utc).isoformat(),
@@ -464,28 +541,87 @@ def main() -> int:
                 ChildResult(script=script, category=category, status="SKIPPED", return_code=0)
             )
             continue
-        result = run_child(script, extra, category, root, args.timeout, allow_skip_live=allow_skip_live)
+        result = run_child(
+            script,
+            extra,
+            category,
+            root,
+            args.timeout,
+            allow_skip_live=allow_skip_live,
+            require_live=False,
+        )
+        # Legitimate SKIPPED (applicability) remains SKIPPED; do not convert to PASS
         report.add_child(result)
         print(f"{result.script}: {result.status} (exit {result.return_code})")
 
     for script, extra, category in OPTIONAL_CHECKS:
         if script == "validate_live_report_dom.py":
-            if args.skip_live or not has_presentation:
+            if args.skip_live and not require_live:
                 report.add_child(
                     ChildResult(script=script, category=category, status="SKIPPED", return_code=0)
                 )
                 print(f"{script}: SKIPPED")
                 continue
-        result = run_child(script, extra, category, root, args.timeout, allow_skip_live=allow_skip_live)
+            if not has_presentation:
+                report.add_child(
+                    ChildResult(script=script, category=category, status="SKIPPED", return_code=0)
+                )
+                print(f"{script}: SKIPPED (no interactive report)")
+                continue
+        result = run_child(
+            script,
+            extra,
+            category,
+            root,
+            args.timeout,
+            allow_skip_live=allow_skip_live,
+            require_live=require_live and script == "validate_live_report_dom.py",
+        )
         report.add_child(result)
         print(f"{result.script}: {result.status} (exit {result.return_code})")
 
-    if report.failures:
+    # WARN must not become PASS unless every child warning is explicitly accepted
+    statuses = {r.status for r in report.results} | {c.status for c in report.local_checks}
+    if report.failures or "FAIL" in statuses or "BLOCKED" in statuses:
         report.overall_status = "FAIL"
+    elif "WARN" in statuses:
+        accepted = load_accepted_warnings(root)
+        unaccepted: list[str] = []
+        result_dir = root / "reports" / "agent" / "_validator_results"
+        for child in report.results:
+            if child.status != "WARN":
+                continue
+            # Prefer machine-readable warning_ids from child JSON
+            json_path = result_dir / f"independent_{Path(child.script).stem}.json"
+            warning_ids: list[str] = []
+            if json_path.exists():
+                try:
+                    payload = load_validator_result_json(json_path)
+                    warning_ids = list(payload.warning_ids or [])
+                except Exception:
+                    warning_ids = []
+            if not warning_ids:
+                warning_ids = [child.script]
+            for wid in warning_ids:
+                hay = wid.lower()
+                if not any(token == hay for token in accepted if token and token not in {"accepted", "deferred", "warning", "warnings"}):
+                    unaccepted.append(wid)
+        if unaccepted:
+            report.overall_status = "WARN"
+            report.failures.append(
+                "unaccepted independent-verifier warnings: " + ", ".join(unaccepted[:8])
+            )
+            report.overall_status = "FAIL"
+        else:
+            # Accepted warnings remain visible in child results; overall may PASS
+            report.overall_status = "PASS"
+    else:
+        report.overall_status = "PASS"
     write_reports(root, report)
     print(f"Independent verification overall status: {report.overall_status}")
     print("Wrote reports/agent/INDEPENDENT_VERIFICATION_REPORT.md")
     print("Wrote reports/agent/INDEPENDENT_VERIFICATION_REPORT.json")
+    # Exit 0 for PASS and WARN (WARN preserved in JSON); FAIL -> 1
     return 1 if report.overall_status == "FAIL" else 0
 
 

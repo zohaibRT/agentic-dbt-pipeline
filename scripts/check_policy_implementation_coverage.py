@@ -130,7 +130,8 @@ KNOWN_CONSUMERS: dict[tuple[str, str], list[str]] = {
     ],
     ("presentation_policy", "interactive_renderer"): ["validate_chart_registry.py"],
     ("presentation_policy", "static_renderer"): ["validate_chart_registry.py"],
-    ("presentation_policy", "require_live_browser_validation"): ["run_acceptance_gate.py"],
+    ("presentation_policy", "require_live_browser_validation"): ["run_acceptance_gate.py", "run_independent_verifier.py"],
+    ("presentation_policy", "require_live_browser_at_final"): ["run_acceptance_gate.py", "run_independent_verifier.py"],
     ("presentation_policy", "live_browser_viewports"): ["run_acceptance_gate.py"],
     ("presentation_policy", "render_modes"): ["validate_chart_registry.py"],
     ("resource_classification_policy", "require_enabled_local_models"): [

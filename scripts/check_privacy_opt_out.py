@@ -12,6 +12,9 @@ Discover attributes from each project's evidence; this gate only checks policy b
 
 from __future__ import annotations
 
+from pathlib import Path
+from lib_gate_common import add_output_json_arg, print_results
+
 import argparse
 import re
 import sys
@@ -163,14 +166,22 @@ def find_presentation_privacy_minimization_copy(root: Path) -> list[str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    add_output_json_arg(parser)
     parser.add_argument("--root", type=Path, default=Path("."))
     args = parser.parse_args()
     root = args.root.resolve()
 
     opted_out, sources = privacy_opt_out_recorded(root)
     if not opted_out:
-        print("SKIPPED: no recorded privacy minimization opt-out in requirements/context/plan")
-        return 0
+        return print_results(
+            "Privacy opt-out check",
+            [],
+            [],
+            output_json=getattr(args, "output_json", None),
+            validator_id=Path(__file__).stem,
+            skipped=True,
+            skip_reason="no recorded privacy minimization opt-out in requirements/context/plan",
+        )
 
     print(f"Privacy opt-out recorded in: {', '.join(sources)}")
     errors: list[str] = []
@@ -182,22 +193,13 @@ def main() -> int:
             "(show reporting attributes that exist in gold; do not hide for privacy)"
         )
 
-    if not errors:
-        print(
-            "Privacy opt-out check PASSED — no OPEN privacy-minimization blockers "
-            "and no presentation minimization copy"
-        )
-        return 0
-
-    print("Privacy opt-out check FAILED")
-    for item in errors:
-        print(f"ERROR: {item}")
-    print(
-        "Fix: close OPEN privacy-minimization rows (CARRY_FORWARD / ANSWERED); "
-        "present attributes that exist in gold. Only secrets/OTP/full bank dumps/"
-        "national ID/PHI need an explicit ask — keep gates domain-neutral."
+    return print_results(
+        "Privacy opt-out check",
+        errors,
+        [],
+        output_json=getattr(args, "output_json", None),
+        validator_id=Path(__file__).stem,
     )
-    return 1
 
 
 if __name__ == "__main__":

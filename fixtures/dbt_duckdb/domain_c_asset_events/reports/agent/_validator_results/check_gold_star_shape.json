@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "validator_id": "check_gold_star_shape",
+  "status": "PASS",
+  "errors": [],
+  "warnings": [],
+  "details": {
+    "facts": [
+      "fct_asset_events"
+    ],
+    "dims": [
+      "dim_assets",
+      "dim_statuses"
+    ]
+  },
+  "checked_at": "2026-07-16T07:44:28.288588+00:00",
+  "warning_ids": [],
+  "applicability": ""
+}

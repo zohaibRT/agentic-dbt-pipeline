@@ -12,6 +12,7 @@ import re
 from pathlib import Path
 
 from lib_gate_common import (
+    add_output_json_arg,
     catalog_item_count,
     cell,
     count_gold_facts,
@@ -57,6 +58,7 @@ def normalize_item_id(value: str) -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    add_output_json_arg(parser)
     parser.add_argument("--root", type=Path, default=Path("."))
     parser.add_argument(
         "--advisory-measure-target",
@@ -267,7 +269,7 @@ def main() -> int:
     if not presentation_report.exists():
         warnings.append("missing reports/agent/10_presentation/presentation_report.md")
 
-    return print_results("Presentation coverage check", errors, warnings)
+    return print_results("Presentation coverage check", errors, warnings, output_json=getattr(args, "output_json", None), validator_id=Path(__file__).stem)
 
 
 if __name__ == "__main__":

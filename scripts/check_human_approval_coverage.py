@@ -13,10 +13,13 @@ from datetime import date, datetime
 from pathlib import Path
 
 from lib_gate_common import (
+    add_output_json_arg,
     INVALID_APPROVAL_EVIDENCE_TOKENS,
     business_approval_status,
     cell,
     compute_contract_fingerprint,
+    discover_production_kpi_obligations,
+    has_production_presentation_artifacts,
     is_meaningful_text,
     load_human_in_loop_policy,
     normalize_header,
@@ -111,6 +114,7 @@ def contract_rows(root: Path) -> list[dict[str, str]]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    add_output_json_arg(parser)
     parser.add_argument("--root", type=Path, default=Path("."))
     parser.add_argument(
         "--phase",
@@ -129,11 +133,28 @@ def main() -> int:
     if not contracts_path.exists():
         if insights.exists():
             errors.append("KPI_DEFINITION_CONTRACTS.md missing while analytics insights exist")
-            return print_results("Human approval coverage check", errors, warnings)
-        print("SKIPPED: no KPI contracts")
-        return 0
-
+            return print_results(
+                "Human approval coverage check",
+                errors,
+                warnings,
+                output_json=getattr(args, "output_json", None),
+                validator_id=Path(__file__).stem,
+            )
+        return print_results(
+            "Human approval coverage check",
+            [],
+            [],
+            output_json=getattr(args, "output_json", None),
+            validator_id=Path(__file__).stem,
+            skipped=True,
+            skip_reason="no KPI contracts",
+        )
     rows = contract_rows(root)
+    contracts_by_id: dict[str, dict[str, str]] = {}
+    for index, row in enumerate(rows, start=1):
+        kid = cell(row, "kpi_id", "id") or cell(row, "kpi", "display_name") or f"row-{index}"
+        contracts_by_id[normalize_field_value(kid)] = row
+
     register = table_rows(
         root / APPROVAL_REGISTER,
         {"approval_id", "object_id", "approval status", "approval_status"},
@@ -153,16 +174,28 @@ def main() -> int:
         if object_id:
             register_by_object[normalize_field_value(object_id)] = row
 
-    production_total = 0
+    obligations = discover_production_kpi_obligations(root)
+    production_total = len(obligations)
     production_approved = 0
     today = date.today()
 
+    # Warn when technical PASS without business approval on any contract row
     for index, row in enumerate(rows, start=1):
         kpi_id = cell(row, "kpi_id", "kpi", "id", "display_name") or f"row-{index}"
         biz = business_approval_status(row)
-        legacy = cell(row, "approval", "approval_status").upper()
+        tech = technical_verification_status(row)
+        if tech == "PASS" and biz not in PRODUCTION_APPROVALS:
+            warnings.append(
+                f"{kpi_id}: technical PASS without business approval "
+                f"({biz or 'missing'}) — not trusted for production"
+            )
+
+    for obl in obligations:
+        kpi_id = obl.kpi_id
+        row = contracts_by_id.get(normalize_field_value(kpi_id), {})
+        biz = business_approval_status(row) if row else (obl.business_approval_status or "NOT_REQUESTED")
+        legacy = cell(row, "approval", "approval_status").upper() if row else ""
         if biz == "PENDING_REVIEW" and legacy in {"APPROVED", "PROPOSED"}:
-            # Legacy APPROVED without evidence is not trusted
             if not cell(row, "approval_evidence", "approval evidence"):
                 biz = "PENDING_REVIEW"
                 warnings.append(
@@ -170,16 +203,20 @@ def main() -> int:
                 )
             else:
                 biz = legacy if legacy != "PROPOSED" else "PENDING_REVIEW"
-        tech = technical_verification_status(row)
+        tech = technical_verification_status(row) if row else obl.technical_status
 
-        if tech == "PASS" and biz not in PRODUCTION_APPROVALS:
-            warnings.append(
-                f"{kpi_id}: technical PASS without business approval "
-                f"({biz}) — not trusted for production"
-            )
+        if obl.trusted_or_executive and biz not in PRODUCTION_APPROVALS:
+            if args.phase in {"presentation", "final"}:
+                errors.append(
+                    f"{kpi_id}: trusted/executive KPI requires business approval "
+                    f"(status={biz or 'blank'})"
+                )
+            else:
+                warnings.append(
+                    f"{kpi_id}: trusted/executive KPI pending business approval ({biz or 'blank'})"
+                )
 
         if biz in {"BLOCKED", "DEFERRED"}:
-            # Must appear on attention board
             found = any(
                 normalize_field_value(cell(a, "object_id", "object id", "id", "blocks"))
                 == normalize_field_value(kpi_id)
@@ -199,14 +236,16 @@ def main() -> int:
         if biz in PRODUCTION_APPROVALS or (
             legacy in {"APPROVED"} and cell(row, "approval_evidence")
         ):
-            production_total += 1
-            owner = cell(row, "business_owner", "owner")
-            approver = cell(row, "approver", "approved_by")
-            evidence = cell(row, "approval_evidence", "approval evidence", "evidence_path")
-            approval_date = cell(row, "approval_date", "approval date", "approved_at")
-            version = cell(row, "contract_version", "version")
-            fingerprint = cell(row, "contract_fingerprint", "fingerprint") or compute_contract_fingerprint(row)
-            calculated_fp = compute_contract_fingerprint(row)
+            owner = cell(row, "business_owner", "owner") or obl.owner
+            approver = cell(row, "approver", "approved_by") or obl.approver
+            evidence = cell(row, "approval_evidence", "approval evidence", "evidence_path") or obl.approval_evidence
+            approval_date = cell(row, "approval_date", "approval date", "approved_at") or obl.approval_date
+            fingerprint = (
+                cell(row, "contract_fingerprint", "fingerprint")
+                or obl.contract_fingerprint
+                or (compute_contract_fingerprint(row) if row else "")
+            )
+            calculated_fp = compute_contract_fingerprint(row) if row else fingerprint
 
             if policy.get("require_named_owner") and not is_meaningful_text(owner):
                 errors.append(f"{kpi_id}: approved KPI missing named business_owner")
@@ -219,7 +258,7 @@ def main() -> int:
             if policy.get("require_approval_date") and not parse_date(approval_date):
                 errors.append(f"{kpi_id}: approved KPI missing approval_date")
 
-            if fingerprint and fingerprint != calculated_fp:
+            if fingerprint and calculated_fp and fingerprint != calculated_fp:
                 msg = (
                     f"{kpi_id}: approval stale — contract fingerprint changed "
                     f"({fingerprint} -> {calculated_fp})"
@@ -228,7 +267,6 @@ def main() -> int:
                     errors.append(msg)
                 else:
                     warnings.append(msg)
-                    # Mark for reapproval
                     warnings.append(f"{kpi_id}: business approval should return to PENDING_REVIEW")
 
             if biz == "APPROVED_WITH_CONDITIONS":
@@ -268,12 +306,10 @@ def main() -> int:
             if not any(err.startswith(f"{kpi_id}:") for err in errors):
                 production_approved += 1
 
-        elif biz in {"PENDING_REVIEW", "PROPOSED", "NOT_REQUESTED"}:
-            # Draft analytics OK; trusted executive not OK
+        elif biz in {"PENDING_REVIEW", "PROPOSED", "NOT_REQUESTED"} or not biz:
             if not policy.get("allow_unapproved_kpis_in_draft_reports") and args.phase == "analytics":
                 errors.append(f"{kpi_id}: unapproved KPI not allowed even in draft reports")
             if not policy.get("allow_unapproved_kpis_in_trusted_executive_reports"):
-                # Scan presentation/report for trusted labeling
                 report_html = (
                     root
                     / "reports"
@@ -284,7 +320,17 @@ def main() -> int:
                 )
                 if report_html.exists():
                     html = read_text(report_html)
-                    if kpi_id in html and TRUSTED_LABELS.search(html) and not PENDING_LABEL.search(html):
+                    # Only fail when the pending KPI is labeled trusted/executive without a pending cue nearby
+                    pending_trusted = re.search(
+                        rf'data-kpi-id=["\']{re.escape(kpi_id)}["\'][^>]*(trusted|executive|trust_level\s*=\s*["\']TRUSTED)',
+                        html,
+                        re.I,
+                    ) or re.search(
+                        rf'(trusted|executive|trust_level\s*=\s*["\']TRUSTED)[^>]*data-kpi-id=["\']{re.escape(kpi_id)}["\']',
+                        html,
+                        re.I,
+                    )
+                    if pending_trusted and not PENDING_LABEL.search(html):
                         if args.phase in {"presentation", "final"}:
                             errors.append(
                                 f"{kpi_id}: pending KPI must not appear as trusted executive KPI"
@@ -327,17 +373,20 @@ def main() -> int:
     if args.phase == "final":
         cov = ratio(production_approved, production_total)
         if production_total == 0:
-            # No production KPIs claimed — OK if none approved; but if APPROVED rows failed checks, errors already set
-            warnings.append("no production-approved KPIs in final phase denominator")
+            if has_production_presentation_artifacts(root):
+                errors.append(
+                    "production presentation exists but no production KPI obligations discovered (0/0 invalid)"
+                )
+            else:
+                warnings.append("no production KPI obligations in final phase denominator")
         elif cov is None or cov < required:
             errors.append(
                 f"production KPI approval coverage {production_approved}/{production_total} "
                 f"below required {required:.0%}"
             )
-        # Warning acceptance cannot bypass — this script never consults accepted warnings
         print(
             f"Human approval coverage: {production_approved}/{production_total} "
-            f"(phase={args.phase})"
+            f"(phase={args.phase}, obligations={production_total})"
         )
     else:
         print(
@@ -353,7 +402,18 @@ def main() -> int:
                         f"{cell(row, 'kpi_id', 'kpi')}: technical work not allowed without business approval"
                     )
 
-    return print_results("Human approval coverage check", errors, warnings)
+    return print_results(
+        "Human approval coverage check",
+        errors,
+        warnings,
+        output_json=getattr(args, "output_json", None),
+        validator_id=Path(__file__).stem,
+        details={
+            "production_approved": production_approved,
+            "production_total": production_total,
+            "obligation_ids": [o.kpi_id for o in obligations],
+        },
+    )
 
 
 if __name__ == "__main__":

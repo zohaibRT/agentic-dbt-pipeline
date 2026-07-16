@@ -12,6 +12,7 @@ import argparse
 from pathlib import Path
 
 from lib_gate_common import (
+    add_output_json_arg,
     KNOWN_VALIDATION_TYPES,
     business_approval_status,
     cell,
@@ -295,6 +296,7 @@ def validate_definition_formula_separation(row: dict[str, str], kpi_id: str, err
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    add_output_json_arg(parser)
     parser.add_argument("--root", type=Path, default=Path("."))
     args = parser.parse_args()
     root = args.root.resolve()
@@ -314,14 +316,14 @@ def main() -> int:
             "KPI_DEFINITION_CONTRACTS.md missing while analytics insights exist — "
             "critical KPI contract coverage cannot be verified"
         )
-        return print_results("Metric contract completeness check", errors, warnings)
+        return print_results("Metric contract completeness check", errors, warnings, output_json=getattr(args, "output_json", None), validator_id=Path(__file__).stem)
 
     schema, rows, headers = contract_rows(contracts)
     print(f"Metric contract completeness: schema={schema} contract_rows={len(rows)}")
 
     if not rows:
         errors.append("KPI_DEFINITION_CONTRACTS.md has no data rows")
-        return print_results("Metric contract completeness check", errors, warnings)
+        return print_results("Metric contract completeness check", errors, warnings, output_json=getattr(args, "output_json", None), validator_id=Path(__file__).stem)
 
     if schema == "legacy":
         warnings.append(
@@ -472,7 +474,7 @@ def main() -> int:
                 f"critical KPI contract coverage {cov:.0%} below required {required_ratio:.0%}"
             )
 
-    return print_results("Metric contract completeness check", errors, warnings)
+    return print_results("Metric contract completeness check", errors, warnings, output_json=getattr(args, "output_json", None), validator_id=Path(__file__).stem)
 
 
 if __name__ == "__main__":

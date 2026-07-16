@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "validator_id": "check_exposure_coverage",
+  "status": "PASS",
+  "errors": [],
+  "warnings": [],
+  "details": {},
+  "checked_at": "2026-07-16T07:44:02.051753+00:00",
+  "warning_ids": [],
+  "applicability": ""
+}

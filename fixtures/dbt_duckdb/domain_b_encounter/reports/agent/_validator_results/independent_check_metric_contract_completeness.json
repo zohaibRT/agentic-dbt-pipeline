@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "validator_id": "check_metric_contract_completeness",
+  "status": "PASS",
+  "errors": [],
+  "warnings": [],
+  "details": {},
+  "checked_at": "2026-07-16T07:44:01.020623+00:00",
+  "warning_ids": [],
+  "applicability": ""
+}

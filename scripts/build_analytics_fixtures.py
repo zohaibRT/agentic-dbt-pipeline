@@ -47,7 +47,7 @@ def fact_coverage_table(fact: str) -> str:
 
 | Fact | Grain | Counting Key | Primary Date | Volume | Amount or Quantity | Duration or Balance | Status Distribution | Lifecycle | Dimensions | Time Trends | Period Comparison | Data Quality | Exceptions | Aging | Reconciliation | Business Questions | Notes | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| {fact} | one row per event | event_id | event_date | SUPPORTED | SUPPORTED | NOT_APPLICABLE | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | NOT_APPLICABLE | SUPPORTED | volume and completion | Fixture | PASS |
+| {fact} | one row per event | event_id | event_date | SUPPORTED: sql_proofs/{fact}_volume.sql | SUPPORTED: sql_proofs/{fact}_amount.sql | NOT_APPLICABLE: no duration measures at this grain | SUPPORTED: sql_proofs/{fact}_status.sql | SUPPORTED: sql_proofs/{fact}_lifecycle.sql | SUPPORTED: sql_proofs/{fact}_dims.sql | SUPPORTED: sql_proofs/{fact}_trends.sql | SUPPORTED: sql_proofs/{fact}_period.sql | SUPPORTED: sql_proofs/{fact}_quality.sql | SUPPORTED: sql_proofs/{fact}_exceptions.sql | NOT_APPLICABLE: aging not in first-pass scope | SUPPORTED: sql_proofs/{fact}_recon.sql | volume and completion | Fixture notes | PASS |
 """
 
 

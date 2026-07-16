@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from lib_gate_common import (
+    add_output_json_arg,
     build_resource_inventory,
     business_approval_status,
     cell,
@@ -21,6 +22,7 @@ from lib_gate_common import (
     ratio,
     read_text,
     resolve_named_resource,
+    resolve_source_reference,
     resources_by_name,
     table_dicts,
 )
@@ -161,25 +163,18 @@ def resolve_dep_token(token: str, inventory: list[dict[str, Any]]) -> tuple[str 
         return (str(match["unique_id"]) if match else None), status
     src_match = re.match(r"source\(\s*['\"]([^'\"]+)['\"]\s*,\s*['\"]([^'\"]+)['\"]\s*\)", raw, re.I)
     if src_match:
-        # Prefer unique_id containing source_name.table
-        table = src_match.group(2).lower()
-        candidates = [
-            r
-            for r in inventory
-            if r.get("resource_type") == "source" and str(r.get("name", "")).lower() == table
-        ]
-        if len(candidates) == 1:
-            return str(candidates[0]["unique_id"]), "ok"
-        if len(candidates) > 1:
-            return None, "ambiguous"
-        return None, "missing"
-    # bare name
+        source_name = src_match.group(1)
+        table = src_match.group(2)
+        match, status = resolve_source_reference(inventory, source_name, table)
+        return (str(match["unique_id"]) if match else None), status
+    # bare name — migration-only; ambiguous fails
     match, status = resolve_named_resource(inventory, name=raw)
     return (str(match["unique_id"]) if match else None), status
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    add_output_json_arg(parser)
     parser.add_argument("--root", type=Path, default=Path("."))
     parser.add_argument("--phase", choices=("analytics", "presentation", "final"), default="analytics")
     args = parser.parse_args()
@@ -206,7 +201,7 @@ def main() -> int:
 
     if presentation_exists and not coverage_path.exists():
         errors.append("presentation exists but exposure_coverage.md is missing")
-        return print_results("Exposure coverage check", errors, warnings)
+        return print_results("Exposure coverage check", errors, warnings, output_json=getattr(args, "output_json", None), validator_id=Path(__file__).stem)
 
     coverage_rows: list[dict[str, str]] = []
     docs_by_key: dict[str, dict[str, str]] = {}
@@ -400,7 +395,7 @@ def main() -> int:
     elif exposure_sources:
         print(f"Exposure technical rows validated: {complete}/{len(exposure_sources)}")
 
-    return print_results("Exposure coverage check", errors, warnings)
+    return print_results("Exposure coverage check", errors, warnings, output_json=getattr(args, "output_json", None), validator_id=Path(__file__).stem)
 
 
 if __name__ == "__main__":

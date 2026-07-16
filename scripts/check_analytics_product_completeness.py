@@ -7,6 +7,7 @@ import argparse
 from pathlib import Path
 
 from lib_gate_common import (
+    add_output_json_arg,
     cell,
     load_analytics_policy,
     named_status,
@@ -35,6 +36,7 @@ PROCESS_MODULES = (
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    add_output_json_arg(parser)
     parser.add_argument("--root", type=Path, default=Path("."))
     args = parser.parse_args()
     root = args.root.resolve()
@@ -54,7 +56,7 @@ def main() -> int:
 
     if not matrix.exists():
         errors.append("missing reports/agent/09_analytics_insights/analytics_coverage_matrix.md")
-        return print_results("Analytics product completeness check", errors, warnings)
+        return print_results("Analytics product completeness check", errors, warnings, output_json=getattr(args, "output_json", None), validator_id=Path(__file__).stem)
 
     rows = table_dicts(
         matrix,
@@ -62,7 +64,7 @@ def main() -> int:
     )
     if not rows:
         errors.append("analytics_coverage_matrix.md has no process rows")
-        return print_results("Analytics product completeness check", errors, warnings)
+        return print_results("Analytics product completeness check", errors, warnings, output_json=getattr(args, "output_json", None), validator_id=Path(__file__).stem)
 
     pass_rows = 0
     applicable = 0
@@ -124,7 +126,7 @@ def main() -> int:
         if "business question" not in text and "question" not in text:
             warnings.append("business_process_catalog.md should document supported business questions")
 
-    return print_results("Analytics product completeness check", errors, warnings)
+    return print_results("Analytics product completeness check", errors, warnings, output_json=getattr(args, "output_json", None), validator_id=Path(__file__).stem)
 
 
 if __name__ == "__main__":

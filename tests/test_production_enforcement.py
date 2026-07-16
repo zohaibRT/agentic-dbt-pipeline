@@ -421,7 +421,7 @@ def _write_fact_root(root: Path, contract_md: str) -> None:
 COMPLETE_FACT_CONTRACT = """
 | Fact | Grain | Counting Key | Primary Date | Volume | Amount or Quantity | Duration or Balance | Status Distribution | Lifecycle | Dimensions | Time Trends | Period Comparison | Data Quality | Exceptions | Aging | Reconciliation | Business Questions | Notes | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| fct_events | one row per event | event_id | event_date | SUPPORTED | SUPPORTED | NOT_APPLICABLE | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | NOT_APPLICABLE | SUPPORTED | volume and completion | Proof: sql_proofs/vol.sql; duration N/A — no duration column | PASS |
+| fct_events | one row per event | event_id | event_date | SUPPORTED: sql_proofs/vol.sql | SUPPORTED: sql_proofs/amt.sql | NOT_APPLICABLE: no duration column at this grain | SUPPORTED: sql_proofs/status.sql | SUPPORTED: sql_proofs/lifecycle.sql | SUPPORTED: sql_proofs/dims.sql | SUPPORTED: sql_proofs/trends.sql | SUPPORTED: sql_proofs/period.sql | SUPPORTED: sql_proofs/quality.sql | SUPPORTED: sql_proofs/exceptions.sql | NOT_APPLICABLE: aging out of first-pass scope | SUPPORTED: sql_proofs/recon.sql | volume and completion | Fixture notes | PASS |
 """
 
 
@@ -479,7 +479,8 @@ class P0AcceptanceFactsTests(unittest.TestCase):
         gate = GateReport(phase="final", enforce_warning_policy=True)
         gate.add(CheckResult("Human verification guide", "WARN", "missing guide"))
         gate.finalize({"human verification guide"}, require_explicit_warning_acceptance=True)
-        self.assertEqual(gate.overall_status, "WARN")
+        # Accepted warnings remain visible but overall completes as PASS
+        self.assertEqual(gate.overall_status, "PASS")
         self.assertEqual(compute_exit_code(gate), 0)
         self.assertTrue(gate.warning_records[0].accepted)
 

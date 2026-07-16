@@ -15,6 +15,7 @@ import argparse
 from pathlib import Path
 
 from lib_gate_common import (
+    add_output_json_arg,
     cell,
     list_analytical_facts,
     list_gold_fact_names,
@@ -191,14 +192,31 @@ def validate_applicability(
         errors.append(f"{fact_name}: missing applicability for {field_label}")
         return False
 
-    norm = normalize_applicability(raw_value)
+    # Bare N/A / NA / NONE / NOT_APPLICABLE without a reason fails
+    bare = raw_value.strip().upper().replace("-", "_").replace(" ", "_")
+    if bare in {"N/A", "NA", "NONE", "NOT_APPLICABLE"}:
+        errors.append(
+            f"{fact_name}: {field_label} bare {raw_value!r} without reason — "
+            "use NOT_APPLICABLE: <specific reason>"
+        )
+        return False
+
+    # Allow "NOT_APPLICABLE: reason" / "SUPPORTED: proof" forms
+    if ":" in raw_value:
+        prefix, _, remainder = raw_value.partition(":")
+        norm = normalize_applicability(prefix)
+        inline_reason = remainder.strip()
+    else:
+        norm = normalize_applicability(raw_value)
+        inline_reason = ""
+
     if norm == "UNKNOWN":
         errors.append(
             f"{fact_name}: {field_label} requires SUPPORTED|NOT_APPLICABLE|BLOCKED|DEFERRED, got {raw_value!r}"
         )
         return False
 
-    notes = cell(row, "notes", "reason", "comment")
+    notes = cell(row, "notes", "reason", "comment") or inline_reason
     owner = cell(row, "owner")
     next_action = cell(row, "next_action", "next action", "recommended_action")
     missing_evidence = cell(row, "missing_evidence", "missing evidence")
@@ -209,11 +227,23 @@ def validate_applicability(
         "reassessment_condition",
         "reassessment condition",
     )
-    evidence = cell(row, "proof", "evidence", "sql_proof", "notes", "reason")
+    # Family-specific evidence: prefer inline after colon, then field itself if SUPPORTED: proof,
+    # then dedicated proof columns — NOT a shared Notes column alone for SUPPORTED.
+    family_evidence = inline_reason if norm == "SUPPORTED" and inline_reason else ""
+    if not family_evidence and norm == "SUPPORTED" and ":" not in raw_value:
+        # Value is just SUPPORTED — require dedicated proof/evidence column (not Notes alone)
+        family_evidence = cell(row, "proof", "evidence", "sql_proof")
+    evidence = family_evidence or inline_reason
 
     if norm == "SUPPORTED":
         if not evidence:
-            errors.append(f"{fact_name}: {field_label} SUPPORTED requires evidence/proof")
+            errors.append(f"{fact_name}: {field_label} SUPPORTED requires family-specific proof/reference")
+            return False
+        # Reject Notes-only generic evidence marker
+        if evidence.strip().lower() in {"see notes", "notes", "generic", "same as above"}:
+            errors.append(
+                f"{fact_name}: {field_label} SUPPORTED requires family-specific proof, not generic Notes"
+            )
             return False
         return True
 
@@ -311,11 +341,30 @@ def row_analytical_complete(fact_name: str, row: dict[str, str], errors: list[st
         value = _legacy_field_value(row, label, aliases)
         if not validate_applicability(fact_name, label, value, row, errors):
             ok = False
+
+    # One generic proof/reference reused for every SUPPORTED family fails
+    supported_proofs: list[str] = []
+    for label, aliases in applicability_fields:
+        value = _legacy_field_value(row, label, aliases)
+        if not value:
+            continue
+        if ":" in value and normalize_applicability(value.split(":", 1)[0]) == "SUPPORTED":
+            supported_proofs.append(value.split(":", 1)[1].strip().lower())
+        elif normalize_applicability(value) == "SUPPORTED":
+            supported_proofs.append(cell(row, "proof", "evidence", "sql_proof", "notes").strip().lower())
+    supported_proofs = [p for p in supported_proofs if p]
+    if len(supported_proofs) >= 3 and len(set(supported_proofs)) == 1:
+        errors.append(
+            f"{fact_name}: one generic proof reused for all analytical families "
+            f"({supported_proofs[0]!r}) — each SUPPORTED family needs family-specific evidence"
+        )
+        ok = False
     return ok
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    add_output_json_arg(parser)
     parser.add_argument("--root", type=Path, default=Path("."))
     args = parser.parse_args()
     root = args.root.resolve()
@@ -327,18 +376,32 @@ def main() -> int:
     gold_facts = list_gold_fact_names(root)
 
     if not insights.exists():
-        print("SKIPPED: no analytics insight folder")
-        return 0
+        return print_results(
+            "Fact analytical coverage check",
+            [],
+            [],
+            output_json=getattr(args, "output_json", None),
+            validator_id=Path(__file__).stem,
+            skipped=True,
+            skip_reason="no analytics insight folder",
+        )
     if not gold_facts and not contracts.exists():
-        print("SKIPPED: no gold facts / fact contracts yet")
-        return 0
+        return print_results(
+            "Fact analytical coverage check",
+            [],
+            [],
+            output_json=getattr(args, "output_json", None),
+            validator_id=Path(__file__).stem,
+            skipped=True,
+            skip_reason="no gold facts / fact contracts yet",
+        )
 
     errors: list[str] = []
     warnings: list[str] = []
 
     if not contracts.exists():
         errors.append("missing reports/agent/09_analytics_insights/fact_coverage_contracts.md")
-        return print_results("Fact analytical coverage check", errors, warnings)
+        return print_results("Fact analytical coverage check", errors, warnings, output_json=getattr(args, "output_json", None), validator_id=Path(__file__).stem)
 
     rows = fact_coverage_rows(contracts)
     by_fact: dict[str, dict[str, str]] = {}
@@ -459,7 +522,7 @@ def main() -> int:
         if cov < required:
             errors.append(f"critical fact coverage {cov:.0%} below required {required:.0%}")
 
-    return print_results("Fact analytical coverage check", errors, warnings)
+    return print_results("Fact analytical coverage check", errors, warnings, output_json=getattr(args, "output_json", None), validator_id=Path(__file__).stem)
 
 
 if __name__ == "__main__":

@@ -110,6 +110,7 @@ presentation_policy:
   interactive_renderer: plotly
   static_renderer: matplotlib
   require_live_browser_validation: true
+  require_live_browser_at_final: true
   live_browser_viewports:
     - desktop
     - tablet

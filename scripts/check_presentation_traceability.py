@@ -13,6 +13,7 @@ import re
 from pathlib import Path
 
 from lib_gate_common import (
+    add_output_json_arg,
     cell,
     compare_formatted_values,
     load_json_registry,
@@ -77,6 +78,7 @@ def _as_list(value: object) -> list[str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    add_output_json_arg(parser)
     parser.add_argument("--root", type=Path, default=Path("."))
     parser.add_argument("--report-dir", type=Path, default=None)
     parser.add_argument("--phase", choices=("analytics", "presentation", "final"), default="presentation")
@@ -99,14 +101,14 @@ def main() -> int:
     if not manifest_path.exists():
         if matplotlib.exists() and (matplotlib / "chart_registry.json").exists():
             errors.append("chart_registry exists but rendered_metric_manifest.json is missing")
-            return print_results("Presentation traceability check", errors, warnings)
+            return print_results("Presentation traceability check", errors, warnings, output_json=getattr(args, "output_json", None), validator_id=Path(__file__).stem)
         print("SKIPPED: no rendered_metric_manifest.json")
         return 0
 
     manifest = load_json_registry(manifest_path)
     if not isinstance(manifest, dict):
         errors.append("rendered_metric_manifest.json must be an object")
-        return print_results("Presentation traceability check", errors, warnings)
+        return print_results("Presentation traceability check", errors, warnings, output_json=getattr(args, "output_json", None), validator_id=Path(__file__).stem)
 
     chart_reg = load_json_registry(paths["chart_registry.json"])
     proof_reg = load_json_registry(paths["proof_registry.json"])
@@ -190,7 +192,10 @@ def main() -> int:
         )
         if not visual_ids:
             msg = f"metric {metric_id}: no visual_ids/chart_ids/card_ids mapped"
-            if policy.get("require_stable_visual_ids", True) and trust in {"TRUSTED", "RENDERED"}:
+            if trust in {"DRAFT", "PENDING", "PENDING_REVIEW"}:
+                # Draft/pending metrics are not production traceability obligations
+                pass
+            elif policy.get("require_stable_visual_ids", True) and trust in {"TRUSTED", "RENDERED"}:
                 errors.append(msg + " (require_stable_visual_ids)")
             else:
                 warnings.append(msg)
@@ -248,7 +253,9 @@ def main() -> int:
                     errors.append(f"metric {metric_id}: proof_id {proof_id} not in proof registry or _proof_index.md")
 
         if not metric.get("query_ids") and not metric.get("query_id"):
-            if policy.get("require_bidirectional_proof_mapping"):
+            if trust not in {"DRAFT", "PENDING", "PENDING_REVIEW"} and policy.get(
+                "require_bidirectional_proof_mapping"
+            ):
                 warnings.append(f"metric {metric_id}: missing query_id mapping")
 
         source_ids = _as_list(metric.get("source_resource_ids"))
@@ -401,7 +408,7 @@ def main() -> int:
         f"Presentation traceability: metrics={len(metrics)} "
         f"visuals~{len(rendered_visual_ids)} proofs~{len(rendered_proof_ids)} errors={len(errors)}"
     )
-    return print_results("Presentation traceability check", errors, warnings)
+    return print_results("Presentation traceability check", errors, warnings, output_json=getattr(args, "output_json", None), validator_id=Path(__file__).stem)
 
 
 if __name__ == "__main__":

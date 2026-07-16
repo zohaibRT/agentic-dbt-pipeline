@@ -1,8 +1,8 @@
 # Live Report DOM Validation
 
 - Status: **PASS**
-- Validated at: `2026-07-15T23:08:48.235233+00:00`
-- URL: `http://127.0.0.1:63711/`
+- Validated at: `2026-07-16T07:49:26.114922+00:00`
+- URL: `http://127.0.0.1:55213/`
 - Viewports: desktop, tablet, mobile
 
 ## Errors

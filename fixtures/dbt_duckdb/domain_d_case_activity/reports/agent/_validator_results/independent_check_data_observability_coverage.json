@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "validator_id": "check_data_observability_coverage",
+  "status": "PASS",
+  "errors": [],
+  "warnings": [],
+  "details": {},
+  "checked_at": "2026-07-16T07:45:56.313120+00:00",
+  "warning_ids": [],
+  "applicability": ""
+}

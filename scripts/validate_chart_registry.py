@@ -12,7 +12,7 @@ import json
 import re
 from pathlib import Path
 
-from lib_gate_common import load_presentation_policy, print_results, read_text
+from lib_gate_common import add_output_json_arg, load_presentation_policy, print_results, read_text
 
 REQUIRED_CHART_FIELDS = (
     "chart_id",
@@ -279,6 +279,7 @@ def validate_report_hooks(matplotlib: Path, errors: list[str], warnings: list[st
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    add_output_json_arg(parser)
     parser.add_argument("--root", type=Path, default=Path("."))
     parser.add_argument("--report-dir", type=Path, default=None)
     args = parser.parse_args()
@@ -308,12 +309,12 @@ def main() -> int:
 
     if not registry_path.exists():
         errors.append("missing chart_registry.json")
-        return print_results("Chart registry validation", errors, warnings)
+        return print_results("Chart registry validation", errors, warnings, output_json=getattr(args, "output_json", None), validator_id=Path(__file__).stem)
 
     registry = load_json(registry_path)
     if not isinstance(registry, dict):
         errors.append("chart_registry.json must be an object")
-        return print_results("Chart registry validation", errors, warnings)
+        return print_results("Chart registry validation", errors, warnings, output_json=getattr(args, "output_json", None), validator_id=Path(__file__).stem)
 
     charts_by_id = validate_registry(registry, errors, matplotlib, policy=policy)
 
@@ -329,7 +330,7 @@ def main() -> int:
     validate_report_hooks(matplotlib, errors, warnings)
 
     print(f"Chart registry validation: charts={len(charts_by_id)} errors={len(errors)}")
-    return print_results("Chart registry validation", errors, warnings)
+    return print_results("Chart registry validation", errors, warnings, output_json=getattr(args, "output_json", None), validator_id=Path(__file__).stem)
 
 
 if __name__ == "__main__":

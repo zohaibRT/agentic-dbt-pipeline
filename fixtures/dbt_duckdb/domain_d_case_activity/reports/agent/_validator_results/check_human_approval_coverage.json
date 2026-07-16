@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0",
+  "validator_id": "check_human_approval_coverage",
+  "status": "PASS",
+  "errors": [],
+  "warnings": [],
+  "details": {
+    "production_approved": 2,
+    "production_total": 2,
+    "obligation_ids": [
+      "KPI-001",
+      "KPI-002"
+    ]
+  },
+  "checked_at": "2026-07-16T07:45:26.967496+00:00",
+  "warning_ids": [],
+  "applicability": ""
+}

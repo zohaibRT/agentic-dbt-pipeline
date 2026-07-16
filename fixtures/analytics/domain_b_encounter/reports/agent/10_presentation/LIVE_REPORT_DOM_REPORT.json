@@ -1,7 +1,7 @@
 {
   "status": "PASS",
-  "validated_at": "2026-07-15T23:02:39.411328+00:00",
-  "url": "http://127.0.0.1:51017/",
+  "validated_at": "2026-07-16T07:40:48.442625+00:00",
+  "url": "http://127.0.0.1:49751/",
   "viewports": [
     "desktop",
     "tablet",
@@ -19,7 +19,7 @@
             "viewport": "desktop",
             "accessible_name": "Volume KPI Trend",
             "data_table": true,
-            "tooltip_text": "Volume KPI \u2014 Actual\nJanuary 2026\n90 events\nStatus: On track\nFresh as of: 2026-07-15T23:01:42+00:00",
+            "tooltip_text": "Volume KPI \u2014 Actual\nJanuary 2026\n90 events\nStatus: On track\nFresh as of: 2026-07-16T07:39:50+00:00",
             "expected": {
               "metric_display_name": "Volume KPI",
               "formatted_value": "90 events",
@@ -28,7 +28,7 @@
               "unit": "events",
               "currency": null,
               "partial_period_note": null,
-              "tooltip_text": "Volume KPI \u2014 Actual\nJanuary 2026\n90 events\nStatus: On track\nFresh as of: 2026-07-15T23:01:42+00:00"
+              "tooltip_text": "Volume KPI \u2014 Actual\nJanuary 2026\n90 events\nStatus: On track\nFresh as of: 2026-07-16T07:39:50+00:00"
             }
           },
           {
@@ -36,7 +36,7 @@
             "viewport": "desktop",
             "accessible_name": "Completion Rate KPI",
             "data_table": true,
-            "tooltip_text": "Completion rate KPI \u2014 Actual\nJanuary 2026\n75.00%\nFresh as of: 2026-07-15T23:01:42+00:00",
+            "tooltip_text": "Completion rate KPI \u2014 Actual\nJanuary 2026\n75.00%\nFresh as of: 2026-07-16T07:39:50+00:00",
             "expected": {
               "metric_display_name": "Completion rate KPI",
               "formatted_value": "75.00%",
@@ -45,7 +45,7 @@
               "unit": null,
               "currency": null,
               "partial_period_note": null,
-              "tooltip_text": "Completion rate KPI \u2014 Actual\nJanuary 2026\n75.00%\nFresh as of: 2026-07-15T23:01:42+00:00"
+              "tooltip_text": "Completion rate KPI \u2014 Actual\nJanuary 2026\n75.00%\nFresh as of: 2026-07-16T07:39:50+00:00"
             }
           }
         ],
@@ -85,15 +85,15 @@
         "page_errors": [],
         "failed_requests": [],
         "refresh": {
-          "prior_version": "2026-07-15T23:02:18.470657+00:00",
+          "prior_version": "2026-07-16T07:40:26.881919+00:00",
           "status": "ready",
           "status_text": "Ready",
-          "new_version": "2026-07-15T23:02:24.317403+00:00",
+          "new_version": "2026-07-16T07:40:32.783175+00:00",
           "forced_failure": {
             "status": "error",
             "stale_labelled": true,
             "version_unchanged": true,
-            "status_text": "Refresh failed \u2014 showing previous data (stale)"
+            "status_text": "Refresh failed \u00e2\u20ac\u201d showing previous data (stale)"
           }
         },
         "accessibility": {
@@ -114,7 +114,7 @@
             "viewport": "tablet",
             "accessible_name": "Volume KPI Trend",
             "data_table": true,
-            "tooltip_text": "Volume KPI \u2014 Actual\nJanuary 2026\n90 events\nStatus: On track\nFresh as of: 2026-07-15T23:01:42+00:00",
+            "tooltip_text": "Volume KPI \u2014 Actual\nJanuary 2026\n90 events\nStatus: On track\nFresh as of: 2026-07-16T07:39:50+00:00",
             "expected": {
               "metric_display_name": "Volume KPI",
               "formatted_value": "90 events",
@@ -123,7 +123,7 @@
               "unit": "events",
               "currency": null,
               "partial_period_note": null,
-              "tooltip_text": "Volume KPI \u2014 Actual\nJanuary 2026\n90 events\nStatus: On track\nFresh as of: 2026-07-15T23:01:42+00:00"
+              "tooltip_text": "Volume KPI \u2014 Actual\nJanuary 2026\n90 events\nStatus: On track\nFresh as of: 2026-07-16T07:39:50+00:00"
             }
           },
           {
@@ -131,7 +131,7 @@
             "viewport": "tablet",
             "accessible_name": "Completion Rate KPI",
             "data_table": true,
-            "tooltip_text": "Completion rate KPI \u2014 Actual\nJanuary 2026\n75.00%\nFresh as of: 2026-07-15T23:01:42+00:00",
+            "tooltip_text": "Completion rate KPI \u2014 Actual\nJanuary 2026\n75.00%\nFresh as of: 2026-07-16T07:39:50+00:00",
             "expected": {
               "metric_display_name": "Completion rate KPI",
               "formatted_value": "75.00%",
@@ -140,7 +140,7 @@
               "unit": null,
               "currency": null,
               "partial_period_note": null,
-              "tooltip_text": "Completion rate KPI \u2014 Actual\nJanuary 2026\n75.00%\nFresh as of: 2026-07-15T23:01:42+00:00"
+              "tooltip_text": "Completion rate KPI \u2014 Actual\nJanuary 2026\n75.00%\nFresh as of: 2026-07-16T07:39:50+00:00"
             }
           }
         ],
@@ -180,15 +180,15 @@
         "page_errors": [],
         "failed_requests": [],
         "refresh": {
-          "prior_version": "2026-07-15T23:02:24.317403+00:00",
+          "prior_version": "2026-07-16T07:40:32.783175+00:00",
           "status": "ready",
           "status_text": "Ready",
-          "new_version": "2026-07-15T23:02:30.913411+00:00",
+          "new_version": "2026-07-16T07:40:40.147246+00:00",
           "forced_failure": {
             "status": "error",
             "stale_labelled": true,
             "version_unchanged": true,
-            "status_text": "Refresh failed \u2014 showing previous data (stale)"
+            "status_text": "Refresh failed \u00e2\u20ac\u201d showing previous data (stale)"
           }
         },
         "accessibility": {
@@ -209,7 +209,7 @@
             "viewport": "mobile",
             "accessible_name": "Volume KPI Trend",
             "data_table": true,
-            "tooltip_text": "Volume KPI \u2014 Actual\nJanuary 2026\n90 events\nStatus: On track\nFresh as of: 2026-07-15T23:01:42+00:00",
+            "tooltip_text": "Volume KPI \u2014 Actual\nJanuary 2026\n90 events\nStatus: On track\nFresh as of: 2026-07-16T07:39:50+00:00",
             "expected": {
               "metric_display_name": "Volume KPI",
               "formatted_value": "90 events",
@@ -218,7 +218,7 @@
               "unit": "events",
               "currency": null,
               "partial_period_note": null,
-              "tooltip_text": "Volume KPI \u2014 Actual\nJanuary 2026\n90 events\nStatus: On track\nFresh as of: 2026-07-15T23:01:42+00:00"
+              "tooltip_text": "Volume KPI \u2014 Actual\nJanuary 2026\n90 events\nStatus: On track\nFresh as of: 2026-07-16T07:39:50+00:00"
             }
           },
           {
@@ -226,7 +226,7 @@
             "viewport": "mobile",
             "accessible_name": "Completion Rate KPI",
             "data_table": true,
-            "tooltip_text": "Completion rate KPI \u2014 Actual\nJanuary 2026\n75.00%\nFresh as of: 2026-07-15T23:01:42+00:00",
+            "tooltip_text": "Completion rate KPI \u2014 Actual\nJanuary 2026\n75.00%\nFresh as of: 2026-07-16T07:39:50+00:00",
             "expected": {
               "metric_display_name": "Completion rate KPI",
               "formatted_value": "75.00%",
@@ -235,7 +235,7 @@
               "unit": null,
               "currency": null,
               "partial_period_note": null,
-              "tooltip_text": "Completion rate KPI \u2014 Actual\nJanuary 2026\n75.00%\nFresh as of: 2026-07-15T23:01:42+00:00"
+              "tooltip_text": "Completion rate KPI \u2014 Actual\nJanuary 2026\n75.00%\nFresh as of: 2026-07-16T07:39:50+00:00"
             }
           }
         ],
@@ -275,15 +275,15 @@
         "page_errors": [],
         "failed_requests": [],
         "refresh": {
-          "prior_version": "2026-07-15T23:02:30.913411+00:00",
+          "prior_version": "2026-07-16T07:40:40.147246+00:00",
           "status": "ready",
           "status_text": "Ready",
-          "new_version": "2026-07-15T23:02:38.182500+00:00",
+          "new_version": "2026-07-16T07:40:47.164399+00:00",
           "forced_failure": {
             "status": "error",
             "stale_labelled": true,
             "version_unchanged": true,
-            "status_text": "Refresh failed \u2014 showing previous data (stale)"
+            "status_text": "Refresh failed \u00e2\u20ac\u201d showing previous data (stale)"
           }
         },
         "accessibility": {
