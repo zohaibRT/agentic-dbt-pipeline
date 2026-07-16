@@ -7,6 +7,7 @@ import argparse
 from pathlib import Path
 
 from lib_gate_common import (
+    add_output_json_arg,
     cell,
     count_gold_facts,
     extract_page_ids_from_presentation,
@@ -80,6 +81,7 @@ def _na_ok(value: str) -> bool:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    add_output_json_arg(parser)
     parser.add_argument("--root", type=Path, default=Path("."))
     parser.add_argument("--phase", choices=("analytics", "presentation", "final"), default="presentation")
     args = parser.parse_args()
@@ -103,7 +105,7 @@ def main() -> int:
             errors.append(
                 "missing report_page_contracts.md while Matplotlib presentation exists"
             )
-            return print_results("Report page contracts check", errors, warnings)
+            return print_results("Report page contracts check", errors, warnings, output_json=getattr(args, "output_json", None), validator_id=Path(__file__).stem)
         print("SKIPPED: report_page_contracts.md not found yet")
         return 0
 
@@ -113,7 +115,7 @@ def main() -> int:
     )
     if not rows:
         errors.append("report_page_contracts.md has no page rows")
-        return print_results("Report page contracts check", errors, warnings)
+        return print_results("Report page contracts check", errors, warnings, output_json=getattr(args, "output_json", None), validator_id=Path(__file__).stem)
 
     rendered_pages = extract_page_ids_from_presentation(root)
     # Prefer page_registry when present
@@ -348,7 +350,7 @@ def main() -> int:
                 f"report page contract coverage {cov:.0%} below required {required_ratio:.0%}"
             )
 
-    return print_results("Report page contracts check", errors, warnings)
+    return print_results("Report page contracts check", errors, warnings, output_json=getattr(args, "output_json", None), validator_id=Path(__file__).stem)
 
 
 if __name__ == "__main__":

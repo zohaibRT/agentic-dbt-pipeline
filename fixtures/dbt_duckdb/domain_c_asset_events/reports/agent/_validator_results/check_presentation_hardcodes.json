@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "validator_id": "check_presentation_hardcodes",
+  "status": "PASS",
+  "errors": [],
+  "warnings": [],
+  "details": {},
+  "checked_at": "2026-07-16T13:56:30.546204+00:00",
+  "warning_ids": [],
+  "applicability": ""
+}

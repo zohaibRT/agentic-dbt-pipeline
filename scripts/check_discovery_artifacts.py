@@ -3,6 +3,9 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+from lib_gate_common import add_output_json_arg, print_results
+
 import argparse
 import json
 import sys
@@ -306,6 +309,7 @@ def validate_discovery_folder_hygiene(root: Path) -> list[str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    add_output_json_arg(parser)
     parser.add_argument("--root", type=Path, default=Path("."))
     args = parser.parse_args()
 
@@ -331,14 +335,13 @@ def main() -> int:
     if not inventory.exists():
         errors.append("Missing required discovery proof: reports/agent/00_discovery/sql_proofs/001_source_table_inventory.sql")
 
-    if errors:
-        print("Discovery artifact validation FAILED")
-        for item in errors:
-            print(f"- {item}")
-        return 1
-
-    print("Discovery artifact validation passed")
-    return 0
+    return print_results(
+        "Discovery artifact validation",
+        errors,
+        [],
+        output_json=getattr(args, "output_json", None),
+        validator_id=Path(__file__).stem,
+    )
 
 
 if __name__ == "__main__":

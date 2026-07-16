@@ -3,6 +3,9 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+from lib_gate_common import add_output_json_arg, print_results
+
 import argparse
 import re
 import sys
@@ -49,6 +52,7 @@ def report_has_dimension_inventory(text: str) -> bool:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    add_output_json_arg(parser)
     parser.add_argument("--root", type=Path, default=Path("."))
     args = parser.parse_args()
     root = args.root.resolve()
@@ -77,34 +81,62 @@ def main() -> int:
     if bridges:
         print("Bridge models: " + ", ".join(bridges))
 
+    errors: list[str] = []
+    warnings: list[str] = []
+
     if not facts and not dims:
-        print("SKIPPED | no gold/marts fact or dimension models found yet")
-        return 0
+        return print_results(
+            "Gold star shape check",
+            errors,
+            warnings,
+            output_json=getattr(args, "output_json", None),
+            validator_id=Path(__file__).stem,
+            skipped=True,
+            skip_reason="no gold/marts fact or dimension models found yet",
+        )
 
     if facts and dims:
-        print("PASS | gold/marts has both facts and dimensions")
-        return 0
+        return print_results(
+            "Gold star shape check",
+            errors,
+            warnings,
+            output_json=getattr(args, "output_json", None),
+            validator_id=Path(__file__).stem,
+            details={"facts": facts, "dims": dims},
+        )
 
     if facts and not dims:
         has_register = report_has_dimension_inventory(report_text)
         if has_register:
-            print(
-                "WARN | facts exist with zero dimensions, but a dimension inventory/"
+            warnings.append(
+                "facts exist with zero dimensions, but a dimension inventory/"
                 "blocked-deferred register was found in gold reports. "
                 "Treat star schema as incomplete until dimensions are built or explicitly approved as deferred."
             )
-            return 0
-        print(
-            "FAIL | facts exist with zero dim_ models and no dimension inventory/"
-            "blocked-deferred register in gold_report.md or gold_discovery.md. "
-            "Read references/gold-dimension-completeness.md. "
-            "Build privacy-safe dimensions where possible, or document each missing dimension as BLOCKED/DEFERRED with proof."
+        else:
+            errors.append(
+                "facts exist with zero dim_ models and no dimension inventory/"
+                "blocked-deferred register in gold_report.md or gold_discovery.md. "
+                "Build privacy-safe dimensions where possible, or document each missing dimension as "
+                "BLOCKED/DEFERRED with proof."
+            )
+        return print_results(
+            "Gold star shape check",
+            errors,
+            warnings,
+            output_json=getattr(args, "output_json", None),
+            validator_id=Path(__file__).stem,
         )
-        return 1
 
-    print("WARN | dimensions exist without facts; confirm this is intentional")
-    return 0
+    warnings.append("dimensions exist without facts; confirm this is intentional")
+    return print_results(
+        "Gold star shape check",
+        errors,
+        warnings,
+        output_json=getattr(args, "output_json", None),
+        validator_id=Path(__file__).stem,
+    )
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main())

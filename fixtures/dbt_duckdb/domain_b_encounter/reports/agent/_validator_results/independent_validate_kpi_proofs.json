@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0",
+  "validator_id": "validate_kpi_proofs",
+  "status": "WARN",
+  "errors": [],
+  "warnings": [
+    {
+      "warning_id": "validate_kpi_proofs:w0:ee46cc6d76e7",
+      "message": "Catalogs do not reference sql_proofs/*.sql paths explicitly"
+    }
+  ],
+  "details": {},
+  "checked_at": "2026-07-16T13:55:51.173702+00:00",
+  "warning_ids": [
+    "validate_kpi_proofs:w0:ee46cc6d76e7"
+  ],
+  "applicability": ""
+}

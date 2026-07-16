@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Analytics Presentation Report</title>
-  <!-- Offline Plotly bundle — no public CDN dependency -->
+  <!-- Offline Plotly bundle â€” no public CDN dependency -->
   <script src="./vendor/plotly.min.js"></script>
   <style>
     :root { color-scheme: light; font-family: "Segoe UI", "Helvetica Neue", sans-serif; }
@@ -31,10 +31,10 @@
     .chart-point:focus, .chart-bar:focus { outline: 2px solid #f59e0b; }
     .chart-partial { stroke-dasharray: 3 2; }
     .status-badge { display: inline-block; margin: 0 0 0.5rem; padding: 0.15rem 0.45rem; border: 1px solid #92400e; background: #fffbeb; color: #92400e; font-size: 0.75rem; }
-    .status-badge.status-pending::before { content: "⚠ "; }
+    .status-badge.status-pending::before { content: "âš  "; }
     .status-row { display: flex; flex-wrap: wrap; gap: 0.75rem; font-size: 0.85rem; color: #334155; margin: 0.25rem 0 0.75rem; }
     .status-row [data-status-kind] { border: 1px solid #cbd5e1; border-radius: 0.25rem; padding: 0.2rem 0.45rem; background: #fff; }
-    body.stale-data .freshness-label::after { content: " (stale — refresh failed)"; color: #92400e; font-weight: 600; }
+    body.stale-data .freshness-label::after { content: " (stale â€” refresh failed)"; color: #92400e; font-weight: 600; }
     .static-fallback { margin-top: 0.5rem; font-size: 0.85rem; color: #475569; }
     .period-label { font-size: 0.9rem; color: #475569; }
     .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
@@ -52,7 +52,7 @@
       <a href="#all_dimensions" data-page="all_dimensions">Dimensions</a>
     </nav>
     <button class="refresh-data" type="button" aria-label="Refresh report data">Refresh Data</button>
-    <span class="freshness freshness-label" aria-live="polite">Freshness: loading…</span>
+    <span class="freshness freshness-label" aria-live="polite">Freshness: loadingâ€¦</span>
     <span class="refresh-status" aria-live="polite">Idle</span>
     <div class="status-row" aria-label="Report trust statuses">
       <span data-status-kind="technical" data-technical-validation-status="PENDING">Technical: PENDING</span>
@@ -181,11 +181,14 @@
           node.addEventListener("mouseleave", hide);
           node.addEventListener("focus", (e) => show(node, e));
           node.addEventListener("blur", hide);
-          // Mobile tap provides the same information as hover
-          node.addEventListener("touchstart", (e) => {
-            e.preventDefault();
-            show(node, e);
-          }, { passive: false });
+          // Mobile tap / pointer provides the same information as hover
+          const reveal = (e) => {
+            if (e && typeof e.preventDefault === "function") e.preventDefault();
+            show(node, e || {});
+          };
+          node.addEventListener("touchstart", reveal, { passive: false });
+          node.addEventListener("pointerdown", reveal);
+          node.addEventListener("click", reveal);
         });
       });
     }
@@ -235,7 +238,7 @@
       let lastGood = null;
       data.forEach((row, idx) => {
         const missing = row.missing_period || row[yField] == null;
-        const tooltip = row.tooltip_text || row.formatted_value || String(row[yField] ?? "—");
+        const tooltip = row.tooltip_text || row.formatted_value || String(row[yField] ?? "â€”");
         const xLabel = row[xField] || "";
         const period = row.period_label || xLabel;
         if (missing) {
@@ -261,7 +264,7 @@
       });
 
       const tableRows = data.map((row) =>
-        `<tr><td>${row.period_label || row[xField] || ""}</td><td>${row.series_display_name || ""}</td><td>${row.formatted_value || row[yField] || "—"}</td><td>${row.partial_period_note || (row.missing_period ? "Missing — not interpolated" : "")}</td></tr>`
+        `<tr><td>${row.period_label || row[xField] || ""}</td><td>${row.series_display_name || ""}</td><td>${row.formatted_value || row[yField] || "â€”"}</td><td>${row.partial_period_note || (row.missing_period ? "Missing â€” not interpolated" : "")}</td></tr>`
       ).join("");
 
       const attrs = chartAttrs(spec);
@@ -385,7 +388,7 @@
           console.error("Refresh failed", err);
           window.__REPORT_REFRESH_STATUS__ = "error";
           document.querySelector(".refresh-status").textContent =
-            "Refresh failed — showing previous data (stale)";
+            "Refresh failed â€” showing previous data (stale)";
           document.querySelector(".freshness-label").setAttribute("data-stale", "true");
           document.body.classList.add("stale-data");
           // Keep prior data version; do not pretend refresh succeeded

@@ -7,6 +7,7 @@ import argparse
 from pathlib import Path
 
 from lib_gate_common import (
+    add_output_json_arg,
     REQUIRED_OBSERVABILITY_DOMAINS,
     cell,
     count_gold_facts,
@@ -78,6 +79,7 @@ def validate_observability_row(
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    add_output_json_arg(parser)
     parser.add_argument("--root", type=Path, default=Path("."))
     args = parser.parse_args()
     root = args.root.resolve()
@@ -101,7 +103,7 @@ def main() -> int:
             "missing reports/agent/09_analytics_insights/data_observability_coverage.md "
             "while analytics insights, gold facts, or presentation exist"
         )
-        return print_results("Data observability coverage check", errors, warnings)
+        return print_results("Data observability coverage check", errors, warnings, output_json=getattr(args, "output_json", None), validator_id=Path(__file__).stem)
 
     rows = table_dicts(coverage_path, required_any_headers=("domain", "status"))
     if not rows:
@@ -167,7 +169,7 @@ def main() -> int:
     if not obs_report.exists():
         warnings.append("missing data_observability_report.md narrative report")
 
-    return print_results("Data observability coverage check", errors, warnings)
+    return print_results("Data observability coverage check", errors, warnings, output_json=getattr(args, "output_json", None), validator_id=Path(__file__).stem)
 
 
 if __name__ == "__main__":

@@ -7,11 +7,13 @@ import argparse
 from pathlib import Path
 
 from lib_gate_common import (
+    add_output_json_arg,
     build_resource_inventory,
     cell,
     load_analytics_policy,
     load_resource_classification_policy,
     print_results,
+    project_package_name,
     ratio,
     resolve_named_resource,
     resources_by_name,
@@ -113,6 +115,7 @@ def in_scope_unique_ids(
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    add_output_json_arg(parser)
     parser.add_argument("--root", type=Path, default=Path("."))
     parser.add_argument("--phase", choices=("analytics", "presentation", "final"), default="analytics")
     args = parser.parse_args()
@@ -133,10 +136,23 @@ def main() -> int:
     insights = root / "reports" / "agent" / "09_analytics_insights"
     classification = insights / "model_classification.md"
     inventory, inv_source = build_resource_inventory(root)
-    local_package = next(
-        (str(r.get("package_name")) for r in inventory if r.get("resource_type") == "model"),
-        None,
-    )
+    # Local package ALWAYS prefers dbt_project.yml name (never inventory order).
+    configured = project_package_name(root)
+    has_configured = any(str(r.get("package_name") or "") == configured for r in inventory)
+    if has_configured:
+        local_package = configured
+    else:
+        # No matching configured package (missing/placeholder dbt_project.yml):
+        # use most common non-dbt package — never pick the first inventory row alone.
+        from collections import Counter
+
+        pkgs = [
+            str(r.get("package_name") or "")
+            for r in inventory
+            if r.get("package_name")
+            and not str(r.get("package_name")).startswith("dbt")
+        ]
+        local_package = Counter(pkgs).most_common(1)[0][0] if pkgs else configured
     scoped = in_scope_unique_ids(inventory, class_policy, local_package=local_package)
     required_uids = set(scoped.keys())
 
@@ -166,7 +182,7 @@ def main() -> int:
 
     if not classification.exists():
         errors.append("missing reports/agent/09_analytics_insights/model_classification.md")
-        return print_results("Model classification coverage check", errors, warnings)
+        return print_results("Model classification coverage check", errors, warnings, output_json=getattr(args, "output_json", None), validator_id=Path(__file__).stem)
 
     rows = table_dicts(
         classification,
@@ -174,7 +190,7 @@ def main() -> int:
     )
     if not rows:
         errors.append("model_classification.md has no classification rows")
-        return print_results("Model classification coverage check", errors, warnings)
+        return print_results("Model classification coverage check", errors, warnings, output_json=getattr(args, "output_json", None), validator_id=Path(__file__).stem)
 
     classified_uids: set[str] = set()
     name_only_ok = 0
@@ -318,7 +334,7 @@ def main() -> int:
         elif type_missing:
             warnings.append(f"{rtype}s missing classification: {', '.join(type_missing[:6])}")
 
-    return print_results("Model classification coverage check", errors, warnings)
+    return print_results("Model classification coverage check", errors, warnings, output_json=getattr(args, "output_json", None), validator_id=Path(__file__).stem)
 
 
 if __name__ == "__main__":

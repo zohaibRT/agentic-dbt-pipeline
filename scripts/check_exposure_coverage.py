@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from lib_gate_common import (
+    add_output_json_arg,
     build_resource_inventory,
     business_approval_status,
     cell,
@@ -21,6 +22,7 @@ from lib_gate_common import (
     ratio,
     read_text,
     resolve_named_resource,
+    resolve_source_reference,
     resources_by_name,
     table_dicts,
 )
@@ -36,6 +38,48 @@ INVALID_EVIDENCE = {
     "none",
     "todo",
 }
+
+
+def _discover_presentation_artifact_ids(root: Path) -> list[str]:
+    """Distinct production delivery artifact IDs (pages/reports — not every chart)."""
+    import json
+
+    ids: set[str] = set()
+    base = root / "reports" / "agent" / "10_presentation"
+    for rel in ("page_registry.json", "matplotlib/page_registry.json"):
+        path = base / rel
+        if not path.exists():
+            continue
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        pages = data.get("pages") if isinstance(data, dict) else data
+        if not isinstance(pages, list):
+            continue
+        for page in pages:
+            if not isinstance(page, dict):
+                continue
+            pid = str(page.get("page_id") or page.get("id") or "").strip()
+            if not pid:
+                continue
+            pclass = str(page.get("page_class") or page.get("class") or "").lower()
+            trust = str(page.get("trust_level") or page.get("status") or "").upper()
+            # Count executive / trusted / production delivery pages
+            if (
+                "executive" in pid.lower()
+                or "executive" in pclass
+                or trust in {"TRUSTED", "PRODUCTION", "RENDERED"}
+                or pclass in {"executive_overview", "production", "trusted"}
+            ):
+                ids.add(pid.lower())
+            elif page.get("production") is True or page.get("is_production") is True:
+                ids.add(pid.lower())
+    html = base / "matplotlib" / "report.html"
+    if html.exists() and not ids:
+        # Fallback: one interactive report artifact when pages are not classified
+        ids.add("matplotlib/report.html")
+    return sorted(ids)
 
 _AGENT_FABRICATED_EVIDENCE = (
     "agent approved",
@@ -161,25 +205,18 @@ def resolve_dep_token(token: str, inventory: list[dict[str, Any]]) -> tuple[str 
         return (str(match["unique_id"]) if match else None), status
     src_match = re.match(r"source\(\s*['\"]([^'\"]+)['\"]\s*,\s*['\"]([^'\"]+)['\"]\s*\)", raw, re.I)
     if src_match:
-        # Prefer unique_id containing source_name.table
-        table = src_match.group(2).lower()
-        candidates = [
-            r
-            for r in inventory
-            if r.get("resource_type") == "source" and str(r.get("name", "")).lower() == table
-        ]
-        if len(candidates) == 1:
-            return str(candidates[0]["unique_id"]), "ok"
-        if len(candidates) > 1:
-            return None, "ambiguous"
-        return None, "missing"
-    # bare name
+        source_name = src_match.group(1)
+        table = src_match.group(2)
+        match, status = resolve_source_reference(inventory, source_name, table)
+        return (str(match["unique_id"]) if match else None), status
+    # bare name — migration-only; ambiguous fails
     match, status = resolve_named_resource(inventory, name=raw)
     return (str(match["unique_id"]) if match else None), status
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    add_output_json_arg(parser)
     parser.add_argument("--root", type=Path, default=Path("."))
     parser.add_argument("--phase", choices=("analytics", "presentation", "final"), default="analytics")
     args = parser.parse_args()
@@ -206,7 +243,7 @@ def main() -> int:
 
     if presentation_exists and not coverage_path.exists():
         errors.append("presentation exists but exposure_coverage.md is missing")
-        return print_results("Exposure coverage check", errors, warnings)
+        return print_results("Exposure coverage check", errors, warnings, output_json=getattr(args, "output_json", None), validator_id=Path(__file__).stem)
 
     coverage_rows: list[dict[str, str]] = []
     docs_by_key: dict[str, dict[str, str]] = {}
@@ -259,6 +296,7 @@ def main() -> int:
         production_presentations = 1
 
     complete = 0
+    mapped_artifacts: set[str] = set()
     for entry in exposure_sources:
         name = str(entry.get("name") or entry.get("label") or "").strip()
         unique_id = str(entry.get("unique_id") or "").strip()
@@ -281,6 +319,22 @@ def main() -> int:
         evidence = _meta_get(entry, "approval_evidence", "evidence")
         fingerprint = _meta_get(entry, "exposure_fingerprint", "fingerprint")
         no_dep_reason = _meta_get(entry, "no_dependency_reason", "dependency_reason")
+        approver = _meta_get(entry, "approver", "approved_by")
+        approval_date = _meta_get(entry, "approval_date", "approved_on")
+        maturity = _meta_get(entry, "maturity", "maturity_level") or str(entry.get("maturity") or "")
+        conditions = _meta_get(entry, "approval_conditions", "conditions", "conditional_conditions")
+        expiry = _meta_get(entry, "expiry", "expiry_or_review", "review_condition")
+        sensitive = _meta_get(entry, "sensitive_data_classification", "sensitive_data")
+        sensitive_approval = _meta_get(entry, "sensitive_data_approval", "sensitive_approval")
+        delivery = entry.get("url") or _meta_get(entry, "delivery_location", "url", "delivery")
+        artifact_id = _meta_get(
+            entry,
+            "presentation_artifact_id",
+            "artifact_id",
+            "page_id",
+            "report_id",
+            "visual_artifact_id",
+        )
 
         doc = docs_by_key.get(unique_id.lower()) or docs_by_key.get(name.lower())
         if doc:
@@ -297,6 +351,18 @@ def main() -> int:
             evidence = cell(doc, "approval_evidence", "evidence") or evidence
             fingerprint = cell(doc, "exposure_fingerprint", "fingerprint") or fingerprint
             no_dep_reason = cell(doc, "no_dependency_reason", "notes") or no_dep_reason
+            approver = cell(doc, "approver", "approved_by") or approver
+            approval_date = cell(doc, "approval_date", "approved_on") or approval_date
+            maturity = cell(doc, "maturity", "maturity_level") or maturity
+            conditions = cell(doc, "approval_conditions", "conditions") or conditions
+            expiry = cell(doc, "expiry", "expiry_or_review", "review_condition") or expiry
+            sensitive = cell(doc, "sensitive_data_classification", "sensitive_data") or sensitive
+            sensitive_approval = cell(doc, "sensitive_data_approval", "sensitive_approval") or sensitive_approval
+            delivery = cell(doc, "url", "delivery_location", "delivery") or delivery
+            artifact_id = (
+                cell(doc, "presentation_artifact_id", "artifact_id", "page_id", "report_id")
+                or artifact_id
+            )
 
         if not is_meaningful_text(owner):
             errors.append(f"exposure {label}: missing owner")
@@ -361,6 +427,33 @@ def main() -> int:
                 errors.append(f"exposure {label}: invalid or agent-generated approval evidence")
             elif not evidence:
                 errors.append(f"exposure {label}: missing approval evidence")
+            else:
+                # Evidence path must exist when it looks like a path
+                ev = evidence.strip().strip("`").split("#", 1)[0]
+                if "/" in ev or "\\" in ev or ev.endswith((".md", ".txt", ".pdf")):
+                    candidates = [root / ev, root / "reports" / "agent" / Path(ev).name]
+                    if not any(c.exists() for c in candidates):
+                        errors.append(f"exposure {label}: approval evidence path not found: {evidence}")
+            if not is_meaningful_text(approver):
+                errors.append(f"exposure {label}: missing named approver")
+            if not is_meaningful_text(approval_date):
+                errors.append(f"exposure {label}: missing approval date")
+            if not is_meaningful_text(maturity):
+                errors.append(f"exposure {label}: missing maturity")
+            if biz_upper == "APPROVED_WITH_CONDITIONS" and not is_meaningful_text(conditions):
+                errors.append(f"exposure {label}: conditional approval requires conditions")
+            if not is_meaningful_text(expiry):
+                errors.append(f"exposure {label}: missing expiry/review condition")
+            if is_meaningful_text(sensitive) and sensitive.upper() not in {"NONE", "N/A", "NA", "PUBLIC"}:
+                if not is_meaningful_text(sensitive_approval):
+                    errors.append(
+                        f"exposure {label}: sensitive_data_classification={sensitive!r} "
+                        "requires sensitive_data_approval"
+                    )
+            if not is_meaningful_text(str(delivery or "")):
+                errors.append(f"exposure {label}: missing URL or delivery location")
+            if presentation_exists and not is_meaningful_text(artifact_id):
+                errors.append(f"exposure {label}: missing exact presentation artifact ID")
         elif biz_upper in {"PENDING_REVIEW", "NOT_REQUESTED", "PROPOSED", ""}:
             warnings.append(f"exposure {label}: business approval {biz_upper or 'NOT_REQUESTED'} (draft OK)")
 
@@ -376,23 +469,38 @@ def main() -> int:
         if row_ok and args.phase == "final":
             if biz_upper in {"APPROVED", "APPROVED_WITH_CONDITIONS"} and evidence.lower() not in INVALID_EVIDENCE:
                 complete += 1
+                if is_meaningful_text(artifact_id):
+                    mapped_artifacts.add(str(artifact_id).strip().lower())
         elif row_ok and args.phase != "final":
             complete += 1
+            if is_meaningful_text(artifact_id):
+                mapped_artifacts.add(str(artifact_id).strip().lower())
 
-    # Coverage denominator
-    if production_presentations:
-        total = max(len(exposure_sources), production_presentations)
-        if not exposure_sources and args.phase == "final":
+    # Inventory distinct production delivery artifacts (pages/charts/report roots)
+    artifact_ids = _discover_presentation_artifact_ids(root)
+    # Coverage denominator: each exposure + each distinct unmapped presentation artifact
+    if artifact_ids or exposure_sources or production_presentations:
+        unmapped = [a for a in artifact_ids if a not in mapped_artifacts]
+        total = max(len(exposure_sources), len(artifact_ids) or (1 if production_presentations else 0))
+        if args.phase == "final" and artifact_ids and not exposure_sources:
             errors.append(
                 "production presentation artifacts exist but no real dbt exposures "
                 "(empty denominator is not 100%)"
             )
-        else:
+        if args.phase == "final" and unmapped and exposure_sources:
+            # Each presentation artifact must map to an exposure
+            errors.append(
+                "presentation artifacts missing exposure mapping: " + ", ".join(sorted(unmapped)[:12])
+            )
+        if total > 0:
             cov = ratio(complete, total)
             if cov is None:
                 errors.append("empty production exposure denominator is not 100%")
             else:
-                print(f"Production exposure coverage: {complete}/{total} ({cov:.0%})")
+                print(
+                    f"Production exposure coverage: {complete}/{total} "
+                    f"(artifacts={len(artifact_ids)}, exposures={len(exposure_sources)}) ({cov:.0%})"
+                )
                 if cov < required_ratio and args.phase in {"presentation", "final"}:
                     errors.append(
                         f"production exposure coverage {cov:.0%} below required {required_ratio:.0%}"
@@ -400,7 +508,7 @@ def main() -> int:
     elif exposure_sources:
         print(f"Exposure technical rows validated: {complete}/{len(exposure_sources)}")
 
-    return print_results("Exposure coverage check", errors, warnings)
+    return print_results("Exposure coverage check", errors, warnings, output_json=getattr(args, "output_json", None), validator_id=Path(__file__).stem)
 
 
 if __name__ == "__main__":

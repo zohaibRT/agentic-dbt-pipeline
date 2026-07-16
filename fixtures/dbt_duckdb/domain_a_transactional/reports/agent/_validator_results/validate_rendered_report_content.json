@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "validator_id": "validate_rendered_report_content",
+  "status": "PASS",
+  "errors": [],
+  "warnings": [],
+  "details": {},
+  "checked_at": "2026-07-16T13:52:14.361917+00:00",
+  "warning_ids": [],
+  "applicability": ""
+}

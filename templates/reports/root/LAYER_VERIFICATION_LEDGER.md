@@ -4,9 +4,9 @@
 
 Track evidence that each generated model is populated, correctly grained, and safe to use downstream.
 
-| Phase | Model | Expected Grain | Row Count | Key Proof | Relationship Proof | Measure Proof | Privacy Proof | Status | Notes |
-|---|---|---|---:|---|---|---|---|---|---|
-| TODO | TODO | TODO | 0 | TODO | TODO | TODO | TODO | TODO | TODO |
+| Phase | Layer | Model / Artifact | Expected Grain | Row Count | Upstream Comparison | Key / Grain Proof | Relationship Proof | Measure / KPI Proof | Privacy Check | Proof Files | dbt Command Result | Overall Status | Notes |
+|---|---|---|---|---:|---|---|---|---|---|---|---|---|---|
+| TODO | TODO | TODO | TODO | 0 | TODO | TODO | TODO | TODO | TODO | TODO | TODO | TODO | TODO |
 
 ## Blockers
 

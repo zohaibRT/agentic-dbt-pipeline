@@ -1,7 +1,7 @@
 # Independent Verification Report
 
 **Overall status:** PASS
-**Checked at:** 2026-07-15T23:05:43.242825+00:00
+**Checked at:** 2026-07-16T13:57:42.074181+00:00
 **Project root:** `C:\codebase\agentic-dbt-pipeline\fixtures\dbt_duckdb\domain_c_asset_events`
 **Mode:** `independent`
 
@@ -30,12 +30,12 @@
 | check_presentation_traceability.py | visual_traceability_proof_mapping | PASS | 0 |
 | validate_rendered_report_content.py | rendered_values | PASS | 0 |
 | validate_chart_registry.py | chart_registry_proof_mapping | PASS | 0 |
-| check_report_business_readability.py | technical_labels_not_visible | PASS | 0 |
-| validate_kpi_proofs.py | proof_mapping | PASS | 0 |
+| check_report_business_readability.py | technical_labels_not_visible | WARN | 0 |
+| validate_kpi_proofs.py | proof_mapping | WARN | 0 |
 | check_layer_proof_coverage.py | layer_proof_mapping | PASS | 0 |
 | check_requirement_traceability.py | requirement_traceability | PASS | 0 |
 | check_presentation_coverage.py | presentation_coverage | PASS | 0 |
-| validate_live_report_dom.py | live_browser_behavior | SKIPPED | 0 |
+| validate_live_report_dom.py | live_browser_behavior | PASS | 0 |
 
 ## Failures
 

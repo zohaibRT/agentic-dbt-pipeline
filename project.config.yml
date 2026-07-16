@@ -110,6 +110,20 @@ presentation_policy:
   interactive_renderer: plotly
   static_renderer: matplotlib
   require_live_browser_validation: true
+  require_live_browser_at_final: true
+  require_llm_playwright_review_at_final: true
+  llm_playwright_review_required_for_release: true
+  llm_playwright_review_required_in_ci: false
+  require_llm_review_artifact_freshness: true
+  require_llm_review_page_coverage: 1.0
+  require_llm_review_visual_coverage: 1.0
+  llm_review_block_on_critical_findings: true
+  llm_review_block_on_high_findings: true
+  llm_playwright_review_applicability: required
+  llm_review_viewports:
+    - desktop
+    - tablet
+    - mobile
   live_browser_viewports:
     - desktop
     - tablet

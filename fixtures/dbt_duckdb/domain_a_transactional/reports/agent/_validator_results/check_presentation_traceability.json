@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "validator_id": "check_presentation_traceability",
+  "status": "PASS",
+  "errors": [],
+  "warnings": [],
+  "details": {},
+  "checked_at": "2026-07-16T13:52:15.157156+00:00",
+  "warning_ids": [],
+  "applicability": ""
+}

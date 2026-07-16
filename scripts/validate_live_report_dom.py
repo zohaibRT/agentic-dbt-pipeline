@@ -25,7 +25,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from lib_gate_common import compare_formatted_values, print_results
+from lib_gate_common import add_output_json_arg, compare_formatted_values, print_results
 
 VIEWPORTS: dict[str, dict[str, int]] = {
     "desktop": {"width": 1440, "height": 900},
@@ -106,6 +106,107 @@ def pick_valid_data_point(chart: dict[str, Any]) -> dict[str, Any] | None:
         if row.get("formatted_value") or row.get("tooltip_text"):
             return row
     return None
+
+
+def pick_critical_period_rows(chart: dict[str, Any]) -> list[dict[str, Any]]:
+    """Return first, middle, last non-missing rows plus one partial-period row when present."""
+    rows = [
+        r
+        for r in (chart.get("data") or [])
+        if isinstance(r, dict)
+        and not r.get("missing_period")
+        and (r.get("formatted_value") or r.get("tooltip_text"))
+    ]
+    if not rows:
+        return []
+    selected: list[dict[str, Any]] = []
+    first = rows[0]
+    last = rows[-1]
+    middle = rows[len(rows) // 2]
+    for row in (first, middle, last):
+        if row not in selected:
+            selected.append(row)
+    for row in rows:
+        if row.get("is_partial_period") or row.get("partial_period_note"):
+            if row not in selected:
+                selected.append(row)
+            break
+    return selected
+
+
+def _interact_chart_point(
+    page: Any,
+    container: Any,
+    point: Any,
+    viewport_name: str,
+    *,
+    chart_id: str,
+) -> str:
+    """Hover/tap a point and return tooltip text. Raises on failure."""
+    tooltip = container.locator(".chart-tooltip")
+    if viewport_name == "mobile":
+        try:
+            point.tap(timeout=5000)
+        except Exception:
+            box = point.bounding_box()
+            if box:
+                page.touchscreen.tap(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2)
+            else:
+                point.click(timeout=5000, force=True)
+        page.wait_for_timeout(250)
+    else:
+        try:
+            point.hover(timeout=5000)
+        except Exception:
+            point.hover(timeout=5000, force=True)
+        page.wait_for_timeout(150)
+    page.wait_for_function(
+        """(sel) => {
+          const tip = document.querySelector(sel + ' .chart-tooltip');
+          if (!tip) return false;
+          if (tip.hasAttribute('hidden')) return false;
+          const style = window.getComputedStyle(tip);
+          return style.display !== 'none' && style.visibility !== 'hidden' && tip.textContent.trim().length > 0;
+        }""",
+        arg=f'[data-chart-id="{chart_id}"]',
+        timeout=3000,
+    )
+    if tooltip.count() == 0:
+        raise RuntimeError("missing tooltip element")
+    return tooltip.inner_text(timeout=1500) or ""
+
+
+def _find_target_for_row(targets: Any, row: dict[str, Any], chart: dict[str, Any]) -> Any | None:
+    label = str(row.get("period_label") or row.get(chart.get("x_field") or "period") or "")
+    short = str(row.get(chart.get("x_field") or "period") or "")
+    series = str(row.get("series_display_name") or row.get("series_name") or "")
+    formatted = str(row.get("formatted_value") or "")
+    best = None
+    for idx in range(targets.count()):
+        candidate = targets.nth(idx)
+        box = candidate.bounding_box()
+        if not box or box.get("width", 0) <= 1 or box.get("height", 0) <= 1:
+            continue
+        period_attr = candidate.get_attribute("data-period") or candidate.get_attribute("data-x") or ""
+        series_attr = candidate.get_attribute("data-series") or candidate.get_attribute("data-series-name") or ""
+        tip = candidate.get_attribute("data-tooltip") or ""
+        if period_attr and period_attr not in {label, short}:
+            continue
+        if series and series_attr and series_attr != series:
+            continue
+        if formatted and formatted in tip:
+            return candidate
+        if period_attr or not label:
+            best = best or candidate
+    if best is not None:
+        return best
+    # Fallback: first visible target
+    for idx in range(targets.count()):
+        candidate = targets.nth(idx)
+        box = candidate.bounding_box()
+        if box and box.get("width", 0) > 1 and box.get("height", 0) > 1:
+            return candidate
+    return targets.first if targets.count() else None
 
 
 def expected_tooltip_assertions(chart: dict[str, Any], row: dict[str, Any]) -> dict[str, Any]:
@@ -559,121 +660,119 @@ def validate_viewport(
             else:
                 chart_detail["data_table"] = True
 
-            row = pick_valid_data_point(chart)
-            if not row:
-                result.fail(f"{viewport_name}: chart {chart_id}: no valid data point for tooltip check")
-                details["charts"].append(chart_detail)
-                continue
-
-            expected = expected_tooltip_assertions(chart, row)
+            sample_rows = pick_critical_period_rows(chart)
             targets = container.locator(".chart-point, .chart-bar")
             if targets.count() == 0:
                 result.fail(f"{viewport_name}: chart {chart_id}: no hover/tap targets found")
                 details["charts"].append(chart_detail)
                 continue
 
-            # Prefer a visible target with non-zero geometry (zero-height bars are not hoverable)
-            chosen = None
-            chosen_idx = 0
-            for idx in range(targets.count()):
-                candidate = targets.nth(idx)
-                box = candidate.bounding_box()
-                if box and box.get("width", 0) > 1 and box.get("height", 0) > 1:
-                    chosen = candidate
-                    chosen_idx = idx
-                    break
-            point = chosen or targets.first
+            # Multi-series (≥2): genuine interaction with one DOM point per series
+            series_list = [
+                s for s in (chart.get("series") or []) if isinstance(s, dict)
+            ]
+            series_targets: list[tuple[str, Any, dict[str, Any]]] = []
+            if len(series_list) >= 2:
+                for series in series_list:
+                    sname = str(series.get("display_name") or series.get("name") or "").strip()
+                    if not sname:
+                        continue
+                    series_rows = [r for r in (series.get("data") or []) if isinstance(r, dict)]
+                    if not series_rows and series is series_list[0]:
+                        series_rows = [
+                            r for r in (chart.get("data") or []) if isinstance(r, dict)
+                        ]
+                    srow = pick_valid_data_point(
+                        {
+                            "data": [
+                                {**r, "series_display_name": sname, "series_name": sname}
+                                for r in series_rows
+                            ],
+                            **{k: chart.get(k) for k in ("title", "x_field", "unit", "currency")},
+                        }
+                    )
+                    matched = None
+                    for idx in range(targets.count()):
+                        candidate = targets.nth(idx)
+                        box = candidate.bounding_box()
+                        if not box or box.get("width", 0) <= 1 or box.get("height", 0) <= 1:
+                            continue
+                        series_attr = (
+                            candidate.get_attribute("data-series")
+                            or candidate.get_attribute("data-series-name")
+                            or ""
+                        )
+                        if series_attr == sname:
+                            matched = candidate
+                            break
+                    if matched is None:
+                        result.fail(
+                            f"{viewport_name}: chart {chart_id}: multi-series requires a "
+                            f"hover/tap target with data-series={sname!r}"
+                        )
+                        continue
+                    if srow:
+                        series_targets.append((sname, matched, srow))
 
-            # Align expected row with the hovered/tapped point when possible
-            period_attr = point.get_attribute("data-period") or point.get_attribute("data-x") or ""
-            for candidate_row in chart.get("data") or []:
-                label = str(candidate_row.get("period_label") or candidate_row.get(chart.get("x_field") or "period") or "")
-                short = str(candidate_row.get(chart.get("x_field") or "period") or "")
-                if period_attr and period_attr in {label, short}:
-                    row = candidate_row
-                    expected = expected_tooltip_assertions(chart, row)
-                    break
-            else:
-                # Fall back to nth non-missing row
-                valid_rows = [r for r in (chart.get("data") or []) if not r.get("missing_period")]
-                if valid_rows:
-                    row = valid_rows[min(chosen_idx, len(valid_rows) - 1)]
-                    expected = expected_tooltip_assertions(chart, row)
+            if not sample_rows and not series_targets:
+                result.fail(f"{viewport_name}: chart {chart_id}: no valid data point for tooltip check")
+                details["charts"].append(chart_detail)
+                continue
+
+            tooltip_text = ""
+            expected: dict[str, Any] = {}
+            interactions: list[dict[str, Any]] = []
+
+            def _run_interaction(point: Any, row: dict[str, Any]) -> None:
+                nonlocal tooltip_text, expected
+                expected = expected_tooltip_assertions(chart, row)
+                try:
+                    tip = _interact_chart_point(
+                        page, container, point, viewport_name, chart_id=chart_id
+                    )
+                except Exception as exc:  # noqa: BLE001
+                    diagnostic = point.get_attribute("data-tooltip") or ""
+                    result.fail(
+                        f"{viewport_name}: chart {chart_id}: genuine hover/tap failed ({exc}); "
+                        f"data-tooltip diagnostic={'present' if diagnostic else 'missing'} "
+                        f"(not accepted as PASS)"
+                    )
+                    return
+                tooltip_text = tip
+                if not tip.strip():
+                    result.fail(f"{viewport_name}: chart {chart_id}: missing tooltip")
+                else:
+                    for msg in assert_tooltip_content(tip, expected, chart_id=chart_id):
+                        result.fail(f"{viewport_name}: {msg}")
+                interactions.append(
+                    {
+                        "period": expected.get("period_label"),
+                        "series": expected.get("series_display_name"),
+                        "tooltip": tip[:200],
+                    }
+                )
+
+            for row in sample_rows:
+                point = _find_target_for_row(targets, row, chart)
+                if point is None:
+                    result.fail(
+                        f"{viewport_name}: chart {chart_id}: no hover/tap target for period sample"
+                    )
+                    continue
+                _run_interaction(point, row)
+
+            for _sname, matched, srow in series_targets:
+                _run_interaction(matched, srow)
 
             tooltip = container.locator(".chart-tooltip")
-            tooltip_text = ""
-
-            try:
-                if viewport_name == "mobile":
-                    # Tap provides the same information as hover
-                    box = point.bounding_box()
-                    if box:
-                        page.touchscreen.tap(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2)
-                    else:
-                        point.dispatch_event("touchstart")
-                        point.dispatch_event("touchend")
-                    page.wait_for_timeout(200)
-                else:
-                    point.hover(timeout=5000)
-                    page.wait_for_timeout(150)
-                    point.focus()
-                    page.wait_for_timeout(100)
-            except Exception as exc:  # noqa: BLE001
-                # Fallback: read data-tooltip without pointer interaction
-                tooltip_text = point.get_attribute("data-tooltip") or ""
-                if not tooltip_text:
-                    result.fail(f"{viewport_name}: chart {chart_id}: hover/tap failed: {exc}")
-                    details["charts"].append(chart_detail)
-                    continue
-
-            if tooltip.count() > 0:
-                try:
-                    # Force show if SVG path left it hidden but data-tooltip exists
-                    if tooltip.is_hidden():
-                        data_tip = point.get_attribute("data-tooltip") or ""
-                        if data_tip:
-                            page.evaluate(
-                                """([sel, text]) => {
-                                  const tip = document.querySelector(sel + ' .chart-tooltip');
-                                  if (tip) { tip.hidden = false; tip.textContent = text; }
-                                }""",
-                                [f'[data-chart-id="{chart_id}"]', data_tip],
-                            )
-                    tooltip_text = tooltip.inner_text(timeout=1500)
-                except Exception:
-                    tooltip_text = point.get_attribute("data-tooltip") or ""
-            else:
-                tooltip_text = point.get_attribute("data-tooltip") or ""
-
-            if not tooltip_text.strip():
-                result.fail(f"{viewport_name}: chart {chart_id}: missing tooltip")
-            else:
-                for msg in assert_tooltip_content(tooltip_text, expected, chart_id=chart_id):
-                    result.fail(f"{viewport_name}: {msg}")
-
-            # Tooltip viewport / container clamp
             if tooltip.count() and not tooltip.is_hidden():
                 if not _tooltip_box_in_bounds(page, tooltip.first, container):
                     result.fail(f"{viewport_name}: chart {chart_id}: tooltip leaves viewport")
 
-            # Multi-series: check a representative point label from each series in registry series data
-            for series in chart.get("series") or []:
-                sname = series.get("display_name") or series.get("name")
-                series_rows = series.get("data") or []
-                if not sname or not series_rows:
-                    continue
-                srow = pick_valid_data_point({"data": series_rows, **{k: chart.get(k) for k in ("title", "x_field", "unit", "currency")}})
-                if not srow:
-                    continue
-                # At least ensure tooltip template / data mentions series somewhere in chart payload
-                payload_blob = json.dumps(series_rows)
-                if sname not in payload_blob and sname not in tooltip_text:
-                    result.fail(
-                        f"{viewport_name}: chart {chart_id}: multi-series tooltip mismatch for series {sname}"
-                    )
-
             chart_detail["tooltip_text"] = tooltip_text
             chart_detail["expected"] = expected
+            chart_detail["interactions"] = interactions
+            chart_detail["sampled_points"] = len(interactions)
             details["charts"].append(chart_detail)
 
         # --- Accessibility (practical automated checks; not legal certification) ---
@@ -885,6 +984,7 @@ def write_reports(root: Path, payload: dict[str, Any], artifacts_dir: Path) -> t
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    add_output_json_arg(parser)
     parser.add_argument("--root", type=Path, default=Path("."))
     parser.add_argument("--report-dir", type=Path, default=None)
     parser.add_argument("--port", type=int, default=None, help="Fixed port (default: ephemeral)")
@@ -1006,7 +1106,7 @@ def main() -> int:
     # Avoid Windows console UnicodeEncodeError on tooltip glyphs
     safe_errors = [e.encode("ascii", "replace").decode("ascii") for e in result.errors]
     safe_warnings = [w.encode("ascii", "replace").decode("ascii") for w in result.warnings]
-    return print_results("Live report DOM validation", safe_errors, safe_warnings)
+    return print_results("Live report DOM validation", safe_errors, safe_warnings, output_json=getattr(args, "output_json", None), validator_id=Path(__file__).stem)
 
 
 if __name__ == "__main__":

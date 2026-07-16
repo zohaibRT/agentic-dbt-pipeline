@@ -24,6 +24,16 @@ presentation_policy:
   require_bidirectional_proof_mapping: true
   approved_kpis_required_for_trusted_executive_pages: true
   pending_kpis_allowed_in_draft_pages: true
+  require_live_browser_validation: true
+  require_live_browser_at_final: true
+  require_llm_playwright_review_at_final: true
+  llm_playwright_review_required_for_release: true
+  llm_playwright_review_required_in_ci: false
+  llm_playwright_review_applicability: not_applicable_fixture
+  llm_review_viewports:
+    - desktop
+    - tablet
+    - mobile
 acceptance_policy:
   final_fail_on_warning: true
   require_explicit_warning_acceptance: true

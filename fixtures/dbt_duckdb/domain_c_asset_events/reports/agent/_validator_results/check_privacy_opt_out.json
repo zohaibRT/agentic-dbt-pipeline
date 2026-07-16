@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "validator_id": "check_privacy_opt_out",
+  "status": "SKIPPED",
+  "errors": [],
+  "warnings": [],
+  "details": {},
+  "checked_at": "2026-07-16T13:56:30.875512+00:00",
+  "warning_ids": [],
+  "applicability": "no recorded privacy minimization opt-out in requirements/context/plan"
+}

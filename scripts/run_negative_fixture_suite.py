@@ -168,6 +168,38 @@ CASES: list[NegativeCase] = [
         "synthetic|fixture|approval",
         "synthetic_outside",
     ),
+    NegativeCase(
+        "warn_without_waiver",
+        "Reconciliation WARN/FAIL without formal waiver fails coverage",
+        "verify_metric_reconciliation.py",
+        [],
+        "waiver|reconciliation|fail",
+        "recon_warn_no_waiver",
+    ),
+    NegativeCase(
+        "bare_na_fact_family",
+        "Bare NOT_APPLICABLE without reason fails fact coverage",
+        "check_fact_analytical_coverage.py",
+        [],
+        "not_applicable|reason|bare",
+        "bare_na_fact",
+    ),
+    NegativeCase(
+        "pending_trusted_executive",
+        "Trusted executive KPI with PENDING_REVIEW fails human approval at final",
+        "check_human_approval_coverage.py",
+        ["--phase", "final"],
+        "trusted|executive|approval|pending",
+        "pending_trusted_exec",
+    ),
+    NegativeCase(
+        "ambiguous_source_table",
+        "Two sources with same table name require full source() identity",
+        "check_exposure_coverage.py",
+        ["--phase", "final"],
+        "ambiguous|source|missing|unresolved",
+        "ambiguous_source",
+    ),
 ]
 
 
@@ -455,6 +487,81 @@ def apply_mutation(root: Path, mutator: str) -> None:
         plan = root / "AGENT_PLAN.md"
         if plan.exists():
             plan.write_text("# Plan\n\nProduction-like project for negative test.\n", encoding="utf-8")
+        return
+
+    if mutator == "recon_warn_no_waiver":
+        path = agent / "KPI_DEFINITION_CONTRACTS.md"
+        text = path.read_text(encoding="utf-8")
+        # Force a calculated FAIL recorded as WARN without waiver register
+        text = text.replace("| PASS |", "| WARN |", 1)
+        # Corrupt actual toward mismatch if numeric columns exist
+        text = re.sub(
+            r"(\|\s*)(\d+(\.\d+)?)(\s*\|\s*)(PASS|WARN)(\s*\|)",
+            r"\g<1>999999\g<4>WARN\g<6>",
+            text,
+            count=1,
+        )
+        path.write_text(text, encoding="utf-8")
+        waiver = agent / "RECONCILIATION_WAIVER_REGISTER.md"
+        if waiver.exists():
+            waiver.unlink()
+        return
+
+    if mutator == "bare_na_fact":
+        path = agent / "09_analytics_insights" / "fact_coverage_contracts.md"
+        if path.exists():
+            text = path.read_text(encoding="utf-8")
+            text = text.replace("NOT_APPLICABLE: no duration measures at this grain", "NOT_APPLICABLE", 1)
+            text = text.replace("NOT_APPLICABLE: aging not in first-pass scope", "N/A", 1)
+            path.write_text(text, encoding="utf-8")
+        return
+
+    if mutator == "pending_trusted_exec":
+        # Mark an approved executive KPI as PENDING while keeping it trusted in registries
+        path = agent / "KPI_DEFINITION_CONTRACTS.md"
+        if path.exists():
+            text = path.read_text(encoding="utf-8")
+            text = text.replace("| APPROVED |", "| PENDING_REVIEW |", 1)
+            path.write_text(text, encoding="utf-8")
+        return
+
+    if mutator == "ambiguous_source":
+        # Inject a second source with same table name into a fake inventory via exposure dep
+        yml = root / "models" / "exposures.yml"
+        if not yml.exists():
+            yml = root / "models" / "report_consumers.yml"
+        if yml.exists():
+            text = yml.read_text(encoding="utf-8")
+            if "source(" not in text:
+                text += "\n# mutated\n"
+            # Force depends_on with ambiguous bare table name
+            text = re.sub(
+                r"depends_on:.*",
+                "depends_on: [\"source('raw_a', 'orders')\", \"source('raw_b', 'orders')\"]",
+                text,
+                count=1,
+            )
+            yml.write_text(text, encoding="utf-8")
+        # Ensure manifest has two sources named orders
+        manifest = root / "target" / "manifest.json"
+        if manifest.exists():
+            data = json.loads(manifest.read_text(encoding="utf-8"))
+            sources = data.setdefault("sources", {})
+            sources["source.domain_a_transactional.raw_a.orders"] = {
+                "unique_id": "source.domain_a_transactional.raw_a.orders",
+                "name": "orders",
+                "resource_type": "source",
+                "package_name": "domain_a_transactional",
+                "source_name": "raw_a",
+            }
+            sources["source.domain_a_transactional.raw_b.orders"] = {
+                "unique_id": "source.domain_a_transactional.raw_b.orders",
+                "name": "orders",
+                "resource_type": "source",
+                "package_name": "domain_a_transactional",
+                "source_name": "raw_b",
+            }
+            manifest.write_text(json.dumps(data), encoding="utf-8")
         return
 
     raise ValueError(f"unknown mutator: {mutator}")

@@ -224,6 +224,13 @@ def iter_scan_files(skill_root: Path) -> list[Path]:
 
 
 def main() -> int:
+    # Prefer shared ValidatorResult helpers when available (acceptance-gate protocol).
+    try:
+        from lib_gate_common import add_output_json_arg, print_results
+    except ImportError:  # pragma: no cover
+        add_output_json_arg = None  # type: ignore[assignment]
+        print_results = None  # type: ignore[assignment]
+
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--root",
@@ -231,6 +238,8 @@ def main() -> int:
         default=Path(__file__).resolve().parent.parent,
         help="Skill repository root (default: parent of scripts/)",
     )
+    if add_output_json_arg is not None:
+        add_output_json_arg(parser)
     args = parser.parse_args()
     skill_root = args.root.resolve()
 
@@ -247,11 +256,20 @@ def main() -> int:
             errors.extend(scan_text_requirements(path, skill_root))
 
     print(f"Domain neutrality scan: root={skill_root}, files={scanned}")
+    if print_results is not None:
+        return print_results(
+            "Domain neutrality check",
+            errors,
+            warnings,
+            output_json=getattr(args, "output_json", None),
+            validator_id=Path(__file__).stem,
+            details={"files_scanned": scanned, "root": str(skill_root)},
+        )
+
     for item in warnings:
         print(f"WARN: {item}")
     for item in errors:
         print(f"ERROR: {item}")
-
     if errors:
         print("Domain neutrality check FAILED")
         return 1

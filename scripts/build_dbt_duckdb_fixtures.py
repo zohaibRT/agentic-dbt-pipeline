@@ -47,6 +47,36 @@ TIME_INTEL_METRICS = [
 ]
 
 
+def _llm_review_applicability(slug: str) -> str:
+    """domain_a carries a real MCP review; other fixtures use explicit fixture-only skip."""
+    if slug == "domain_a_transactional":
+        return "required"
+    return "not_applicable_fixture"
+
+
+def refresh_domain_a_llm_review(root: Path) -> None:
+    """Refresh domain_a LLM review hashes from existing MCP evidence (no MCP re-run)."""
+    evidence = root / "reports" / "agent" / "10_presentation" / "llm_playwright_evidence"
+    if not evidence.exists() or not any(evidence.glob("*.png")):
+        return
+    proc = subprocess.run(
+        [
+            sys.executable,
+            str(SCRIPTS / "write_llm_playwright_review_from_mcp.py"),
+            "--root",
+            str(root),
+        ],
+        cwd=str(SCRIPTS),
+        capture_output=True,
+        text=True,
+    )
+    if proc.returncode != 0:
+        raise RuntimeError(
+            "Failed to refresh domain_a LLM Playwright review:\n"
+            f"{proc.stdout}\n{proc.stderr}"
+        )
+
+
 def write_dbt_project(base: Path, slug: str) -> None:
     write(
         base / "dbt_project.yml",
@@ -153,6 +183,8 @@ models:
 
 
 def write_exposures(base: Path, facts: list[str], process: str) -> None:
+    # dbt-fusion rejects exposure-level `meta` (UnusedConfigKey). Governance fields live in
+    # exposure_coverage.md via stamp_manifest_identities after a successful parse/build.
     deps = "\n".join(f"      - ref('{fact}')" for fact in facts)
     write(
         base / "models" / "exposures.yml",
@@ -162,8 +194,9 @@ exposures:
   - name: browser_report
     type: dashboard
     maturity: high
+    url: reports/agent/10_presentation/matplotlib/report.html
     label: Browser Report
-    description: "TEST FIXTURE browser report for {process} | purpose: {process} overview for analysts | criticality: high | refresh: daily | audience: analysts | approval: APPROVED | evidence: SYNTHETIC_FIXTURE_APPROVAL:exposure_coverage#browser_report"
+    description: "TEST FIXTURE browser report for {process} | purpose: {process} overview for analysts | criticality: high | refresh: daily | audience: analysts | approval: APPROVED | evidence: reports/agent/09_analytics_insights/SYNTHETIC_FIXTURE_EXPOSURE_APPROVAL.md | artifact: executive_overview | approver: fixture-approver | approval_date: 2026-01-15 | expiry: 2027-01-15"
     depends_on:
 {deps}
     owner:
@@ -266,11 +299,22 @@ def stamp_manifest_identities(base: Path) -> None:
             "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|",
         ]
         for resource in fact_models:
+            name = resource.get("name")
             contract_lines.append(
-                f"| {resource.get('unique_id')} | {resource.get('name')} | one row per event | event_id | event_date | "
-                "SUPPORTED | SUPPORTED | NOT_APPLICABLE | SUPPORTED | SUPPORTED | SUPPORTED | "
-                "SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | NOT_APPLICABLE | SUPPORTED | volume and completion | "
-                "Fixture | PASS |"
+                f"| {resource.get('unique_id')} | {name} | one row per event | event_id | event_date | "
+                f"SUPPORTED: sql_proofs/{name}_volume.sql | "
+                f"SUPPORTED: sql_proofs/{name}_amount.sql | "
+                f"NOT_APPLICABLE: no duration measures at this grain | "
+                f"SUPPORTED: sql_proofs/{name}_status.sql | "
+                f"SUPPORTED: sql_proofs/{name}_lifecycle.sql | "
+                f"SUPPORTED: sql_proofs/{name}_dims.sql | "
+                f"SUPPORTED: sql_proofs/{name}_trends.sql | "
+                f"SUPPORTED: sql_proofs/{name}_period.sql | "
+                f"SUPPORTED: sql_proofs/{name}_quality.sql | "
+                f"SUPPORTED: sql_proofs/{name}_exceptions.sql | "
+                f"NOT_APPLICABLE: aging not in first-pass scope | "
+                f"SUPPORTED: sql_proofs/{name}_recon.sql | "
+                f"volume and completion | Fixture notes | PASS |"
             )
         write(contracts, "# Fact Coverage Contracts (TEST FIXTURE)\n\n" + "\n".join(contract_lines) + "\n")
 
@@ -278,12 +322,31 @@ def stamp_manifest_identities(base: Path) -> None:
         exp = exposures[0]
         deps = list(exp.get("depends_on_nodes") or [])
         meta = exp.get("meta") if isinstance(exp.get("meta"), dict) else {}
-        purpose = str(meta.get("business_purpose") or "overview for analysts")
+        desc = str(exp.get("description") or "")
+        purpose = str(meta.get("business_purpose") or "")
+        if not purpose and "purpose:" in desc.lower():
+            # "… | purpose: X | criticality: …"
+            for part in desc.split("|"):
+                if part.strip().lower().startswith("purpose:"):
+                    purpose = part.split(":", 1)[1].strip()
+                    break
+        purpose = purpose or "overview for analysts"
         audience = str(meta.get("audience") or "analysts")
         criticality = str(meta.get("criticality") or "high")
         refresh = str(meta.get("refresh_expectation") or "daily")
-        sensitive = str(meta.get("sensitive_data_classification") or "")
-        evidence = "SYNTHETIC_FIXTURE_APPROVAL:exposure_coverage#browser_report"
+        sensitive = str(meta.get("sensitive_data_classification") or "NONE")
+        delivery = str(
+            exp.get("url")
+            or meta.get("delivery_location")
+            or "reports/agent/10_presentation/matplotlib/report.html"
+        )
+        artifact_id = str(meta.get("presentation_artifact_id") or "executive_overview")
+        evidence = "reports/agent/09_analytics_insights/SYNTHETIC_FIXTURE_EXPOSURE_APPROVAL.md"
+        write(
+            insights / "SYNTHETIC_FIXTURE_EXPOSURE_APPROVAL.md",
+            "# TEST FIXTURE — NOT PRODUCTION APPROVAL\n\n"
+            "Synthetic exposure approval evidence for DuckDB fixtures only.\n",
+        )
         fp = compute_exposure_fingerprint(
             {
                 "type": exp.get("type") or "dashboard",
@@ -292,21 +355,50 @@ def stamp_manifest_identities(base: Path) -> None:
                 "depends_on_models": deps,
                 "depends_on_sources": [],
                 "depends_on_metrics": "",
-                "url": "",
-                "delivery_location": "",
+                "url": delivery,
+                "delivery_location": delivery,
                 "refresh_expectation": refresh,
                 "criticality": criticality,
                 "sensitive_data_classification": sensitive,
             }
         )
+        # dbt-fusion drops exposure meta; stamp governance into coverage + manifest for validators
+        stamped_meta = {
+            "business_purpose": purpose,
+            "audience": audience,
+            "criticality": criticality,
+            "refresh_expectation": refresh,
+            "business_approval_status": "APPROVED",
+            "technical_validation_status": "PASS",
+            "approver": "fixture-approver",
+            "approval_date": "2026-01-15",
+            "maturity": str(exp.get("maturity") or "high"),
+            "expiry_or_review": "2027-01-15",
+            "presentation_artifact_id": artifact_id,
+            "delivery_location": delivery,
+            "approval_evidence": evidence,
+            "sensitive_data_classification": sensitive,
+            "exposure_fingerprint": fp,
+        }
+        man_path = base / "target" / "manifest.json"
+        if man_path.exists():
+            import json
+
+            man = json.loads(man_path.read_text(encoding="utf-8"))
+            uid = str(exp.get("unique_id") or "")
+            if uid and uid in (man.get("exposures") or {}):
+                man["exposures"][uid]["meta"] = stamped_meta
+                if not man["exposures"][uid].get("url"):
+                    man["exposures"][uid]["url"] = delivery
+                man_path.write_text(json.dumps(man, indent=2), encoding="utf-8")
         write(
             insights / "exposure_coverage.md",
             f"""
 # Exposure Coverage (TEST FIXTURE — SYNTHETIC approval evidence)
 
-| Exposure ID | Unique ID | Exposure | Type | Owner | Approver | Dependent Models | Dependent Metrics | Refresh Expectation | Business Purpose | Audience | Criticality | Technical Validation Status | Business Approval Status | Approval Evidence | Exposure Fingerprint | Validation Status |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| EXP-browser_report | {exp.get('unique_id')} | browser_report | dashboard | fixture-owner | fixture-approver | {', '.join(deps)} | Volume KPI | {refresh} | {purpose} | {audience} | {criticality} | PASS | APPROVED | {evidence} | {fp} | PASS |
+| Exposure ID | Unique ID | Exposure | Type | Owner | Approver | Approval Date | Maturity | Expiry Or Review | Presentation Artifact ID | Delivery Location | Dependent Models | Dependent Metrics | Refresh Expectation | Business Purpose | Audience | Criticality | Sensitive Data Classification | Sensitive Data Approval | Technical Validation Status | Business Approval Status | Approval Evidence | Exposure Fingerprint | Validation Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| EXP-browser_report | {exp.get('unique_id')} | browser_report | dashboard | fixture-owner | fixture-approver | 2026-01-15 | high | 2027-01-15 | {artifact_id} | {delivery} | {', '.join(deps)} | Volume KPI | {refresh} | {purpose} | {audience} | {criticality} | {sensitive} | N/A | PASS | APPROVED | {evidence} | {fp} | PASS |
 """,
         )
 
@@ -354,6 +446,18 @@ presentation_policy:
   require_bidirectional_proof_mapping: true
   approved_kpis_required_for_trusted_executive_pages: true
   pending_kpis_allowed_in_draft_pages: true
+  require_live_browser_validation: true
+  require_live_browser_at_final: true
+  require_llm_playwright_review_at_final: true
+  llm_playwright_review_required_for_release: true
+  llm_playwright_review_required_in_ci: false
+  # Fixture-only skip is allowed only under fixtures/. domain_a keeps required
+  # because it carries a real Playwright MCP review artifact for release gates.
+  llm_playwright_review_applicability: {_llm_review_applicability(slug)}
+  llm_review_viewports:
+    - desktop
+    - tablet
+    - mobile
 resource_classification_policy:
   require_enabled_local_models: true
   require_sources: true
@@ -397,7 +501,20 @@ acceptance_policy:
     fact_catalog_rows = []
     for fact in facts:
         fact_contract_rows.append(
-            f"| {fact} | one row per event | event_id | event_date | SUPPORTED | SUPPORTED | NOT_APPLICABLE | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | NOT_APPLICABLE | SUPPORTED | volume and completion | Fixture | PASS |"
+            f"| {fact} | one row per event | event_id | event_date | "
+            f"SUPPORTED: sql_proofs/{fact}_volume.sql | "
+            f"SUPPORTED: sql_proofs/{fact}_amount.sql | "
+            f"NOT_APPLICABLE: no duration measures at this grain | "
+            f"SUPPORTED: sql_proofs/{fact}_status.sql | "
+            f"SUPPORTED: sql_proofs/{fact}_lifecycle.sql | "
+            f"SUPPORTED: sql_proofs/{fact}_dims.sql | "
+            f"SUPPORTED: sql_proofs/{fact}_trends.sql | "
+            f"SUPPORTED: sql_proofs/{fact}_period.sql | "
+            f"SUPPORTED: sql_proofs/{fact}_quality.sql | "
+            f"SUPPORTED: sql_proofs/{fact}_exceptions.sql | "
+            f"NOT_APPLICABLE: aging not in first-pass scope | "
+            f"SUPPORTED: sql_proofs/{fact}_recon.sql | "
+            f"volume and completion | Fixture notes | PASS |"
         )
         fact_catalog_rows.append(f"| {fact} | event | PASS |")
 
@@ -1265,11 +1382,20 @@ def main() -> int:
     else:
         print("[PASS] check_domain_neutrality.py")
 
+    # Refresh domain_a MCP review hashes after live DOM / presentation mutations.
+    domain_a = FIX / "domain_a_transactional"
+    try:
+        refresh_domain_a_llm_review(domain_a)
+        print("[PASS] domain_a_transactional :: refresh_llm_playwright_review")
+    except Exception as exc:
+        failures += 1
+        print(f"[FAIL] domain_a_transactional :: refresh_llm_playwright_review :: {exc}")
+
     for domain in DOMAINS:
         root = FIX / domain["slug"]
         for script_name, extra_args in (
             ("run_acceptance_gate.py", ["--phase", "final", "--strict", "--skip-dbt"]),
-            ("run_independent_verifier.py", []),
+            ("run_independent_verifier.py", ["--phase", "final"]),
         ):
             cmd = [sys.executable, str(SCRIPTS / script_name), "--root", str(root), *extra_args]
             proc = subprocess.run(cmd, cwd=str(SCRIPTS), capture_output=True, text=True)

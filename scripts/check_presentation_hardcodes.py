@@ -7,6 +7,9 @@ and non-secret env / project config — never from copied passwords or machine p
 
 from __future__ import annotations
 
+from pathlib import Path
+from lib_gate_common import add_output_json_arg, print_results
+
 import argparse
 import re
 import sys
@@ -24,19 +27,34 @@ ABSOLUTE_CODEBASE_RE = re.compile(
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    add_output_json_arg(parser)
     parser.add_argument("--root", type=Path, default=Path("."))
     args = parser.parse_args()
     root = args.root.resolve()
     presentation = root / "reports" / "agent" / "10_presentation"
     if not presentation.exists():
-        print("SKIPPED: no presentation folder")
-        return 0
+        return print_results(
+            "Presentation hardcode check",
+            [],
+            [],
+            output_json=getattr(args, "output_json", None),
+            validator_id=Path(__file__).stem,
+            skipped=True,
+            skip_reason="no presentation folder",
+        )
 
     errors: list[str] = []
     py_files = [p for p in presentation.rglob("*.py") if "__pycache__" not in p.parts]
     if not py_files:
-        print("SKIPPED: no presentation Python files")
-        return 0
+        return print_results(
+            "Presentation hardcode check",
+            [],
+            [],
+            output_json=getattr(args, "output_json", None),
+            validator_id=Path(__file__).stem,
+            skipped=True,
+            skip_reason="no presentation Python files",
+        )
 
     for path in py_files:
         text = path.read_text(encoding="utf-8", errors="replace")
@@ -49,13 +67,13 @@ def main() -> int:
             errors.append(f"{rel}: references another agentic_dbt_* project id")
 
     print(f"Checked {len(py_files)} presentation Python file(s)")
-    for item in errors:
-        print(f"ERROR: {item}")
-    if errors:
-        print("Presentation hardcode check FAILED")
-        return 1
-    print("Presentation hardcode check PASSED")
-    return 0
+    return print_results(
+        "Presentation hardcode check",
+        errors,
+        [],
+        output_json=getattr(args, "output_json", None),
+        validator_id=Path(__file__).stem,
+    )
 
 
 if __name__ == "__main__":

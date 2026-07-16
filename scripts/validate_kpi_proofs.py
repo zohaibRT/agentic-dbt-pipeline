@@ -8,6 +8,7 @@ import sys
 from pathlib import Path
 
 from lib_gate_common import (
+    add_output_json_arg,
     catalog_item_count,
     cell,
     print_results,
@@ -120,6 +121,7 @@ def count_catalog_rows(paths: tuple[Path, ...]) -> int:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    add_output_json_arg(parser)
     parser.add_argument("--root", type=Path, default=Path("."), help="Project or workspace root")
     parser.add_argument("--min-measures", type=int, default=0, help="Minimum measure catalog rows")
     parser.add_argument("--min-metrics", type=int, default=0, help="Minimum metric catalog rows")
@@ -245,7 +247,7 @@ def main() -> int:
     print(f"  sql proof files: {len(proof_files)}")
     print(f"  referenced proofs: {len(referenced_proofs)}")
 
-    return print_results("KPI proof validation", errors, warnings)
+    return print_results("KPI proof validation", errors, warnings, output_json=getattr(args, "output_json", None), validator_id=Path(__file__).stem)
 
 
 if __name__ == "__main__":

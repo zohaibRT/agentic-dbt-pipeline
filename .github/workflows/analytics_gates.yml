@@ -76,14 +76,21 @@ jobs:
           set -euo pipefail
           for fixture in fixtures/dbt_duckdb/domain_*; do
             echo "=== Independent verifier: $fixture ==="
-            python scripts/run_independent_verifier.py --root "$fixture"
+            python scripts/run_independent_verifier.py --root "$fixture" --phase final
             test -f "$fixture/reports/agent/INDEPENDENT_VERIFICATION_REPORT.json"
             test -f "$fixture/reports/agent/INDEPENDENT_VERIFICATION_REPORT.md"
-            python - <<PY
+            # Pass fixture path via argv; quoted heredoc avoids literal $fixture bugs
+            python - "$fixture" <<'PY'
           import json, pathlib, sys
-          root = pathlib.Path("$fixture")
+          root = pathlib.Path(sys.argv[1])
           payload = json.loads((root / "reports/agent/INDEPENDENT_VERIFICATION_REPORT.json").read_text())
           assert payload.get("overall_status") == "PASS", payload
+          # Live browser must be PASS (not SKIPPED) when interactive report exists
+          interactive = (root / "reports/agent/10_presentation/matplotlib/report.html").exists()
+          if interactive:
+              live_children = [c for c in payload.get("results") or [] if "live" in str(c.get("script","")).lower() or c.get("category") == "live_browser"]
+              for child in live_children:
+                  assert child.get("status") == "PASS", child
           print("independent verifier asserted PASS for", root)
           PY
           done
@@ -95,12 +102,58 @@ jobs:
             echo "=== Strict final gate: $fixture ==="
             python scripts/run_acceptance_gate.py --root "$fixture" --phase final --strict --skip-dbt
             test -f "$fixture/reports/agent/ACCEPTANCE_GATE_REPORT.json"
-            python - <<PY
-          import json, pathlib
-          root = pathlib.Path("$fixture")
+            # Pass fixture path via argv; quoted heredoc avoids literal $fixture bugs
+            python - "$fixture" <<'PY'
+          import json, pathlib, sys
+          root = pathlib.Path(sys.argv[1])
           payload = json.loads((root / "reports/agent/ACCEPTANCE_GATE_REPORT.json").read_text())
           status = payload.get("overall_status") or payload.get("status")
           assert status == "PASS", payload
+          # No unaccepted warnings under strict final
+          for record in payload.get("warning_records") or []:
+              if not record.get("accepted"):
+                  raise AssertionError(f"unaccepted warning remains: {record}")
+          # Every required validator produced schema-valid result JSON
+          result_dir = root / "reports/agent/_validator_results"
+          assert result_dir.exists(), "missing _validator_results"
+          never_skip = {
+              "validate_live_report_dom.json",
+              "independent_validate_live_report_dom.json",
+              "check_human_approval_coverage.json",
+              "verify_metric_reconciliation.json",
+              "check_model_classification_coverage.json",
+          }
+          for path in sorted(result_dir.glob("*.json")):
+              data = json.loads(path.read_text(encoding="utf-8"))
+              assert data.get("schema_version") in {"1", "1.0"}, path
+              assert data.get("validator_id"), path
+              if path.name in never_skip:
+                  assert data.get("status") != "SKIPPED", f"required validator SKIPPED: {path.name}"
+              if data.get("status") == "WARN":
+                  assert data.get("warnings"), data
+          live = root / "reports/agent/10_presentation/LIVE_REPORT_DOM_REPORT.json"
+          if (root / "reports/agent/10_presentation/matplotlib/report.html").exists():
+              live_payload = json.loads(live.read_text())
+              assert live_payload.get("status") == "PASS", live_payload
+          # Human approval numerator == denominator for production fixtures
+          hitl = result_dir / "check_human_approval_coverage.json"
+          if hitl.exists():
+              hitl_payload = json.loads(hitl.read_text(encoding="utf-8"))
+              details = hitl_payload.get("details") or {}
+              num = details.get("production_approved", details.get("approved_count", details.get("numerator")))
+              den = details.get("production_total", details.get("denominator"))
+              if den is not None and int(den) > 0:
+                  assert int(num) == int(den), (num, den, hitl_payload)
+          # Governed reconciliation exceptions remain calculated FAIL with approved waiver
+          recon = result_dir / "verify_metric_reconciliation.json"
+          if recon.exists():
+              recon_payload = json.loads(recon.read_text(encoding="utf-8"))
+              for item in (recon_payload.get("details") or {}).get("governed_exceptions") or []:
+                  assert str(item.get("calculated_status") or "").upper() == "FAIL", item
+                  assert str(item.get("governance_disposition") or "").upper() in {
+                      "APPROVED_WAIVER",
+                      "APPROVED_WITH_CONDITIONS",
+                  }, item
           print("strict final gate asserted PASS for", root)
           PY
           done

@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import re
+from dataclasses import dataclass, field
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from typing import Any
@@ -441,6 +442,17 @@ def load_presentation_policy(root: Path) -> dict[str, Any]:
         "interactive_renderer": "plotly",
         "static_renderer": "matplotlib",
         "require_live_browser_validation": True,
+        "require_live_browser_at_final": True,
+        "require_llm_playwright_review_at_final": True,
+        "llm_playwright_review_required_for_release": True,
+        "llm_playwright_review_required_in_ci": False,
+        "require_llm_review_artifact_freshness": True,
+        "require_llm_review_page_coverage": 1.0,
+        "require_llm_review_visual_coverage": 1.0,
+        "llm_review_block_on_critical_findings": True,
+        "llm_review_block_on_high_findings": True,
+        "llm_playwright_review_applicability": "required",
+        "llm_review_viewports": ["desktop", "tablet", "mobile"],
         "live_browser_viewports": ["desktop", "tablet", "mobile"],
         "render_modes": ["auto", "interactive_html", "static_image"],
     }
@@ -548,6 +560,14 @@ KNOWN_VALIDATION_TYPES = frozenset(
         "row_count_match",
         "set_match",
         "acceptance_rule",
+        "sql_boolean",
+        "numeric_comparison",
+        "set_constraint",
+        "regex_match",
+        "row_count_constraint",
+        "approved_human_decision",
+        "artifact_presence",
+        "custom_python_predicate",
         "blocked",
         "deferred",
     }
@@ -1976,11 +1996,323 @@ def ratio(numerator: int, denominator: int) -> float | None:
     return numerator / denominator
 
 
-def print_results(title: str, errors: list[str], warnings: list[str]) -> int:
+VALIDATOR_RESULT_SCHEMA_VERSION = "1.0"
+VALIDATOR_RESULT_SCHEMA_VERSIONS = frozenset({"1", "1.0"})
+
+
+@dataclass
+class ValidatorWarning:
+    warning_id: str
+    message: str
+
+    def to_dict(self) -> dict[str, str]:
+        return {"warning_id": self.warning_id, "message": self.message}
+
+
+@dataclass
+class ValidatorResult:
+    """Machine-readable validator outcome (schema_version=1.0)."""
+
+    validator_id: str
+    status: str  # PASS | WARN | FAIL | BLOCKED | SKIPPED
+    errors: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
+    details: dict[str, Any] = field(default_factory=dict)
+    checked_at: str = ""
+    schema_version: str = VALIDATOR_RESULT_SCHEMA_VERSION
+    warning_ids: list[str] = field(default_factory=list)
+    applicability: str = ""
+
+    def structured_warnings(self) -> list[ValidatorWarning]:
+        items: list[ValidatorWarning] = []
+        ids = list(self.warning_ids)
+        for index, message in enumerate(self.warnings):
+            wid = ids[index] if index < len(ids) else stable_warning_id(self.validator_id, message, index)
+            items.append(ValidatorWarning(warning_id=wid, message=message))
+        return items
+
+    def to_dict(self) -> dict[str, Any]:
+        structured = self.structured_warnings()
+        return {
+            "schema_version": self.schema_version,
+            "validator_id": self.validator_id,
+            "status": self.status,
+            "errors": list(self.errors),
+            "warnings": [item.to_dict() for item in structured],
+            "details": dict(self.details),
+            "checked_at": self.checked_at,
+            "warning_ids": [item.warning_id for item in structured],
+            "applicability": self.applicability,
+        }
+
+
+def stable_warning_id(validator_id: str, message: str, index: int) -> str:
+    """Stable warning id for acceptance matching (not full-message substring)."""
+    import hashlib
+
+    digest = hashlib.sha1(f"{validator_id}|{message.strip()}".encode("utf-8")).hexdigest()[:12]
+    return f"{validator_id}:w{index}:{digest}"
+
+
+def build_validator_result(
+    validator_id: str,
+    errors: list[str],
+    warnings: list[str],
+    *,
+    details: dict[str, Any] | None = None,
+    skipped: bool = False,
+    skip_reason: str = "",
+    blocked: bool = False,
+) -> ValidatorResult:
+    from datetime import datetime, timezone
+
+    warning_ids = [stable_warning_id(validator_id, w, i) for i, w in enumerate(warnings)]
+    checked_at = datetime.now(timezone.utc).isoformat()
+    if skipped:
+        status = "SKIPPED"
+    elif blocked or any("BLOCKED" in e.upper() for e in errors):
+        status = "BLOCKED" if blocked else "FAIL"
+    elif errors:
+        status = "FAIL"
+    elif warnings:
+        status = "WARN"
+    else:
+        status = "PASS"
+    return ValidatorResult(
+        validator_id=validator_id,
+        status=status,
+        errors=list(errors),
+        warnings=list(warnings),
+        details=dict(details or {}),
+        checked_at=checked_at,
+        warning_ids=warning_ids,
+        applicability=skip_reason if skipped else "",
+    )
+
+
+def write_validator_result_json(path: Path | str | None, result: ValidatorResult) -> None:
+    if not path:
+        return
+    out = Path(path)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(result.to_dict(), indent=2) + "\n", encoding="utf-8")
+
+
+def write_validator_result(path: Path | str | None, result: ValidatorResult) -> None:
+    """Alias for write_validator_result_json."""
+    write_validator_result_json(path, result)
+
+
+def validate_validator_result_schema(data: dict[str, Any]) -> None:
+    """Raise ValueError when ValidatorResult JSON is invalid or contradictory."""
+    from datetime import datetime
+
+    if not isinstance(data, dict):
+        raise ValueError("validator result must be a JSON object")
+    schema = str(data.get("schema_version") or "")
+    if schema not in VALIDATOR_RESULT_SCHEMA_VERSIONS:
+        raise ValueError(f"unknown or missing schema_version: {schema!r}")
+    validator_id = str(data.get("validator_id") or "").strip()
+    if not validator_id:
+        raise ValueError("missing validator_id")
+    status = str(data.get("status") or "").upper()
+    if status not in {"PASS", "WARN", "FAIL", "BLOCKED", "SKIPPED"}:
+        raise ValueError(f"invalid status: {status!r}")
+    errors = data.get("errors") or []
+    warnings = data.get("warnings") or []
+    if not isinstance(errors, list):
+        raise ValueError("errors must be a list")
+    if not isinstance(warnings, list):
+        raise ValueError("warnings must be a list")
+    details = data.get("details")
+    if details is None:
+        details = {}
+    if not isinstance(details, dict):
+        raise ValueError("details must be an object")
+    checked_at = str(data.get("checked_at") or "").strip()
+    if not checked_at:
+        raise ValueError("missing checked_at")
+    # Accept ISO-8601 with optional Z / offset
+    parsed_ok = False
+    for candidate in (checked_at, checked_at.replace("Z", "+00:00")):
+        try:
+            datetime.fromisoformat(candidate)
+            parsed_ok = True
+            break
+        except ValueError:
+            continue
+    if not parsed_ok:
+        raise ValueError(f"checked_at is not a valid ISO-8601 timestamp: {checked_at!r}")
+    # Unique warning IDs (prefer structured warning objects; fall back to warning_ids)
+    warning_ids: list[str] = []
+    structured_ids = False
+    for item in warnings:
+        if isinstance(item, dict):
+            structured_ids = True
+            wid = str(item.get("warning_id") or "").strip()
+            if wid:
+                warning_ids.append(wid)
+    if not structured_ids:
+        for wid in data.get("warning_ids") or []:
+            token = str(wid).strip()
+            if token:
+                warning_ids.append(token)
+    if warning_ids and len(warning_ids) != len(set(warning_ids)):
+        raise ValueError("warning_ids must be unique")
+    # Contradictions in payload itself
+    if status == "PASS" and warnings:
+        raise ValueError("JSON status PASS must not contain warnings")
+    if status == "WARN" and errors:
+        raise ValueError("JSON status WARN must not contain errors")
+    if status == "PASS" and errors:
+        raise ValueError("JSON status PASS must not contain errors")
+    if status == "WARN" and not warnings:
+        raise ValueError("JSON status WARN requires at least one warning")
+    if status == "FAIL" and not errors:
+        raise ValueError("JSON status FAIL requires errors")
+    if status == "BLOCKED":
+        has_blocker = bool(errors) or bool(
+            details.get("blocker") or details.get("blocking_reason") or details.get("blocked_reason")
+        )
+        if not has_blocker:
+            raise ValueError(
+                "JSON status BLOCKED requires errors or details.blocker/blocking_reason"
+            )
+
+
+def _normalize_warning_entries(raw_warnings: list[Any], warning_ids: list[str], validator_id: str) -> tuple[list[str], list[str]]:
+    messages: list[str] = []
+    ids: list[str] = []
+    for index, item in enumerate(raw_warnings):
+        if isinstance(item, dict):
+            message = str(item.get("message") or item.get("warning") or "").strip()
+            wid = str(item.get("warning_id") or "").strip()
+            if not message and not wid:
+                continue
+            if not message:
+                message = wid
+            if not wid:
+                wid = warning_ids[index] if index < len(warning_ids) else stable_warning_id(validator_id, message, index)
+            messages.append(message)
+            ids.append(wid)
+        else:
+            message = str(item).strip()
+            if not message:
+                continue
+            wid = warning_ids[index] if index < len(warning_ids) else stable_warning_id(validator_id, message, index)
+            messages.append(message)
+            ids.append(wid)
+    if not ids and warning_ids:
+        ids = [str(x) for x in warning_ids]
+    return messages, ids
+
+
+def load_validator_result_json(path: Path | str) -> ValidatorResult:
+    data = json.loads(Path(path).read_text(encoding="utf-8"))
+    validate_validator_result_schema(data)
+    validator_id = str(data.get("validator_id") or Path(path).stem)
+    status = str(data.get("status") or "").upper()
+    raw_warnings = list(data.get("warnings") or [])
+    warning_ids_raw = [str(x) for x in (data.get("warning_ids") or [])]
+    messages, warning_ids = _normalize_warning_entries(raw_warnings, warning_ids_raw, validator_id)
+    return ValidatorResult(
+        validator_id=validator_id,
+        status=status,
+        errors=[str(x) for x in (data.get("errors") or [])],
+        warnings=messages,
+        details=dict(data.get("details") or {}),
+        checked_at=str(data.get("checked_at") or ""),
+        schema_version=str(data.get("schema_version") or VALIDATOR_RESULT_SCHEMA_VERSION),
+        warning_ids=warning_ids,
+        applicability=str(data.get("applicability") or ""),
+    )
+
+
+def read_validator_result(path: Path | str) -> ValidatorResult:
+    """Alias for load_validator_result_json."""
+    return load_validator_result_json(path)
+
+
+def finalize_validator_result(
+    validator_id: str,
+    errors: list[str],
+    warnings: list[str],
+    *,
+    output_json: Path | str | None = None,
+    details: dict[str, Any] | None = None,
+    skipped: bool = False,
+    skip_reason: str = "",
+) -> ValidatorResult:
+    """Build, optionally write, and return a ValidatorResult."""
+    result = build_validator_result(
+        validator_id,
+        errors,
+        warnings,
+        details=details,
+        skipped=skipped,
+        skip_reason=skip_reason,
+    )
+    write_validator_result_json(output_json, result)
+    return result
+
+
+def add_output_json_arg(parser: Any) -> None:
+    """Attach --output-json to an ArgumentParser."""
+    parser.add_argument(
+        "--output-json",
+        type=Path,
+        default=None,
+        help="Write machine-readable ValidatorResult JSON to this path",
+    )
+
+
+def add_result_output_argument(parser: Any) -> None:
+    """Alias for add_output_json_arg (shared result protocol)."""
+    add_output_json_arg(parser)
+
+
+def print_results(
+    title: str,
+    errors: list[str],
+    warnings: list[str],
+    *,
+    output_json: Path | str | None = None,
+    validator_id: str | None = None,
+    details: dict[str, Any] | None = None,
+    skipped: bool = False,
+    skip_reason: str = "",
+) -> int:
+    """Print human-readable results and optionally write ValidatorResult JSON.
+
+    Exit codes (direct CLI usage preserved):
+      FAIL/BLOCKED -> 1
+      PASS/WARN/SKIPPED -> 0
+    JSON status always reflects WARN when warnings exist without errors.
+    """
+    vid = validator_id or re.sub(r"[^a-z0-9_]+", "_", title.lower()).strip("_") or "validator"
+    result = build_validator_result(
+        vid,
+        errors,
+        warnings,
+        details=details,
+        skipped=skipped,
+        skip_reason=skip_reason,
+    )
+    write_validator_result_json(output_json, result)
+
+    if skipped:
+        reason = skip_reason or title
+        print(f"SKIPPED: {reason}")
+        print(f"STATUS: SKIPPED")
+        return 0
+
     for item in warnings:
         print(f"WARN: {item}")
     for item in errors:
         print(f"ERROR: {item}")
+    print(f"STATUS: {result.status}")
+    if result.warning_ids:
+        print("WARNING_IDS: " + ", ".join(result.warning_ids))
     if errors:
         print(f"{title} FAILED")
         return 1
@@ -1989,3 +2321,822 @@ def print_results(title: str, errors: list[str], warnings: list[str]) -> int:
         return 0
     print(f"{title} PASSED")
     return 0
+
+
+def project_package_name(root: Path) -> str:
+    """Public local package name from dbt_project.yml (not inventory order)."""
+    return _project_package_name(root)
+
+
+# ---------------------------------------------------------------------------
+# Production KPI obligation inventory (human-approval denominator)
+# ---------------------------------------------------------------------------
+
+PRODUCTION_KPI_INTENT_TOKENS = frozenset(
+    {
+        "production",
+        "trusted",
+        "rendered",
+        "executive",
+        "approved",
+        "proposed",
+        "conditionally approved",
+        "approved_with_conditions",
+        "pending_review",
+        "not_requested",
+    }
+)
+
+PENDING_BUSINESS_STATUSES = frozenset(
+    {
+        "PENDING_REVIEW",
+        "NOT_REQUESTED",
+        "PROPOSED",
+        "REJECTED",
+        "BLOCKED",
+        "DEFERRED",
+        "",
+    }
+)
+
+APPROVED_BUSINESS_STATUSES = frozenset({"APPROVED", "APPROVED_WITH_CONDITIONS"})
+
+
+@dataclass
+class ProductionKpiObligation:
+    kpi_id: str
+    source_artifacts: list[str] = field(default_factory=list)
+    technical_status: str = ""
+    business_approval_status: str = ""
+    owner: str = ""
+    approver: str = ""
+    approval_evidence: str = ""
+    approval_date: str = ""
+    contract_version: str = ""
+    contract_fingerprint: str = ""
+    trusted_or_executive: bool = False
+    resolution_state: str = "OPEN"
+
+
+def _load_json_file(path: Path) -> Any:
+    if not path.exists():
+        return None
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+
+
+def _table_rows_any(path: Path, required_any: set[str]) -> list[dict[str, str]]:
+    if not path.exists():
+        return []
+    rows: list[dict[str, str]] = []
+    for headers, data in parse_markdown_tables(read_text(path)):
+        norm = [normalize_header(h) for h in headers]
+        if not (set(norm) & required_any):
+            continue
+        for cells in data:
+            row = {
+                norm[i]: (cells[i].strip() if i < len(cells) else "")
+                for i in range(len(norm))
+                if norm[i]
+            }
+            first = next(iter(row.values()), "")
+            if first.lower() in {"none", "n/a", "na", "<d-01>", "todo"}:
+                continue
+            rows.append(row)
+    return rows
+
+
+def _add_obligation(
+    bag: dict[str, ProductionKpiObligation],
+    kpi_id: str,
+    artifact: str,
+    *,
+    trusted: bool = False,
+) -> ProductionKpiObligation:
+    kid = (kpi_id or "").strip()
+    if not kid or kid.lower() in {"n/a", "na", "none", "todo", "tbd"}:
+        raise ValueError("empty kpi_id")
+    # Prefer stable IDs — reject pure display-name tokens when they look like sentences
+    obl = bag.get(kid)
+    if obl is None:
+        obl = ProductionKpiObligation(kpi_id=kid)
+        bag[kid] = obl
+    if artifact not in obl.source_artifacts:
+        obl.source_artifacts.append(artifact)
+    if trusted:
+        obl.trusted_or_executive = True
+    return obl
+
+
+def discover_production_kpi_obligations(root: Path) -> list[ProductionKpiObligation]:
+    """Discover all production KPIs requiring business approval (canonical kpi_id).
+
+    Sources:
+      1. KPI_DEFINITION_CONTRACTS.md
+      2. Strategic KPI catalog rows
+      3. rendered_metric_manifest.json
+      4. page_registry.json primary_kpi_ids
+      5. report_page_contracts.md primary KPI fields
+      6. trusted/executive presentation items
+    """
+    root = Path(root)
+    bag: dict[str, ProductionKpiObligation] = {}
+
+    contracts_path = root / "reports" / "agent" / "KPI_DEFINITION_CONTRACTS.md"
+    contract_rows = _table_rows_any(
+        contracts_path,
+        {"kpi_id", "kpi", "sql_proof", "business_approval_status", "approval"},
+    )
+    for index, row in enumerate(contract_rows, start=1):
+        kpi_id = cell(row, "kpi_id", "id") or ""
+        display = cell(row, "kpi", "display_name")
+        # Canonical ID preferred; fall back to display only when no kpi_id column value
+        canonical = kpi_id or display
+        if not canonical:
+            continue
+        if not kpi_id and display:
+            # Display-only rows are still tracked but flagged in resolution_state
+            pass
+        intent = " ".join(
+            [
+                cell(row, "trust_level", "trust"),
+                cell(row, "production_status", "production"),
+                cell(row, "audience"),
+                cell(row, "notes"),
+                business_approval_status(row),
+                cell(row, "approval", "approval_status"),
+            ]
+        ).lower()
+        biz = business_approval_status(row)
+        legacy = cell(row, "approval", "approval_status").upper()
+        # Production intent: approved/proposed/conditionally approved, or explicit production markers.
+        # Pending/not_requested alone does NOT imply production obligation unless other artifacts
+        # (trusted/executive/rendered) pull the KPI in later.
+        is_production_intent = (
+            biz in APPROVED_BUSINESS_STATUSES
+            or legacy in {"APPROVED", "APPROVED_WITH_CONDITIONS", "PROPOSED"}
+            or any(
+                tok in intent
+                for tok in (
+                    "production",
+                    "trusted",
+                    "executive",
+                    "conditionally approved",
+                    "approved_with_conditions",
+                )
+            )
+        )
+        if not is_production_intent:
+            continue
+        try:
+            obl = _add_obligation(bag, canonical, "KPI_DEFINITION_CONTRACTS.md")
+        except ValueError:
+            continue
+        obl.technical_status = technical_verification_status(row)
+        obl.business_approval_status = biz or legacy or "NOT_REQUESTED"
+        obl.owner = cell(row, "business_owner", "owner")
+        obl.approver = cell(row, "approver", "approved_by")
+        obl.approval_evidence = cell(row, "approval_evidence", "approval evidence", "evidence_path")
+        obl.approval_date = cell(row, "approval_date", "approval date", "approved_at")
+        obl.contract_version = cell(row, "contract_version", "version")
+        obl.contract_fingerprint = cell(row, "contract_fingerprint", "fingerprint") or compute_contract_fingerprint(row)
+
+    # Strategic catalog
+    for rel in (
+        Path("reports/agent/09_analytics_insights/strategic_kpi_catalog.md"),
+        Path("reports/agent/09_analytics_insights/kpi_catalog.md"),
+        Path("reports/agent/STRATEGIC_KPI_CATALOG.md"),
+    ):
+        path = root / rel
+        for row in _table_rows_any(path, {"kpi_id", "metric_id", "strategic"}):
+            kid = cell(row, "kpi_id", "metric_id", "id")
+            if not kid:
+                continue
+            try:
+                _add_obligation(bag, kid, rel.as_posix())
+            except ValueError:
+                continue
+
+    # Rendered metric manifest
+    for manifest_rel in (
+        Path("reports/agent/10_presentation/rendered_metric_manifest.json"),
+        Path("reports/agent/10_presentation/matplotlib/rendered_metric_manifest.json"),
+    ):
+        data = _load_json_file(root / manifest_rel)
+        if not data:
+            continue
+        metrics = data.get("metrics") if isinstance(data, dict) else data
+        if isinstance(metrics, dict):
+            metrics = list(metrics.values())
+        if not isinstance(metrics, list):
+            continue
+        for item in metrics:
+            if not isinstance(item, dict):
+                continue
+            kid = str(item.get("kpi_id") or item.get("metric_id") or "").strip()
+            if not kid:
+                continue
+            trust = str(item.get("trust_level") or item.get("trust") or "").upper()
+            # DRAFT / PENDING / PROPOSED rendered items are not production obligations
+            if trust in {"DRAFT", "PENDING", "PENDING_REVIEW", "PROPOSED", "NOT_REQUESTED"}:
+                continue
+            trusted = trust in {"TRUSTED", "PRODUCTION", "EXECUTIVE"} or bool(
+                item.get("executive") or item.get("trusted")
+            )
+            # Only production obligations from manifest when trusted/production or explicitly approved
+            biz = str(item.get("business_approval_status") or item.get("approval_status") or "").upper()
+            if not trusted and biz not in APPROVED_BUSINESS_STATUSES:
+                continue
+            try:
+                obl = _add_obligation(bag, kid, manifest_rel.as_posix(), trusted=trusted)
+            except ValueError:
+                continue
+            if not obl.technical_status:
+                obl.technical_status = str(item.get("technical_status") or item.get("status") or "")
+            if biz and not obl.business_approval_status:
+                obl.business_approval_status = biz
+
+    # page_registry.json
+    for preg_rel in (
+        Path("reports/agent/10_presentation/page_registry.json"),
+        Path("reports/agent/10_presentation/matplotlib/page_registry.json"),
+    ):
+        data = _load_json_file(root / preg_rel)
+        if not data:
+            continue
+        pages = data.get("pages") if isinstance(data, dict) else data
+        if isinstance(pages, dict):
+            pages = list(pages.values())
+        if not isinstance(pages, list):
+            continue
+        for page in pages:
+            if not isinstance(page, dict):
+                continue
+            page_class = str(page.get("page_class") or page.get("page_type") or "").lower()
+            audience = str(page.get("audience") or "").lower()
+            # Executive/leadership trusted pages create production KPI obligations for primary KPIs.
+            # Operational DQ/pipeline pages may be marked trusted for ops but are not executive KPIs
+            # unless they are also primary on an executive page.
+            page_trusted = (
+                "executive" in page_class
+                or "leadership" in audience
+                or (
+                    bool(page.get("trusted"))
+                    and any(t in audience for t in ("executive", "leadership", "c-suite"))
+                )
+            )
+            if not page_trusted:
+                continue
+            primary = page.get("primary_kpi_ids") or page.get("primary_kpis") or []
+            if isinstance(primary, str):
+                primary = [p.strip() for p in primary.split(",") if p.strip()]
+            for kid in primary:
+                token = str(kid).strip()
+                if not token or token.upper().startswith("NOT_APPLICABLE"):
+                    continue
+                try:
+                    _add_obligation(bag, token, preg_rel.as_posix(), trusted=True)
+                except ValueError:
+                    continue
+
+    # report_page_contracts.md
+    rpc = root / "reports" / "agent" / "10_presentation" / "report_page_contracts.md"
+    for row in _table_rows_any(rpc, {"page_id", "page", "primary_kpi", "primary_kpi_ids"}):
+        kids = cell(row, "primary_kpi_ids", "primary_kpi", "kpi_id", "primary kpis")
+        page_label = cell(row, "page_type", "audience", "trust", "notes", "page_class", "page").lower()
+        is_exec = any(t in page_label for t in ("executive", "trusted", "production", "leadership"))
+        if not is_exec:
+            continue
+        for part in re.split(r"[,;|]", kids):
+            kid = part.strip()
+            if not kid or kid.upper().startswith("NOT_APPLICABLE"):
+                continue
+            try:
+                _add_obligation(bag, kid, "report_page_contracts.md", trusted=True)
+            except ValueError:
+                continue
+
+    # HTML: only mark trusted when element has explicit trust/executive attributes
+    report_html = root / "reports" / "agent" / "10_presentation" / "matplotlib" / "report.html"
+    if report_html.exists():
+        html = read_text(report_html)
+        for match in re.finditer(
+            r'data-kpi-id=["\']([^"\']+)["\'][^>]*(?:data-trust-level|data-trust|trust_level)=["\']([^"\']+)["\']',
+            html,
+            re.I,
+        ):
+            kid, trust = match.group(1), match.group(2).upper()
+            if trust in {"TRUSTED", "PRODUCTION", "EXECUTIVE"}:
+                try:
+                    _add_obligation(bag, kid, "report.html", trusted=True)
+                except ValueError:
+                    continue
+        for match in re.finditer(
+            r'(?:data-trust-level|data-trust)=["\'](TRUSTED|PRODUCTION|EXECUTIVE)["\'][^>]*data-kpi-id=["\']([^"\']+)["\']',
+            html,
+            re.I,
+        ):
+            try:
+                _add_obligation(bag, match.group(2), "report.html", trusted=True)
+            except ValueError:
+                continue
+
+    # Fill resolution_state
+    for obl in bag.values():
+        if obl.business_approval_status in APPROVED_BUSINESS_STATUSES:
+            obl.resolution_state = "APPROVED"
+        elif obl.business_approval_status in {"BLOCKED", "DEFERRED", "REJECTED"}:
+            obl.resolution_state = obl.business_approval_status
+        elif obl.trusted_or_executive and not obl.business_approval_status:
+            obl.business_approval_status = "NOT_REQUESTED"
+            obl.resolution_state = "OPEN"
+        else:
+            obl.resolution_state = "OPEN"
+
+    return sorted(bag.values(), key=lambda o: o.kpi_id.lower())
+
+
+def has_production_presentation_artifacts(root: Path) -> bool:
+    """True when trusted/executive/production presentation artifacts exist."""
+    root = Path(root)
+    html = root / "reports" / "agent" / "10_presentation" / "matplotlib" / "report.html"
+    if html.exists():
+        text = read_text(html)
+        if re.search(r"\b(trusted|executive|production)\b", text, re.I):
+            return True
+    for rel in (
+        "reports/agent/10_presentation/page_registry.json",
+        "reports/agent/10_presentation/rendered_metric_manifest.json",
+        "reports/agent/10_presentation/matplotlib/rendered_metric_manifest.json",
+    ):
+        data = _load_json_file(root / rel)
+        if not data:
+            continue
+        blob = json.dumps(data).lower()
+        if any(tok in blob for tok in ("trusted", "executive", "production")):
+            return True
+    return False
+
+
+# ---------------------------------------------------------------------------
+# Reconciliation waiver register
+# ---------------------------------------------------------------------------
+
+RECONCILIATION_WAIVER_REGISTER = Path("reports/agent/RECONCILIATION_WAIVER_REGISTER.md")
+
+
+@dataclass
+class ReconciliationWaiver:
+    waiver_id: str
+    kpi_id: str
+    validation_type: str = ""
+    calculated_result: str = ""
+    calculated_difference: str = ""
+    tolerance: str = ""
+    reason: str = ""
+    business_impact: str = ""
+    risk_owner: str = ""
+    approver: str = ""
+    approval_evidence: str = ""
+    approval_date: str = ""
+    expiry_or_review: str = ""
+    current_status: str = ""
+    fingerprint: str = ""
+    raw: dict[str, str] = field(default_factory=dict)
+
+
+def load_reconciliation_waivers(root: Path) -> list[ReconciliationWaiver]:
+    path = Path(root) / RECONCILIATION_WAIVER_REGISTER
+    rows = _table_rows_any(
+        path,
+        {"waiver_id", "kpi_id", "metric_id", "object_id", "approver", "risk_owner"},
+    )
+    waivers: list[ReconciliationWaiver] = []
+    for row in rows:
+        wid = cell(row, "waiver_id", "id")
+        kid = cell(row, "object_id", "kpi_id", "metric_id", "object id")
+        if not wid or not kid:
+            continue
+        disposition = cell(
+            row,
+            "governance_disposition",
+            "disposition",
+            "current_status",
+            "status",
+            "waiver_status",
+        ).upper()
+        waivers.append(
+            ReconciliationWaiver(
+                waiver_id=wid,
+                kpi_id=kid,
+                validation_type=cell(row, "validation_type"),
+                calculated_result=cell(row, "calculated_result", "calculated_status"),
+                calculated_difference=cell(row, "calculated_difference", "difference"),
+                tolerance=cell(row, "tolerance"),
+                reason=cell(row, "reason"),
+                business_impact=cell(row, "business_impact", "impact"),
+                risk_owner=cell(row, "risk_owner", "owner"),
+                approver=cell(row, "approver", "approved_by"),
+                approval_evidence=cell(row, "approval_evidence", "evidence"),
+                approval_date=cell(row, "approval_date", "approved_at"),
+                expiry_or_review=cell(
+                    row,
+                    "expiry_or_review_condition",
+                    "expiry",
+                    "review_condition",
+                    "approval_expiry_or_review_condition",
+                ),
+                current_status=disposition,
+                fingerprint=cell(
+                    row,
+                    "reconciliation_fingerprint",
+                    "contract_fingerprint",
+                    "fingerprint",
+                ),
+                raw=row,
+            )
+        )
+    return waivers
+
+
+def validate_reconciliation_waiver(
+    root: Path,
+    waiver: ReconciliationWaiver,
+    *,
+    expected_kpi_id: str,
+    expected_fingerprint: str = "",
+    expected_validation_type: str = "",
+    expected_calculated_status: str = "FAIL",
+    expected_difference: str | float | None = None,
+    expected_tolerance: str = "",
+    today: Any = None,
+) -> tuple[bool, list[str], str]:
+    """Return (ok, errors, governance_disposition).
+
+    Does not convert calculated FAIL into technical PASS.
+    Binds waiver fields to live reconciliation result.
+    """
+    from datetime import date as date_cls, datetime
+
+    errors: list[str] = []
+    if today is None:
+        today = date_cls.today()
+
+    if normalize_field_value(waiver.kpi_id) != normalize_field_value(expected_kpi_id):
+        errors.append(f"waiver {waiver.waiver_id}: kpi_id mismatch ({waiver.kpi_id} vs {expected_kpi_id})")
+
+    if expected_validation_type:
+        wtype = normalize_field_value(waiver.validation_type).replace(" ", "_")
+        etype = normalize_field_value(expected_validation_type).replace(" ", "_")
+        if wtype and etype and wtype != etype:
+            errors.append(
+                f"waiver {waiver.waiver_id}: validation_type mismatch "
+                f"({waiver.validation_type} vs {expected_validation_type})"
+            )
+        elif not wtype:
+            errors.append(f"waiver {waiver.waiver_id}: missing validation_type")
+
+    if expected_calculated_status:
+        wcalc = normalize_field_value(waiver.calculated_result).upper()
+        ecalc = normalize_field_value(expected_calculated_status).upper()
+        if wcalc and ecalc and wcalc != ecalc and wcalc not in {ecalc, "FAIL"}:
+            # Allow waiver to record FAIL when calculated is FAIL
+            if not (ecalc == "FAIL" and wcalc in {"FAIL", "FAILED"}):
+                errors.append(
+                    f"waiver {waiver.waiver_id}: calculated_result mismatch "
+                    f"({waiver.calculated_result} vs {expected_calculated_status})"
+                )
+        elif not wcalc:
+            errors.append(f"waiver {waiver.waiver_id}: missing calculated_result")
+
+    if expected_tolerance:
+        wt = normalize_field_value(waiver.tolerance)
+        et = normalize_field_value(expected_tolerance)
+        if wt and et and wt != et:
+            errors.append(
+                f"waiver {waiver.waiver_id}: tolerance mismatch ({waiver.tolerance} vs {expected_tolerance})"
+            )
+
+    if expected_difference is not None and str(expected_difference).strip() != "":
+        wdiff = parse_number(str(waiver.calculated_difference or "").replace("±", "").split()[0])
+        ediff = parse_number(str(expected_difference).replace("±", "").split()[0])
+        if ediff is not None:
+            if wdiff is None:
+                errors.append(f"waiver {waiver.waiver_id}: missing/invalid calculated_difference")
+            elif abs(wdiff - ediff) > Decimal("0.01"):
+                errors.append(
+                    f"waiver {waiver.waiver_id}: calculated_difference mismatch "
+                    f"({waiver.calculated_difference} vs {expected_difference})"
+                )
+
+    if waiver.current_status not in APPROVED_BUSINESS_STATUSES | {
+        "APPROVED_WAIVER",
+        "APPROVED_WITH_CONDITIONS",
+    }:
+        errors.append(
+            f"waiver {waiver.waiver_id}: status {waiver.current_status or '(blank)'} "
+            "must be APPROVED_WAIVER, APPROVED, or APPROVED_WITH_CONDITIONS"
+        )
+    if not is_meaningful_text(waiver.risk_owner):
+        errors.append(f"waiver {waiver.waiver_id}: missing risk_owner")
+    if not is_meaningful_text(waiver.approver):
+        errors.append(f"waiver {waiver.waiver_id}: missing approver")
+    if not is_meaningful_text(waiver.reason):
+        errors.append(f"waiver {waiver.waiver_id}: missing reason")
+    if not is_meaningful_text(waiver.approval_evidence):
+        errors.append(f"waiver {waiver.waiver_id}: missing approval_evidence")
+    else:
+        evidence = waiver.approval_evidence.strip()
+        lower = evidence.lower()
+        if lower in INVALID_APPROVAL_EVIDENCE_TOKENS:
+            errors.append(f"waiver {waiver.waiver_id}: invalid approval evidence token")
+        if re.search(r"\b(agent[- ]?(generated|approved)|auto[- ]?approved)\b", evidence, re.I):
+            errors.append(f"waiver {waiver.waiver_id}: agent-generated approval invalid")
+        if "/" in evidence or "\\" in evidence or evidence.endswith((".md", ".txt", ".pdf")):
+            cleaned = evidence.strip("`").split("#", 1)[0]
+            candidates = [Path(root) / cleaned, Path(root) / "reports" / "agent" / Path(cleaned).name]
+            if cleaned and not any(c.exists() for c in candidates):
+                errors.append(f"waiver {waiver.waiver_id}: evidence path not found: {evidence}")
+
+    # approval date
+    parsed_date = None
+    raw_date = (waiver.approval_date or "").strip()
+    for fmt in ("%Y-%m-%d", "%Y/%m/%d", "%d-%m-%Y", "%m/%d/%Y"):
+        try:
+            parsed_date = datetime.strptime(raw_date[:10], fmt).date()
+            break
+        except ValueError:
+            continue
+    if not parsed_date:
+        errors.append(f"waiver {waiver.waiver_id}: missing/invalid approval_date")
+
+    # expiry / review condition required
+    expiry_raw = (waiver.expiry_or_review or "").strip()
+    if not expiry_raw:
+        errors.append(f"waiver {waiver.waiver_id}: missing expiry/review condition")
+    else:
+        parsed_expiry = False
+        for fmt in ("%Y-%m-%d", "%Y/%m/%d"):
+            try:
+                expiry = datetime.strptime(expiry_raw[:10], fmt).date()
+                parsed_expiry = True
+                if expiry < today:
+                    errors.append(f"waiver {waiver.waiver_id}: expired on {expiry.isoformat()}")
+                break
+            except ValueError:
+                continue
+        if not parsed_expiry and len(expiry_raw) < 3:
+            errors.append(f"waiver {waiver.waiver_id}: expiry/review condition too short")
+
+    if expected_fingerprint:
+        if not waiver.fingerprint:
+            errors.append(f"waiver {waiver.waiver_id}: missing reconciliation fingerprint")
+        elif waiver.fingerprint != expected_fingerprint:
+            errors.append(
+                f"waiver {waiver.waiver_id}: stale fingerprint "
+                f"({waiver.fingerprint} != {expected_fingerprint})"
+            )
+
+    ok = not errors
+    disposition = "APPROVED_WAIVER" if ok else "INVALID_WAIVER"
+    return ok, errors, disposition
+
+
+def find_valid_waiver_for_kpi(
+    root: Path,
+    kpi_id: str,
+    *,
+    fingerprint: str = "",
+    validation_type: str = "",
+    calculated_status: str = "FAIL",
+    calculated_difference: str | float | None = None,
+    tolerance: str = "",
+) -> tuple[ReconciliationWaiver | None, list[str], str]:
+    """Find a currently valid waiver for kpi_id. Returns (waiver|None, errors, disposition)."""
+    candidates = [
+        w
+        for w in load_reconciliation_waivers(root)
+        if normalize_field_value(w.kpi_id) == normalize_field_value(kpi_id)
+    ]
+    if not candidates:
+        return None, [f"{kpi_id}: reconciliation FAIL/WARN requires formal waiver"], "MISSING_WAIVER"
+    errors_all: list[str] = []
+    for waiver in candidates:
+        ok, errs, disposition = validate_reconciliation_waiver(
+            root,
+            waiver,
+            expected_kpi_id=kpi_id,
+            expected_fingerprint=fingerprint,
+            expected_validation_type=validation_type,
+            expected_calculated_status=calculated_status,
+            expected_difference=calculated_difference,
+            expected_tolerance=tolerance,
+        )
+        if ok:
+            return waiver, [], disposition
+        errors_all.extend(errs)
+    return None, errors_all or [f"{kpi_id}: no valid reconciliation waiver"], "INVALID_WAIVER"
+
+
+# ---------------------------------------------------------------------------
+# Typed executable acceptance rules
+# ---------------------------------------------------------------------------
+
+EXECUTABLE_ACCEPTANCE_RULE_TYPES = frozenset(
+    {
+        "sql_boolean",
+        "numeric_comparison",
+        "set_constraint",
+        "regex_match",
+        "row_count_constraint",
+        "approved_human_decision",
+        "artifact_presence",
+        "custom_python_predicate",
+    }
+)
+
+
+def evaluate_typed_acceptance_rule(
+    root: Path,
+    row: dict[str, str],
+    *,
+    allowlisted_predicates: set[str] | None = None,
+) -> dict[str, Any]:
+    """Independently calculate PASS/FAIL for typed acceptance rules.
+
+    Free-text PASS / APPROVED / looks correct is never sufficient.
+    """
+    rule_id = cell(row, "acceptance_rule_id", "rule_id")
+    rule_type = cell(row, "acceptance_rule_type", "rule_type", "validation_type").lower().strip()
+    description = cell(row, "acceptance_rule_description", "rule_description", "acceptance_rule")
+    evaluated_input = cell(row, "evaluated_input", "evaluated_result", "actual", "actual_result")
+    expected_condition = cell(row, "expected_condition", "expected", "expected_result")
+    proof = cell(row, "proof_artifact", "sql_proof", "proof", "validation_source")
+
+    errors: list[str] = []
+    if not rule_id or rule_id.strip().upper() in {"PASS", "APPROVED", "LOOKS CORRECT", "TODO"}:
+        errors.append("missing or free-text acceptance_rule_id")
+    if not rule_type:
+        errors.append("missing acceptance_rule_type")
+    elif rule_type not in EXECUTABLE_ACCEPTANCE_RULE_TYPES and rule_type != "acceptance_rule":
+        # unknown typed rule
+        if rule_type not in KNOWN_VALIDATION_TYPES:
+            errors.append(f"unknown acceptance_rule_type {rule_type!r}")
+    if not is_meaningful_text(description) or description.strip().upper() in {"PASS", "APPROVED", "LOOKS CORRECT"}:
+        errors.append("missing acceptance_rule_description")
+    if not proof or proof.strip().upper() in {"N/A", "TODO", "NONE"}:
+        errors.append("missing proof_artifact")
+
+    calculated = "FAIL"
+    actual_result = evaluated_input
+
+    if errors and rule_type not in EXECUTABLE_ACCEPTANCE_RULE_TYPES:
+        return {
+            "acceptance_rule_id": rule_id,
+            "acceptance_rule_type": rule_type,
+            "acceptance_rule_description": description,
+            "evaluated_input": evaluated_input,
+            "expected_condition": expected_condition,
+            "actual_result": actual_result,
+            "proof_artifact": proof,
+            "calculated_status": "FAIL",
+            "errors": errors,
+        }
+
+    if rule_type in {"numeric_comparison", "numeric_tolerance", "numeric_exact", "ratio_tolerance"}:
+        tol = cell(row, "tolerance", "diff_tolerance") or ("exact" if rule_type == "numeric_exact" else "0")
+        result = reconcile_numeric(expected_condition, evaluated_input, tol)
+        calculated = result["calculated_status"]
+        if result["expected"] is None or result["actual"] is None:
+            errors.append("numeric_comparison requires parseable expected and actual")
+            calculated = "FAIL"
+    elif rule_type in {"set_constraint", "set_match"}:
+        result = reconcile_set_match(expected_condition, evaluated_input, cell(row, "normalization_rules", "tolerance"))
+        calculated = result["calculated_status"]
+    elif rule_type in {"row_count_constraint", "row_count_match"}:
+        result = reconcile_row_count(expected_condition, evaluated_input, cell(row, "tolerance"))
+        calculated = result["calculated_status"]
+        errors.extend(result.get("errors") or [])
+    elif rule_type == "regex_match":
+        pattern = expected_condition
+        if not pattern:
+            errors.append("regex_match missing expected_condition pattern")
+            calculated = "FAIL"
+        else:
+            try:
+                calculated = "PASS" if re.search(pattern, evaluated_input or "") else "FAIL"
+            except re.error as exc:
+                errors.append(f"invalid regex: {exc}")
+                calculated = "FAIL"
+            if calculated == "FAIL" and not errors:
+                errors.append("regex_match did not match evaluated_input")
+    elif rule_type == "sql_boolean":
+        token = (evaluated_input or "").strip().upper()
+        if token in {"TRUE", "PASS", "1", "YES"}:
+            calculated = "PASS"
+        elif token in {"FALSE", "FAIL", "0", "NO"}:
+            calculated = "FAIL"
+            errors.append("sql_boolean evaluated false")
+        else:
+            calculated = "FAIL"
+            errors.append("sql_boolean requires TRUE/FALSE (or PASS/FAIL) evaluated_input")
+    elif rule_type == "artifact_presence":
+        target = expected_condition or proof
+        path = Path(root) / target if target else None
+        if path and path.exists():
+            calculated = "PASS"
+        else:
+            calculated = "FAIL"
+            errors.append(f"artifact not present: {target}")
+    elif rule_type == "approved_human_decision":
+        biz = business_approval_status(row)
+        evidence = cell(row, "approval_evidence", "evidence")
+        if biz in APPROVED_BUSINESS_STATUSES and is_meaningful_text(evidence):
+            if evidence.strip().lower() not in INVALID_APPROVAL_EVIDENCE_TOKENS:
+                calculated = "PASS"
+            else:
+                errors.append("approved_human_decision: invalid evidence")
+        else:
+            errors.append("approved_human_decision requires APPROVED status and valid evidence")
+            calculated = "FAIL"
+    elif rule_type == "custom_python_predicate":
+        pred = cell(row, "predicate_name", "custom_predicate", "expected_condition")
+        allow = allowlisted_predicates or set()
+        if pred not in allow:
+            errors.append(f"custom_python_predicate {pred!r} not allowlisted")
+            calculated = "FAIL"
+        else:
+            # Deterministic allowlisted predicates only — no arbitrary code from Markdown
+            if pred == "nonempty":
+                calculated = "PASS" if is_meaningful_text(evaluated_input) else "FAIL"
+            elif pred == "equals_expected":
+                calculated = "PASS" if (evaluated_input or "").strip() == (expected_condition or "").strip() else "FAIL"
+            else:
+                errors.append(f"allowlisted predicate {pred!r} has no implementation")
+                calculated = "FAIL"
+    elif rule_type == "acceptance_rule":
+        # Legacy metadata path — still require named rule fields
+        meta = reconcile_acceptance_rule(row)
+        calculated = meta["calculated_status"]
+        errors.extend(meta.get("errors") or [])
+    else:
+        if rule_type:
+            errors.append(f"unknown acceptance_rule_type {rule_type!r}")
+        calculated = "FAIL"
+
+    if errors and calculated == "PASS":
+        calculated = "FAIL"
+
+    return {
+        "acceptance_rule_id": rule_id,
+        "acceptance_rule_type": rule_type,
+        "acceptance_rule_description": description,
+        "evaluated_input": evaluated_input,
+        "expected_condition": expected_condition,
+        "actual_result": actual_result,
+        "proof_artifact": proof,
+        "calculated_status": calculated,
+        "errors": errors,
+    }
+
+
+def resolve_source_reference(
+    inventory: list[dict[str, Any]],
+    source_name: str,
+    table_name: str,
+    *,
+    package_name: str = "",
+) -> tuple[dict[str, Any] | None, str]:
+    """Resolve source(source_name, table_name) using both names (+ package when given)."""
+    sname = source_name.strip().lower()
+    tname = table_name.strip().lower()
+    candidates = []
+    for resource in inventory:
+        if resource.get("resource_type") != "source":
+            continue
+        uid = str(resource.get("unique_id") or "")
+        # unique_id form: source.package.source_name.table_name
+        parts = uid.split(".")
+        uid_source = parts[2].lower() if len(parts) >= 4 else ""
+        uid_table = parts[3].lower() if len(parts) >= 4 else str(resource.get("name") or "").lower()
+        name_ok = str(resource.get("name") or "").lower() == tname or uid_table == tname
+        source_ok = uid_source == sname or sname in uid.lower()
+        # Also check meta / fqn
+        fqn = str(resource.get("meta", {}).get("source_name") or resource.get("source_name") or "").lower()
+        if fqn:
+            source_ok = source_ok or fqn == sname
+        if not (name_ok and source_ok):
+            # Fallback: unique_id contains source_name.table
+            if f"{sname}.{tname}" in uid.lower():
+                candidates.append(resource)
+            continue
+        if package_name and str(resource.get("package_name") or "").lower() != package_name.lower():
+            continue
+        candidates.append(resource)
+    if len(candidates) == 1:
+        return candidates[0], "ok"
+    if len(candidates) > 1:
+        return None, "ambiguous"
+    return None, "missing"

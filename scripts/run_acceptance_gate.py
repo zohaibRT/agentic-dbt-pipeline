@@ -28,6 +28,8 @@ from lib_gate_common import (
     load_accepted_warnings,
     load_analytics_policy,
     load_presentation_policy,
+    load_validator_result_json,
+    VALIDATOR_RESULT_SCHEMA_VERSION,
 )
 
 STATUS_VALUES = {"PASS", "WARN", "FAIL", "BLOCKED", "SKIPPED", "DEFERRED"}
@@ -80,12 +82,13 @@ PROJECT_VALIDATION_SCRIPTS = [
     ("check_gold_star_shape.py", ["--root", "{root}"], "gold"),
     ("validate_kpi_proofs.py", ["--root", "{root}"], "analytics"),
     ("check_requirement_traceability.py", ["--root", "{root}"], "bronze"),
-    ("check_layer_proof_coverage.py", ["--root", "{root}"], "bronze"),
+    ("check_layer_proof_coverage.py", ["--root", "{root}", "--phase", "{phase}"], "bronze"),
+    ("check_llm_playwright_review.py", ["--root", "{root}", "--phase", "{phase}"], "presentation"),
     ("verify_metric_reconciliation.py", ["--root", "{root}"], "analytics"),
     ("check_model_classification_coverage.py", ["--root", "{root}", "--phase", "{phase}"], "analytics"),
     ("check_analytics_coverage.py", ["--root", "{root}"], "analytics"),
     ("check_analytics_product_completeness.py", ["--root", "{root}"], "analytics"),
-    ("check_fact_analytical_coverage.py", ["--root", "{root}"], "analytics"),
+    ("check_fact_analytical_coverage.py", ["--root", "{root}", "--phase", "{phase}"], "analytics"),
     ("check_metric_contract_completeness.py", ["--root", "{root}"], "analytics"),
     (
         "check_human_approval_coverage.py",
@@ -121,7 +124,7 @@ PROJECT_VALIDATION_SCRIPTS = [
     ("validate_chart_registry.py", ["--root", "{root}"], "presentation"),
     ("check_presentation_traceability.py", ["--root", "{root}", "--phase", "{phase}"], "presentation"),
     ("validate_live_report_dom.py", ["--root", "{root}", "--desktop", "--tablet", "--mobile"], "presentation"),
-    ("run_independent_verifier.py", ["--root", "{root}", "--skip-live"], "final"),
+    ("run_independent_verifier.py", ["--root", "{root}", "--phase", "{phase}"], "final"),
 ]
 
 DBT_COMMANDS = [
@@ -167,7 +170,19 @@ class GateReport:
         elif result.status == "WARN":
             message = f"{result.name}: {result.detail}"
             self.warnings.append(message)
-            self.warning_records.append(WarningRecord(warning_id=result.name, message=message))
+            # Prefer explicit warning_ids=... from validator JSON detail
+            warning_ids: list[str] = []
+            if "warning_ids=" in (result.detail or ""):
+                token = (result.detail or "").split("warning_ids=", 1)[1]
+                warning_ids = [part.strip() for part in token.split(",") if part.strip()]
+            if warning_ids:
+                for wid in warning_ids:
+                    self.warning_records.append(WarningRecord(warning_id=wid, message=message))
+            else:
+                self.warning_records.append(WarningRecord(warning_id=result.name, message=message))
+        elif result.status == "SKIPPED":
+            # Recorded for visibility; required final SKIPPED handled by caller
+            pass
 
     def finalize(
         self,
@@ -177,25 +192,42 @@ class GateReport:
     ) -> None:
         if self.enforce_warning_policy:
             remaining_warnings: list[str] = []
+            accepted_visible: list[str] = []
             for record in self.warning_records:
                 if require_explicit_warning_acceptance:
+                    # Primary: stable warning_id match (exact or accepted token contained in id).
+                    # Do not use full warning-message substring as primary acceptance.
+                    wid = record.warning_id.lower()
+                    noise = {"accepted", "deferred", "warning", "warnings"}
                     record.accepted = any(
-                        token in record.message.lower() for token in accepted_tokens
+                        token == wid
+                        for token in accepted_tokens
+                        if token and token not in noise
                     )
                 else:
-                    # No acceptance escape hatch — every warning becomes a failure.
                     record.accepted = False
                 if record.accepted:
-                    remaining_warnings.append(record.message)
+                    accepted_visible.append(record.message)
                 else:
                     self.failures.append(record.message)
-            self.warnings = remaining_warnings
+                    remaining_warnings.append(record.message)
+            # Accepted warnings remain visible but do not keep overall at WARN
+            self.warnings = accepted_visible + remaining_warnings
         else:
             for record in self.warning_records:
-                record.accepted = any(token in record.message.lower() for token in accepted_tokens)
+                wid = record.warning_id.lower()
+                noise = {"accepted", "deferred", "warning", "warnings"}
+                record.accepted = any(
+                    token == wid for token in accepted_tokens if token and token not in noise
+                )
 
         if self.failures:
             self.overall_status = "FAIL"
+        elif any(not r.accepted for r in self.warning_records):
+            self.overall_status = "WARN"
+        elif self.warning_records and all(r.accepted for r in self.warning_records):
+            # Explicitly accepted warnings remain listed; overall PASS for completion
+            self.overall_status = "PASS"
         elif self.warnings:
             self.overall_status = "WARN"
         else:
@@ -222,7 +254,13 @@ def resolve_default_phase(root: Path) -> str:
     return "analytics" if insights.exists() else "final"
 
 
-def run_command(command: list[str], root: Path, timeout: int) -> CheckResult:
+def run_command(
+    command: list[str],
+    root: Path,
+    timeout: int,
+    *,
+    result_json: Path | None = None,
+) -> CheckResult:
     command_text = " ".join(command)
     executable = Path(command[0])
     if not executable.exists() and shutil.which(command[0]) is None:
@@ -241,6 +279,70 @@ def run_command(command: list[str], root: Path, timeout: int) -> CheckResult:
 
     output = (completed.stdout + "\n" + completed.stderr).strip()
     detail = output[-1500:] if output else "No output"
+
+    # Prefer machine-readable ValidatorResult when requested
+    if result_json is not None:
+        if not result_json.exists():
+            return CheckResult(
+                command_text,
+                "FAIL",
+                f"missing validator result JSON: {result_json}",
+                command_text,
+                completed.returncode,
+            )
+        try:
+            payload = load_validator_result_json(result_json)
+        except Exception as exc:  # noqa: BLE001
+            return CheckResult(
+                command_text,
+                "FAIL",
+                f"malformed validator result JSON ({result_json}): {exc}",
+                command_text,
+                completed.returncode,
+            )
+        status = payload.status
+        # Exit code vs JSON contradiction
+        if status in {"FAIL", "BLOCKED"} and completed.returncode == 0:
+            return CheckResult(
+                command_text,
+                "FAIL",
+                f"JSON status {status} contradicts exit 0",
+                command_text,
+                completed.returncode,
+            )
+        if status == "PASS" and completed.returncode != 0:
+            return CheckResult(
+                command_text,
+                "FAIL",
+                f"JSON status PASS contradicts exit {completed.returncode}",
+                command_text,
+                completed.returncode,
+            )
+        if status in {"WARN", "SKIPPED"} and completed.returncode != 0:
+            return CheckResult(
+                command_text,
+                "FAIL",
+                f"JSON status {status} contradicts exit {completed.returncode}",
+                command_text,
+                completed.returncode,
+            )
+        detail_bits = []
+        if payload.errors:
+            detail_bits.extend(payload.errors[:8])
+        if payload.warnings:
+            detail_bits.extend(payload.warnings[:8])
+        if payload.warning_ids:
+            detail_bits.append("warning_ids=" + ",".join(payload.warning_ids[:12]))
+        if not detail_bits:
+            detail_bits.append(detail or payload.status)
+        return CheckResult(
+            command_text,
+            status,
+            "; ".join(detail_bits),
+            command_text,
+            completed.returncode,
+        )
+
     status = "PASS" if completed.returncode == 0 else "FAIL"
     return CheckResult(command_text, status, detail, command_text, completed.returncode)
 
@@ -572,7 +674,14 @@ def check_operational_gaps(root: Path, report: GateReport, phase: str) -> None:
         )
 
 
-def run_validation_scripts(root: Path, report: GateReport, timeout: int, phase: str) -> None:
+def run_validation_scripts(
+    root: Path,
+    report: GateReport,
+    timeout: int,
+    phase: str,
+    *,
+    strict: bool = False,
+) -> None:
     script_dir = Path(__file__).resolve().parent
     skill_root = script_dir.parent
     insights = root / "reports" / "agent" / "09_analytics_insights"
@@ -708,16 +817,142 @@ def run_validation_scripts(root: Path, report: GateReport, timeout: int, phase: 
                     hitl_phase = "presentation"
                 value = value.replace("{phase}", hitl_phase)
             resolved_args.append(value)
-        if script_name == "validate_live_report_dom.py" and not os.environ.get("CI", "").lower() in {
-            "1",
-            "true",
-            "yes",
-        }:
-            resolved_args.append("--allow-skip")
+
+        # Final / interactive reports must not auto-skip Playwright
+        interactive_report = (matplotlib_dir / "report.html").exists()
+        if script_name == "validate_live_report_dom.py":
+            presentation_policy = load_presentation_policy(root)
+            require_live = bool(presentation_policy.get("require_live_browser_validation", True))
+            require_at_final = bool(presentation_policy.get("require_live_browser_at_final", True))
+            if phase_at_least(phase, "final"):
+                require_live = require_live and require_at_final
+            if phase_at_least(phase, "final") and interactive_report and require_live:
+                # Strip any allow-skip that may have been passed
+                resolved_args = [a for a in resolved_args if a != "--allow-skip"]
+            elif (
+                not phase_at_least(phase, "final")
+                and not os.environ.get("CI", "").lower() in {"1", "true", "yes"}
+            ):
+                if "--allow-skip" not in resolved_args:
+                    resolved_args.append("--allow-skip")
+
+        # Independent verifier must not skip live in final/strict mode with interactive report
+        if script_name == "run_independent_verifier.py":
+            final_like = phase_at_least(phase, "final") or bool(strict)
+            if final_like and interactive_report:
+                resolved_args = [
+                    a
+                    for a in resolved_args
+                    if a not in {"--skip-live", "--allow-skip-live", "--allow-skip"}
+                ]
+                if "--strict" not in resolved_args and strict:
+                    resolved_args.append("--strict")
+            elif "--skip-live" not in resolved_args and not final_like:
+                # non-final may skip live for speed unless CI
+                if not os.environ.get("CI", "").lower() in {"1", "true", "yes"}:
+                    resolved_args.append("--skip-live")
+
+        result_dir = root / "reports" / "agent" / "_validator_results"
+        result_dir.mkdir(parents=True, exist_ok=True)
+        result_json = result_dir / f"{Path(script_name).stem}.json"
+        # Scripts that support --output-json (production validators)
+        no_json_scripts = {
+            "run_independent_verifier.py",
+            "validate_powerbi_pbip.py",
+        }
+        supports_json = script_name.endswith(".py") and script_name not in no_json_scripts
+        if supports_json:
+            resolved_args.extend(["--output-json", str(result_json)])
+
         command = [sys.executable, str(script_path), *resolved_args]
         cwd = skill_root if script_name == "check_domain_neutrality.py" else root
-        report.add(run_command(command, cwd, timeout))
-
+        check = run_command(
+            command,
+            cwd,
+            timeout,
+            result_json=result_json if supports_json else None,
+        )
+        # Independent verifier: prefer overall_status from its report JSON
+        if script_name == "run_independent_verifier.py":
+            iv_report = root / "reports" / "agent" / "INDEPENDENT_VERIFICATION_REPORT.json"
+            if iv_report.exists():
+                try:
+                    iv_payload = json.loads(iv_report.read_text(encoding="utf-8"))
+                    iv_status = str(iv_payload.get("overall_status") or "").upper()
+                    if iv_status in {"PASS", "WARN", "FAIL", "BLOCKED", "SKIPPED"}:
+                        check = CheckResult(
+                            check.name,
+                            iv_status,
+                            f"independent verifier overall_status={iv_status}",
+                            check.command,
+                            check.return_code,
+                        )
+                except Exception as exc:  # noqa: BLE001
+                    check = CheckResult(
+                        check.name,
+                        "FAIL",
+                        f"malformed INDEPENDENT_VERIFICATION_REPORT.json: {exc}",
+                        check.command,
+                        check.return_code,
+                    )
+            elif phase_at_least(phase, "final"):
+                check = CheckResult(
+                    check.name,
+                    "FAIL",
+                    "missing INDEPENDENT_VERIFICATION_REPORT.json after verifier run",
+                    check.command,
+                    check.return_code,
+                )
+        # Required final/strict SKIPPED is FAIL unless applicability evidence allows it
+        final_like = phase_at_least(phase, "final") or bool(strict)
+        if final_like and check.status == "SKIPPED":
+            detail_lower = (check.detail or "").lower()
+            allowed_skip = any(
+                token in detail_lower
+                for token in (
+                    "no pbip found",
+                    "no local web report server found",
+                    "no report.html",
+                    "no matplotlib presentation folder",
+                    "no analytics insight folder",
+                    "no presentation folder",
+                    "already inside independent verifier",
+                    "presentation_policy.require_live_browser_validation=false",
+                    "not_applicable",
+                    "applicability=",
+                )
+            )
+            # Live browser is never an allowed skip when interactive report exists
+            if script_name == "validate_live_report_dom.py" and interactive_report:
+                allowed_skip = False
+            # Core production validators must not be skipped at final when applicable
+            core_required = {
+                "check_human_approval_coverage.py",
+                "verify_metric_reconciliation.py",
+                "check_model_classification_coverage.py",
+                "check_fact_analytical_coverage.py",
+                "check_exposure_coverage.py",
+                "check_presentation_traceability.py",
+                "validate_live_report_dom.py",
+                "run_independent_verifier.py",
+            }
+            if script_name in core_required and not allowed_skip:
+                check = CheckResult(
+                    check.name,
+                    "FAIL",
+                    f"required validator SKIPPED at final/strict: {check.detail}",
+                    check.command,
+                    check.return_code,
+                )
+            elif script_name == "validate_live_report_dom.py" and interactive_report:
+                check = CheckResult(
+                    check.name,
+                    "FAIL",
+                    f"live browser SKIPPED is not allowed at final with interactive report: {check.detail}",
+                    check.command,
+                    check.return_code,
+                )
+        report.add(check)
 
 def run_dbt(root: Path, report: GateReport, timeout: int, skip_dbt: bool, phase: str) -> None:
     if skip_dbt:
@@ -874,7 +1109,7 @@ def main() -> int:
     check_phase_reports(root, gate, phase)
     check_sql_proofs(root, gate, phase)
     check_traceability_files(root, gate, phase)
-    run_validation_scripts(root, gate, args.timeout, phase)
+    run_validation_scripts(root, gate, args.timeout, phase, strict=bool(args.strict))
     run_dbt(root, gate, args.timeout, args.skip_dbt, phase)
     check_operational_gaps(root, gate, phase)
 

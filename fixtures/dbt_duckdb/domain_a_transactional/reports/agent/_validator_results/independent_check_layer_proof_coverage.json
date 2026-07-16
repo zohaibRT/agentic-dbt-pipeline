@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "validator_id": "check_layer_proof_coverage",
+  "status": "PASS",
+  "errors": [],
+  "warnings": [],
+  "details": {
+    "schema": "expanded",
+    "row_count": 9,
+    "phase": "analytics",
+    "headers": [
+      "Phase",
+      "Layer",
+      "Model / Artifact",
+      "Expected Grain",
+      "Row Count",
+      "Upstream Comparison",
+      "Key / Grain Proof",
+      "Relationship Proof",
+      "Measure / KPI Proof",
+      "Privacy Check",
+      "Proof Files",
+      "dbt Command Result",
+      "Overall Status",
+      "Notes"
+    ]
+  },
+  "checked_at": "2026-07-16T13:53:49.767997+00:00",
+  "warning_ids": [],
+  "applicability": ""
+}
