@@ -669,7 +669,14 @@ def write_interactive_presentation(
 
     # Self-contained renderer beside the report (no Plotly calls in business pages)
     shutil.copy2(SCRIPTS / "lib_chart_renderer.py", matplotlib / "chart_renderer.py")
-    for name in ("report.html", "serve_report.py", "data_access.py", "report_builder.py"):
+    for name in (
+        "report.html",
+        "serve_report.py",
+        "data_access.py",
+        "report_builder.py",
+        "open_report.bat",
+        "open_report.sh",
+    ):
         src = TEMPLATES / name
         if src.exists():
             shutil.copy2(src, matplotlib / name)

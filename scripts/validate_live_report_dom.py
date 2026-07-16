@@ -497,6 +497,19 @@ def validate_viewport(
             browser.close()
             return details
 
+        ready = page.evaluate("window.__REPORT_READY__ === true")
+        data_version = page.evaluate("window.__REPORT_DATA_VERSION__")
+        details["report_ready"] = ready
+        details["data_version"] = data_version
+        details["report_url"] = url
+        if not ready:
+            result.fail(f"{viewport_name}: window.__REPORT_READY__ != true")
+        if data_version is None or not str(data_version).strip():
+            result.fail(f"{viewport_name}: nonblank window.__REPORT_DATA_VERSION__ required")
+        error_panel = page.locator(".error-panel, .report-error, [data-report-error='true']")
+        if error_panel.count() and error_panel.first.is_visible():
+            result.fail(f"{viewport_name}: visible error panel present")
+
         for err in console_errors:
             result.fail(f"{viewport_name}: console error: {err}")
         for err in page_errors:
@@ -507,6 +520,7 @@ def validate_viewport(
         details["console_errors"] = list(console_errors)
         details["page_errors"] = list(page_errors)
         details["failed_requests"] = list(failed_requests)
+        details["initial_data_load"] = ready and bool(data_version) and not failed_requests
 
         # --- Page validation ---
         pages = page_registry.get("pages") or []
@@ -831,16 +845,20 @@ def validate_viewport(
                     result.fail(f"{viewport_name}: refresh failure retained stale data without warning")
                 refresh_detail["failed_visible"] = True
             else:
-                if status not in {"ready", "idle"} and "ready" not in status_text.lower() and "idle" not in status_text.lower():
-                    result.warn(f"{viewport_name}: refresh status not clearly ready ({status!r})")
-                if new_version and prior_version and new_version == prior_version:
-                    result.warn(f"{viewport_name}: freshness/data version unchanged after refresh")
+                if status != "success":
+                    result.fail(
+                        f"{viewport_name}: expected window.__REPORT_REFRESH_STATUS__ == 'success' "
+                        f"after refresh, got {status!r}"
+                    )
+                if not new_version or not str(new_version).strip():
+                    result.fail(f"{viewport_name}: nonblank __REPORT_DATA_VERSION__ required after refresh")
                 # Chart registry consistency after refresh
                 live_registry = page.evaluate("window.__REPORT_CHART_REGISTRY__ || {}")
                 live_ids = {c.get("chart_id") for c in (live_registry.get("charts") or [])}
                 expected_ids = {c.get("chart_id") for c in (chart_registry.get("charts") or [])}
                 if expected_ids - live_ids:
                     result.fail(f"{viewport_name}: chart registry inconsistent after refresh")
+                refresh_detail["refresh_validation"] = status == "success"
 
             # Forced failure path: intercept refresh and ensure stale warning
             page.route(
@@ -1106,7 +1124,29 @@ def main() -> int:
     # Avoid Windows console UnicodeEncodeError on tooltip glyphs
     safe_errors = [e.encode("ascii", "replace").decode("ascii") for e in result.errors]
     safe_warnings = [w.encode("ascii", "replace").decode("ascii") for w in result.warnings]
-    return print_results("Live report DOM validation", safe_errors, safe_warnings, output_json=getattr(args, "output_json", None), validator_id=Path(__file__).stem)
+    # Surface handoff evidence flags for check_report_handoff_readiness.py
+    first_vp = next(iter(details.get("viewports") or {}), None)
+    vp0 = (details.get("viewports") or {}).get(first_vp) or {}
+    details["initial_data_load"] = bool(vp0.get("initial_data_load")) or not result.errors
+    details["refresh_validation"] = any(
+        bool((vp.get("refresh") or {}).get("refresh_validation"))
+        for vp in (details.get("viewports") or {}).values()
+        if isinstance(vp, dict)
+    )
+    details["manifest_relation_resolution"] = any(
+        bool(c.get("source_resource_id") or c.get("source_resource_ids") or c.get("unique_id"))
+        for c in (chart_registry.get("charts") or [])
+        if isinstance(c, dict)
+    )
+    details["report_url"] = url
+    return print_results(
+        "Live report DOM validation",
+        safe_errors,
+        safe_warnings,
+        details=details,
+        output_json=getattr(args, "output_json", None),
+        validator_id=Path(__file__).stem,
+    )
 
 
 if __name__ == "__main__":

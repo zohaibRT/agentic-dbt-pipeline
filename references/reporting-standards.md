@@ -85,7 +85,8 @@ Every Matplotlib chart must be readable, business-facing, SQL-verified, and rend
 | Legends | Clear series meaning; avoid duplicate or unreadable legends |
 | Live output | Serve charts through `serve_report.py` as Matplotlib SVG/HTML endpoints or approved browser-native charts from refreshed JSON |
 | Static output | Optional only; save SVG/PNG files under `figures/` for snapshots or exports, clearly labeled as not automatically updating |
-| Browser review | Build a rich local `report.html` shell with colorful classified tabs, summary cards, chart cards, captions, caveats, validation status, refresh timestamp/control, provide `open_report.bat` or `serve_report.py --open`, and validate the actual localhost page response before handoff |
+| Browser review | Build a rich local `report.html` shell with colorful classified tabs, summary cards, chart cards, captions, caveats, validation status, refresh timestamp/control; validate live data/refresh endpoints (HTTP 200 alone is not enough); release readiness-gated `open_report.bat` / `open_report.sh` only after `REPORT_HANDOFF_READINESS.json` has `open_allowed=true` |
+| Verified handoff | Never print report URLs or open instructions until handoff readiness PASS; before that say artifacts were generated but the report is not ready to open |
 | Page modules | Organize generation code in `report_pages/` by business tab, not one unstructured script |
 | Labels | Use business names from dimensions, mappings, and `label_dictionary.md`; never raw codes on chart axes or legends |
 | Validation | Every plotted aggregate must reconcile to SQL in `sql_verification/` before the chart is marked trusted |

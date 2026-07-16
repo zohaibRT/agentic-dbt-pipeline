@@ -4,8 +4,452 @@
   "status": "PASS",
   "errors": [],
   "warnings": [],
-  "details": {},
-  "checked_at": "2026-07-16T13:54:29.663875+00:00",
+  "details": {
+    "viewports": {
+      "desktop": {
+        "viewport": "desktop",
+        "charts": [
+          {
+            "chart_id": "volume_trend",
+            "viewport": "desktop",
+            "accessible_name": "Volume KPI Trend",
+            "data_table": true,
+            "tooltip_text": "Volume KPI \u2014 Prior period\nJanuary 2026\n0 events\nFresh as of: 2026-07-16T22:08:50+00:00",
+            "expected": {
+              "metric_display_name": "Volume KPI",
+              "formatted_value": "0 events",
+              "period_label": "January 2026",
+              "series_display_name": "Prior period",
+              "unit": "events",
+              "currency": null,
+              "partial_period_note": null,
+              "tooltip_text": "Volume KPI \u2014 Prior period\nJanuary 2026\n0 events\nFresh as of: 2026-07-16T22:08:50+00:00"
+            },
+            "interactions": [
+              {
+                "period": "January 2026",
+                "series": "Actual",
+                "tooltip": "Volume KPI \u2014 Actual\nJanuary 2026\n0 events\nStatus: On track\nFresh as of: 2026-07-16T22:08:50+00:00"
+              },
+              {
+                "period": "March 2026",
+                "series": "Actual",
+                "tooltip": "Volume KPI \u2014 Actual\nMarch 2026\n5 events\nPrevious: 0 events\nChange: 5 events\nStatus: On track\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T22:08:50+00:00"
+              },
+              {
+                "period": "January 2026",
+                "series": "Actual",
+                "tooltip": "Volume KPI \u2014 Actual\nJanuary 2026\n0 events\nStatus: On track\nFresh as of: 2026-07-16T22:08:50+00:00"
+              },
+              {
+                "period": "January 2026",
+                "series": "Prior period",
+                "tooltip": "Volume KPI \u2014 Prior period\nJanuary 2026\n0 events\nFresh as of: 2026-07-16T22:08:50+00:00"
+              }
+            ],
+            "sampled_points": 4
+          },
+          {
+            "chart_id": "completion_rate_trend",
+            "viewport": "desktop",
+            "accessible_name": "Completion Rate KPI",
+            "data_table": true,
+            "tooltip_text": "Completion rate KPI \u2014 Actual\nMarch 2026\n40.00%\nPrevious: 38.00%\nChange: 2.00% (5.26%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T22:08:50+00:00",
+            "expected": {
+              "metric_display_name": "Completion rate KPI",
+              "formatted_value": "40.00%",
+              "period_label": "March 2026",
+              "series_display_name": "Actual",
+              "unit": null,
+              "currency": null,
+              "partial_period_note": "Partial period \u2014 incomplete",
+              "tooltip_text": "Completion rate KPI \u2014 Actual\nMarch 2026\n40.00%\nPrevious: 38.00%\nChange: 2.00% (5.26%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T22:08:50+00:00"
+            },
+            "interactions": [
+              {
+                "period": "January 2026",
+                "series": "Actual",
+                "tooltip": "Completion rate KPI \u2014 Actual\nJanuary 2026\n35.00%\nFresh as of: 2026-07-16T22:08:50+00:00"
+              },
+              {
+                "period": "February 2026",
+                "series": "Actual",
+                "tooltip": "Completion rate KPI \u2014 Actual\nFebruary 2026\n38.00%\nPrevious: 35.00%\nChange: 3.00% (8.57%)\nFresh as of: 2026-07-16T22:08:50+00:00"
+              },
+              {
+                "period": "March 2026",
+                "series": "Actual",
+                "tooltip": "Completion rate KPI \u2014 Actual\nMarch 2026\n40.00%\nPrevious: 38.00%\nChange: 2.00% (5.26%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T22:08:50+00:00"
+              }
+            ],
+            "sampled_points": 3
+          }
+        ],
+        "pages": [
+          {
+            "page_id": "executive_overview",
+            "exists": true,
+            "title": "Executive Overview"
+          },
+          {
+            "page_id": "exceptions_and_data_quality",
+            "exists": true,
+            "title": "Exceptions and Data Quality"
+          },
+          {
+            "page_id": "pipeline_health",
+            "exists": true,
+            "title": "Pipeline Health"
+          },
+          {
+            "page_id": "all_measures",
+            "exists": true,
+            "title": "All Measures"
+          },
+          {
+            "page_id": "all_metrics",
+            "exists": true,
+            "title": "All Metrics"
+          },
+          {
+            "page_id": "all_dimensions",
+            "exists": true,
+            "title": "Dimensions"
+          }
+        ],
+        "console_errors": [],
+        "page_errors": [],
+        "failed_requests": [],
+        "refresh": {
+          "prior_version": "2026-07-16T22:31:48.364502+00:00",
+          "status": "success",
+          "status_text": "Ready",
+          "new_version": "2026-07-16T22:31:58.763078+00:00",
+          "refresh_validation": true,
+          "forced_failure": {
+            "status": "error",
+            "stale_labelled": true,
+            "version_unchanged": true,
+            "status_text": "Refresh failed \u00e2\u20ac\u201d showing previous data (stale)"
+          }
+        },
+        "accessibility": {
+          "has_nav_landmark": true,
+          "has_main_or_pages": true,
+          "heading_count": 7,
+          "focusable_charts": 11,
+          "status_text_beyond_color": true,
+          "disclaimer": "Automated checks only \u2014 not a full legal accessibility certification"
+        },
+        "artifacts": {},
+        "report_ready": true,
+        "data_version": "2026-07-16T22:31:48.364502+00:00",
+        "report_url": "http://127.0.0.1:58463/",
+        "initial_data_load": true
+      },
+      "tablet": {
+        "viewport": "tablet",
+        "charts": [
+          {
+            "chart_id": "volume_trend",
+            "viewport": "tablet",
+            "accessible_name": "Volume KPI Trend",
+            "data_table": true,
+            "tooltip_text": "Volume KPI \u2014 Prior period\nJanuary 2026\n0 events\nFresh as of: 2026-07-16T22:08:50+00:00",
+            "expected": {
+              "metric_display_name": "Volume KPI",
+              "formatted_value": "0 events",
+              "period_label": "January 2026",
+              "series_display_name": "Prior period",
+              "unit": "events",
+              "currency": null,
+              "partial_period_note": null,
+              "tooltip_text": "Volume KPI \u2014 Prior period\nJanuary 2026\n0 events\nFresh as of: 2026-07-16T22:08:50+00:00"
+            },
+            "interactions": [
+              {
+                "period": "January 2026",
+                "series": "Actual",
+                "tooltip": "Volume KPI \u2014 Actual\nJanuary 2026\n0 events\nStatus: On track\nFresh as of: 2026-07-16T22:08:50+00:00"
+              },
+              {
+                "period": "March 2026",
+                "series": "Actual",
+                "tooltip": "Volume KPI \u2014 Actual\nMarch 2026\n5 events\nPrevious: 0 events\nChange: 5 events\nStatus: On track\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T22:08:50+00:00"
+              },
+              {
+                "period": "January 2026",
+                "series": "Actual",
+                "tooltip": "Volume KPI \u2014 Actual\nJanuary 2026\n0 events\nStatus: On track\nFresh as of: 2026-07-16T22:08:50+00:00"
+              },
+              {
+                "period": "January 2026",
+                "series": "Prior period",
+                "tooltip": "Volume KPI \u2014 Prior period\nJanuary 2026\n0 events\nFresh as of: 2026-07-16T22:08:50+00:00"
+              }
+            ],
+            "sampled_points": 4
+          },
+          {
+            "chart_id": "completion_rate_trend",
+            "viewport": "tablet",
+            "accessible_name": "Completion Rate KPI",
+            "data_table": true,
+            "tooltip_text": "Completion rate KPI \u2014 Actual\nMarch 2026\n40.00%\nPrevious: 38.00%\nChange: 2.00% (5.26%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T22:08:50+00:00",
+            "expected": {
+              "metric_display_name": "Completion rate KPI",
+              "formatted_value": "40.00%",
+              "period_label": "March 2026",
+              "series_display_name": "Actual",
+              "unit": null,
+              "currency": null,
+              "partial_period_note": "Partial period \u2014 incomplete",
+              "tooltip_text": "Completion rate KPI \u2014 Actual\nMarch 2026\n40.00%\nPrevious: 38.00%\nChange: 2.00% (5.26%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T22:08:50+00:00"
+            },
+            "interactions": [
+              {
+                "period": "January 2026",
+                "series": "Actual",
+                "tooltip": "Completion rate KPI \u2014 Actual\nJanuary 2026\n35.00%\nFresh as of: 2026-07-16T22:08:50+00:00"
+              },
+              {
+                "period": "February 2026",
+                "series": "Actual",
+                "tooltip": "Completion rate KPI \u2014 Actual\nFebruary 2026\n38.00%\nPrevious: 35.00%\nChange: 3.00% (8.57%)\nFresh as of: 2026-07-16T22:08:50+00:00"
+              },
+              {
+                "period": "March 2026",
+                "series": "Actual",
+                "tooltip": "Completion rate KPI \u2014 Actual\nMarch 2026\n40.00%\nPrevious: 38.00%\nChange: 2.00% (5.26%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T22:08:50+00:00"
+              }
+            ],
+            "sampled_points": 3
+          }
+        ],
+        "pages": [
+          {
+            "page_id": "executive_overview",
+            "exists": true,
+            "title": "Executive Overview"
+          },
+          {
+            "page_id": "exceptions_and_data_quality",
+            "exists": true,
+            "title": "Exceptions and Data Quality"
+          },
+          {
+            "page_id": "pipeline_health",
+            "exists": true,
+            "title": "Pipeline Health"
+          },
+          {
+            "page_id": "all_measures",
+            "exists": true,
+            "title": "All Measures"
+          },
+          {
+            "page_id": "all_metrics",
+            "exists": true,
+            "title": "All Metrics"
+          },
+          {
+            "page_id": "all_dimensions",
+            "exists": true,
+            "title": "Dimensions"
+          }
+        ],
+        "console_errors": [],
+        "page_errors": [],
+        "failed_requests": [],
+        "refresh": {
+          "prior_version": "2026-07-16T22:31:58.763078+00:00",
+          "status": "success",
+          "status_text": "Ready",
+          "new_version": "2026-07-16T22:32:08.661260+00:00",
+          "refresh_validation": true,
+          "forced_failure": {
+            "status": "error",
+            "stale_labelled": true,
+            "version_unchanged": true,
+            "status_text": "Refresh failed \u00e2\u20ac\u201d showing previous data (stale)"
+          }
+        },
+        "accessibility": {
+          "has_nav_landmark": true,
+          "has_main_or_pages": true,
+          "heading_count": 7,
+          "focusable_charts": 11,
+          "status_text_beyond_color": true,
+          "disclaimer": "Automated checks only \u2014 not a full legal accessibility certification"
+        },
+        "artifacts": {},
+        "report_ready": true,
+        "data_version": "2026-07-16T22:31:58.763078+00:00",
+        "report_url": "http://127.0.0.1:58463/",
+        "initial_data_load": true
+      },
+      "mobile": {
+        "viewport": "mobile",
+        "charts": [
+          {
+            "chart_id": "volume_trend",
+            "viewport": "mobile",
+            "accessible_name": "Volume KPI Trend",
+            "data_table": true,
+            "tooltip_text": "Volume KPI \u2014 Prior period\nJanuary 2026\n0 events\nFresh as of: 2026-07-16T22:08:50+00:00",
+            "expected": {
+              "metric_display_name": "Volume KPI",
+              "formatted_value": "0 events",
+              "period_label": "January 2026",
+              "series_display_name": "Prior period",
+              "unit": "events",
+              "currency": null,
+              "partial_period_note": null,
+              "tooltip_text": "Volume KPI \u2014 Prior period\nJanuary 2026\n0 events\nFresh as of: 2026-07-16T22:08:50+00:00"
+            },
+            "interactions": [
+              {
+                "period": "January 2026",
+                "series": "Actual",
+                "tooltip": "Volume KPI \u2014 Actual\nJanuary 2026\n0 events\nStatus: On track\nFresh as of: 2026-07-16T22:08:50+00:00"
+              },
+              {
+                "period": "March 2026",
+                "series": "Actual",
+                "tooltip": "Volume KPI \u2014 Actual\nMarch 2026\n5 events\nPrevious: 0 events\nChange: 5 events\nStatus: On track\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T22:08:50+00:00"
+              },
+              {
+                "period": "January 2026",
+                "series": "Actual",
+                "tooltip": "Volume KPI \u2014 Actual\nJanuary 2026\n0 events\nStatus: On track\nFresh as of: 2026-07-16T22:08:50+00:00"
+              },
+              {
+                "period": "January 2026",
+                "series": "Prior period",
+                "tooltip": "Volume KPI \u2014 Prior period\nJanuary 2026\n0 events\nFresh as of: 2026-07-16T22:08:50+00:00"
+              }
+            ],
+            "sampled_points": 4
+          },
+          {
+            "chart_id": "completion_rate_trend",
+            "viewport": "mobile",
+            "accessible_name": "Completion Rate KPI",
+            "data_table": true,
+            "tooltip_text": "Completion rate KPI \u2014 Actual\nMarch 2026\n40.00%\nPrevious: 38.00%\nChange: 2.00% (5.26%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T22:08:50+00:00",
+            "expected": {
+              "metric_display_name": "Completion rate KPI",
+              "formatted_value": "40.00%",
+              "period_label": "March 2026",
+              "series_display_name": "Actual",
+              "unit": null,
+              "currency": null,
+              "partial_period_note": "Partial period \u2014 incomplete",
+              "tooltip_text": "Completion rate KPI \u2014 Actual\nMarch 2026\n40.00%\nPrevious: 38.00%\nChange: 2.00% (5.26%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T22:08:50+00:00"
+            },
+            "interactions": [
+              {
+                "period": "January 2026",
+                "series": "Actual",
+                "tooltip": "Completion rate KPI \u2014 Actual\nJanuary 2026\n35.00%\nFresh as of: 2026-07-16T22:08:50+00:00"
+              },
+              {
+                "period": "February 2026",
+                "series": "Actual",
+                "tooltip": "Completion rate KPI \u2014 Actual\nFebruary 2026\n38.00%\nPrevious: 35.00%\nChange: 3.00% (8.57%)\nFresh as of: 2026-07-16T22:08:50+00:00"
+              },
+              {
+                "period": "March 2026",
+                "series": "Actual",
+                "tooltip": "Completion rate KPI \u2014 Actual\nMarch 2026\n40.00%\nPrevious: 38.00%\nChange: 2.00% (5.26%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T22:08:50+00:00"
+              }
+            ],
+            "sampled_points": 3
+          }
+        ],
+        "pages": [
+          {
+            "page_id": "executive_overview",
+            "exists": true,
+            "title": "Executive Overview"
+          },
+          {
+            "page_id": "exceptions_and_data_quality",
+            "exists": true,
+            "title": "Exceptions and Data Quality"
+          },
+          {
+            "page_id": "pipeline_health",
+            "exists": true,
+            "title": "Pipeline Health"
+          },
+          {
+            "page_id": "all_measures",
+            "exists": true,
+            "title": "All Measures"
+          },
+          {
+            "page_id": "all_metrics",
+            "exists": true,
+            "title": "All Metrics"
+          },
+          {
+            "page_id": "all_dimensions",
+            "exists": true,
+            "title": "Dimensions"
+          }
+        ],
+        "console_errors": [],
+        "page_errors": [],
+        "failed_requests": [],
+        "refresh": {
+          "prior_version": "2026-07-16T22:32:08.661260+00:00",
+          "status": "success",
+          "status_text": "Ready",
+          "new_version": "2026-07-16T22:32:19.972602+00:00",
+          "refresh_validation": true,
+          "forced_failure": {
+            "status": "error",
+            "stale_labelled": true,
+            "version_unchanged": true,
+            "status_text": "Refresh failed \u00e2\u20ac\u201d showing previous data (stale)"
+          }
+        },
+        "accessibility": {
+          "has_nav_landmark": true,
+          "has_main_or_pages": true,
+          "heading_count": 7,
+          "focusable_charts": 11,
+          "status_text_beyond_color": true,
+          "disclaimer": "Automated checks only \u2014 not a full legal accessibility certification"
+        },
+        "artifacts": {},
+        "report_ready": true,
+        "data_version": "2026-07-16T22:32:08.661260+00:00",
+        "report_url": "http://127.0.0.1:58463/",
+        "initial_data_load": true
+      }
+    },
+    "endpoints": {
+      "/api/charts.json": {
+        "status": 200,
+        "ok": true
+      },
+      "/api/metrics.json": {
+        "status": 200,
+        "ok": true
+      },
+      "/api/refresh": {
+        "status": 200,
+        "ok": true
+      }
+    },
+    "initial_data_load": true,
+    "refresh_validation": true,
+    "manifest_relation_resolution": true,
+    "report_url": "http://127.0.0.1:58463/"
+  },
+  "checked_at": "2026-07-16T22:32:21.282747+00:00",
   "warning_ids": [],
   "applicability": ""
 }

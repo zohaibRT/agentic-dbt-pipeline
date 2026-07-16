@@ -363,6 +363,27 @@ LLM review PASS is technical presentation verification only — it never sets
 business approval to APPROVED. If Playwright MCP tools are unavailable while
 policy requires the review, mark the review `BLOCKED` and stop.
 
+### Hard user-handoff rule
+
+Never tell a user to open a generated report until
+`reports/agent/10_presentation/REPORT_HANDOFF_READINESS.json` has
+`status=PASS` and `open_allowed=true`.
+
+Before verified handoff, do **not** print report URLs, browser links,
+`open_report.bat` / `open_report.sh` instructions, “Open it”, “Report ready”,
+“Presentation complete”, or presentation PASS. Instead say:
+
+> Report artifacts were generated, but the report is not ready to open.
+> Runtime and browser verification are still pending.
+
+Presentation states: `PRESENTATION_GENERATED` → runtime/browser/MCP/final
+verification → `VERIFIED_FOR_HANDOFF`. Generated files, HTTP 200, or a smoke
+test alone are never completion. Run
+`scripts/check_report_handoff_readiness.py --root <project.root> --phase final`
+after independent verification and acceptance evidence exist. Launchers must
+call that script with `--require-pass` before starting the server or opening a
+browser. Do not call `webbrowser.open` during generation or validation.
+
 Before final delivery, run:
 
 ```powershell
@@ -371,9 +392,11 @@ python <installed-skill-path>/scripts/check_requirement_traceability.py --root <
 python <installed-skill-path>/scripts/check_layer_proof_coverage.py --root <project.root> --phase final
 python <installed-skill-path>/scripts/verify_metric_reconciliation.py --root <project.root>
 python <installed-skill-path>/scripts/check_llm_playwright_review.py --root <project.root> --phase final
+python <installed-skill-path>/scripts/check_report_handoff_readiness.py --root <project.root> --phase final
 ```
 
 Do not claim project completion when the acceptance gate returns `FAIL`. Generated projects should include `reports/agent/ACCEPTANCE_GATE_REPORT.md` and `reports/agent/ACCEPTANCE_GATE_REPORT.json`.
+Do not release report open instructions when handoff readiness `open_allowed` is false.
 
 After builder work is complete, run a fresh verifier agent with [agents/dbt-verifier-agent.md](agents/dbt-verifier-agent.md) and write `reports/agent/INDEPENDENT_VERIFICATION_REPORT.md` plus `.json`. Final delivery is blocked when independent verification is `FAIL`.
 

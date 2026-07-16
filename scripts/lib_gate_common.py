@@ -455,6 +455,19 @@ def load_presentation_policy(root: Path) -> dict[str, Any]:
         "llm_review_viewports": ["desktop", "tablet", "mobile"],
         "live_browser_viewports": ["desktop", "tablet", "mobile"],
         "render_modes": ["auto", "interactive_html", "static_image"],
+        "withhold_report_access_until_verified": True,
+        "require_report_handoff_readiness": True,
+        "require_manifest_relation_resolution": True,
+        "require_report_runtime_preflight": True,
+        "require_successful_initial_data_load": True,
+        "require_successful_refresh_validation": True,
+        "require_deterministic_playwright_before_handoff": True,
+        "require_playwright_mcp_before_handoff": True,
+        "require_independent_verification_before_handoff": True,
+        "require_final_acceptance_before_handoff": True,
+        "block_open_report_launcher_until_verified": True,
+        "prohibit_early_report_url_in_chat": True,
+        "report_handoff_applicability": "required",
     }
     cfg = _load_project_config(root)
     policy = cfg.get("presentation_policy") if isinstance(cfg.get("presentation_policy"), dict) else None

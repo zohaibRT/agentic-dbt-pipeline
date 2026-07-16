@@ -35,6 +35,7 @@ MCP is useful, but MCP itself is **not** the verifier.
 |---|---|
 | [agents/dbt-verifier-agent.md](../agents/dbt-verifier-agent.md) | Instructions for a fresh auditor agent |
 | [scripts/run_acceptance_gate.py](../scripts/run_acceptance_gate.py) | Deterministic acceptance gate |
+| [scripts/check_report_handoff_readiness.py](../scripts/check_report_handoff_readiness.py) | Report handoff readiness gate (`open_allowed` only after verified gates) |
 | [scripts/check_requirement_traceability.py](../scripts/check_requirement_traceability.py) | Requirement traceability gate |
 | [scripts/check_layer_proof_coverage.py](../scripts/check_layer_proof_coverage.py) | Layer proof coverage gate |
 | [scripts/verify_metric_reconciliation.py](../scripts/verify_metric_reconciliation.py) | Metric and key performance indicator reconciliation gate |
@@ -146,6 +147,8 @@ The verifier must:
 4. Write `reports/agent/INDEPENDENT_VERIFICATION_REPORT.md` and `.json`.
 
 Final delivery is blocked when independent verification is `FAIL`.
+
+Interactive report handoff is also blocked until `reports/agent/10_presentation/REPORT_HANDOFF_READINESS.json` shows `status=PASS` and `open_allowed=true`. Independent verification is one required gate in that readiness check; do not expose report URLs or launchers before it.
 
 ## CI gate
 

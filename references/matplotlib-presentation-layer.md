@@ -49,16 +49,26 @@ Why this matters: Matplotlib does not execute inside the browser. To reflect cha
 |---|---|
 | `serve_report.py` | Starts the local refreshable web report server, runs read-only data refresh, and serves chart endpoints or refreshed HTML |
 | `report.html` | Main browser shell with tabbed navigation, chart grouping, key performance indicator summaries, blocked/deferred notes, and report metadata |
-| `open_report.bat` | Windows launcher that starts `serve_report.py` and opens the local report URL |
-| `open_report.sh` | Optional Unix launcher for the same behavior |
+| `open_report.bat` | Windows launcher that **blocks** until `REPORT_HANDOFF_READINESS.json` has `open_allowed=true`, then starts `serve_report.py` and opens the verified URL |
+| `open_report.sh` | Unix launcher with the same readiness gate |
 | `generate_report.py` | Optional static export command that can create offline HTML/SVG/PNG snapshots, never the only live path |
 | `data_cache/` | Optional local cache of query results used only when live warehouse access is unavailable or explicitly requested |
 
-Expected user flow on Windows:
+### Verified report handoff
 
-1. Double-click `reports/agent/10_presentation/matplotlib/open_report.bat`, or run `python reports/agent/10_presentation/matplotlib/serve_report.py`.
-2. The browser opens the local report URL, usually `http://127.0.0.1:<port>/`.
-3. Refresh the browser, click the refresh control, or wait for the approved auto-refresh interval to see changed values after the underlying data changes.
+Opening instructions are shown to the user **only after** `reports/agent/10_presentation/REPORT_HANDOFF_READINESS.json` has `status=PASS` and `open_allowed=true`.
+
+Before that artifact passes:
+
+- Do not print report URLs, browser links, `open_report.*` instructions, or “report ready / presentation complete”.
+- Say: “Report artifacts were generated, but the report is not ready to open. Runtime and browser verification are still pending.”
+- Internal validators may start `serve_report.py` without opening the user’s browser.
+- Do not call `webbrowser.open` during generation or validation.
+
+After verified handoff:
+
+1. Run `open_report.bat` / `open_report.sh`, which re-checks readiness with `check_report_handoff_readiness.py --require-pass`.
+2. Only then does the launcher start the server and open `http://127.0.0.1:<port>/`.
 
 Do not require Power BI, Jupyter, or a notebook server for normal review.
 
@@ -303,8 +313,8 @@ reports/agent/10_presentation/matplotlib/
 | `data_access.py` | Read-only warehouse query helpers, cache helpers, and SQL verification utilities |
 | `report_pages/` | One Python module per classified report page/tab, for example `executive.py`, `trends.py`, `segmentation.py`, `exceptions.py` |
 | `report.html` | Browser-viewable multi-tab report for business review |
-| `open_report.bat` | Windows launcher for `report.html` |
-| `open_report.sh` | Optional launcher for macOS/Linux |
+| `open_report.bat` | Windows launcher gated by report handoff readiness |
+| `open_report.sh` | Unix launcher gated by report handoff readiness |
 | `data_cache/` | Optional cached query results for offline review or static export; must be clearly labeled with generated timestamp |
 | `figures/` | Optional exported SVG/PNG charts aligned to `dashboard_spec.md`; not the primary live rendering path |
 | `sql_verification/` | Exact queries and captured results for **every** RENDERED chart and for All Measures / All Metrics board values; include `_proof_index.md` |
@@ -576,17 +586,17 @@ Every chart must answer one business question from `reporting_catalog.md` or `da
 
 ## Validation before handoff
 
-Before marking Matplotlib presentation work complete:
+Before marking Matplotlib presentation work **VERIFIED_FOR_HANDOFF**:
 
 1. Verify `matplotlib`, `numpy`, and `pandas` import successfully or document the exact install blocker and commands attempted.
 2. Verify `requirements-matplotlib.txt` exists and matches the installed packages.
 3. Verify `kpi_figure_coverage.md` includes **every row** from `measure_catalog.md`, `metric_catalog.md`, `kpi_catalog.md`, and `KPI_DEFINITION_CONTRACTS.md` (supported/recommended/trusted or contract rows), each with `RENDERED`, `BLOCKED`, or `DEFERRED` status. See [reporting-coverage-requirements.md](reporting-coverage-requirements.md).
 4. Verify `serve_report.py --smoke-test` or the documented server smoke test runs without error.
-5. Verify the local report page itself with `scripts/validate_local_web_report.py --report-dir <matplotlib_dir>`, proving that `http://127.0.0.1:<port>/` returns HTTP 200 and non-empty HTML. This catches browser failures such as `ERR_EMPTY_RESPONSE`.
-6. Verify the **data refresh path** used by the report (refresh control / data API / chart JSON endpoint). Run live warehouse SQL for every `RENDERED` chart. A missing relation such as `schema.fct_* does not exist` is presentation `FAIL`, not a tip for the user.
+5. Verify local report **live data** with `scripts/validate_local_web_report.py --report-dir <matplotlib_dir>` — HTTP 200 alone is not enough; require runtime preflight, `/api/charts.json`, `/api/metrics.json`, and `/api/refresh` success with no structured query errors.
+6. Verify the **data refresh path** used by the report (refresh control / data API / chart JSON endpoint). Run live warehouse SQL for every `RENDERED` chart. A missing relation is presentation `FAIL`, not a tip for the user.
 7. If `generate_report.py` exists for snapshot export, verify it runs without error or document the exact blocker.
 8. Verify the local web report contains the classified tabs/sections defined in `report_spec.md`.
-9. Verify `open_report.bat` exists on Windows-focused projects or document the equivalent open command, and confirm it points to the same validated server entrypoint.
+9. Verify `open_report.bat` / `open_report.sh` exist and call `check_report_handoff_readiness.py --require-pass` before starting the server or opening a browser.
 10. Verify every `RENDERED` row in `kpi_figure_coverage.md` appears in the correct HTML tab/section through SVG/HTML/JSON chart output, measure/metric board cards, or has a documented static export fallback.
 10b. Verify decision-oriented business pages render with display names and formatted values. All Measures / All Metrics may exist as dictionary pages but are not required to hit a fixed card count.
 10c. Verify boards show **Display name** + **formatted_value** — primary columns must not be snake_case SQL ids or raw floats (`0.261111…`). Engineering `dim_*_row_count` / null-counts belong on Exceptions or Report Info.
@@ -597,33 +607,42 @@ Before marking Matplotlib presentation work complete:
 14. Verify chart scope matches `dashboard_spec.md` and does not include deferred items from `insight_backlog.md` without a visible blocked note.
 15. Run `python <skill>/scripts/check_presentation_coverage.py --root <project.root>` when available — must FAIL on missing display_name / value formatting when boards exist.
 16. Record pass/fail evidence in `reports/agent/10_presentation/presentation_report.md`.
-17. Run deterministic `validate_live_report_dom.py` (desktop/tablet/mobile).
+17. Run deterministic `validate_live_report_dom.py` (desktop/tablet/mobile) with `__REPORT_READY__`, successful refresh, populated cards/charts, and no console/API errors.
 18. Perform the LLM-guided Playwright MCP review (real MCP browser tools), write `LLM_PLAYWRIGHT_REVIEW.*`, and run `check_llm_playwright_review.py --phase final`.
+19. Run independent verification and final strict acceptance.
+20. Run `check_report_handoff_readiness.py --phase final` and confirm `open_allowed=true` before releasing open instructions.
 
-HTML shell load alone is never enough to mark presentation complete.
+HTML shell load alone is never enough to mark presentation complete. Generated files alone are not completion. HTTP 200 alone is not completion.
 
 ## Done gate
 
 ```text
-Presentation layer: COMPLETE
+Presentation layer: VERIFIED_FOR_HANDOFF
 
 Presentation technology: Matplotlib
+Presentation state: VERIFIED_FOR_HANDOFF
+Handoff readiness: reports/agent/10_presentation/REPORT_HANDOFF_READINESS.json (open_allowed=true)
 Browser report server: reports/agent/10_presentation/matplotlib/serve_report.py
 Browser report shell: reports/agent/10_presentation/matplotlib/report.html
-Launcher: reports/agent/10_presentation/matplotlib/open_report.bat or documented equivalent
+Launcher: reports/agent/10_presentation/matplotlib/open_report.bat (readiness-gated)
 Refresh mode: manual / timed / snapshot export
 Coverage map: reports/agent/10_presentation/matplotlib/kpi_figure_coverage.md
 Label dictionary: reports/agent/10_presentation/matplotlib/label_dictionary.md
 Python prerequisites: PASS or BLOCKED with install commands attempted
 Report spec: reports/agent/10_presentation/matplotlib/report_spec.md
 Figure generation: PASS or BLOCKED with reason
-Local page validation: PASS with URL and response size, or BLOCKED with stdout/stderr
+Local page validation: PASS with live data endpoints, or BLOCKED with stdout/stderr
+Deterministic Playwright: PASS
+LLM Playwright MCP review: PASS or fixture-exempt NOT_APPLICABLE
+Independent verification: PASS
+Final acceptance: PASS
 SQL verification: PASS or BLOCKED with reason
 Report: reports/agent/10_presentation/presentation_report.md
 Pipeline status: reports/agent/PIPELINE_STATUS.md
 ```
 
 Do not claim figures are validated if SQL reconciliation was not recorded.
+Do not claim presentation PASS unless handoff readiness `open_allowed=true`.
 
 ## Commit guidance
 

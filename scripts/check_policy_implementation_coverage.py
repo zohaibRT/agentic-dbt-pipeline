@@ -150,6 +150,55 @@ KNOWN_CONSUMERS: dict[tuple[str, str], list[str]] = {
     ("presentation_policy", "llm_review_viewports"): ["check_llm_playwright_review.py"],
     ("presentation_policy", "live_browser_viewports"): ["run_acceptance_gate.py"],
     ("presentation_policy", "render_modes"): ["validate_chart_registry.py"],
+    ("presentation_policy", "withhold_report_access_until_verified"): [
+        "check_report_handoff_readiness.py"
+    ],
+    ("presentation_policy", "require_report_handoff_readiness"): [
+        "check_report_handoff_readiness.py",
+        "run_acceptance_gate.py",
+    ],
+    ("presentation_policy", "require_manifest_relation_resolution"): [
+        "check_report_handoff_readiness.py",
+        "validate_local_web_report.py",
+    ],
+    ("presentation_policy", "require_report_runtime_preflight"): [
+        "check_report_handoff_readiness.py",
+        "validate_local_web_report.py",
+    ],
+    ("presentation_policy", "require_successful_initial_data_load"): [
+        "check_report_handoff_readiness.py",
+        "validate_local_web_report.py",
+    ],
+    ("presentation_policy", "require_successful_refresh_validation"): [
+        "check_report_handoff_readiness.py",
+        "validate_local_web_report.py",
+        "validate_live_report_dom.py",
+    ],
+    ("presentation_policy", "require_deterministic_playwright_before_handoff"): [
+        "check_report_handoff_readiness.py",
+        "validate_live_report_dom.py",
+    ],
+    ("presentation_policy", "require_playwright_mcp_before_handoff"): [
+        "check_report_handoff_readiness.py",
+        "check_llm_playwright_review.py",
+    ],
+    ("presentation_policy", "require_independent_verification_before_handoff"): [
+        "check_report_handoff_readiness.py",
+        "run_independent_verifier.py",
+    ],
+    ("presentation_policy", "require_final_acceptance_before_handoff"): [
+        "check_report_handoff_readiness.py",
+        "run_acceptance_gate.py",
+    ],
+    ("presentation_policy", "block_open_report_launcher_until_verified"): [
+        "check_report_handoff_readiness.py"
+    ],
+    ("presentation_policy", "prohibit_early_report_url_in_chat"): [
+        "check_report_handoff_readiness.py"
+    ],
+    ("presentation_policy", "report_handoff_applicability"): [
+        "check_report_handoff_readiness.py"
+    ],
     ("resource_classification_policy", "require_enabled_local_models"): [
         "check_model_classification_coverage.py",
     ],

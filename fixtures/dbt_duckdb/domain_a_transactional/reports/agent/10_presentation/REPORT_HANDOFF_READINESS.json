@@ -1,0 +1,87 @@
+{
+  "schema_version": "1.0",
+  "status": "PASS",
+  "open_allowed": true,
+  "presentation_state": "VERIFIED_FOR_HANDOFF",
+  "report_bundle_hash": "788094c18d7ea3b2b8b83626e9459ab7d2e6016344d36e48f72d9e0a6cf4b741",
+  "file_hashes": {
+    "report_html": "af1701b029b3f6b06f5bc43a4bec2ed79972340f4fdf8c5d8a235b121575a786",
+    "page_registry": "ec25f4182e887cc8792be79c92ba3dbc5d8ff0a1cf90c13edb07b53ace2c0184",
+    "chart_registry": "762ffc13f04ceb971c5e46b51b7a01c82654be7a7a236f5305ace7179233feeb",
+    "rendered_metric_manifest": "bd812907def17e73f68f97cfb3e87eb7d8b320f82a4db596bbba9cb545c5ae21",
+    "query_registry": "13233c3939a05ed3ec783c6c6453095091b3a83dde94ea2c8c6828c49bef82ee",
+    "proof_registry": "3accf1610922ec1a9c84eb8f8a1d6cd3fb0184857e31a07ca4524c2c9380070e",
+    "chart_registry_canonical": "7a0ec87d66630b9037b052c45964978307e4ffb14ea992b88006cbe8d9e1afe8"
+  },
+  "checked_at": "2026-07-16T22:36:37.696350+00:00",
+  "phase": "final",
+  "gates": [
+    {
+      "gate_id": "manifest_relation_resolution",
+      "status": "PASS",
+      "evidence": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_a_transactional\\reports\\agent\\10_presentation\\matplotlib\\runtime_preflight.json",
+      "notes": "",
+      "required": true
+    },
+    {
+      "gate_id": "runtime_preflight",
+      "status": "PASS",
+      "evidence": "validate_local_web_report.py / runtime_preflight.json",
+      "notes": "",
+      "required": true
+    },
+    {
+      "gate_id": "initial_data_load",
+      "status": "PASS",
+      "evidence": "live data endpoints",
+      "notes": "",
+      "required": true
+    },
+    {
+      "gate_id": "refresh_validation",
+      "status": "PASS",
+      "evidence": "refresh endpoint",
+      "notes": "",
+      "required": true
+    },
+    {
+      "gate_id": "deterministic_playwright",
+      "status": "PASS",
+      "evidence": "validate_live_report_dom.py",
+      "notes": "",
+      "required": true
+    },
+    {
+      "gate_id": "playwright_mcp_review",
+      "status": "PASS",
+      "evidence": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_a_transactional\\reports\\agent\\10_presentation\\LLM_PLAYWRIGHT_REVIEW.json",
+      "notes": "",
+      "required": true
+    },
+    {
+      "gate_id": "llm_review_artifact_validation",
+      "status": "PASS",
+      "evidence": "check_llm_playwright_review.py",
+      "notes": "",
+      "required": true
+    },
+    {
+      "gate_id": "independent_verification",
+      "status": "PASS",
+      "evidence": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_a_transactional\\reports\\agent\\INDEPENDENT_VERIFICATION_REPORT.json",
+      "notes": "",
+      "required": true
+    },
+    {
+      "gate_id": "final_acceptance",
+      "status": "PASS",
+      "evidence": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_a_transactional\\reports\\agent\\ACCEPTANCE_GATE_REPORT.json",
+      "notes": "",
+      "required": true
+    }
+  ],
+  "blocking_gates": [],
+  "open_command": "reports/agent/10_presentation/matplotlib/open_report.bat",
+  "report_url": "http://127.0.0.1:8765/",
+  "open_instructions_released": true
+}

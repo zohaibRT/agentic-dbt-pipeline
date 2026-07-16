@@ -1,0 +1,87 @@
+{
+  "schema_version": "1.0",
+  "status": "PASS",
+  "open_allowed": true,
+  "presentation_state": "VERIFIED_FOR_HANDOFF",
+  "report_bundle_hash": "ed0f23f11975a407f5493c2e60fbb1026154f334dd856e492b757b9e49dc6ec0",
+  "file_hashes": {
+    "report_html": "9fabb383cd10b0bbad4bcf4e40872c6ac9925fe1e0febb1c4349c813382824ef",
+    "page_registry": "ec25f4182e887cc8792be79c92ba3dbc5d8ff0a1cf90c13edb07b53ace2c0184",
+    "chart_registry": "f01022228c3464dde6910a4cca52afe874a13c6adfda6d902119ab0bab492974",
+    "rendered_metric_manifest": "9ecd81ee9a009c6b1a9b9a0ef3a46e27066dd4c3410ad389a66e2e2cb323299c",
+    "query_registry": "742d660f7c8c964fc38920f5f0861b5870d910a9a8c010fb3e23e1a379b5f4eb",
+    "proof_registry": "a33c950142671cb0289e0a1dc6ea2ab29dfc6a0d72fa7d1b921d0116480cf3a7",
+    "chart_registry_canonical": "88b6a587d024e2c6a2234089dbac07d64c714f7e092d4cd0e19a2bbd693a0e47"
+  },
+  "checked_at": "2026-07-16T22:29:56.650839+00:00",
+  "phase": "final",
+  "gates": [
+    {
+      "gate_id": "manifest_relation_resolution",
+      "status": "PASS",
+      "evidence": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_d_case_activity\\reports\\agent\\10_presentation\\matplotlib\\runtime_preflight.json",
+      "notes": "",
+      "required": true
+    },
+    {
+      "gate_id": "runtime_preflight",
+      "status": "PASS",
+      "evidence": "validate_local_web_report.py / runtime_preflight.json",
+      "notes": "",
+      "required": true
+    },
+    {
+      "gate_id": "initial_data_load",
+      "status": "PASS",
+      "evidence": "live data endpoints",
+      "notes": "",
+      "required": true
+    },
+    {
+      "gate_id": "refresh_validation",
+      "status": "PASS",
+      "evidence": "refresh endpoint",
+      "notes": "",
+      "required": true
+    },
+    {
+      "gate_id": "deterministic_playwright",
+      "status": "PASS",
+      "evidence": "validate_live_report_dom.py",
+      "notes": "",
+      "required": true
+    },
+    {
+      "gate_id": "playwright_mcp_review",
+      "status": "NOT_APPLICABLE",
+      "evidence": "",
+      "notes": "mcp_not_required_or_fixture_exempt",
+      "required": false
+    },
+    {
+      "gate_id": "llm_review_artifact_validation",
+      "status": "NOT_APPLICABLE",
+      "evidence": "",
+      "notes": "mcp_not_required_or_fixture_exempt",
+      "required": false
+    },
+    {
+      "gate_id": "independent_verification",
+      "status": "PASS",
+      "evidence": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_d_case_activity\\reports\\agent\\INDEPENDENT_VERIFICATION_REPORT.json",
+      "notes": "",
+      "required": true
+    },
+    {
+      "gate_id": "final_acceptance",
+      "status": "PASS",
+      "evidence": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_d_case_activity\\reports\\agent\\ACCEPTANCE_GATE_REPORT.json",
+      "notes": "",
+      "required": true
+    }
+  ],
+  "blocking_gates": [],
+  "open_command": "reports/agent/10_presentation/matplotlib/open_report.bat",
+  "report_url": "http://127.0.0.1:8765/",
+  "open_instructions_released": true
+}

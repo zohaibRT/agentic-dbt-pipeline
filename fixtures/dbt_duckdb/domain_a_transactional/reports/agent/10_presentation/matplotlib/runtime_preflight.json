@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "runtime_preflight": true,
+  "manifest_relation_resolution": true,
+  "initial_data_load": true,
+  "refresh_validation": true,
+  "resolved_relations": [
+    "model.domain_a_transactional.fct_events"
+  ],
+  "charts_payload_ok": true,
+  "metrics_payload_ok": true,
+  "refresh_ok": true,
+  "errors": []
+}

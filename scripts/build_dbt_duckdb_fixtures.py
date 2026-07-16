@@ -458,6 +458,19 @@ presentation_policy:
     - desktop
     - tablet
     - mobile
+  withhold_report_access_until_verified: true
+  require_report_handoff_readiness: true
+  require_manifest_relation_resolution: true
+  require_report_runtime_preflight: true
+  require_successful_initial_data_load: true
+  require_successful_refresh_validation: true
+  require_deterministic_playwright_before_handoff: true
+  require_playwright_mcp_before_handoff: true
+  require_independent_verification_before_handoff: true
+  require_final_acceptance_before_handoff: true
+  block_open_report_launcher_until_verified: true
+  prohibit_early_report_url_in_chat: true
+  report_handoff_applicability: required
 resource_classification_policy:
   require_enabled_local_models: true
   require_sources: true
@@ -1394,8 +1407,9 @@ def main() -> int:
     for domain in DOMAINS:
         root = FIX / domain["slug"]
         for script_name, extra_args in (
-            ("run_acceptance_gate.py", ["--phase", "final", "--strict", "--skip-dbt"]),
+            # IV first so report handoff readiness sees fresh independent evidence.
             ("run_independent_verifier.py", ["--phase", "final"]),
+            ("run_acceptance_gate.py", ["--phase", "final", "--strict", "--skip-dbt"]),
         ):
             cmd = [sys.executable, str(SCRIPTS / script_name), "--root", str(root), *extra_args]
             proc = subprocess.run(cmd, cwd=str(SCRIPTS), capture_output=True, text=True)

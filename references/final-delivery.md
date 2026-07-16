@@ -185,6 +185,26 @@ For full dbt pipeline final delivery, use the more detailed structure below.
 
 Always start with a concise user-facing summary before detailed handoff notes. The final response must be printed in the chat pane; report files are supporting evidence, not a substitute for the chat summary.
 
+### Report access handoff
+
+If an interactive report exists, presentation summaries must follow the hard handoff rule:
+
+**Before** `reports/agent/10_presentation/REPORT_HANDOFF_READINESS.json` has `status=PASS` and `open_allowed=true`:
+
+- Status: BLOCKED or IN PROGRESS
+- Report artifact: generated
+- Report access: withheld until verification
+- Open instructions: not available
+- Next action: runtime/browser verification
+- Do not print URLs, `open_report.*` commands, or “report ready / presentation complete”
+
+**After** verified handoff:
+
+- Status: PASS
+- Report access: VERIFIED_FOR_HANDOFF
+- Open instructions: readiness-gated launcher and verified URL
+- Evidence: `REPORT_HANDOFF_READINESS.json`
+
 Use this order:
 
 ### Short summary

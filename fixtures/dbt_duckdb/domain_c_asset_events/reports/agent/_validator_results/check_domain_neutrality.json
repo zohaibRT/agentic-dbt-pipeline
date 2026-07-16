@@ -5,10 +5,10 @@
   "errors": [],
   "warnings": [],
   "details": {
-    "files_scanned": 252,
+    "files_scanned": 256,
     "root": "C:\\codebase\\agentic-dbt-pipeline"
   },
-  "checked_at": "2026-07-16T13:56:33.449381+00:00",
+  "checked_at": "2026-07-16T22:27:10.207769+00:00",
   "warning_ids": [],
   "applicability": ""
 }

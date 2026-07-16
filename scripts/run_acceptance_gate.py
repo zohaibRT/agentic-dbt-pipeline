@@ -125,6 +125,11 @@ PROJECT_VALIDATION_SCRIPTS = [
     ("check_presentation_traceability.py", ["--root", "{root}", "--phase", "{phase}"], "presentation"),
     ("validate_live_report_dom.py", ["--root", "{root}", "--desktop", "--tablet", "--mobile"], "presentation"),
     ("run_independent_verifier.py", ["--root", "{root}", "--phase", "{phase}"], "final"),
+    (
+        "check_report_handoff_readiness.py",
+        ["--root", "{root}", "--phase", "{phase}"],
+        "presentation",
+    ),
 ]
 
 DBT_COMMANDS = [

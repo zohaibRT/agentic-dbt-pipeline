@@ -292,7 +292,7 @@
     {
       "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_domain_neutrality.py --root C:\\codebase\\agentic-dbt-pipeline --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_a_transactional\\reports\\agent\\_validator_results\\check_domain_neutrality.json",
       "status": "PASS",
-      "detail": "Domain neutrality scan: root=C:\\codebase\\agentic-dbt-pipeline, files=252\nSTATUS: PASS\nDomain neutrality check PASSED",
+      "detail": "Domain neutrality scan: root=C:\\codebase\\agentic-dbt-pipeline, files=256\nSTATUS: PASS\nDomain neutrality check PASSED",
       "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_domain_neutrality.py --root C:\\codebase\\agentic-dbt-pipeline --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_a_transactional\\reports\\agent\\_validator_results\\check_domain_neutrality.json",
       "return_code": 0
     },
@@ -343,6 +343,13 @@
       "status": "PASS",
       "detail": "independent verifier overall_status=PASS",
       "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\run_independent_verifier.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_a_transactional --phase final --strict",
+      "return_code": 0
+    },
+    {
+      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_report_handoff_readiness.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_a_transactional --phase final --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_a_transactional\\reports\\agent\\_validator_results\\check_report_handoff_readiness.json",
+      "status": "PASS",
+      "detail": "STATUS: PASS\nReport handoff readiness PASSED",
+      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_report_handoff_readiness.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_a_transactional --phase final --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_a_transactional\\reports\\agent\\_validator_results\\check_report_handoff_readiness.json",
       "return_code": 0
     },
     {

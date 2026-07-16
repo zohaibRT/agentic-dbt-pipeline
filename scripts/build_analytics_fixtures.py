@@ -137,6 +137,11 @@ presentation_policy:
     - desktop
     - tablet
     - mobile
+  withhold_report_access_until_verified: true
+  require_report_handoff_readiness: true
+  report_handoff_applicability: not_applicable_fixture
+  block_open_report_launcher_until_verified: true
+  prohibit_early_report_url_in_chat: true
 acceptance_policy:
   final_fail_on_warning: true
   require_explicit_warning_acceptance: true
