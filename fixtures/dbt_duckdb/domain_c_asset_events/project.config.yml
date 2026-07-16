@@ -24,6 +24,18 @@ presentation_policy:
   require_bidirectional_proof_mapping: true
   approved_kpis_required_for_trusted_executive_pages: true
   pending_kpis_allowed_in_draft_pages: true
+  require_live_browser_validation: true
+  require_live_browser_at_final: true
+  require_llm_playwright_review_at_final: true
+  llm_playwright_review_required_for_release: true
+  llm_playwright_review_required_in_ci: false
+  # Fixture-only skip is allowed only under fixtures/. domain_a keeps required
+  # because it carries a real Playwright MCP review artifact for release gates.
+  llm_playwright_review_applicability: not_applicable_fixture
+  llm_review_viewports:
+    - desktop
+    - tablet
+    - mobile
 resource_classification_policy:
   require_enabled_local_models: true
   require_sources: true

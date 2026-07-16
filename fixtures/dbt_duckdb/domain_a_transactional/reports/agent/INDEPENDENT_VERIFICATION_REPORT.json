@@ -1,6 +1,6 @@
 {
   "overall_status": "PASS",
-  "checked_at": "2026-07-16T10:41:44.547608+00:00",
+  "checked_at": "2026-07-16T13:53:45.198547+00:00",
   "root": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_a_transactional",
   "mode": "independent",
   "results": [
@@ -105,7 +105,7 @@
       "category": "technical_labels_not_visible",
       "status": "WARN",
       "return_code": 0,
-      "stdout": "Business readability: files=12, tech_name_hits~908, dim_row_count_hits~0, raw_float_hits~245, display_hints=True, label_coverage=100% (required=100%)\nWARN: high-precision raw floats present \u2014 ensure UI shows formatted_value (%, currency, rounded decimals)\nSTATUS: WARN\nWARNING_IDS: check_report_business_readability:w0:a8029ff012c7\nReport business readability check PASSED with warnings\n",
+      "stdout": "Business readability: files=13, tech_name_hits~915, dim_row_count_hits~0, raw_float_hits~245, display_hints=True, label_coverage=100% (required=100%)\nWARN: high-precision raw floats present \u2014 ensure UI shows formatted_value (%, currency, rounded decimals)\nSTATUS: WARN\nWARNING_IDS: check_report_business_readability:w0:a8029ff012c7\nReport business readability check PASSED with warnings\n",
       "stderr": ""
     },
     {

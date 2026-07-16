@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0",
+  "validator_id": "check_llm_playwright_review",
+  "status": "SKIPPED",
+  "errors": [],
+  "warnings": [],
+  "details": {
+    "phase": "final",
+    "interactive_report": true,
+    "applicability": "not_applicable_fixture"
+  },
+  "checked_at": "2026-07-16T13:54:31.658745+00:00",
+  "warning_ids": [],
+  "applicability": "fixture_only_llm_playwright_review_exempt"
+}

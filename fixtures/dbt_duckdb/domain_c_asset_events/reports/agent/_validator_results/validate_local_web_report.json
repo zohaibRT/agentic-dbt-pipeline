@@ -5,12 +5,12 @@
   "errors": [],
   "warnings": [],
   "details": {
-    "url": "http://127.0.0.1:62817/",
+    "url": "http://127.0.0.1:52705/",
     "report_dir": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\10_presentation\\matplotlib",
     "http_status": 200,
     "body_bytes": 51685
   },
-  "checked_at": "2026-07-16T10:36:42.267166+00:00",
+  "checked_at": "2026-07-16T13:56:34.500237+00:00",
   "warning_ids": [],
   "applicability": ""
 }

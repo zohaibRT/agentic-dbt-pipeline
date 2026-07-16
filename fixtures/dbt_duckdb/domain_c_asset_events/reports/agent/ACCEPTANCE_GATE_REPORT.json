@@ -171,10 +171,17 @@
       "return_code": 0
     },
     {
-      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_layer_proof_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_layer_proof_coverage.json",
+      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_layer_proof_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --phase final --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_layer_proof_coverage.json",
       "status": "PASS",
       "detail": "STATUS: PASS\nLayer proof coverage PASSED",
-      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_layer_proof_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_layer_proof_coverage.json",
+      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_layer_proof_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --phase final --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_layer_proof_coverage.json",
+      "return_code": 0
+    },
+    {
+      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_llm_playwright_review.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --phase final --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_llm_playwright_review.json",
+      "status": "SKIPPED",
+      "detail": "SKIPPED: fixture_only_llm_playwright_review_exempt\nSTATUS: SKIPPED",
+      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_llm_playwright_review.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events --phase final --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_llm_playwright_review.json",
       "return_code": 0
     },
     {
@@ -285,7 +292,7 @@
     {
       "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_domain_neutrality.py --root C:\\codebase\\agentic-dbt-pipeline --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_domain_neutrality.json",
       "status": "PASS",
-      "detail": "Domain neutrality scan: root=C:\\codebase\\agentic-dbt-pipeline, files=249\nSTATUS: PASS\nDomain neutrality check PASSED",
+      "detail": "Domain neutrality scan: root=C:\\codebase\\agentic-dbt-pipeline, files=252\nSTATUS: PASS\nDomain neutrality check PASSED",
       "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_domain_neutrality.py --root C:\\codebase\\agentic-dbt-pipeline --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\_validator_results\\check_domain_neutrality.json",
       "return_code": 0
     },

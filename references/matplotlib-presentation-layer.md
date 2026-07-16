@@ -35,8 +35,9 @@ Default behavior:
 - `report.html` must set Batch 6 hooks after boot: `window.__REPORT_READY__`, `window.__REPORT_CHART_REGISTRY__`, `window.__REPORT_METRIC_MANIFEST__`, `window.__REPORT_DATA_VERSION__`, `window.__REPORT_REFRESH_STATUS__`. Chart containers must expose `data-chart-id`, `data-page-id`, `data-metric-ids`, `data-query-id`, `data-validation-status`, and `data-business-approval-status`.
 - Live hover/tap browser verification is performed by `scripts/validate_live_report_dom.py` (Playwright) across desktop, tablet, and mobile viewports. It writes `LIVE_REPORT_DOM_REPORT.json` / `.md`, and captures screenshots/traces under `live_browser_artifacts/` on failure.
 - Acceptance gate runs live browser validation in presentation and final phases when `report.html` exists. CI installs Chromium via `playwright install --with-deps` and uploads artifacts on failure.
+- **LLM-guided Playwright MCP review (separate gate):** after deterministic Playwright, the agent must start the report server and use Playwright MCP tools to review pages, hover/tap charts, compare visible values to manifests/proofs, and write `LLM_PLAYWRIGHT_REVIEW.json` / `.md` plus `llm_playwright_evidence/`. Validate with `scripts/check_llm_playwright_review.py`. CI does not fake an LLM MCP session; release workflow requires the artifacts when policy says so. Fixture projects may set `llm_playwright_review_applicability: not_applicable_fixture` only under `fixtures/`.
 - Automated accessibility checks in the live validator are practical hooks only — not a full legal accessibility certification.
-- Browser PASS does not grant business approval; technical verification and business approval statuses remain separate.
+- Browser PASS / LLM review PASS do not grant business approval; technical verification and business approval statuses remain separate.
 - PNG/PDF files are optional exports for download, documentation, or offline snapshots. Do not use PNG as the only chart rendering path.
 - `report.html` is the web shell and can be served by `serve_report.py`; a fully static `report.html` is acceptable only as an explicit export/snapshot mode.
 
@@ -596,6 +597,8 @@ Before marking Matplotlib presentation work complete:
 14. Verify chart scope matches `dashboard_spec.md` and does not include deferred items from `insight_backlog.md` without a visible blocked note.
 15. Run `python <skill>/scripts/check_presentation_coverage.py --root <project.root>` when available — must FAIL on missing display_name / value formatting when boards exist.
 16. Record pass/fail evidence in `reports/agent/10_presentation/presentation_report.md`.
+17. Run deterministic `validate_live_report_dom.py` (desktop/tablet/mobile).
+18. Perform the LLM-guided Playwright MCP review (real MCP browser tools), write `LLM_PLAYWRIGHT_REVIEW.*`, and run `check_llm_playwright_review.py --phase final`.
 
 HTML shell load alone is never enough to mark presentation complete.
 

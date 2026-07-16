@@ -47,6 +47,36 @@ TIME_INTEL_METRICS = [
 ]
 
 
+def _llm_review_applicability(slug: str) -> str:
+    """domain_a carries a real MCP review; other fixtures use explicit fixture-only skip."""
+    if slug == "domain_a_transactional":
+        return "required"
+    return "not_applicable_fixture"
+
+
+def refresh_domain_a_llm_review(root: Path) -> None:
+    """Refresh domain_a LLM review hashes from existing MCP evidence (no MCP re-run)."""
+    evidence = root / "reports" / "agent" / "10_presentation" / "llm_playwright_evidence"
+    if not evidence.exists() or not any(evidence.glob("*.png")):
+        return
+    proc = subprocess.run(
+        [
+            sys.executable,
+            str(SCRIPTS / "write_llm_playwright_review_from_mcp.py"),
+            "--root",
+            str(root),
+        ],
+        cwd=str(SCRIPTS),
+        capture_output=True,
+        text=True,
+    )
+    if proc.returncode != 0:
+        raise RuntimeError(
+            "Failed to refresh domain_a LLM Playwright review:\n"
+            f"{proc.stdout}\n{proc.stderr}"
+        )
+
+
 def write_dbt_project(base: Path, slug: str) -> None:
     write(
         base / "dbt_project.yml",
@@ -416,6 +446,18 @@ presentation_policy:
   require_bidirectional_proof_mapping: true
   approved_kpis_required_for_trusted_executive_pages: true
   pending_kpis_allowed_in_draft_pages: true
+  require_live_browser_validation: true
+  require_live_browser_at_final: true
+  require_llm_playwright_review_at_final: true
+  llm_playwright_review_required_for_release: true
+  llm_playwright_review_required_in_ci: false
+  # Fixture-only skip is allowed only under fixtures/. domain_a keeps required
+  # because it carries a real Playwright MCP review artifact for release gates.
+  llm_playwright_review_applicability: {_llm_review_applicability(slug)}
+  llm_review_viewports:
+    - desktop
+    - tablet
+    - mobile
 resource_classification_policy:
   require_enabled_local_models: true
   require_sources: true
@@ -1339,6 +1381,15 @@ def main() -> int:
         print(proc.stderr)
     else:
         print("[PASS] check_domain_neutrality.py")
+
+    # Refresh domain_a MCP review hashes after live DOM / presentation mutations.
+    domain_a = FIX / "domain_a_transactional"
+    try:
+        refresh_domain_a_llm_review(domain_a)
+        print("[PASS] domain_a_transactional :: refresh_llm_playwright_review")
+    except Exception as exc:
+        failures += 1
+        print(f"[FAIL] domain_a_transactional :: refresh_llm_playwright_review :: {exc}")
 
     for domain in DOMAINS:
         root = FIX / domain["slug"]

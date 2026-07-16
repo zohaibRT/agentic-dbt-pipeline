@@ -4,8 +4,28 @@
   "status": "PASS",
   "errors": [],
   "warnings": [],
-  "details": {},
-  "checked_at": "2026-07-16T10:35:13.533154+00:00",
+  "details": {
+    "schema": "expanded",
+    "row_count": 12,
+    "phase": "final",
+    "headers": [
+      "Phase",
+      "Layer",
+      "Model / Artifact",
+      "Expected Grain",
+      "Row Count",
+      "Upstream Comparison",
+      "Key / Grain Proof",
+      "Relationship Proof",
+      "Measure / KPI Proof",
+      "Privacy Check",
+      "Proof Files",
+      "dbt Command Result",
+      "Overall Status",
+      "Notes"
+    ]
+  },
+  "checked_at": "2026-07-16T13:54:31.423313+00:00",
   "warning_ids": [],
   "applicability": ""
 }

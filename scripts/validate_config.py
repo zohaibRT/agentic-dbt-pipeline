@@ -49,6 +49,7 @@ REQUIRED_REPO_FILES = {
     "scripts/create_report_skeleton.py",
     "scripts/run_acceptance_gate.py",
     "scripts/check_layer_proof_coverage.py",
+    "scripts/check_llm_playwright_review.py",
     "scripts/check_requirement_traceability.py",
     "scripts/verify_metric_reconciliation.py",
     "scripts/validate_local_web_report.py",

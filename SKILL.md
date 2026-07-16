@@ -341,13 +341,32 @@ Verification must not depend only on the same agent or chat window. The builder 
 
 MCP may provide access to repo, files, database, and dbt commands, but MCP is not the verifier.
 
+When an interactive presentation report exists, final delivery also requires an
+**LLM-guided Playwright MCP review** that is separate from deterministic
+`scripts/validate_live_report_dom.py`:
+
+1. Run deterministic Playwright (`validate_live_report_dom.py`) for desktop/tablet/mobile.
+2. Start `serve_report.py` for the interactive report.
+3. Use the installed Playwright MCP browser tools in the active agent session
+   (real navigate/hover/tap/screenshot — not static HTML parsing alone).
+4. Write `reports/agent/10_presentation/LLM_PLAYWRIGHT_REVIEW.json` / `.md`
+   and evidence under `llm_playwright_evidence/`.
+5. Run `scripts/check_llm_playwright_review.py --root <project.root> --phase final`.
+6. Run final strict acceptance / independent verifier.
+
+Deterministic Playwright and LLM Playwright MCP review do not replace each other.
+LLM review PASS is technical presentation verification only — it never sets
+business approval to APPROVED. If Playwright MCP tools are unavailable while
+policy requires the review, mark the review `BLOCKED` and stop.
+
 Before final delivery, run:
 
 ```powershell
 python <installed-skill-path>/scripts/run_acceptance_gate.py --root <project.root>
 python <installed-skill-path>/scripts/check_requirement_traceability.py --root <project.root>
-python <installed-skill-path>/scripts/check_layer_proof_coverage.py --root <project.root>
+python <installed-skill-path>/scripts/check_layer_proof_coverage.py --root <project.root> --phase final
 python <installed-skill-path>/scripts/verify_metric_reconciliation.py --root <project.root>
+python <installed-skill-path>/scripts/check_llm_playwright_review.py --root <project.root> --phase final
 ```
 
 Do not claim project completion when the acceptance gate returns `FAIL`. Generated projects should include `reports/agent/ACCEPTANCE_GATE_REPORT.md` and `reports/agent/ACCEPTANCE_GATE_REPORT.json`.
