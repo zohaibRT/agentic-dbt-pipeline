@@ -12,6 +12,14 @@ Install the skill with:
 npx skills add zohaibRT/agentic-dbt-pipeline
 ```
 
+On Windows, if multi-agent copy fails with `ENOENT ... mkdir ...templates\\reports\\10_presentation`, install Cursor-only:
+
+```bash
+npx skills add zohaibRT/agentic-dbt-pipeline --agent cursor -y
+```
+
+Then verify `templates/reports/09_analytics_insights/` and `templates/reports/10_presentation/` exist under `.agents/skills/agentic-dbt-pipeline/`. See [references/install-skill.md](references/install-skill.md).
+
 This is the only skill users need to install manually. During project setup and configuration, the skill can install the required dbt Labs agent skills and dbt packages when they are missing.
 
 Some versions of `npx skills add` install only the entry `SKILL.md` file into agent folders. On first use, this skill checks for its local resources and hydrates missing `references/`, `scripts/`, `agents/`, `project.config.yml`, `prompt.md`, and `.env.example` from this repository into the installed skill folder before continuing.

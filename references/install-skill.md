@@ -6,6 +6,26 @@
 npx skills add zohaibRT/agentic-dbt-pipeline
 ```
 
+### Windows / Cursor-only install (recommended when multi-agent copy fails)
+
+Copying this large skill into many agent folders at once can fail on Windows with:
+
+`ENOENT: no such file or directory, mkdir '...templates\\reports\\10_presentation'`
+
+Install into Cursor (and the shared `.agents/skills` folder) only:
+
+```bash
+npx skills add zohaibRT/agentic-dbt-pipeline --agent cursor -y
+```
+
+If a previous install was partial, remove the broken skill folder and reinstall, or hydrate from git per `SKILL.md` (Local resource hydration). After install, confirm these exist:
+
+```text
+.agents/skills/agentic-dbt-pipeline/templates/reports/09_analytics_insights/
+.agents/skills/agentic-dbt-pipeline/templates/reports/10_presentation/
+.agents/skills/agentic-dbt-pipeline/scripts/run_acceptance_gate.py
+```
+
 Repository: https://github.com/zohaibRT/agentic-dbt-pipeline
 
 **You do not install dbt Agent Skills separately.** On first pipeline run, project setup and configuration installs them automatically when `auto_install_dbt_skills: true` (default):
