@@ -12,6 +12,12 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
+try:
+    from lib_gate_common import add_output_json_arg, print_results
+except ImportError:  # pragma: no cover
+    add_output_json_arg = None  # type: ignore[assignment]
+    print_results = None  # type: ignore[assignment]
+
 
 def find_free_port() -> int:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
@@ -71,22 +77,48 @@ def main() -> int:
         nargs=argparse.REMAINDER,
         help="Optional custom command. Use {port} as a placeholder for the selected port.",
     )
+    if add_output_json_arg is not None:
+        add_output_json_arg(parser)
     args = parser.parse_args()
+
+    errors: list[str] = []
+    warnings: list[str] = []
+    details: dict[str, object] = {}
 
     report_dir = Path(args.report_dir).resolve()
     if not report_dir.exists():
+        errors.append(f"report directory does not exist: {report_dir}")
+        if print_results is not None:
+            return print_results(
+                "Local web report validation",
+                errors,
+                warnings,
+                output_json=getattr(args, "output_json", None),
+                validator_id=Path(__file__).stem,
+            )
         print(f"ERROR: report directory does not exist: {report_dir}", file=sys.stderr)
         return 1
 
     port = args.port or find_free_port()
     path = args.path if args.path.startswith("/") else f"/{args.path}"
     url = f"http://127.0.0.1:{port}{path}"
+    details["url"] = url
+    details["report_dir"] = str(report_dir)
 
     if args.command:
         command = [part.format(port=port) for part in args.command]
     else:
         serve_report = report_dir / "serve_report.py"
         if not serve_report.exists():
+            errors.append(f"missing {serve_report}")
+            if print_results is not None:
+                return print_results(
+                    "Local web report validation",
+                    errors,
+                    warnings,
+                    output_json=getattr(args, "output_json", None),
+                    validator_id=Path(__file__).stem,
+                )
             print(f"ERROR: missing {serve_report}", file=sys.stderr)
             return 1
         command = [
@@ -106,14 +138,16 @@ def main() -> int:
         text=True,
     )
 
+    body = b""
     try:
         status, body = wait_for_response(url, process, args.timeout_seconds)
+        details["http_status"] = status
+        details["body_bytes"] = len(body)
         if status != 200:
             raise RuntimeError(f"Expected HTTP 200 but got HTTP {status}.")
         validate_body(body, args.expected_text)
     except Exception as exc:  # noqa: BLE001
-        print(f"ERROR: local web report validation failed for {url}: {exc}", file=sys.stderr)
-        return 1
+        errors.append(f"local web report validation failed for {url}: {exc}")
     finally:
         if process.poll() is None:
             process.terminate()
@@ -122,6 +156,19 @@ def main() -> int:
             except subprocess.TimeoutExpired:
                 process.kill()
 
+    if print_results is not None:
+        return print_results(
+            "Local web report validation",
+            errors,
+            warnings,
+            output_json=getattr(args, "output_json", None),
+            validator_id=Path(__file__).stem,
+            details=details,
+        )
+
+    if errors:
+        print(f"ERROR: {errors[0]}", file=sys.stderr)
+        return 1
     print(f"Local web report validation passed: {url} returned {len(body)} bytes of HTML.")
     return 0
 

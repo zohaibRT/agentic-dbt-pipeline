@@ -298,6 +298,7 @@ def build_chart_registry(
     from lib_chart_renderer import _render_svg_chart, plotly_available
 
     for chart in (volume_chart, rate_chart):
+        # Pass primary data; multi-series SVG rendering uses chart["series"][*].data when present
         chart["interactive_html"] = _render_svg_chart(chart, list(chart.get("data") or []))
         chart["renderer"] = "svg"
         chart["plotly_available"] = plotly_available()

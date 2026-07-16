@@ -189,6 +189,9 @@ def run_child(
             elif status == "PASS" and completed.returncode != 0:
                 status = "FAIL"
                 out = f"JSON status PASS contradicts exit {completed.returncode}\n" + out
+            elif status in {"WARN", "SKIPPED"} and completed.returncode != 0:
+                status = "FAIL"
+                out = f"JSON status {payload.status} contradicts exit {completed.returncode}\n" + out
         except Exception as exc:  # noqa: BLE001
             return ChildResult(
                 script=script,
@@ -255,53 +258,110 @@ def recalculate_manifest_inventory(root: Path) -> dict[str, Any]:
 
 
 def detect_builder_false_pass(root: Path) -> LocalCheck:
-    """Recalculate KPI expected vs actual; reject recorded PASS that does not reconcile."""
+    """Recalculate KPI expected vs actual using validation types/tolerances."""
+    from lib_gate_common import (
+        cell,
+        parse_markdown_tables,
+        parse_number,
+        reconcile_numeric,
+        reconcile_row_count,
+        reconcile_set_match,
+        table_dicts,
+    )
+
     contracts = root / "reports" / "agent" / "KPI_DEFINITION_CONTRACTS.md"
     if not contracts.exists():
         return LocalCheck("recalculate_numeric_values", "SKIPPED", "no KPI_DEFINITION_CONTRACTS.md")
 
-    text = read_text(contracts)
     mismatches: list[str] = []
     checked = 0
-    for headers, rows in parse_markdown_tables(text):
-        headers_l = [h.lower() for h in headers]
+    rows = table_dicts(
+        contracts,
+        required_any_headers=("kpi id", "kpi_id", "expected", "expected result"),
+    )
+    if not rows:
+        # Fallback: legacy header scan
+        text = read_text(contracts)
+        for headers, raw_rows in parse_markdown_tables(text):
+            headers_l = [h.lower() for h in headers]
 
-        def idx(*names: str) -> int | None:
-            for name in names:
-                for i, h in enumerate(headers_l):
-                    if name in h:
-                        return i
-            return None
+            def idx(*names: str) -> int | None:
+                for name in names:
+                    for i, h in enumerate(headers_l):
+                        if name in h:
+                            return i
+                return None
 
-        i_kpi = idx("kpi id", "kpi_id")
-        i_expected = idx("expected result", "expected")
-        i_actual = idx("actual result", "actual")
-        i_calc = idx("calculated status", "calculated")
-        i_tech = idx("technical verification status", "technical verification")
-        if i_expected is None or i_actual is None:
-            continue
-        for cells in rows:
-            if not cells:
+            i_kpi = idx("kpi id", "kpi_id")
+            i_expected = idx("expected result", "expected")
+            i_actual = idx("actual result", "actual")
+            i_calc = idx("calculated status", "calculated")
+            i_tech = idx("technical verification status", "technical verification")
+            if i_expected is None or i_actual is None:
                 continue
-            expected = str(cells[i_expected] if i_expected < len(cells) else "").strip()
-            actual = str(cells[i_actual] if i_actual < len(cells) else "").strip()
+            for cells in raw_rows:
+                if not cells:
+                    continue
+                expected = str(cells[i_expected] if i_expected < len(cells) else "").strip()
+                actual = str(cells[i_actual] if i_actual < len(cells) else "").strip()
+                if not expected and not actual:
+                    continue
+                if expected.upper().startswith("NOT_APPLICABLE") or actual.upper().startswith("NOT_APPLICABLE"):
+                    continue
+                checked += 1
+                kpi = str(cells[i_kpi] if i_kpi is not None and i_kpi < len(cells) else "?").strip()
+                calc = (
+                    str(cells[i_calc] if i_calc is not None and i_calc < len(cells) else "").strip().upper()
+                )
+                tech = (
+                    str(cells[i_tech] if i_tech is not None and i_tech < len(cells) else "").strip().upper()
+                )
+                ok, reason = compare_formatted_values(actual, expected)
+                recorded_pass = calc == "PASS" or tech == "PASS"
+                if recorded_pass and not ok:
+                    mismatches.append(
+                        f"{kpi}: builder recorded PASS but values differ ({actual!r} vs {expected!r}): {reason}"
+                    )
+    else:
+        for row in rows:
+            kpi = cell(row, "kpi id", "kpi_id", "id") or "?"
+            expected = cell(row, "expected result", "expected")
+            actual = cell(row, "actual result", "actual")
             if not expected and not actual:
                 continue
             if expected.upper().startswith("NOT_APPLICABLE") or actual.upper().startswith("NOT_APPLICABLE"):
                 continue
-            checked += 1
-            kpi = str(cells[i_kpi] if i_kpi is not None and i_kpi < len(cells) else "?").strip()
-            calc = (
-                str(cells[i_calc] if i_calc is not None and i_calc < len(cells) else "").strip().upper()
-            )
-            tech = (
-                str(cells[i_tech] if i_tech is not None and i_tech < len(cells) else "").strip().upper()
-            )
-            ok, reason = compare_formatted_values(actual, expected)
+            vtype = cell(row, "validation_type", "recon_type").lower() or "numeric_tolerance"
+            tolerance = cell(row, "diff_tolerance", "tolerance", "diff") or "0"
+            calc = cell(row, "calculated status", "calculated_status").upper()
+            tech = cell(row, "technical verification status", "technical_verification_status").upper()
             recorded_pass = calc == "PASS" or tech == "PASS"
-            if recorded_pass and not ok:
+            checked += 1
+            calc_status = "PASS"
+            if vtype == "set_match":
+                result = reconcile_set_match(expected, actual, tolerance)
+                calc_status = result["calculated_status"]
+            elif vtype == "row_count_match":
+                result = reconcile_row_count(expected, actual, tolerance)
+                calc_status = result["calculated_status"]
+            elif parse_number(expected) is not None and parse_number(actual) is not None:
+                result = reconcile_numeric(
+                    expected,
+                    actual,
+                    "exact" if vtype == "numeric_exact" else tolerance,
+                )
+                calc_status = result["calculated_status"]
+            else:
+                ok, reason = compare_formatted_values(actual, expected)
+                if recorded_pass and not ok:
+                    mismatches.append(
+                        f"{kpi}: builder recorded PASS but values differ ({actual!r} vs {expected!r}): {reason}"
+                    )
+                continue
+            if recorded_pass and calc_status == "FAIL":
                 mismatches.append(
-                    f"{kpi}: builder recorded PASS but values differ ({actual!r} vs {expected!r}): {reason}"
+                    f"{kpi}: builder recorded PASS but typed recalculation FAIL "
+                    f"(type={vtype}, tolerance={tolerance!r}, expected={expected!r}, actual={actual!r})"
                 )
 
     if mismatches:

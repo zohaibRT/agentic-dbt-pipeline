@@ -645,13 +645,38 @@ def _render_svg_chart(spec: dict[str, Any], data: list[dict[str, Any]]) -> str:
             f'<h3 class="chart-title">{title}</h3>{body}</div>'
         )
 
-    # Only plot non-missing points; do not interpolate gaps in the line path
-    plot_rows = list(data)
-    numeric_values = [
-        float(row[y_field])
-        for row in plot_rows
-        if row.get(y_field) is not None and not row.get("missing_period")
-    ]
+    # Build plot series: multi-series charts keep separate series with shared x indices
+    series_list = [s for s in (spec.get("series") or []) if isinstance(s, dict) and s.get("data")]
+    if len(series_list) >= 2:
+        plot_series: list[tuple[str, str, list[dict[str, Any]]]] = []
+        for item in series_list:
+            sname = str(item.get("display_name") or item.get("name") or "Series")
+            sy = str(item.get("y_field") or y_field)
+            rows = []
+            for raw in item.get("data") or []:
+                row = dict(raw)
+                row.setdefault("series_display_name", sname)
+                rows.append(row)
+            plot_series.append((sname, sy, rows))
+        axis_rows = plot_series[0][2]
+    else:
+        primary_name = str(
+            (series_list[0].get("display_name") if series_list else None)
+            or spec.get("series_display_name")
+            or ""
+        )
+        rows = [dict(r) for r in data]
+        if primary_name:
+            for row in rows:
+                row.setdefault("series_display_name", primary_name)
+        plot_series = [(primary_name, y_field, rows)]
+        axis_rows = rows
+
+    numeric_values: list[float] = []
+    for _sname, sy, rows in plot_series:
+        for row in rows:
+            if row.get(sy) is not None and not row.get("missing_period"):
+                numeric_values.append(float(row[sy]))
     min_val = min(numeric_values) if numeric_values else 0.0
     max_val = max(numeric_values) if numeric_values else 1.0
     # Bar charts need a zero baseline so the smallest category is still hoverable
@@ -663,64 +688,77 @@ def _render_svg_chart(spec: dict[str, Any], data: list[dict[str, Any]]) -> str:
 
     shapes: list[str] = []
     marks: list[str] = []
-    count = len(plot_rows)
-    last_good_idx: int | None = None
+    count = max(len(axis_rows), 1)
+    series_colors = ["#2563eb", "#dc2626", "#059669", "#d97706", "#7c3aed"]
 
-    for idx, row in enumerate(plot_rows):
-        raw_value = row.get(y_field)
-        missing = raw_value is None or row.get("missing_period")
-        tooltip = html.escape(build_tooltip_text(row, spec))
-        x_label = html.escape(str(row.get(x_field, "")))
-        period = html.escape(str(row.get("period_label") or row.get(x_field, "")))
+    for series_idx, (sname, sy, rows) in enumerate(plot_series):
+        color = series_colors[series_idx % len(series_colors)]
+        last_good_idx: int | None = None
+        escaped_series = html.escape(sname) if sname else ""
+        for idx, row in enumerate(rows):
+            raw_value = row.get(sy)
+            missing = raw_value is None or row.get("missing_period")
+            tooltip = html.escape(build_tooltip_text(row, spec))
+            x_label = html.escape(str(row.get(x_field, "")))
+            period = html.escape(str(row.get("period_label") or row.get(x_field, "")))
+            series_attr = f' data-series="{escaped_series}"' if escaped_series else ""
 
-        if missing:
-            # Gap marker — no connecting line across missing periods
-            x, _ = _svg_point_coords(idx, count, min_val, min_val, max_val)
-            marks.append(
-                f'<circle class="chart-point chart-missing" cx="{x:.1f}" cy="{height - padding:.1f}" '
-                f'r="4" fill="none" stroke="#94a3b8" stroke-dasharray="2 2" '
-                f'data-tooltip="{tooltip}" data-x="{x_label}" data-period="{period}" '
-                f'tabindex="0" role="button" aria-label="{period}: missing"/>'
-            )
-            continue
+            if missing:
+                x, _ = _svg_point_coords(idx, count, min_val, min_val, max_val)
+                marks.append(
+                    f'<circle class="chart-point chart-missing" cx="{x:.1f}" cy="{height - padding:.1f}" '
+                    f'r="4" fill="none" stroke="#94a3b8" stroke-dasharray="2 2" '
+                    f'data-tooltip="{tooltip}" data-x="{x_label}" data-period="{period}"{series_attr} '
+                    f'tabindex="0" role="button" aria-label="{period}: missing"/>'
+                )
+                continue
 
-        value = float(raw_value)
-        x, y = _svg_point_coords(idx, count, value, min_val, max_val)
-        partial_class = " chart-partial" if row.get("is_partial_period") else ""
+            value = float(raw_value)
+            x, y = _svg_point_coords(idx, count, value, min_val, max_val)
+            # Slight horizontal offset so multi-series points at the same period remain hoverable
+            if len(plot_series) > 1:
+                x += (series_idx - (len(plot_series) - 1) / 2.0) * 8.0
+            partial_class = " chart-partial" if row.get("is_partial_period") else ""
 
-        if chart_type in {"bar", "grouped_bar", "stacked_bar"}:
-            bar_width = (width - 2 * padding) / max(count, 1) * 0.6
-            bar_x = x - bar_width / 2
-            bar_height = height - padding - y
-            marks.append(
-                f'<rect class="chart-bar{partial_class}" x="{bar_x:.1f}" y="{y:.1f}" '
-                f'width="{bar_width:.1f}" height="{bar_height:.1f}" data-tooltip="{tooltip}" '
-                f'data-x="{x_label}" data-period="{period}" tabindex="0" role="button" '
-                f'aria-label="{period}: {tooltip}"/>'
-            )
-        else:
-            marks.append(
-                f'<circle class="chart-point{partial_class}" cx="{x:.1f}" cy="{y:.1f}" r="5" '
-                f'data-tooltip="{tooltip}" data-x="{x_label}" data-period="{period}" '
-                f'tabindex="0" role="button" aria-label="{period}: {tooltip}"/>'
-            )
-            if last_good_idx is not None and chart_type in {
-                "line",
-                "multi_line",
-                "area",
-                "scatter",
-            }:
-                # Only connect consecutive non-missing points (no silent interpolation)
-                if idx == last_good_idx + 1:
-                    prev = plot_rows[last_good_idx]
-                    prev_x, prev_y = _svg_point_coords(
-                        last_good_idx, count, float(prev[y_field]), min_val, max_val
-                    )
-                    shapes.append(
-                        f'<line x1="{prev_x:.1f}" y1="{prev_y:.1f}" x2="{x:.1f}" y2="{y:.1f}" '
-                        f'stroke="#2563eb" stroke-width="2"/>'
-                    )
-        last_good_idx = idx
+            if chart_type in {"bar", "grouped_bar", "stacked_bar"}:
+                bar_width = (width - 2 * padding) / max(count, 1) * 0.6
+                if len(plot_series) > 1:
+                    bar_width = bar_width / len(plot_series)
+                    bar_x = x - (bar_width * len(plot_series)) / 2 + series_idx * bar_width
+                else:
+                    bar_x = x - bar_width / 2
+                bar_height = height - padding - y
+                marks.append(
+                    f'<rect class="chart-bar{partial_class}" x="{bar_x:.1f}" y="{y:.1f}" '
+                    f'width="{bar_width:.1f}" height="{bar_height:.1f}" fill="{color}" '
+                    f'data-tooltip="{tooltip}" data-x="{x_label}" data-period="{period}"{series_attr} '
+                    f'tabindex="0" role="button" aria-label="{period}: {tooltip}"/>'
+                )
+            else:
+                marks.append(
+                    f'<circle class="chart-point{partial_class}" cx="{x:.1f}" cy="{y:.1f}" r="5" '
+                    f'fill="{color}" stroke="{color}" data-tooltip="{tooltip}" data-x="{x_label}" '
+                    f'data-period="{period}"{series_attr} tabindex="0" role="button" '
+                    f'aria-label="{period}: {tooltip}"/>'
+                )
+                if last_good_idx is not None and chart_type in {
+                    "line",
+                    "multi_line",
+                    "area",
+                    "scatter",
+                }:
+                    if idx == last_good_idx + 1:
+                        prev = rows[last_good_idx]
+                        prev_x, prev_y = _svg_point_coords(
+                            last_good_idx, count, float(prev[sy]), min_val, max_val
+                        )
+                        if len(plot_series) > 1:
+                            prev_x += (series_idx - (len(plot_series) - 1) / 2.0) * 8.0
+                        shapes.append(
+                            f'<line x1="{prev_x:.1f}" y1="{prev_y:.1f}" x2="{x:.1f}" y2="{y:.1f}" '
+                            f'stroke="{color}" stroke-width="2"/>'
+                        )
+            last_good_idx = idx
 
     axis = (
         f'<line x1="{padding}" y1="{height - padding}" x2="{width - padding}" '
@@ -728,8 +766,13 @@ def _render_svg_chart(spec: dict[str, Any], data: list[dict[str, Any]]) -> str:
         f'<line x1="{padding}" y1="{padding}" x2="{padding}" y2="{height - padding}" '
         f'stroke="#94a3b8"/>'
     )
-    table = _data_table_html(spec, data) if spec.get("accessible_data_table", True) else ""
-    payload = html.escape(json.dumps(data, ensure_ascii=False, default=str))
+    table_rows: list[dict[str, Any]] = []
+    for _sname, _sy, rows in plot_series:
+        table_rows.extend(rows)
+    if not table_rows:
+        table_rows = list(data)
+    table = _data_table_html(spec, table_rows) if spec.get("accessible_data_table", True) else ""
+    payload = html.escape(json.dumps(table_rows, ensure_ascii=False, default=str))
     approval = str(spec.get("business_approval_status") or "PENDING").upper()
     status_badge = ""
     if approval in {"PENDING", "DRAFT"}:

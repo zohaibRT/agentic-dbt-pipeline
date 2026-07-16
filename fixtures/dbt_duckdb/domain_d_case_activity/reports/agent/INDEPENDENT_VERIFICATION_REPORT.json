@@ -1,6 +1,6 @@
 {
   "overall_status": "PASS",
-  "checked_at": "2026-07-16T07:45:54.953945+00:00",
+  "checked_at": "2026-07-16T10:39:01.840125+00:00",
   "root": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_d_case_activity",
   "mode": "independent",
   "results": [
@@ -65,7 +65,7 @@
       "category": "exposure_coverage",
       "status": "PASS",
       "return_code": 0,
-      "stdout": "Exposure discovery: source=manifest inventory=manifest count=1\nProduction exposure coverage: 1/1 (100%)\nSTATUS: PASS\nExposure coverage check PASSED\n",
+      "stdout": "Exposure discovery: source=manifest inventory=manifest count=1\nProduction exposure coverage: 1/1 (artifacts=1, exposures=1) (100%)\nSTATUS: PASS\nExposure coverage check PASSED\n",
       "stderr": ""
     },
     {

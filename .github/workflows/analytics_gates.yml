@@ -101,7 +101,7 @@ jobs:
             echo "=== Strict final gate: $fixture ==="
             python scripts/run_acceptance_gate.py --root "$fixture" --phase final --strict --skip-dbt
             test -f "$fixture/reports/agent/ACCEPTANCE_GATE_REPORT.json"
-            python - <<'PY'
+            python - <<PY
           import json, pathlib
           root = pathlib.Path("$fixture")
           payload = json.loads((root / "reports/agent/ACCEPTANCE_GATE_REPORT.json").read_text())

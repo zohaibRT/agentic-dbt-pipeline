@@ -28,7 +28,11 @@ def normalize_id(value: str) -> str:
     return re.sub(r"[^a-z0-9]+", "_", value.strip().lower()).strip("_")
 
 
-def collect_contract_rows(root: Path) -> dict[str, dict[str, str]]:
+def collect_contract_rows(
+    root: Path,
+    *,
+    allow_display_name: bool = True,
+) -> dict[str, dict[str, str]]:
     contracts_path = root / "reports" / "agent" / "KPI_DEFINITION_CONTRACTS.md"
     mapping: dict[str, dict[str, str]] = {}
     if not contracts_path.exists():
@@ -38,9 +42,10 @@ def collect_contract_rows(root: Path) -> dict[str, dict[str, str]]:
         if not kpi_id:
             continue
         mapping[normalize_id(kpi_id)] = row
-        display = cell(row, "display name", "display_name", "name")
-        if display:
-            mapping[normalize_id(display)] = row
+        if allow_display_name:
+            display = cell(row, "display name", "display_name", "name")
+            if display:
+                mapping[normalize_id(display)] = row
     return mapping
 
 
@@ -115,7 +120,8 @@ def main() -> int:
     query_reg = load_json_registry(paths["query_registry.json"])
     page_reg = load_json_registry(paths["page_registry.json"])
 
-    contract_rows = collect_contract_rows(root)
+    final_like = args.phase == "final"
+    contract_rows = collect_contract_rows(root, allow_display_name=not final_like)
     proof_index = collect_proof_index(root)
 
     metrics = list(manifest.get("metrics") or [])
@@ -147,12 +153,16 @@ def main() -> int:
             or ""
         ).upper()
 
-        if contract_rows and norm not in contract_rows and normalize_id(display_name) not in contract_rows:
-            # DQ/pipeline fixture metrics may not be in KPI contracts; draft metrics are allowed pending
-            if trust in {"DRAFT", "PENDING"}:
-                pass
-            elif not metric_id.upper().startswith(("DQ-", "PIPE-", "OBS-")):
-                errors.append(f"metric {metric_id}: not found in KPI_DEFINITION_CONTRACTS")
+        if contract_rows:
+            in_contracts = norm in contract_rows
+            if not final_like and not in_contracts:
+                in_contracts = normalize_id(display_name) in contract_rows
+            if not in_contracts:
+                # DQ/pipeline fixture metrics may not be in KPI contracts; draft metrics are allowed pending
+                if trust in {"DRAFT", "PENDING"}:
+                    pass
+                elif not metric_id.upper().startswith(("DQ-", "PIPE-", "OBS-")):
+                    errors.append(f"metric {metric_id}: not found in KPI_DEFINITION_CONTRACTS")
 
         if trust in {"TRUSTED", "RENDERED"} and biz not in {
             "APPROVED",
@@ -245,9 +255,11 @@ def main() -> int:
                 if not preg.get("proof_path") and not preg.get("path"):
                     errors.append(f"proof {proof_id}: missing proof_path")
                 if not preg.get("query_id"):
-                    warnings.append(f"proof {proof_id}: missing query_id")
+                    msg = f"proof {proof_id}: missing query_id"
+                    (errors if final_like else warnings).append(msg)
                 if not _as_list(preg.get("source_resource_ids")) and not preg.get("source_resource_unique_id"):
-                    warnings.append(f"proof {proof_id}: missing source_resource_ids")
+                    msg = f"proof {proof_id}: missing source_resource_ids"
+                    (errors if final_like else warnings).append(msg)
             elif proof_index:
                 if normalize_id(proof_id) not in proof_index and normalize_id(Path(str(proof_id)).stem) not in proof_index:
                     errors.append(f"metric {metric_id}: proof_id {proof_id} not in proof registry or _proof_index.md")
@@ -256,16 +268,22 @@ def main() -> int:
             if trust not in {"DRAFT", "PENDING", "PENDING_REVIEW"} and policy.get(
                 "require_bidirectional_proof_mapping"
             ):
-                warnings.append(f"metric {metric_id}: missing query_id mapping")
+                msg = f"metric {metric_id}: missing query_id mapping"
+                (errors if final_like else warnings).append(msg)
 
         source_ids = _as_list(metric.get("source_resource_ids"))
         if metric.get("source_resource_unique_id"):
             source_ids.append(str(metric.get("source_resource_unique_id")))
         if trust in {"TRUSTED", "RENDERED"} and not source_ids:
-            warnings.append(f"metric {metric_id}: missing source_resource_unique_id")
+            msg = f"metric {metric_id}: missing source_resource_unique_id"
+            (errors if final_like else warnings).append(msg)
 
         if not metric.get("refresh_timestamp") and not manifest.get("freshness_timestamp"):
-            warnings.append(f"metric {metric_id}: missing refresh/freshness timestamp")
+            msg = f"metric {metric_id}: missing refresh/freshness timestamp"
+            if final_like and trust in {"TRUSTED", "RENDERED"}:
+                errors.append(msg)
+            else:
+                warnings.append(msg)
 
         # Human approval separate from technical
         if tech == "PASS" and biz in {"APPROVED", "APPROVED_WITH_CONDITIONS"}:
@@ -298,11 +316,11 @@ def main() -> int:
                 if nproof not in rendered_proof_ids and visuals:
                     errors.append(f"proof {proof_id}: no rendered item mapping for executive proof")
             elif visuals and nproof not in rendered_proof_ids:
-                # Non-executive proofs may be page-local; warn unless final
                 msg = f"proof {proof_id}: no rendered metric mapping"
                 if args.phase == "final":
-                    # Only fail if proof claims RENDERED trust via visuals on trusted pages
                     if str(preg.get("proof_status") or "").upper() == "PASS" and visuals:
+                        errors.append(msg)
+                    else:
                         warnings.append(msg)
                 else:
                     warnings.append(msg)
@@ -354,12 +372,55 @@ def main() -> int:
                 errors.append(f"duplicate page_id: {page_id}")
             page_seen.add(npid)
 
-            # Approved KPIs required on trusted executive pages only
+            # Approved/trusted KPIs required on executive pages — must be in trusted_metric_ids at final
             if policy.get("approved_kpis_required_for_trusted_executive_pages") and (
                 page.get("page_class") == "executive_overview" or "executive" in npid
             ):
                 for mid in _as_list(page.get("primary_kpi_ids")):
-                    if normalize_id(mid) not in trusted_metric_ids and normalize_id(mid) not in metric_ids_seen:
+                    nmid = normalize_id(mid)
+                    if final_like:
+                        if nmid not in trusted_metric_ids:
+                            if nmid not in metric_ids_seen:
+                                errors.append(
+                                    f"page {page_id}: approved/trusted KPI {mid} absent from rendered metric manifest"
+                                )
+                            else:
+                                errors.append(
+                                    f"page {page_id}: primary KPI {mid} is present but not TRUSTED/RENDERED"
+                                )
+                            continue
+                        # Verify approval, technical status, proof, freshness for trusted primary KPIs
+                        metric_obj = next(
+                            (
+                                m
+                                for m in metrics
+                                if normalize_id(str(m.get("metric_id") or m.get("kpi_id") or "")) == nmid
+                            ),
+                            None,
+                        )
+                        if not metric_obj:
+                            continue
+                        biz = str(metric_obj.get("business_approval_status") or "").upper()
+                        tech = str(
+                            metric_obj.get("technical_validation_status")
+                            or metric_obj.get("technical_verification_status")
+                            or ""
+                        ).upper()
+                        if biz not in {"APPROVED", "APPROVED_WITH_CONDITIONS"}:
+                            errors.append(
+                                f"page {page_id}: trusted primary KPI {mid} lacks business approval ({biz or 'MISSING'})"
+                            )
+                        if tech and tech not in {"PASS", "WARN"}:
+                            errors.append(
+                                f"page {page_id}: trusted primary KPI {mid} technical status is {tech}"
+                            )
+                        if not _as_list(metric_obj.get("proof_ids")) and not metric_obj.get("proof_id"):
+                            errors.append(f"page {page_id}: trusted primary KPI {mid} missing proof_id")
+                        if not metric_obj.get("refresh_timestamp") and not manifest.get("freshness_timestamp"):
+                            errors.append(
+                                f"page {page_id}: trusted primary KPI {mid} missing freshness/refresh timestamp"
+                            )
+                    elif nmid not in trusted_metric_ids and nmid not in metric_ids_seen:
                         errors.append(
                             f"page {page_id}: approved/trusted KPI {mid} absent from rendered metric manifest"
                         )

@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 from decimal import Decimal
 from pathlib import Path
+from typing import Any
 
 from lib_gate_common import (
     add_output_json_arg,
@@ -130,7 +131,7 @@ def numeric_reconcile_row(
     validation_type: str = "numeric_tolerance",
     root: Path | None = None,
     fingerprint: str = "",
-    waiver_disclosures: list[str] | None = None,
+    waiver_disclosures: list[Any] | None = None,
 ) -> bool:
     """Return True when reconciliation succeeds within tolerance or has a valid waiver.
 
@@ -157,8 +158,15 @@ def numeric_reconcile_row(
         if not expected or not actual:
             errors.append(f"{label}: missing expected or actual for numeric reconciliation")
             return False
-        warnings.append(f"{label}: nonnumeric expected/actual — require explicit validation_type")
-        return recorded_status in {"PASS", "WARN"}
+        # Nonnumeric values require an explicit non-numeric validation_type; never bypass via WARN.
+        if validation_type in NUMERIC_TYPES | {"row_count_match", ""}:
+            errors.append(
+                f"{label}: nonnumeric expected/actual for {validation_type or 'numeric'} "
+                "reconciliation — set validation_type to set_match/acceptance_rule or fix values"
+            )
+            return False
+        errors.append(f"{label}: expected/actual not parseable for validation_type={validation_type}")
+        return False
 
     if recorded_diff and recorded_diff.upper() not in {"N/A", "TODO", "NONE", ""}:
         parsed_diff = parse_number(recorded_diff.replace("±", "").split()[0])
@@ -184,19 +192,35 @@ def numeric_reconcile_row(
     if calc == "PASS":
         return True
 
-    # calc == FAIL (or WARN path): require formal waiver — WARN alone is not reconciled
+    # calc == FAIL: require formal waiver bound to type/result/diff/tolerance/fingerprint
     if root is not None:
         waiver, werrs, disposition = find_valid_waiver_for_kpi(
-            root, label, fingerprint=fingerprint
+            root,
+            label,
+            fingerprint=fingerprint,
+            validation_type=validation_type,
+            calculated_status="FAIL",
+            calculated_difference=result.get("abs_diff"),
+            tolerance=tolerance or "0",
         )
         if waiver and disposition == "APPROVED_WAIVER":
+            entry = {
+                "kpi_id": label,
+                "waiver_id": waiver.waiver_id,
+                "calculated_status": "FAIL",
+                "governance_disposition": "APPROVED_WAIVER",
+                "validation_type": validation_type,
+                "calculated_difference": str(result.get("abs_diff")),
+                "tolerance": tolerance or "0",
+                "fingerprint": fingerprint,
+            }
             msg = (
                 f"{label}: calculated_status=FAIL governance_disposition=APPROVED_WAIVER "
                 f"(waiver_id={waiver.waiver_id}, abs_diff={result['abs_diff']})"
             )
             warnings.append(msg)
             if waiver_disclosures is not None:
-                waiver_disclosures.append(msg)
+                waiver_disclosures.append(entry)
             return True  # governed exception counts toward coverage, not technical PASS
         errors.extend(werrs or [f"{label}: reconciliation FAIL/WARN without valid waiver"])
         return False
@@ -254,6 +278,7 @@ def main() -> int:
     critical_total = 0
     critical_reconciled = 0
     blocked_or_deferred = 0
+    governed_exceptions: list[dict[str, Any]] = []
 
     for index, row in enumerate(contracts, start=1):
         kpi_id = (
@@ -331,20 +356,41 @@ def main() -> int:
                 continue
 
             reconciled = False
-            waiver_disclosures: list[str] = []
+            waiver_disclosures: list[Any] = []
             fingerprint = cell(row, "contract_fingerprint", "fingerprint") or compute_contract_fingerprint(row)
 
-            def _waiver_covers_fail() -> bool:
+            def _waiver_covers_fail(
+                *,
+                vtype_local: str = "",
+                calc_diff: Any = None,
+                tol_local: str = "",
+            ) -> bool:
                 waiver, werrs, disposition = find_valid_waiver_for_kpi(
-                    root, kpi_id, fingerprint=fingerprint
+                    root,
+                    kpi_id,
+                    fingerprint=fingerprint,
+                    validation_type=vtype_local or vtype,
+                    calculated_status="FAIL",
+                    calculated_difference=calc_diff,
+                    tolerance=tol_local or tolerance or "0",
                 )
                 if waiver and disposition == "APPROVED_WAIVER":
+                    entry = {
+                        "kpi_id": kpi_id,
+                        "waiver_id": waiver.waiver_id,
+                        "calculated_status": "FAIL",
+                        "governance_disposition": "APPROVED_WAIVER",
+                        "validation_type": vtype_local or vtype,
+                        "calculated_difference": str(calc_diff) if calc_diff is not None else "",
+                        "tolerance": tol_local or tolerance or "0",
+                        "fingerprint": fingerprint,
+                    }
                     msg = (
                         f"{kpi_id}: calculated_status=FAIL governance_disposition=APPROVED_WAIVER "
                         f"(waiver_id={waiver.waiver_id})"
                     )
                     warnings.append(msg)
-                    waiver_disclosures.append(msg)
+                    waiver_disclosures.append(entry)
                     return True
                 errors.extend(werrs or [f"{kpi_id}: reconciliation FAIL/WARN without valid waiver"])
                 return False
@@ -366,9 +412,9 @@ def main() -> int:
                 elif calc == "PASS":
                     reconciled = True
                 elif calc == "FAIL":
-                    reconciled = _waiver_covers_fail()
+                    reconciled = _waiver_covers_fail(vtype_local="set_match")
                 elif verification == "WARN":
-                    reconciled = _waiver_covers_fail()
+                    reconciled = _waiver_covers_fail(vtype_local="set_match")
             elif vtype == "row_count_match":
                 rc = reconcile_row_count(expected, actual, tolerance)
                 if rc["errors"]:
@@ -381,7 +427,11 @@ def main() -> int:
                 elif rc["calculated_status"] == "PASS":
                     reconciled = True
                 else:
-                    reconciled = _waiver_covers_fail()
+                    reconciled = _waiver_covers_fail(
+                        vtype_local="row_count_match",
+                        calc_diff=rc.get("abs_diff"),
+                        tol_local=tolerance or "0",
+                    )
             elif vtype == "acceptance_rule":
                 rule_result = evaluate_typed_acceptance_rule(root, row)
                 if rule_result["calculated_status"] == "FAIL":
@@ -423,10 +473,11 @@ def main() -> int:
                 )
 
             # Governed waiver counts toward coverage; calculated FAIL remains disclosed
-            if reconciled and proof_ok and verification in {"PASS", "WARN"}:
+            if reconciled and proof_ok:
                 critical_reconciled += 1
-            elif reconciled and proof_ok and waiver_disclosures:
-                critical_reconciled += 1
+            for item in waiver_disclosures:
+                if isinstance(item, dict):
+                    governed_exceptions.append(item)
 
         elif verification in {"PASS", "WARN"}:
             if proof:
@@ -524,14 +575,13 @@ def main() -> int:
     if matrix_critical:
         print(f"  matrix reconciled: {matrix_ok}/{matrix_critical}")
 
-    from lib_gate_common import print_results
-
     return print_results(
         "Metric reconciliation",
         errors,
         warnings,
         output_json=getattr(args, "output_json", None),
         validator_id=Path(__file__).stem,
+        details={"governed_exceptions": governed_exceptions},
     )
 
 

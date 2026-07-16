@@ -2095,6 +2095,8 @@ def write_validator_result(path: Path | str | None, result: ValidatorResult) -> 
 
 def validate_validator_result_schema(data: dict[str, Any]) -> None:
     """Raise ValueError when ValidatorResult JSON is invalid or contradictory."""
+    from datetime import datetime
+
     if not isinstance(data, dict):
         raise ValueError("validator result must be a JSON object")
     schema = str(data.get("schema_version") or "")
@@ -2112,6 +2114,41 @@ def validate_validator_result_schema(data: dict[str, Any]) -> None:
         raise ValueError("errors must be a list")
     if not isinstance(warnings, list):
         raise ValueError("warnings must be a list")
+    details = data.get("details")
+    if details is None:
+        details = {}
+    if not isinstance(details, dict):
+        raise ValueError("details must be an object")
+    checked_at = str(data.get("checked_at") or "").strip()
+    if not checked_at:
+        raise ValueError("missing checked_at")
+    # Accept ISO-8601 with optional Z / offset
+    parsed_ok = False
+    for candidate in (checked_at, checked_at.replace("Z", "+00:00")):
+        try:
+            datetime.fromisoformat(candidate)
+            parsed_ok = True
+            break
+        except ValueError:
+            continue
+    if not parsed_ok:
+        raise ValueError(f"checked_at is not a valid ISO-8601 timestamp: {checked_at!r}")
+    # Unique warning IDs (prefer structured warning objects; fall back to warning_ids)
+    warning_ids: list[str] = []
+    structured_ids = False
+    for item in warnings:
+        if isinstance(item, dict):
+            structured_ids = True
+            wid = str(item.get("warning_id") or "").strip()
+            if wid:
+                warning_ids.append(wid)
+    if not structured_ids:
+        for wid in data.get("warning_ids") or []:
+            token = str(wid).strip()
+            if token:
+                warning_ids.append(token)
+    if warning_ids and len(warning_ids) != len(set(warning_ids)):
+        raise ValueError("warning_ids must be unique")
     # Contradictions in payload itself
     if status == "PASS" and warnings:
         raise ValueError("JSON status PASS must not contain warnings")
@@ -2119,9 +2156,18 @@ def validate_validator_result_schema(data: dict[str, Any]) -> None:
         raise ValueError("JSON status WARN must not contain errors")
     if status == "PASS" and errors:
         raise ValueError("JSON status PASS must not contain errors")
-    if status in {"FAIL", "BLOCKED"} and not errors and status == "FAIL":
-        # FAIL should have errors; BLOCKED may use details
+    if status == "WARN" and not warnings:
+        raise ValueError("JSON status WARN requires at least one warning")
+    if status == "FAIL" and not errors:
         raise ValueError("JSON status FAIL requires errors")
+    if status == "BLOCKED":
+        has_blocker = bool(errors) or bool(
+            details.get("blocker") or details.get("blocking_reason") or details.get("blocked_reason")
+        )
+        if not has_blocker:
+            raise ValueError(
+                "JSON status BLOCKED requires errors or details.blocker/blocking_reason"
+            )
 
 
 def _normalize_warning_entries(raw_warnings: list[Any], warning_ids: list[str], validator_id: str) -> tuple[list[str], list[str]]:
@@ -2711,11 +2757,16 @@ def validate_reconciliation_waiver(
     *,
     expected_kpi_id: str,
     expected_fingerprint: str = "",
+    expected_validation_type: str = "",
+    expected_calculated_status: str = "FAIL",
+    expected_difference: str | float | None = None,
+    expected_tolerance: str = "",
     today: Any = None,
 ) -> tuple[bool, list[str], str]:
     """Return (ok, errors, governance_disposition).
 
     Does not convert calculated FAIL into technical PASS.
+    Binds waiver fields to live reconciliation result.
     """
     from datetime import date as date_cls, datetime
 
@@ -2725,6 +2776,50 @@ def validate_reconciliation_waiver(
 
     if normalize_field_value(waiver.kpi_id) != normalize_field_value(expected_kpi_id):
         errors.append(f"waiver {waiver.waiver_id}: kpi_id mismatch ({waiver.kpi_id} vs {expected_kpi_id})")
+
+    if expected_validation_type:
+        wtype = normalize_field_value(waiver.validation_type).replace(" ", "_")
+        etype = normalize_field_value(expected_validation_type).replace(" ", "_")
+        if wtype and etype and wtype != etype:
+            errors.append(
+                f"waiver {waiver.waiver_id}: validation_type mismatch "
+                f"({waiver.validation_type} vs {expected_validation_type})"
+            )
+        elif not wtype:
+            errors.append(f"waiver {waiver.waiver_id}: missing validation_type")
+
+    if expected_calculated_status:
+        wcalc = normalize_field_value(waiver.calculated_result).upper()
+        ecalc = normalize_field_value(expected_calculated_status).upper()
+        if wcalc and ecalc and wcalc != ecalc and wcalc not in {ecalc, "FAIL"}:
+            # Allow waiver to record FAIL when calculated is FAIL
+            if not (ecalc == "FAIL" and wcalc in {"FAIL", "FAILED"}):
+                errors.append(
+                    f"waiver {waiver.waiver_id}: calculated_result mismatch "
+                    f"({waiver.calculated_result} vs {expected_calculated_status})"
+                )
+        elif not wcalc:
+            errors.append(f"waiver {waiver.waiver_id}: missing calculated_result")
+
+    if expected_tolerance:
+        wt = normalize_field_value(waiver.tolerance)
+        et = normalize_field_value(expected_tolerance)
+        if wt and et and wt != et:
+            errors.append(
+                f"waiver {waiver.waiver_id}: tolerance mismatch ({waiver.tolerance} vs {expected_tolerance})"
+            )
+
+    if expected_difference is not None and str(expected_difference).strip() != "":
+        wdiff = parse_number(str(waiver.calculated_difference or "").replace("±", "").split()[0])
+        ediff = parse_number(str(expected_difference).replace("±", "").split()[0])
+        if ediff is not None:
+            if wdiff is None:
+                errors.append(f"waiver {waiver.waiver_id}: missing/invalid calculated_difference")
+            elif abs(wdiff - ediff) > Decimal("0.01"):
+                errors.append(
+                    f"waiver {waiver.waiver_id}: calculated_difference mismatch "
+                    f"({waiver.calculated_difference} vs {expected_difference})"
+                )
 
     if waiver.current_status not in APPROVED_BUSINESS_STATUSES | {
         "APPROVED_WAIVER",
@@ -2767,22 +2862,32 @@ def validate_reconciliation_waiver(
     if not parsed_date:
         errors.append(f"waiver {waiver.waiver_id}: missing/invalid approval_date")
 
-    # expiry
+    # expiry / review condition required
     expiry_raw = (waiver.expiry_or_review or "").strip()
-    for fmt in ("%Y-%m-%d", "%Y/%m/%d"):
-        try:
-            expiry = datetime.strptime(expiry_raw[:10], fmt).date()
-            if expiry < today:
-                errors.append(f"waiver {waiver.waiver_id}: expired on {expiry.isoformat()}")
-            break
-        except ValueError:
-            continue
+    if not expiry_raw:
+        errors.append(f"waiver {waiver.waiver_id}: missing expiry/review condition")
+    else:
+        parsed_expiry = False
+        for fmt in ("%Y-%m-%d", "%Y/%m/%d"):
+            try:
+                expiry = datetime.strptime(expiry_raw[:10], fmt).date()
+                parsed_expiry = True
+                if expiry < today:
+                    errors.append(f"waiver {waiver.waiver_id}: expired on {expiry.isoformat()}")
+                break
+            except ValueError:
+                continue
+        if not parsed_expiry and len(expiry_raw) < 3:
+            errors.append(f"waiver {waiver.waiver_id}: expiry/review condition too short")
 
-    if expected_fingerprint and waiver.fingerprint and waiver.fingerprint != expected_fingerprint:
-        errors.append(
-            f"waiver {waiver.waiver_id}: stale fingerprint "
-            f"({waiver.fingerprint} != {expected_fingerprint})"
-        )
+    if expected_fingerprint:
+        if not waiver.fingerprint:
+            errors.append(f"waiver {waiver.waiver_id}: missing reconciliation fingerprint")
+        elif waiver.fingerprint != expected_fingerprint:
+            errors.append(
+                f"waiver {waiver.waiver_id}: stale fingerprint "
+                f"({waiver.fingerprint} != {expected_fingerprint})"
+            )
 
     ok = not errors
     disposition = "APPROVED_WAIVER" if ok else "INVALID_WAIVER"
@@ -2794,15 +2899,30 @@ def find_valid_waiver_for_kpi(
     kpi_id: str,
     *,
     fingerprint: str = "",
+    validation_type: str = "",
+    calculated_status: str = "FAIL",
+    calculated_difference: str | float | None = None,
+    tolerance: str = "",
 ) -> tuple[ReconciliationWaiver | None, list[str], str]:
     """Find a currently valid waiver for kpi_id. Returns (waiver|None, errors, disposition)."""
-    candidates = [w for w in load_reconciliation_waivers(root) if normalize_field_value(w.kpi_id) == normalize_field_value(kpi_id)]
+    candidates = [
+        w
+        for w in load_reconciliation_waivers(root)
+        if normalize_field_value(w.kpi_id) == normalize_field_value(kpi_id)
+    ]
     if not candidates:
         return None, [f"{kpi_id}: reconciliation FAIL/WARN requires formal waiver"], "MISSING_WAIVER"
     errors_all: list[str] = []
     for waiver in candidates:
         ok, errs, disposition = validate_reconciliation_waiver(
-            root, waiver, expected_kpi_id=kpi_id, expected_fingerprint=fingerprint
+            root,
+            waiver,
+            expected_kpi_id=kpi_id,
+            expected_fingerprint=fingerprint,
+            expected_validation_type=validation_type,
+            expected_calculated_status=calculated_status,
+            expected_difference=calculated_difference,
+            expected_tolerance=tolerance,
         )
         if ok:
             return waiver, [], disposition

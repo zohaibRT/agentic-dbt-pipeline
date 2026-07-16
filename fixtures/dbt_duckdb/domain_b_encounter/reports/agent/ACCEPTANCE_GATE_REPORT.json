@@ -206,10 +206,10 @@
       "return_code": 0
     },
     {
-      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_fact_analytical_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_b_encounter --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_b_encounter\\reports\\agent\\_validator_results\\check_fact_analytical_coverage.json",
+      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_fact_analytical_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_b_encounter --phase final --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_b_encounter\\reports\\agent\\_validator_results\\check_fact_analytical_coverage.json",
       "status": "PASS",
       "detail": "Fact coverage contracts: rows=2, gold_facts=2, unique_ids=2\nCritical fact coverage: 2/2 (100%)\nSTATUS: PASS\nFact analytical coverage check PASSED",
-      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_fact_analytical_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_b_encounter --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_b_encounter\\reports\\agent\\_validator_results\\check_fact_analytical_coverage.json",
+      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_fact_analytical_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_b_encounter --phase final --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_b_encounter\\reports\\agent\\_validator_results\\check_fact_analytical_coverage.json",
       "return_code": 0
     },
     {
@@ -264,7 +264,7 @@
     {
       "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_exposure_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_b_encounter --phase final --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_b_encounter\\reports\\agent\\_validator_results\\check_exposure_coverage.json",
       "status": "PASS",
-      "detail": "Exposure discovery: source=manifest inventory=manifest count=1\nProduction exposure coverage: 1/1 (100%)\nSTATUS: PASS\nExposure coverage check PASSED",
+      "detail": "Exposure discovery: source=manifest inventory=manifest count=1\nProduction exposure coverage: 1/1 (artifacts=1, exposures=1) (100%)\nSTATUS: PASS\nExposure coverage check PASSED",
       "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_exposure_coverage.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_b_encounter --phase final --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_b_encounter\\reports\\agent\\_validator_results\\check_exposure_coverage.json",
       "return_code": 0
     },
@@ -283,10 +283,10 @@
       "return_code": 0
     },
     {
-      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_domain_neutrality.py --root C:\\codebase\\agentic-dbt-pipeline",
+      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_domain_neutrality.py --root C:\\codebase\\agentic-dbt-pipeline --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_b_encounter\\reports\\agent\\_validator_results\\check_domain_neutrality.json",
       "status": "PASS",
-      "detail": "Domain neutrality scan: root=C:\\codebase\\agentic-dbt-pipeline, files=249\nDomain neutrality check PASSED",
-      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_domain_neutrality.py --root C:\\codebase\\agentic-dbt-pipeline",
+      "detail": "Domain neutrality scan: root=C:\\codebase\\agentic-dbt-pipeline, files=249\nSTATUS: PASS\nDomain neutrality check PASSED",
+      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_domain_neutrality.py --root C:\\codebase\\agentic-dbt-pipeline --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_b_encounter\\reports\\agent\\_validator_results\\check_domain_neutrality.json",
       "return_code": 0
     },
     {
@@ -297,10 +297,10 @@
       "return_code": null
     },
     {
-      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\validate_local_web_report.py --report-dir C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_b_encounter/reports/agent/10_presentation/matplotlib",
+      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\validate_local_web_report.py --report-dir C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_b_encounter/reports/agent/10_presentation/matplotlib --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_b_encounter\\reports\\agent\\_validator_results\\validate_local_web_report.json",
       "status": "PASS",
-      "detail": "Local web report validation passed: http://127.0.0.1:62323/ returned 47339 bytes of HTML.",
-      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\validate_local_web_report.py --report-dir C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_b_encounter/reports/agent/10_presentation/matplotlib",
+      "detail": "STATUS: PASS\nLocal web report validation PASSED",
+      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\validate_local_web_report.py --report-dir C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_b_encounter/reports/agent/10_presentation/matplotlib --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_b_encounter\\reports\\agent\\_validator_results\\validate_local_web_report.json",
       "return_code": 0
     },
     {

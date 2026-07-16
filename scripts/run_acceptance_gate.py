@@ -87,7 +87,7 @@ PROJECT_VALIDATION_SCRIPTS = [
     ("check_model_classification_coverage.py", ["--root", "{root}", "--phase", "{phase}"], "analytics"),
     ("check_analytics_coverage.py", ["--root", "{root}"], "analytics"),
     ("check_analytics_product_completeness.py", ["--root", "{root}"], "analytics"),
-    ("check_fact_analytical_coverage.py", ["--root", "{root}"], "analytics"),
+    ("check_fact_analytical_coverage.py", ["--root", "{root}", "--phase", "{phase}"], "analytics"),
     ("check_metric_contract_completeness.py", ["--root", "{root}"], "analytics"),
     (
         "check_human_approval_coverage.py",
@@ -300,7 +300,7 @@ def run_command(
                 completed.returncode,
             )
         status = payload.status
-        # Exit code vs JSON contradiction (except WARN/SKIPPED may exit 0)
+        # Exit code vs JSON contradiction
         if status in {"FAIL", "BLOCKED"} and completed.returncode == 0:
             return CheckResult(
                 command_text,
@@ -314,6 +314,14 @@ def run_command(
                 command_text,
                 "FAIL",
                 f"JSON status PASS contradicts exit {completed.returncode}",
+                command_text,
+                completed.returncode,
+            )
+        if status in {"WARN", "SKIPPED"} and completed.returncode != 0:
+            return CheckResult(
+                command_text,
+                "FAIL",
+                f"JSON status {status} contradicts exit {completed.returncode}",
                 command_text,
                 completed.returncode,
             )
@@ -849,9 +857,7 @@ def run_validation_scripts(
         # Scripts that support --output-json (production validators)
         no_json_scripts = {
             "run_independent_verifier.py",
-            "check_domain_neutrality.py",
             "validate_powerbi_pbip.py",
-            "validate_local_web_report.py",
         }
         supports_json = script_name.endswith(".py") and script_name not in no_json_scripts
         if supports_json:
@@ -896,20 +902,55 @@ def run_validation_scripts(
                     check.command,
                     check.return_code,
                 )
-        # Required final SKIPPED for interactive live browser is FAIL
-        if (
-            script_name == "validate_live_report_dom.py"
-            and phase_at_least(phase, "final")
-            and interactive_report
-            and check.status == "SKIPPED"
-        ):
-            check = CheckResult(
-                check.name,
-                "FAIL",
-                f"live browser SKIPPED is not allowed at final with interactive report: {check.detail}",
-                check.command,
-                check.return_code,
+        # Required final/strict SKIPPED is FAIL unless applicability evidence allows it
+        final_like = phase_at_least(phase, "final") or bool(strict)
+        if final_like and check.status == "SKIPPED":
+            detail_lower = (check.detail or "").lower()
+            allowed_skip = any(
+                token in detail_lower
+                for token in (
+                    "no pbip found",
+                    "no local web report server found",
+                    "no report.html",
+                    "no matplotlib presentation folder",
+                    "no analytics insight folder",
+                    "no presentation folder",
+                    "already inside independent verifier",
+                    "presentation_policy.require_live_browser_validation=false",
+                    "not_applicable",
+                    "applicability=",
+                )
             )
+            # Live browser is never an allowed skip when interactive report exists
+            if script_name == "validate_live_report_dom.py" and interactive_report:
+                allowed_skip = False
+            # Core production validators must not be skipped at final when applicable
+            core_required = {
+                "check_human_approval_coverage.py",
+                "verify_metric_reconciliation.py",
+                "check_model_classification_coverage.py",
+                "check_fact_analytical_coverage.py",
+                "check_exposure_coverage.py",
+                "check_presentation_traceability.py",
+                "validate_live_report_dom.py",
+                "run_independent_verifier.py",
+            }
+            if script_name in core_required and not allowed_skip:
+                check = CheckResult(
+                    check.name,
+                    "FAIL",
+                    f"required validator SKIPPED at final/strict: {check.detail}",
+                    check.command,
+                    check.return_code,
+                )
+            elif script_name == "validate_live_report_dom.py" and interactive_report:
+                check = CheckResult(
+                    check.name,
+                    "FAIL",
+                    f"live browser SKIPPED is not allowed at final with interactive report: {check.detail}",
+                    check.command,
+                    check.return_code,
+                )
         report.add(check)
 
 def run_dbt(root: Path, report: GateReport, timeout: int, skip_dbt: bool, phase: str) -> None:

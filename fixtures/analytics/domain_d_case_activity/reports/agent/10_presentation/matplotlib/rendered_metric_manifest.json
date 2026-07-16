@@ -1,6 +1,6 @@
 {
   "version": "1",
-  "freshness_timestamp": "2026-07-16T07:39:52+00:00",
+  "freshness_timestamp": "2026-07-16T10:30:47+00:00",
   "metrics": [
     {
       "metric_id": "KPI-001",
@@ -48,7 +48,7 @@
       "format": "integer",
       "unit": "events",
       "period_label": "Current month",
-      "refresh_timestamp": "2026-07-16T07:39:52+00:00",
+      "refresh_timestamp": "2026-07-16T10:30:47+00:00",
       "trust_level": "TRUSTED",
       "validation_status": "PASS",
       "technical_validation_status": "PASS",
@@ -99,7 +99,7 @@
       "formatting_rule": "percent",
       "format": "percent",
       "period_label": "Current month",
-      "refresh_timestamp": "2026-07-16T07:39:52+00:00",
+      "refresh_timestamp": "2026-07-16T10:30:47+00:00",
       "trust_level": "TRUSTED",
       "validation_status": "PASS",
       "technical_validation_status": "PASS",
@@ -131,7 +131,7 @@
       "formatting_rule": "decimal",
       "format": "decimal",
       "period_label": "Not approved",
-      "refresh_timestamp": "2026-07-16T07:39:52+00:00",
+      "refresh_timestamp": "2026-07-16T10:30:47+00:00",
       "trust_level": "DRAFT",
       "validation_status": "PENDING",
       "technical_validation_status": "PENDING",

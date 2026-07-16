@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0",
+  "validator_id": "validate_local_web_report",
+  "status": "PASS",
+  "errors": [],
+  "warnings": [],
+  "details": {
+    "url": "http://127.0.0.1:59837/",
+    "report_dir": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_d_case_activity\\reports\\agent\\10_presentation\\matplotlib",
+    "http_status": 200,
+    "body_bytes": 51709
+  },
+  "checked_at": "2026-07-16T10:38:23.184828+00:00",
+  "warning_ids": [],
+  "applicability": ""
+}

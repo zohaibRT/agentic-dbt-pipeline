@@ -1,7 +1,7 @@
 {
   "version": "1",
-  "freshness_timestamp": "2026-07-16T07:45:22.836460+00:00",
-  "data_version": "2026-07-16T07:31:05+00:00",
+  "freshness_timestamp": "2026-07-16T10:38:08.706224+00:00",
+  "data_version": "2026-07-16T10:20:52+00:00",
   "charts": [
     {
       "chart_id": "volume_trend",
@@ -33,9 +33,9 @@
               "series_display_name": "Actual",
               "unit": "events",
               "status_label": "On track",
-              "freshness_timestamp": "2026-07-16T07:31:05+00:00",
+              "freshness_timestamp": "2026-07-16T10:20:52+00:00",
               "formatted_value": "0 events",
-              "tooltip_text": "Volume KPI \u2014 Actual\nJanuary 2026\n0 events\nStatus: On track\nFresh as of: 2026-07-16T07:31:05+00:00",
+              "tooltip_text": "Volume KPI \u2014 Actual\nJanuary 2026\n0 events\nStatus: On track\nFresh as of: 2026-07-16T10:20:52+00:00",
               "point_index": 0
             },
             {
@@ -49,7 +49,7 @@
               "series_display_name": "Actual",
               "unit": "events",
               "status_label": "On track",
-              "freshness_timestamp": "2026-07-16T07:31:05+00:00",
+              "freshness_timestamp": "2026-07-16T10:20:52+00:00",
               "formatted_value": "\u2014",
               "tooltip_text": "Volume KPI \u2014 Actual\nFebruary 2026\n\u2014\nMissing period \u2014 value not interpolated",
               "point_index": 1
@@ -65,14 +65,14 @@
               "series_display_name": "Actual",
               "unit": "events",
               "status_label": "On track",
-              "freshness_timestamp": "2026-07-16T07:31:05+00:00",
+              "freshness_timestamp": "2026-07-16T10:20:52+00:00",
               "partial_period_note": "Partial period \u2014 incomplete",
               "formatted_value": "5 events",
               "prior_value": 0.0,
               "prior_formatted_value": "0 events",
               "abs_change": 5.0,
               "abs_change_formatted": "5 events",
-              "tooltip_text": "Volume KPI \u2014 Actual\nMarch 2026\n5 events\nPrevious: 0 events\nChange: 5 events\nStatus: On track\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T07:31:05+00:00",
+              "tooltip_text": "Volume KPI \u2014 Actual\nMarch 2026\n5 events\nPrevious: 0 events\nChange: 5 events\nStatus: On track\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T10:20:52+00:00",
               "point_index": 2
             }
           ]
@@ -90,9 +90,9 @@
               "metric_display_name": "Volume KPI",
               "series_display_name": "Prior period",
               "unit": "events",
-              "freshness_timestamp": "2026-07-16T07:31:05+00:00",
+              "freshness_timestamp": "2026-07-16T10:20:52+00:00",
               "formatted_value": "0 events",
-              "tooltip_text": "Volume KPI \u2014 Prior period\nJanuary 2026\n0 events\nFresh as of: 2026-07-16T07:31:05+00:00",
+              "tooltip_text": "Volume KPI \u2014 Prior period\nJanuary 2026\n0 events\nFresh as of: 2026-07-16T10:20:52+00:00",
               "point_index": 0
             },
             {
@@ -103,13 +103,13 @@
               "metric_display_name": "Volume KPI",
               "series_display_name": "Prior period",
               "unit": "events",
-              "freshness_timestamp": "2026-07-16T07:31:05+00:00",
+              "freshness_timestamp": "2026-07-16T10:20:52+00:00",
               "formatted_value": "0 events",
               "prior_value": 0.0,
               "prior_formatted_value": "0 events",
               "abs_change": 0.0,
               "abs_change_formatted": "0 events",
-              "tooltip_text": "Volume KPI \u2014 Prior period\nFebruary 2026\n0 events\nPrevious: 0 events\nChange: 0 events\nFresh as of: 2026-07-16T07:31:05+00:00",
+              "tooltip_text": "Volume KPI \u2014 Prior period\nFebruary 2026\n0 events\nPrevious: 0 events\nChange: 0 events\nFresh as of: 2026-07-16T10:20:52+00:00",
               "point_index": 1
             },
             {
@@ -120,13 +120,13 @@
               "metric_display_name": "Volume KPI",
               "series_display_name": "Prior period",
               "unit": "events",
-              "freshness_timestamp": "2026-07-16T07:31:05+00:00",
+              "freshness_timestamp": "2026-07-16T10:20:52+00:00",
               "formatted_value": "0 events",
               "prior_value": 0.0,
               "prior_formatted_value": "0 events",
               "abs_change": 0.0,
               "abs_change_formatted": "0 events",
-              "tooltip_text": "Volume KPI \u2014 Prior period\nMarch 2026\n0 events\nPrevious: 0 events\nChange: 0 events\nFresh as of: 2026-07-16T07:31:05+00:00",
+              "tooltip_text": "Volume KPI \u2014 Prior period\nMarch 2026\n0 events\nPrevious: 0 events\nChange: 0 events\nFresh as of: 2026-07-16T10:20:52+00:00",
               "point_index": 2
             }
           ]
@@ -170,7 +170,7 @@
       "source_resource_ids": [
         "model.domain_c_asset_events.fct_asset_events"
       ],
-      "freshness_timestamp": "2026-07-16T07:31:05+00:00",
+      "freshness_timestamp": "2026-07-16T10:20:52+00:00",
       "partial_period_behavior": "label_and_include",
       "empty_state_behavior": "show_empty_message",
       "validation_status": "PASS",
@@ -199,9 +199,9 @@
           "series_display_name": "Actual",
           "unit": "events",
           "status_label": "On track",
-          "freshness_timestamp": "2026-07-16T07:31:05+00:00",
+          "freshness_timestamp": "2026-07-16T10:20:52+00:00",
           "formatted_value": "0 events",
-          "tooltip_text": "Volume KPI \u2014 Actual\nJanuary 2026\n0 events\nStatus: On track\nFresh as of: 2026-07-16T07:31:05+00:00",
+          "tooltip_text": "Volume KPI \u2014 Actual\nJanuary 2026\n0 events\nStatus: On track\nFresh as of: 2026-07-16T10:20:52+00:00",
           "point_index": 0
         },
         {
@@ -215,7 +215,7 @@
           "series_display_name": "Actual",
           "unit": "events",
           "status_label": "On track",
-          "freshness_timestamp": "2026-07-16T07:31:05+00:00",
+          "freshness_timestamp": "2026-07-16T10:20:52+00:00",
           "formatted_value": "\u2014",
           "tooltip_text": "Volume KPI \u2014 Actual\nFebruary 2026\n\u2014\nMissing period \u2014 value not interpolated",
           "point_index": 1
@@ -231,18 +231,18 @@
           "series_display_name": "Actual",
           "unit": "events",
           "status_label": "On track",
-          "freshness_timestamp": "2026-07-16T07:31:05+00:00",
+          "freshness_timestamp": "2026-07-16T10:20:52+00:00",
           "partial_period_note": "Partial period \u2014 incomplete",
           "formatted_value": "5 events",
           "prior_value": 0.0,
           "prior_formatted_value": "0 events",
           "abs_change": 5.0,
           "abs_change_formatted": "5 events",
-          "tooltip_text": "Volume KPI \u2014 Actual\nMarch 2026\n5 events\nPrevious: 0 events\nChange: 5 events\nStatus: On track\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T07:31:05+00:00",
+          "tooltip_text": "Volume KPI \u2014 Actual\nMarch 2026\n5 events\nPrevious: 0 events\nChange: 5 events\nStatus: On track\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T10:20:52+00:00",
           "point_index": 2
         }
       ],
-      "interactive_html": "<div class=\"interactive-chart svg-chart\" data-chart-id=\"volume_trend\" data-page-id=\"executive_overview\" data-metric-ids=\"KPI-001\" data-query-id=\"Q-volume_trend\" data-validation-status=\"PASS\" data-business-approval-status=\"APPROVED\" id=\"chart-volume_trend\"\n     role=\"figure\" aria-label=\"Volume KPI Trend\" aria-description=\"Line chart of volume KPI by month with prior-period comparison\"\n     data-mobile-tap=\"true\" data-chart-payload=\"[{&quot;period&quot;: &quot;Jan&quot;, &quot;full_date&quot;: &quot;2026-01-01&quot;, &quot;period_label&quot;: &quot;January 2026&quot;, &quot;volume&quot;: 0, &quot;missing_period&quot;: false, &quot;is_partial_period&quot;: false, &quot;metric_display_name&quot;: &quot;Volume KPI&quot;, &quot;series_display_name&quot;: &quot;Actual&quot;, &quot;unit&quot;: &quot;events&quot;, &quot;status_label&quot;: &quot;On track&quot;, &quot;freshness_timestamp&quot;: &quot;2026-07-16T07:31:05+00:00&quot;, &quot;formatted_value&quot;: &quot;0 events&quot;, &quot;tooltip_text&quot;: &quot;Volume KPI \u2014 Actual\\nJanuary 2026\\n0 events\\nStatus: On track\\nFresh as of: 2026-07-16T07:31:05+00:00&quot;, &quot;point_index&quot;: 0}, {&quot;period&quot;: &quot;Feb&quot;, &quot;full_date&quot;: &quot;2026-02-01&quot;, &quot;period_label&quot;: &quot;February 2026&quot;, &quot;volume&quot;: null, &quot;missing_period&quot;: true, &quot;is_partial_period&quot;: false, &quot;metric_display_name&quot;: &quot;Volume KPI&quot;, &quot;series_display_name&quot;: &quot;Actual&quot;, &quot;unit&quot;: &quot;events&quot;, &quot;status_label&quot;: &quot;On track&quot;, &quot;freshness_timestamp&quot;: &quot;2026-07-16T07:31:05+00:00&quot;, &quot;formatted_value&quot;: &quot;\u2014&quot;, &quot;tooltip_text&quot;: &quot;Volume KPI \u2014 Actual\\nFebruary 2026\\n\u2014\\nMissing period \u2014 value not interpolated&quot;, &quot;point_index&quot;: 1}, {&quot;period&quot;: &quot;Mar&quot;, &quot;full_date&quot;: &quot;2026-03-01&quot;, &quot;period_label&quot;: &quot;March 2026&quot;, &quot;volume&quot;: 5, &quot;missing_period&quot;: false, &quot;is_partial_period&quot;: true, &quot;metric_display_name&quot;: &quot;Volume KPI&quot;, &quot;series_display_name&quot;: &quot;Actual&quot;, &quot;unit&quot;: &quot;events&quot;, &quot;status_label&quot;: &quot;On track&quot;, &quot;freshness_timestamp&quot;: &quot;2026-07-16T07:31:05+00:00&quot;, &quot;partial_period_note&quot;: &quot;Partial period \u2014 incomplete&quot;, &quot;formatted_value&quot;: &quot;5 events&quot;, &quot;prior_value&quot;: 0.0, &quot;prior_formatted_value&quot;: &quot;0 events&quot;, &quot;abs_change&quot;: 5.0, &quot;abs_change_formatted&quot;: &quot;5 events&quot;, &quot;tooltip_text&quot;: &quot;Volume KPI \u2014 Actual\\nMarch 2026\\n5 events\\nPrevious: 0 events\\nChange: 5 events\\nStatus: On track\\nPartial period \u2014 incomplete\\nFresh as of: 2026-07-16T07:31:05+00:00&quot;, &quot;point_index&quot;: 2}]\">\n  <h3 class=\"chart-title\">Volume KPI Trend</h3>\n  \n  <svg class=\"chart-svg\" viewBox=\"0 0 480 220\" width=\"100%\" height=\"220\"\n       aria-hidden=\"true\">\n    <line x1=\"36\" y1=\"184\" x2=\"444\" y2=\"184\" stroke=\"#94a3b8\"/><line x1=\"36\" y1=\"36\" x2=\"36\" y2=\"184\" stroke=\"#94a3b8\"/>\n    \n    <circle class=\"chart-point\" cx=\"36.0\" cy=\"184.0\" r=\"5\" data-tooltip=\"Volume KPI \u2014 Actual\nJanuary 2026\n0 events\nStatus: On track\nFresh as of: 2026-07-16T07:31:05+00:00\" data-x=\"Jan\" data-period=\"January 2026\" tabindex=\"0\" role=\"button\" aria-label=\"January 2026: Volume KPI \u2014 Actual\nJanuary 2026\n0 events\nStatus: On track\nFresh as of: 2026-07-16T07:31:05+00:00\"/><circle class=\"chart-point chart-missing\" cx=\"240.0\" cy=\"184.0\" r=\"4\" fill=\"none\" stroke=\"#94a3b8\" stroke-dasharray=\"2 2\" data-tooltip=\"Volume KPI \u2014 Actual\nFebruary 2026\n\u2014\nMissing period \u2014 value not interpolated\" data-x=\"Feb\" data-period=\"February 2026\" tabindex=\"0\" role=\"button\" aria-label=\"February 2026: missing\"/><circle class=\"chart-point chart-partial\" cx=\"444.0\" cy=\"36.0\" r=\"5\" data-tooltip=\"Volume KPI \u2014 Actual\nMarch 2026\n5 events\nPrevious: 0 events\nChange: 5 events\nStatus: On track\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T07:31:05+00:00\" data-x=\"Mar\" data-period=\"March 2026\" tabindex=\"0\" role=\"button\" aria-label=\"March 2026: Volume KPI \u2014 Actual\nMarch 2026\n5 events\nPrevious: 0 events\nChange: 5 events\nStatus: On track\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T07:31:05+00:00\"/>\n  </svg>\n  <div class=\"chart-tooltip\" role=\"tooltip\" aria-live=\"polite\" hidden></div>\n  <table class=\"chart-data-table\" tabindex=\"0\" aria-label=\"Volume KPI Trend data table\"><thead><tr><th>Period / category</th><th>Series</th><th>Value</th><th>Notes</th></tr></thead><tbody><tr><td>January 2026</td><td>Actual</td><td>0 events</td><td></td></tr><tr><td>February 2026</td><td>Actual</td><td>\u2014</td><td>Missing</td></tr><tr><td>March 2026</td><td>Actual</td><td>5 events</td><td>Partial period \u2014 incomplete</td></tr></tbody></table>\n</div>",
+      "interactive_html": "<div class=\"interactive-chart svg-chart\" data-chart-id=\"volume_trend\" data-page-id=\"executive_overview\" data-metric-ids=\"KPI-001\" data-query-id=\"Q-volume_trend\" data-validation-status=\"PASS\" data-business-approval-status=\"APPROVED\" id=\"chart-volume_trend\"\n     role=\"figure\" aria-label=\"Volume KPI Trend\" aria-description=\"Line chart of volume KPI by month with prior-period comparison\"\n     data-mobile-tap=\"true\" data-chart-payload=\"[{&quot;period&quot;: &quot;Jan&quot;, &quot;full_date&quot;: &quot;2026-01-01&quot;, &quot;period_label&quot;: &quot;January 2026&quot;, &quot;volume&quot;: 0, &quot;missing_period&quot;: false, &quot;is_partial_period&quot;: false, &quot;metric_display_name&quot;: &quot;Volume KPI&quot;, &quot;series_display_name&quot;: &quot;Actual&quot;, &quot;unit&quot;: &quot;events&quot;, &quot;status_label&quot;: &quot;On track&quot;, &quot;freshness_timestamp&quot;: &quot;2026-07-16T10:20:52+00:00&quot;, &quot;formatted_value&quot;: &quot;0 events&quot;, &quot;tooltip_text&quot;: &quot;Volume KPI \u2014 Actual\\nJanuary 2026\\n0 events\\nStatus: On track\\nFresh as of: 2026-07-16T10:20:52+00:00&quot;, &quot;point_index&quot;: 0}, {&quot;period&quot;: &quot;Feb&quot;, &quot;full_date&quot;: &quot;2026-02-01&quot;, &quot;period_label&quot;: &quot;February 2026&quot;, &quot;volume&quot;: null, &quot;missing_period&quot;: true, &quot;is_partial_period&quot;: false, &quot;metric_display_name&quot;: &quot;Volume KPI&quot;, &quot;series_display_name&quot;: &quot;Actual&quot;, &quot;unit&quot;: &quot;events&quot;, &quot;status_label&quot;: &quot;On track&quot;, &quot;freshness_timestamp&quot;: &quot;2026-07-16T10:20:52+00:00&quot;, &quot;formatted_value&quot;: &quot;\u2014&quot;, &quot;tooltip_text&quot;: &quot;Volume KPI \u2014 Actual\\nFebruary 2026\\n\u2014\\nMissing period \u2014 value not interpolated&quot;, &quot;point_index&quot;: 1}, {&quot;period&quot;: &quot;Mar&quot;, &quot;full_date&quot;: &quot;2026-03-01&quot;, &quot;period_label&quot;: &quot;March 2026&quot;, &quot;volume&quot;: 5, &quot;missing_period&quot;: false, &quot;is_partial_period&quot;: true, &quot;metric_display_name&quot;: &quot;Volume KPI&quot;, &quot;series_display_name&quot;: &quot;Actual&quot;, &quot;unit&quot;: &quot;events&quot;, &quot;status_label&quot;: &quot;On track&quot;, &quot;freshness_timestamp&quot;: &quot;2026-07-16T10:20:52+00:00&quot;, &quot;partial_period_note&quot;: &quot;Partial period \u2014 incomplete&quot;, &quot;formatted_value&quot;: &quot;5 events&quot;, &quot;prior_value&quot;: 0.0, &quot;prior_formatted_value&quot;: &quot;0 events&quot;, &quot;abs_change&quot;: 5.0, &quot;abs_change_formatted&quot;: &quot;5 events&quot;, &quot;tooltip_text&quot;: &quot;Volume KPI \u2014 Actual\\nMarch 2026\\n5 events\\nPrevious: 0 events\\nChange: 5 events\\nStatus: On track\\nPartial period \u2014 incomplete\\nFresh as of: 2026-07-16T10:20:52+00:00&quot;, &quot;point_index&quot;: 2}, {&quot;period&quot;: &quot;Jan&quot;, &quot;full_date&quot;: &quot;2026-01-01&quot;, &quot;period_label&quot;: &quot;January 2026&quot;, &quot;volume&quot;: 0, &quot;metric_display_name&quot;: &quot;Volume KPI&quot;, &quot;series_display_name&quot;: &quot;Prior period&quot;, &quot;unit&quot;: &quot;events&quot;, &quot;freshness_timestamp&quot;: &quot;2026-07-16T10:20:52+00:00&quot;, &quot;formatted_value&quot;: &quot;0 events&quot;, &quot;tooltip_text&quot;: &quot;Volume KPI \u2014 Prior period\\nJanuary 2026\\n0 events\\nFresh as of: 2026-07-16T10:20:52+00:00&quot;, &quot;point_index&quot;: 0}, {&quot;period&quot;: &quot;Feb&quot;, &quot;full_date&quot;: &quot;2026-02-01&quot;, &quot;period_label&quot;: &quot;February 2026&quot;, &quot;volume&quot;: 0, &quot;metric_display_name&quot;: &quot;Volume KPI&quot;, &quot;series_display_name&quot;: &quot;Prior period&quot;, &quot;unit&quot;: &quot;events&quot;, &quot;freshness_timestamp&quot;: &quot;2026-07-16T10:20:52+00:00&quot;, &quot;formatted_value&quot;: &quot;0 events&quot;, &quot;prior_value&quot;: 0.0, &quot;prior_formatted_value&quot;: &quot;0 events&quot;, &quot;abs_change&quot;: 0.0, &quot;abs_change_formatted&quot;: &quot;0 events&quot;, &quot;tooltip_text&quot;: &quot;Volume KPI \u2014 Prior period\\nFebruary 2026\\n0 events\\nPrevious: 0 events\\nChange: 0 events\\nFresh as of: 2026-07-16T10:20:52+00:00&quot;, &quot;point_index&quot;: 1}, {&quot;period&quot;: &quot;Mar&quot;, &quot;full_date&quot;: &quot;2026-03-01&quot;, &quot;period_label&quot;: &quot;March 2026&quot;, &quot;volume&quot;: 0, &quot;metric_display_name&quot;: &quot;Volume KPI&quot;, &quot;series_display_name&quot;: &quot;Prior period&quot;, &quot;unit&quot;: &quot;events&quot;, &quot;freshness_timestamp&quot;: &quot;2026-07-16T10:20:52+00:00&quot;, &quot;formatted_value&quot;: &quot;0 events&quot;, &quot;prior_value&quot;: 0.0, &quot;prior_formatted_value&quot;: &quot;0 events&quot;, &quot;abs_change&quot;: 0.0, &quot;abs_change_formatted&quot;: &quot;0 events&quot;, &quot;tooltip_text&quot;: &quot;Volume KPI \u2014 Prior period\\nMarch 2026\\n0 events\\nPrevious: 0 events\\nChange: 0 events\\nFresh as of: 2026-07-16T10:20:52+00:00&quot;, &quot;point_index&quot;: 2}]\">\n  <h3 class=\"chart-title\">Volume KPI Trend</h3>\n  \n  <svg class=\"chart-svg\" viewBox=\"0 0 480 220\" width=\"100%\" height=\"220\"\n       aria-hidden=\"true\">\n    <line x1=\"36\" y1=\"184\" x2=\"444\" y2=\"184\" stroke=\"#94a3b8\"/><line x1=\"36\" y1=\"36\" x2=\"36\" y2=\"184\" stroke=\"#94a3b8\"/>\n    <line x1=\"40.0\" y1=\"184.0\" x2=\"244.0\" y2=\"184.0\" stroke=\"#dc2626\" stroke-width=\"2\"/><line x1=\"244.0\" y1=\"184.0\" x2=\"448.0\" y2=\"184.0\" stroke=\"#dc2626\" stroke-width=\"2\"/>\n    <circle class=\"chart-point\" cx=\"32.0\" cy=\"184.0\" r=\"5\" fill=\"#2563eb\" stroke=\"#2563eb\" data-tooltip=\"Volume KPI \u2014 Actual\nJanuary 2026\n0 events\nStatus: On track\nFresh as of: 2026-07-16T10:20:52+00:00\" data-x=\"Jan\" data-period=\"January 2026\" data-series=\"Actual\" tabindex=\"0\" role=\"button\" aria-label=\"January 2026: Volume KPI \u2014 Actual\nJanuary 2026\n0 events\nStatus: On track\nFresh as of: 2026-07-16T10:20:52+00:00\"/><circle class=\"chart-point chart-missing\" cx=\"240.0\" cy=\"184.0\" r=\"4\" fill=\"none\" stroke=\"#94a3b8\" stroke-dasharray=\"2 2\" data-tooltip=\"Volume KPI \u2014 Actual\nFebruary 2026\n\u2014\nMissing period \u2014 value not interpolated\" data-x=\"Feb\" data-period=\"February 2026\" data-series=\"Actual\" tabindex=\"0\" role=\"button\" aria-label=\"February 2026: missing\"/><circle class=\"chart-point chart-partial\" cx=\"440.0\" cy=\"36.0\" r=\"5\" fill=\"#2563eb\" stroke=\"#2563eb\" data-tooltip=\"Volume KPI \u2014 Actual\nMarch 2026\n5 events\nPrevious: 0 events\nChange: 5 events\nStatus: On track\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T10:20:52+00:00\" data-x=\"Mar\" data-period=\"March 2026\" data-series=\"Actual\" tabindex=\"0\" role=\"button\" aria-label=\"March 2026: Volume KPI \u2014 Actual\nMarch 2026\n5 events\nPrevious: 0 events\nChange: 5 events\nStatus: On track\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T10:20:52+00:00\"/><circle class=\"chart-point\" cx=\"40.0\" cy=\"184.0\" r=\"5\" fill=\"#dc2626\" stroke=\"#dc2626\" data-tooltip=\"Volume KPI \u2014 Prior period\nJanuary 2026\n0 events\nFresh as of: 2026-07-16T10:20:52+00:00\" data-x=\"Jan\" data-period=\"January 2026\" data-series=\"Prior period\" tabindex=\"0\" role=\"button\" aria-label=\"January 2026: Volume KPI \u2014 Prior period\nJanuary 2026\n0 events\nFresh as of: 2026-07-16T10:20:52+00:00\"/><circle class=\"chart-point\" cx=\"244.0\" cy=\"184.0\" r=\"5\" fill=\"#dc2626\" stroke=\"#dc2626\" data-tooltip=\"Volume KPI \u2014 Prior period\nFebruary 2026\n0 events\nPrevious: 0 events\nChange: 0 events\nFresh as of: 2026-07-16T10:20:52+00:00\" data-x=\"Feb\" data-period=\"February 2026\" data-series=\"Prior period\" tabindex=\"0\" role=\"button\" aria-label=\"February 2026: Volume KPI \u2014 Prior period\nFebruary 2026\n0 events\nPrevious: 0 events\nChange: 0 events\nFresh as of: 2026-07-16T10:20:52+00:00\"/><circle class=\"chart-point\" cx=\"448.0\" cy=\"184.0\" r=\"5\" fill=\"#dc2626\" stroke=\"#dc2626\" data-tooltip=\"Volume KPI \u2014 Prior period\nMarch 2026\n0 events\nPrevious: 0 events\nChange: 0 events\nFresh as of: 2026-07-16T10:20:52+00:00\" data-x=\"Mar\" data-period=\"March 2026\" data-series=\"Prior period\" tabindex=\"0\" role=\"button\" aria-label=\"March 2026: Volume KPI \u2014 Prior period\nMarch 2026\n0 events\nPrevious: 0 events\nChange: 0 events\nFresh as of: 2026-07-16T10:20:52+00:00\"/>\n  </svg>\n  <div class=\"chart-tooltip\" role=\"tooltip\" aria-live=\"polite\" hidden></div>\n  <table class=\"chart-data-table\" tabindex=\"0\" aria-label=\"Volume KPI Trend data table\"><thead><tr><th>Period / category</th><th>Series</th><th>Value</th><th>Notes</th></tr></thead><tbody><tr><td>January 2026</td><td>Actual</td><td>0 events</td><td></td></tr><tr><td>February 2026</td><td>Actual</td><td>\u2014</td><td>Missing</td></tr><tr><td>March 2026</td><td>Actual</td><td>5 events</td><td>Partial period \u2014 incomplete</td></tr><tr><td>January 2026</td><td>Prior period</td><td>0 events</td><td></td></tr><tr><td>February 2026</td><td>Prior period</td><td>0 events</td><td></td></tr><tr><td>March 2026</td><td>Prior period</td><td>0 events</td><td></td></tr></tbody></table>\n</div>",
       "plotly_available": true,
       "static_pdf_path": "static/volume_trend.pdf",
       "offline_dependency_exists": true
@@ -305,7 +305,7 @@
       "source_resource_ids": [
         "model.domain_c_asset_events.fct_asset_events"
       ],
-      "freshness_timestamp": "2026-07-16T07:31:05+00:00",
+      "freshness_timestamp": "2026-07-16T10:20:52+00:00",
       "partial_period_behavior": "label_and_include",
       "empty_state_behavior": "show_empty_message",
       "validation_status": "PASS",
@@ -331,9 +331,9 @@
           "is_partial_period": false,
           "metric_display_name": "Completion rate KPI",
           "series_display_name": "Actual",
-          "freshness_timestamp": "2026-07-16T07:31:05+00:00",
+          "freshness_timestamp": "2026-07-16T10:20:52+00:00",
           "formatted_value": "35.00%",
-          "tooltip_text": "Completion rate KPI \u2014 Actual\nJanuary 2026\n35.00%\nFresh as of: 2026-07-16T07:31:05+00:00",
+          "tooltip_text": "Completion rate KPI \u2014 Actual\nJanuary 2026\n35.00%\nFresh as of: 2026-07-16T10:20:52+00:00",
           "point_index": 0
         },
         {
@@ -344,7 +344,7 @@
           "is_partial_period": false,
           "metric_display_name": "Completion rate KPI",
           "series_display_name": "Actual",
-          "freshness_timestamp": "2026-07-16T07:31:05+00:00",
+          "freshness_timestamp": "2026-07-16T10:20:52+00:00",
           "formatted_value": "38.00%",
           "prior_value": 0.35000000000000003,
           "prior_formatted_value": "35.00%",
@@ -352,7 +352,7 @@
           "abs_change_formatted": "3.00%",
           "pct_change": 0.08571428571428562,
           "pct_change_formatted": "8.57%",
-          "tooltip_text": "Completion rate KPI \u2014 Actual\nFebruary 2026\n38.00%\nPrevious: 35.00%\nChange: 3.00% (8.57%)\nFresh as of: 2026-07-16T07:31:05+00:00",
+          "tooltip_text": "Completion rate KPI \u2014 Actual\nFebruary 2026\n38.00%\nPrevious: 35.00%\nChange: 3.00% (8.57%)\nFresh as of: 2026-07-16T10:20:52+00:00",
           "point_index": 1
         },
         {
@@ -363,7 +363,7 @@
           "is_partial_period": true,
           "metric_display_name": "Completion rate KPI",
           "series_display_name": "Actual",
-          "freshness_timestamp": "2026-07-16T07:31:05+00:00",
+          "freshness_timestamp": "2026-07-16T10:20:52+00:00",
           "partial_period_note": "Partial period \u2014 incomplete",
           "formatted_value": "40.00%",
           "prior_value": 0.38,
@@ -372,11 +372,11 @@
           "abs_change_formatted": "2.00%",
           "pct_change": 0.05263157894736847,
           "pct_change_formatted": "5.26%",
-          "tooltip_text": "Completion rate KPI \u2014 Actual\nMarch 2026\n40.00%\nPrevious: 38.00%\nChange: 2.00% (5.26%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T07:31:05+00:00",
+          "tooltip_text": "Completion rate KPI \u2014 Actual\nMarch 2026\n40.00%\nPrevious: 38.00%\nChange: 2.00% (5.26%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T10:20:52+00:00",
           "point_index": 2
         }
       ],
-      "interactive_html": "<div class=\"interactive-chart svg-chart\" data-chart-id=\"completion_rate_trend\" data-page-id=\"executive_overview\" data-metric-ids=\"KPI-002\" data-query-id=\"Q-completion_rate\" data-validation-status=\"PASS\" data-business-approval-status=\"APPROVED\" id=\"chart-completion_rate_trend\"\n     role=\"figure\" aria-label=\"Completion Rate KPI\" aria-description=\"Bar chart of completion rate by month\"\n     data-mobile-tap=\"true\" data-chart-payload=\"[{&quot;period&quot;: &quot;Jan&quot;, &quot;full_date&quot;: &quot;2026-01-01&quot;, &quot;period_label&quot;: &quot;January 2026&quot;, &quot;rate&quot;: 0.35000000000000003, &quot;is_partial_period&quot;: false, &quot;metric_display_name&quot;: &quot;Completion rate KPI&quot;, &quot;series_display_name&quot;: &quot;Actual&quot;, &quot;freshness_timestamp&quot;: &quot;2026-07-16T07:31:05+00:00&quot;, &quot;formatted_value&quot;: &quot;35.00%&quot;, &quot;tooltip_text&quot;: &quot;Completion rate KPI \u2014 Actual\\nJanuary 2026\\n35.00%\\nFresh as of: 2026-07-16T07:31:05+00:00&quot;, &quot;point_index&quot;: 0}, {&quot;period&quot;: &quot;Feb&quot;, &quot;full_date&quot;: &quot;2026-02-01&quot;, &quot;period_label&quot;: &quot;February 2026&quot;, &quot;rate&quot;: 0.38, &quot;is_partial_period&quot;: false, &quot;metric_display_name&quot;: &quot;Completion rate KPI&quot;, &quot;series_display_name&quot;: &quot;Actual&quot;, &quot;freshness_timestamp&quot;: &quot;2026-07-16T07:31:05+00:00&quot;, &quot;formatted_value&quot;: &quot;38.00%&quot;, &quot;prior_value&quot;: 0.35000000000000003, &quot;prior_formatted_value&quot;: &quot;35.00%&quot;, &quot;abs_change&quot;: 0.02999999999999997, &quot;abs_change_formatted&quot;: &quot;3.00%&quot;, &quot;pct_change&quot;: 0.08571428571428562, &quot;pct_change_formatted&quot;: &quot;8.57%&quot;, &quot;tooltip_text&quot;: &quot;Completion rate KPI \u2014 Actual\\nFebruary 2026\\n38.00%\\nPrevious: 35.00%\\nChange: 3.00% (8.57%)\\nFresh as of: 2026-07-16T07:31:05+00:00&quot;, &quot;point_index&quot;: 1}, {&quot;period&quot;: &quot;Mar&quot;, &quot;full_date&quot;: &quot;2026-03-01&quot;, &quot;period_label&quot;: &quot;March 2026&quot;, &quot;rate&quot;: 0.4, &quot;is_partial_period&quot;: true, &quot;metric_display_name&quot;: &quot;Completion rate KPI&quot;, &quot;series_display_name&quot;: &quot;Actual&quot;, &quot;freshness_timestamp&quot;: &quot;2026-07-16T07:31:05+00:00&quot;, &quot;partial_period_note&quot;: &quot;Partial period \u2014 incomplete&quot;, &quot;formatted_value&quot;: &quot;40.00%&quot;, &quot;prior_value&quot;: 0.38, &quot;prior_formatted_value&quot;: &quot;38.00%&quot;, &quot;abs_change&quot;: 0.020000000000000018, &quot;abs_change_formatted&quot;: &quot;2.00%&quot;, &quot;pct_change&quot;: 0.05263157894736847, &quot;pct_change_formatted&quot;: &quot;5.26%&quot;, &quot;tooltip_text&quot;: &quot;Completion rate KPI \u2014 Actual\\nMarch 2026\\n40.00%\\nPrevious: 38.00%\\nChange: 2.00% (5.26%)\\nPartial period \u2014 incomplete\\nFresh as of: 2026-07-16T07:31:05+00:00&quot;, &quot;point_index&quot;: 2}]\">\n  <h3 class=\"chart-title\">Completion Rate KPI</h3>\n  \n  <svg class=\"chart-svg\" viewBox=\"0 0 480 220\" width=\"100%\" height=\"220\"\n       aria-hidden=\"true\">\n    <line x1=\"36\" y1=\"184\" x2=\"444\" y2=\"184\" stroke=\"#94a3b8\"/><line x1=\"36\" y1=\"36\" x2=\"36\" y2=\"184\" stroke=\"#94a3b8\"/>\n    \n    <rect class=\"chart-bar\" x=\"-4.8\" y=\"54.5\" width=\"81.6\" height=\"129.5\" data-tooltip=\"Completion rate KPI \u2014 Actual\nJanuary 2026\n35.00%\nFresh as of: 2026-07-16T07:31:05+00:00\" data-x=\"Jan\" data-period=\"January 2026\" tabindex=\"0\" role=\"button\" aria-label=\"January 2026: Completion rate KPI \u2014 Actual\nJanuary 2026\n35.00%\nFresh as of: 2026-07-16T07:31:05+00:00\"/><rect class=\"chart-bar\" x=\"199.2\" y=\"43.4\" width=\"81.6\" height=\"140.6\" data-tooltip=\"Completion rate KPI \u2014 Actual\nFebruary 2026\n38.00%\nPrevious: 35.00%\nChange: 3.00% (8.57%)\nFresh as of: 2026-07-16T07:31:05+00:00\" data-x=\"Feb\" data-period=\"February 2026\" tabindex=\"0\" role=\"button\" aria-label=\"February 2026: Completion rate KPI \u2014 Actual\nFebruary 2026\n38.00%\nPrevious: 35.00%\nChange: 3.00% (8.57%)\nFresh as of: 2026-07-16T07:31:05+00:00\"/><rect class=\"chart-bar chart-partial\" x=\"403.2\" y=\"36.0\" width=\"81.6\" height=\"148.0\" data-tooltip=\"Completion rate KPI \u2014 Actual\nMarch 2026\n40.00%\nPrevious: 38.00%\nChange: 2.00% (5.26%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T07:31:05+00:00\" data-x=\"Mar\" data-period=\"March 2026\" tabindex=\"0\" role=\"button\" aria-label=\"March 2026: Completion rate KPI \u2014 Actual\nMarch 2026\n40.00%\nPrevious: 38.00%\nChange: 2.00% (5.26%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T07:31:05+00:00\"/>\n  </svg>\n  <div class=\"chart-tooltip\" role=\"tooltip\" aria-live=\"polite\" hidden></div>\n  <table class=\"chart-data-table\" tabindex=\"0\" aria-label=\"Completion Rate KPI data table\"><thead><tr><th>Period / category</th><th>Series</th><th>Value</th><th>Notes</th></tr></thead><tbody><tr><td>January 2026</td><td>Actual</td><td>35.00%</td><td></td></tr><tr><td>February 2026</td><td>Actual</td><td>38.00%</td><td></td></tr><tr><td>March 2026</td><td>Actual</td><td>40.00%</td><td>Partial period \u2014 incomplete</td></tr></tbody></table>\n</div>",
+      "interactive_html": "<div class=\"interactive-chart svg-chart\" data-chart-id=\"completion_rate_trend\" data-page-id=\"executive_overview\" data-metric-ids=\"KPI-002\" data-query-id=\"Q-completion_rate\" data-validation-status=\"PASS\" data-business-approval-status=\"APPROVED\" id=\"chart-completion_rate_trend\"\n     role=\"figure\" aria-label=\"Completion Rate KPI\" aria-description=\"Bar chart of completion rate by month\"\n     data-mobile-tap=\"true\" data-chart-payload=\"[{&quot;period&quot;: &quot;Jan&quot;, &quot;full_date&quot;: &quot;2026-01-01&quot;, &quot;period_label&quot;: &quot;January 2026&quot;, &quot;rate&quot;: 0.35000000000000003, &quot;is_partial_period&quot;: false, &quot;metric_display_name&quot;: &quot;Completion rate KPI&quot;, &quot;series_display_name&quot;: &quot;Actual&quot;, &quot;freshness_timestamp&quot;: &quot;2026-07-16T10:20:52+00:00&quot;, &quot;formatted_value&quot;: &quot;35.00%&quot;, &quot;tooltip_text&quot;: &quot;Completion rate KPI \u2014 Actual\\nJanuary 2026\\n35.00%\\nFresh as of: 2026-07-16T10:20:52+00:00&quot;, &quot;point_index&quot;: 0}, {&quot;period&quot;: &quot;Feb&quot;, &quot;full_date&quot;: &quot;2026-02-01&quot;, &quot;period_label&quot;: &quot;February 2026&quot;, &quot;rate&quot;: 0.38, &quot;is_partial_period&quot;: false, &quot;metric_display_name&quot;: &quot;Completion rate KPI&quot;, &quot;series_display_name&quot;: &quot;Actual&quot;, &quot;freshness_timestamp&quot;: &quot;2026-07-16T10:20:52+00:00&quot;, &quot;formatted_value&quot;: &quot;38.00%&quot;, &quot;prior_value&quot;: 0.35000000000000003, &quot;prior_formatted_value&quot;: &quot;35.00%&quot;, &quot;abs_change&quot;: 0.02999999999999997, &quot;abs_change_formatted&quot;: &quot;3.00%&quot;, &quot;pct_change&quot;: 0.08571428571428562, &quot;pct_change_formatted&quot;: &quot;8.57%&quot;, &quot;tooltip_text&quot;: &quot;Completion rate KPI \u2014 Actual\\nFebruary 2026\\n38.00%\\nPrevious: 35.00%\\nChange: 3.00% (8.57%)\\nFresh as of: 2026-07-16T10:20:52+00:00&quot;, &quot;point_index&quot;: 1}, {&quot;period&quot;: &quot;Mar&quot;, &quot;full_date&quot;: &quot;2026-03-01&quot;, &quot;period_label&quot;: &quot;March 2026&quot;, &quot;rate&quot;: 0.4, &quot;is_partial_period&quot;: true, &quot;metric_display_name&quot;: &quot;Completion rate KPI&quot;, &quot;series_display_name&quot;: &quot;Actual&quot;, &quot;freshness_timestamp&quot;: &quot;2026-07-16T10:20:52+00:00&quot;, &quot;partial_period_note&quot;: &quot;Partial period \u2014 incomplete&quot;, &quot;formatted_value&quot;: &quot;40.00%&quot;, &quot;prior_value&quot;: 0.38, &quot;prior_formatted_value&quot;: &quot;38.00%&quot;, &quot;abs_change&quot;: 0.020000000000000018, &quot;abs_change_formatted&quot;: &quot;2.00%&quot;, &quot;pct_change&quot;: 0.05263157894736847, &quot;pct_change_formatted&quot;: &quot;5.26%&quot;, &quot;tooltip_text&quot;: &quot;Completion rate KPI \u2014 Actual\\nMarch 2026\\n40.00%\\nPrevious: 38.00%\\nChange: 2.00% (5.26%)\\nPartial period \u2014 incomplete\\nFresh as of: 2026-07-16T10:20:52+00:00&quot;, &quot;point_index&quot;: 2}]\">\n  <h3 class=\"chart-title\">Completion Rate KPI</h3>\n  \n  <svg class=\"chart-svg\" viewBox=\"0 0 480 220\" width=\"100%\" height=\"220\"\n       aria-hidden=\"true\">\n    <line x1=\"36\" y1=\"184\" x2=\"444\" y2=\"184\" stroke=\"#94a3b8\"/><line x1=\"36\" y1=\"36\" x2=\"36\" y2=\"184\" stroke=\"#94a3b8\"/>\n    \n    <rect class=\"chart-bar\" x=\"-4.8\" y=\"54.5\" width=\"81.6\" height=\"129.5\" fill=\"#2563eb\" data-tooltip=\"Completion rate KPI \u2014 Actual\nJanuary 2026\n35.00%\nFresh as of: 2026-07-16T10:20:52+00:00\" data-x=\"Jan\" data-period=\"January 2026\" tabindex=\"0\" role=\"button\" aria-label=\"January 2026: Completion rate KPI \u2014 Actual\nJanuary 2026\n35.00%\nFresh as of: 2026-07-16T10:20:52+00:00\"/><rect class=\"chart-bar\" x=\"199.2\" y=\"43.4\" width=\"81.6\" height=\"140.6\" fill=\"#2563eb\" data-tooltip=\"Completion rate KPI \u2014 Actual\nFebruary 2026\n38.00%\nPrevious: 35.00%\nChange: 3.00% (8.57%)\nFresh as of: 2026-07-16T10:20:52+00:00\" data-x=\"Feb\" data-period=\"February 2026\" tabindex=\"0\" role=\"button\" aria-label=\"February 2026: Completion rate KPI \u2014 Actual\nFebruary 2026\n38.00%\nPrevious: 35.00%\nChange: 3.00% (8.57%)\nFresh as of: 2026-07-16T10:20:52+00:00\"/><rect class=\"chart-bar chart-partial\" x=\"403.2\" y=\"36.0\" width=\"81.6\" height=\"148.0\" fill=\"#2563eb\" data-tooltip=\"Completion rate KPI \u2014 Actual\nMarch 2026\n40.00%\nPrevious: 38.00%\nChange: 2.00% (5.26%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T10:20:52+00:00\" data-x=\"Mar\" data-period=\"March 2026\" tabindex=\"0\" role=\"button\" aria-label=\"March 2026: Completion rate KPI \u2014 Actual\nMarch 2026\n40.00%\nPrevious: 38.00%\nChange: 2.00% (5.26%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T10:20:52+00:00\"/>\n  </svg>\n  <div class=\"chart-tooltip\" role=\"tooltip\" aria-live=\"polite\" hidden></div>\n  <table class=\"chart-data-table\" tabindex=\"0\" aria-label=\"Completion Rate KPI data table\"><thead><tr><th>Period / category</th><th>Series</th><th>Value</th><th>Notes</th></tr></thead><tbody><tr><td>January 2026</td><td>Actual</td><td>35.00%</td><td></td></tr><tr><td>February 2026</td><td>Actual</td><td>38.00%</td><td></td></tr><tr><td>March 2026</td><td>Actual</td><td>40.00%</td><td>Partial period \u2014 incomplete</td></tr></tbody></table>\n</div>",
       "plotly_available": true,
       "static_pdf_path": "static/completion_rate_trend.pdf",
       "offline_dependency_exists": true

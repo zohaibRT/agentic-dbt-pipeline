@@ -4,8 +4,10 @@
   "status": "PASS",
   "errors": [],
   "warnings": [],
-  "details": {},
-  "checked_at": "2026-07-16T07:45:55.743460+00:00",
+  "details": {
+    "governed_exceptions": []
+  },
+  "checked_at": "2026-07-16T10:39:03.105333+00:00",
   "warning_ids": [],
   "applicability": ""
 }

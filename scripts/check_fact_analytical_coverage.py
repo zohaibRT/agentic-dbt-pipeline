@@ -216,7 +216,7 @@ def validate_applicability(
         )
         return False
 
-    notes = cell(row, "notes", "reason", "comment") or inline_reason
+    shared_notes = cell(row, "notes", "reason", "comment")
     owner = cell(row, "owner")
     next_action = cell(row, "next_action", "next action", "recommended_action")
     missing_evidence = cell(row, "missing_evidence", "missing evidence")
@@ -248,12 +248,23 @@ def validate_applicability(
         return True
 
     if norm == "NOT_APPLICABLE":
-        if not notes:
-            errors.append(f"{fact_name}: {field_label} NOT_APPLICABLE requires a reason")
+        # Require family-specific inline reason; shared Notes alone is not enough.
+        if not inline_reason:
+            errors.append(
+                f"{fact_name}: {field_label} NOT_APPLICABLE requires a family-specific "
+                "inline reason (NOT_APPLICABLE: <reason>), not a shared Notes cell"
+            )
             return False
+        if inline_reason.strip().lower() in {"see notes", "notes", "n/a", "na", "none"}:
+            errors.append(
+                f"{fact_name}: {field_label} NOT_APPLICABLE reason must be family-specific"
+            )
+            return False
+        _ = shared_notes  # shared notes may exist but cannot substitute for inline reason
         return True
 
     if norm == "BLOCKED":
+        notes = inline_reason or shared_notes
         missing = []
         if not notes:
             missing.append("reason")
@@ -272,6 +283,7 @@ def validate_applicability(
         return True
 
     if norm == "DEFERRED":
+        notes = inline_reason or shared_notes
         missing = []
         if not notes:
             missing.append("reason")
@@ -351,11 +363,15 @@ def row_analytical_complete(fact_name: str, row: dict[str, str], errors: list[st
         if ":" in value and normalize_applicability(value.split(":", 1)[0]) == "SUPPORTED":
             supported_proofs.append(value.split(":", 1)[1].strip().lower())
         elif normalize_applicability(value) == "SUPPORTED":
-            supported_proofs.append(cell(row, "proof", "evidence", "sql_proof", "notes").strip().lower())
+            # Bare SUPPORTED falling back to shared proof/notes counts as shared evidence
+            shared = cell(row, "proof", "evidence", "sql_proof", "notes").strip().lower()
+            if shared:
+                supported_proofs.append(shared)
     supported_proofs = [p for p in supported_proofs if p]
-    if len(supported_proofs) >= 3 and len(set(supported_proofs)) == 1:
+    # Two or more SUPPORTED families sharing one generic proof token is a failure
+    if len(supported_proofs) >= 2 and len(set(supported_proofs)) == 1:
         errors.append(
-            f"{fact_name}: one generic proof reused for all analytical families "
+            f"{fact_name}: one generic proof reused across analytical families "
             f"({supported_proofs[0]!r}) — each SUPPORTED family needs family-specific evidence"
         )
         ok = False
@@ -366,8 +382,14 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     add_output_json_arg(parser)
     parser.add_argument("--root", type=Path, default=Path("."))
+    parser.add_argument(
+        "--phase",
+        default="analytics",
+        help="Workflow phase. final requires unique_id on every analytical fact contract.",
+    )
     args = parser.parse_args()
     root = args.root.resolve()
+    phase = str(args.phase or "analytics").strip().lower()
     policy = load_analytics_policy(root)
     required = float(policy.get("critical_fact_coverage_required", 1.0))
 
@@ -428,13 +450,26 @@ def main() -> int:
         f"unique_ids={len(analytical_facts)}"
     )
 
+    final_like = phase in {"final", "acceptance"}
     if analytical_facts:
-        missing_uids = [
-            f"{item.get('unique_id')} ({item.get('name')})"
-            for item in analytical_facts
-            if item.get("unique_id") not in by_unique_id
-            and (item.get("name") or "").lower() not in by_fact
-        ]
+        if final_like:
+            for name, row in by_fact.items():
+                if not cell(row, "unique_id", "fact_id"):
+                    errors.append(
+                        f"{name}: final phase requires unique_id on fact coverage contract row"
+                    )
+            missing_uids = [
+                f"{item.get('unique_id')} ({item.get('name')})"
+                for item in analytical_facts
+                if item.get("unique_id") not in by_unique_id
+            ]
+        else:
+            missing_uids = [
+                f"{item.get('unique_id')} ({item.get('name')})"
+                for item in analytical_facts
+                if item.get("unique_id") not in by_unique_id
+                and (item.get("name") or "").lower() not in by_fact
+            ]
         if missing_uids:
             errors.append(
                 "fact_coverage_contracts missing rows for facts: " + ", ".join(missing_uids[:12])
@@ -442,6 +477,8 @@ def main() -> int:
         for name, row in by_fact.items():
             if cell(row, "unique_id", "fact_id"):
                 continue
+            if final_like:
+                continue  # already errored above
             matches = [f for f in analytical_facts if f.get("name") == name]
             if len(matches) > 1:
                 errors.append(
@@ -469,11 +506,21 @@ def main() -> int:
     if analytical_facts:
         for item in analytical_facts:
             fact_name = item.get("name") or ""
-            row = by_unique_id.get(item.get("unique_id") or "") or by_fact.get(fact_name or "")
+            uid = item.get("unique_id") or ""
+            if final_like:
+                row = by_unique_id.get(uid) if uid else None
+                if not row:
+                    errors.append(
+                        f"{uid or fact_name}: final phase requires unique_id contract match "
+                        "(name-only fallback forbidden)"
+                    )
+                    continue
+            else:
+                row = by_unique_id.get(uid) or by_fact.get(fact_name or "")
             if not row:
                 continue
             applicable += 1
-            label = item.get("unique_id") or fact_name
+            label = uid or fact_name
             status = named_status(row)
             if status == "UNKNOWN":
                 errors.append(f"{label}: missing explicit Status column value")

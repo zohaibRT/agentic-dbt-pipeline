@@ -877,11 +877,18 @@ def _exposure_project(
         "refresh_expectation": "daily",
         "business_approval_status": biz_status,
         "technical_validation_status": "PASS",
-        "approval_evidence": "SYNTHETIC_FIXTURE_APPROVAL:exposure#browser_report",
-        "sensitive_data_classification": "NOT_APPLICABLE: fixture",
+        "approval_evidence": "reports/agent/09_analytics_insights/SYNTHETIC_FIXTURE_EXPOSURE_APPROVAL.md",
+        "sensitive_data_classification": "NONE",
+        "approver": "fixture-approver",
+        "approval_date": "2026-01-15",
+        "maturity": "high",
+        "expiry_or_review": "2027-01-15",
+        "presentation_artifact_id": "matplotlib/report.html",
+        "delivery_location": "reports/agent/10_presentation/matplotlib/report.html",
         **(meta or {}),
     }
     owner = owner if owner is not None else {"name": "fixture-owner", "email": "o@example.test"}
+    delivery = str(meta.get("delivery_location") or "reports/agent/10_presentation/matplotlib/report.html")
     write_manifest(
         root,
         base_manifest(
@@ -896,6 +903,7 @@ def _exposure_project(
                     "original_file_path": yaml_name,
                     "depends_on": {"nodes": list(deps)},
                     "owner": owner,
+                    "url": delivery,
                     "config": {},
                     "meta": meta,
                     "tags": [],
@@ -908,6 +916,10 @@ def _exposure_project(
         (root / "dbt_project.yml").write_text("name: demo\nversion: '1.0.0'\n", encoding="utf-8")
     insights = root / "reports" / "agent" / "09_analytics_insights"
     insights.mkdir(parents=True)
+    (insights / "SYNTHETIC_FIXTURE_EXPOSURE_APPROVAL.md").write_text(
+        "# TEST FIXTURE — NOT PRODUCTION APPROVAL\n\nSynthetic exposure approval.\n",
+        encoding="utf-8",
+    )
     fp = compute_exposure_fingerprint(
         {
             "type": "dashboard",
@@ -916,8 +928,8 @@ def _exposure_project(
             "depends_on_models": deps,
             "depends_on_sources": [],
             "depends_on_metrics": "",
-            "url": "",
-            "delivery_location": "",
+            "url": delivery,
+            "delivery_location": delivery,
             "refresh_expectation": meta["refresh_expectation"],
             "criticality": meta["criticality"],
             "sensitive_data_classification": meta["sensitive_data_classification"],
@@ -940,6 +952,7 @@ exposures:
     owner:
       name: {owner.get('name', '')}
       email: {owner.get('email', '')}
+    url: "{delivery}"
     {dep_yaml_block}
     meta:
       business_purpose: "{meta['business_purpose']}"
@@ -947,8 +960,15 @@ exposures:
       criticality: "{meta['criticality']}"
       refresh_expectation: "{meta['refresh_expectation']}"
       business_approval_status: "{meta['business_approval_status']}"
+      technical_validation_status: "PASS"
       approval_evidence: "{meta['approval_evidence']}"
       sensitive_data_classification: "{meta['sensitive_data_classification']}"
+      approver: "{meta.get('approver', 'fixture-approver')}"
+      approval_date: "{meta.get('approval_date', '2026-01-15')}"
+      maturity: "{meta.get('maturity', 'high')}"
+      expiry_or_review: "{meta.get('expiry_or_review', '2027-01-15')}"
+      presentation_artifact_id: "{meta.get('presentation_artifact_id', 'matplotlib/report.html')}"
+      delivery_location: "{delivery}"
       exposure_fingerprint: "{fp}"
 """,
         encoding="utf-8",
@@ -967,6 +987,7 @@ exposures:
                     "original_file_path": yaml_name,
                     "depends_on": {"nodes": list(deps)},
                     "owner": owner,
+                    "url": delivery,
                     "config": {},
                     "meta": meta,
                     "tags": [],
@@ -977,9 +998,9 @@ exposures:
     )
     (insights / "exposure_coverage.md").write_text(
         f"""
-| Exposure ID | Unique ID | Exposure | Type | Owner | Dependent Models | Refresh Expectation | Business Purpose | Audience | Criticality | Technical Validation Status | Business Approval Status | Approval Evidence | Exposure Fingerprint | Validation Status |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| EXP-browser_report | exposure.demo.browser_report | browser_report | dashboard | {owner.get('name')} | {', '.join(deps)} | {meta['refresh_expectation']} | {meta['business_purpose']} | {meta['audience']} | {meta['criticality']} | PASS | {meta['business_approval_status']} | {meta['approval_evidence']} | {fp} | PASS |
+| Exposure ID | Unique ID | Exposure | Type | Owner | Dependent Models | Refresh Expectation | Business Purpose | Audience | Criticality | Technical Validation Status | Business Approval Status | Approval Evidence | Approver | Approval Date | Maturity | Expiry | Presentation Artifact ID | Delivery Location | Exposure Fingerprint | Validation Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| EXP-browser_report | exposure.demo.browser_report | browser_report | dashboard | {owner.get('name')} | {', '.join(deps)} | {meta['refresh_expectation']} | {meta['business_purpose']} | {meta['audience']} | {meta['criticality']} | PASS | {meta['business_approval_status']} | {meta['approval_evidence']} | {meta.get('approver', 'fixture-approver')} | {meta.get('approval_date', '2026-01-15')} | {meta.get('maturity', 'high')} | {meta.get('expiry_or_review', '2027-01-15')} | {meta.get('presentation_artifact_id', 'matplotlib/report.html')} | {delivery} | {fp} | PASS |
 """,
         encoding="utf-8",
     )
@@ -1087,6 +1108,22 @@ class ExposureTests(unittest.TestCase):
     def test_43_dependency_package_model_resolves(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
+            delivery = "reports/agent/10_presentation/matplotlib/report.html"
+            fp = compute_exposure_fingerprint(
+                {
+                    "type": "dashboard",
+                    "business_purpose": "overview for analysts",
+                    "audience": "analysts",
+                    "depends_on_models": ["model.other_pkg.fact_a"],
+                    "depends_on_sources": [],
+                    "depends_on_metrics": "",
+                    "url": delivery,
+                    "delivery_location": delivery,
+                    "refresh_expectation": "daily",
+                    "criticality": "high",
+                    "sensitive_data_classification": "NONE",
+                }
+            )
             write_manifest(
                 root,
                 base_manifest(
@@ -1104,14 +1141,23 @@ class ExposureTests(unittest.TestCase):
                             "package_name": "demo",
                             "depends_on": {"nodes": ["model.other_pkg.fact_a"]},
                             "owner": {"name": "fixture-owner"},
+                            "url": delivery,
                             "meta": {
                                 "business_purpose": "overview for analysts",
                                 "audience": "analysts",
                                 "criticality": "high",
                                 "refresh_expectation": "daily",
                                 "business_approval_status": "APPROVED",
-                                "approval_evidence": "SYNTHETIC_FIXTURE_APPROVAL:x",
-                                "sensitive_data_classification": "NOT_APPLICABLE: fixture",
+                                "technical_validation_status": "PASS",
+                                "approval_evidence": "reports/agent/09_analytics_insights/SYNTHETIC_FIXTURE_EXPOSURE_APPROVAL.md",
+                                "sensitive_data_classification": "NONE",
+                                "approver": "fixture-approver",
+                                "approval_date": "2026-01-15",
+                                "maturity": "high",
+                                "expiry_or_review": "2027-01-15",
+                                "presentation_artifact_id": "matplotlib/report.html",
+                                "delivery_location": delivery,
+                                "exposure_fingerprint": fp,
                             },
                             "config": {},
                             "tags": [],
@@ -1122,11 +1168,14 @@ class ExposureTests(unittest.TestCase):
             (root / "dbt_project.yml").write_text("name: demo\nversion: '1.0.0'\n", encoding="utf-8")
             insights = root / "reports" / "agent" / "09_analytics_insights"
             insights.mkdir(parents=True)
+            (insights / "SYNTHETIC_FIXTURE_EXPOSURE_APPROVAL.md").write_text(
+                "# TEST FIXTURE\n", encoding="utf-8"
+            )
             (insights / "exposure_coverage.md").write_text(
-                """
-| Unique ID | Exposure | Owner | Refresh Expectation | Business Purpose | Criticality | Business Approval Status | Approval Evidence | Validation Status |
-|---|---|---|---|---|---|---|---|---|
-| exposure.demo.browser_report | browser_report | fixture-owner | daily | overview for analysts | high | APPROVED | SYNTHETIC_FIXTURE_APPROVAL:x | PASS |
+                f"""
+| Unique ID | Exposure | Owner | Refresh Expectation | Business Purpose | Criticality | Business Approval Status | Approval Evidence | Approver | Approval Date | Maturity | Expiry | Presentation Artifact ID | Delivery Location | Exposure Fingerprint | Validation Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| exposure.demo.browser_report | browser_report | fixture-owner | daily | overview for analysts | high | APPROVED | reports/agent/09_analytics_insights/SYNTHETIC_FIXTURE_EXPOSURE_APPROVAL.md | fixture-approver | 2026-01-15 | high | 2027-01-15 | matplotlib/report.html | {delivery} | {fp} | PASS |
 """,
                 encoding="utf-8",
             )
@@ -1303,6 +1352,7 @@ class ExposureTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             _exposure_project(root, deps=["model.demo.fact_a"])
+            delivery = "reports/agent/10_presentation/matplotlib/report.html"
             # Stale fingerprint (wrong deps)
             insights = root / "reports" / "agent" / "09_analytics_insights"
             text = (insights / "exposure_coverage.md").read_text(encoding="utf-8")
@@ -1316,11 +1366,11 @@ class ExposureTests(unittest.TestCase):
                             "depends_on_models": ["model.demo.fact_a"],
                             "depends_on_sources": [],
                             "depends_on_metrics": "",
-                            "url": "",
-                            "delivery_location": "",
+                            "url": delivery,
+                            "delivery_location": delivery,
                             "refresh_expectation": "daily",
                             "criticality": "high",
-                            "sensitive_data_classification": "NOT_APPLICABLE: fixture",
+                            "sensitive_data_classification": "NONE",
                         }
                     ),
                     "deadbeefdeadbeef",
