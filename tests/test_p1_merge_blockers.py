@@ -25,13 +25,17 @@ from lib_gate_common import (  # noqa: E402
 class CiHeredocTests(unittest.TestCase):
     def test_strict_final_heredoc_expands_fixture(self) -> None:
         text = (ROOT / ".github" / "workflows" / "analytics_gates.yml").read_text(encoding="utf-8")
-        # Must not use quoted <<'PY' for the strict-final assertion that interpolates $fixture
+        # Pass fixture via argv + quoted heredoc so $fixture never appears as a literal Path
         self.assertIn("Strict final acceptance for every valid fixture", text)
-        # After the strict-final step header, the python heredoc must be unquoted
         idx = text.index("Strict final acceptance for every valid fixture")
-        chunk = text[idx : idx + 1200]
-        self.assertIn("python - <<PY", chunk)
-        self.assertNotIn("python - <<'PY'", chunk)
+        chunk = text[idx : idx + 1600]
+        self.assertIn('python - "$fixture" <<\'PY\'', chunk)
+        self.assertIn("pathlib.Path(sys.argv[1])", chunk)
+        self.assertNotIn('pathlib.Path("$fixture")', chunk)
+        # Independent verifier step uses the same argv pattern
+        iv = text.index("Independent verifier")
+        iv_chunk = text[iv : iv + 1200]
+        self.assertIn('python - "$fixture" <<\'PY\'', iv_chunk)
 
 
 class ValidatorSchemaP1Tests(unittest.TestCase):

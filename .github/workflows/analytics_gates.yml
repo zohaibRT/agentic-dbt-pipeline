@@ -79,9 +79,10 @@ jobs:
             python scripts/run_independent_verifier.py --root "$fixture" --phase final
             test -f "$fixture/reports/agent/INDEPENDENT_VERIFICATION_REPORT.json"
             test -f "$fixture/reports/agent/INDEPENDENT_VERIFICATION_REPORT.md"
-            python - <<PY
+            # Pass fixture path via argv; quoted heredoc avoids literal $fixture bugs
+            python - "$fixture" <<'PY'
           import json, pathlib, sys
-          root = pathlib.Path("$fixture")
+          root = pathlib.Path(sys.argv[1])
           payload = json.loads((root / "reports/agent/INDEPENDENT_VERIFICATION_REPORT.json").read_text())
           assert payload.get("overall_status") == "PASS", payload
           # Live browser must be PASS (not SKIPPED) when interactive report exists
@@ -101,9 +102,10 @@ jobs:
             echo "=== Strict final gate: $fixture ==="
             python scripts/run_acceptance_gate.py --root "$fixture" --phase final --strict --skip-dbt
             test -f "$fixture/reports/agent/ACCEPTANCE_GATE_REPORT.json"
-            python - <<PY
-          import json, pathlib
-          root = pathlib.Path("$fixture")
+            # Pass fixture path via argv; quoted heredoc avoids literal $fixture bugs
+            python - "$fixture" <<'PY'
+          import json, pathlib, sys
+          root = pathlib.Path(sys.argv[1])
           payload = json.loads((root / "reports/agent/ACCEPTANCE_GATE_REPORT.json").read_text())
           status = payload.get("overall_status") or payload.get("status")
           assert status == "PASS", payload
