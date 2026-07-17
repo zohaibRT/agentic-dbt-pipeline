@@ -454,5 +454,8 @@
   "notes": [
     "Automated browser checks only \u2014 not a full legal accessibility certification.",
     "Browser PASS does not grant business approval."
-  ]
+  ],
+  "report_bundle_hash": "a643762d7226881ffcaee3659752d055c55907dcc351f53077d0a1e3a8f1046f",
+  "manifest_checksum": "a09218527699f1be3b33ceb1ac723ff2abe1efa0f3493ef401a7e21634850055",
+  "repository_commit_sha": "e1d0cb8ca6faead9a844111d2e7051ec6db629a8"
 }

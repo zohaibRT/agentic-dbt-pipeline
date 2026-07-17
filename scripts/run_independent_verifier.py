@@ -448,6 +448,36 @@ def detect_fixed_count_gates(root: Path) -> LocalCheck:
     return LocalCheck("no_fixed_count_gates", "PASS", "no arbitrary fixed-count gates")
 
 
+def _evidence_bindings(root: Path) -> dict[str, str]:
+    """Fingerprint fields that bind IV to the current report/manifest/commit."""
+    bindings: dict[str, str] = {}
+    try:
+        from lib_llm_playwright_review import compute_report_bundle_hash
+
+        bundle, _ = compute_report_bundle_hash(root)
+        if bundle:
+            bindings["report_bundle_hash"] = bundle
+    except Exception:  # noqa: BLE001
+        pass
+    manifest = root / "target" / "manifest.json"
+    if manifest.exists():
+        try:
+            from lib_manifest_relation import sha256_file
+
+            bindings["manifest_checksum"] = sha256_file(manifest)
+        except Exception:  # noqa: BLE001
+            pass
+    try:
+        commit = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=str(root), text=True
+        ).strip()
+        if commit:
+            bindings["repository_commit_sha"] = commit
+    except Exception:  # noqa: BLE001
+        pass
+    return bindings
+
+
 def write_reports(root: Path, report: VerificationReport) -> None:
     agent = root / "reports" / "agent"
     agent.mkdir(parents=True, exist_ok=True)
@@ -467,6 +497,7 @@ def write_reports(root: Path, report: VerificationReport) -> None:
             "Synthetic TEST FIXTURE approvals are valid only under fixtures/ paths.",
         ],
     }
+    payload.update(_evidence_bindings(root))
     (agent / "INDEPENDENT_VERIFICATION_REPORT.json").write_text(
         json.dumps(payload, indent=2) + "\n",
         encoding="utf-8",

@@ -389,5 +389,8 @@
     "accepted",
     "check_report_business_readability:w0:a8029ff012c7",
     "validate_kpi_proofs:w0:ee46cc6d76e7"
-  ]
+  ],
+  "report_bundle_hash": "5a159aeb95513c80d0bf5a0a920e95979729e181cde9fdbd82753bd37099aff2",
+  "manifest_checksum": "b899b0caf5ebee91c851645e8edb0cf67991fdb1be067a123da5e028981d2577",
+  "repository_commit_sha": "e1d0cb8ca6faead9a844111d2e7051ec6db629a8"
 }

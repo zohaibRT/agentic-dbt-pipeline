@@ -474,6 +474,9 @@ presentation_policy:
   require_report_runtime_preflight: true
   require_successful_initial_data_load: true
   require_successful_refresh_validation: true
+  require_live_report_refresh_execution: true
+  require_live_kpi_proof_execution: true
+  report_runtime_applicability: required
   require_deterministic_playwright_before_handoff: true
   require_playwright_mcp_before_handoff: true
   require_independent_verification_before_handoff: true

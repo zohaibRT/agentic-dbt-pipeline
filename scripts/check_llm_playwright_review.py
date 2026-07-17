@@ -11,7 +11,13 @@ import argparse
 from pathlib import Path
 from typing import Any
 
-from lib_gate_common import add_output_json_arg, load_presentation_policy, print_results
+from lib_gate_common import (
+    add_output_json_arg,
+    compare_formatted_values,
+    load_presentation_policy,
+    print_results,
+    reconcile_numeric,
+)
 from lib_llm_playwright_review import (
     REVIEW_JSON,
     REVIEW_MD,
@@ -133,11 +139,16 @@ def validate_review(
 
     # Technical vs business separation — browser review cannot approve KPIs.
     biz = str(payload.get("business_approval_status") or "").strip().upper()
-    tech = str(payload.get("technical_verification_status") or "")
+    tech = str(payload.get("technical_verification_status") or "").strip().upper()
     details["business_approval_status"] = biz
     details["technical_verification_status"] = tech
     if not tech:
         errors.append("technical_verification_status missing on LLM review")
+    if status == "PASS" and tech != "PASS":
+        errors.append(
+            "review_status=PASS is invalid when technical_verification_status "
+            f"is {tech or 'missing'!r}"
+        )
     if "business_approval_status" not in payload:
         errors.append("business_approval_status missing (must remain separate from browser review)")
     elif biz != "UNCHANGED":
@@ -273,14 +284,27 @@ def validate_review(
                 f"{item.get('chart_id') or item.get('visual_id')}"
             )
 
-    # Screenshots list
+    # Screenshots list — require one per mandatory viewport when review is required.
+    screenshot_viewports: set[str] = set()
     for shot in _as_list(payload.get("screenshots")):
         if isinstance(shot, dict):
             path = shot.get("path") or shot.get("screenshot_path")
+            vp = str(shot.get("viewport") or "").lower()
+            if vp:
+                screenshot_viewports.add(vp)
         else:
             path = shot
         if path and not (root / str(path)).exists():
             errors.append(f"screenshot missing: {path}")
+    review_required = bool(
+        policy.get("require_llm_playwright_review_at_final", True)
+        if phase == "final"
+        else policy.get("llm_playwright_review_required_for_release", True)
+    )
+    if review_required and status in {"PASS", "WARN"}:
+        for vp in required_viewports:
+            if vp not in screenshot_viewports:
+                errors.append(f"missing required LLM review screenshot for viewport: {vp}")
 
     # Multi-series + critical periods for interactive charts
     for chart in charts:
@@ -321,19 +345,45 @@ def validate_review(
                     f"chart {cid}: missing critical-period LLM coverage for {missing_periods}"
                 )
 
-    # Value comparisons
+    # Value comparisons — independently recompute; ignore false manual PASS.
     comparisons = [c for c in _as_list(payload.get("observed_value_comparisons")) if isinstance(c, dict)]
     if charts and not comparisons and phase == "final":
         errors.append("LLM review missing observed_value_comparisons for interactive charts")
+    independent_failures = 0
     for cmp_row in comparisons:
         st = str(cmp_row.get("comparison_status") or "").upper()
         if st and st not in VALID_COMPARISON_STATUSES:
             errors.append(f"invalid comparison_status {st!r}")
-        if st == "FAIL":
+        displayed = str(cmp_row.get("displayed_value") or "")
+        manifest = str(cmp_row.get("manifest_value") or "")
+        proof = str(cmp_row.get("proof_value") or "")
+        ok_dm, reason_dm = compare_formatted_values(displayed, manifest)
+        ok_dp, reason_dp = compare_formatted_values(displayed, proof)
+        if not ok_dm or not ok_dp:
+            # Numeric reconcile as a second chance for percent/format variants.
+            recon_m = reconcile_numeric(manifest, displayed, "0")
+            recon_p = reconcile_numeric(proof, displayed, "0")
+            ok_dm = ok_dm or bool(recon_m.get("within_tolerance"))
+            ok_dp = ok_dp or bool(recon_p.get("within_tolerance"))
+            if not ok_dm:
+                reason_dm = reason_dm or "displayed vs manifest mismatch"
+            if not ok_dp:
+                reason_dp = reason_dp or "displayed vs proof mismatch"
+        independent_ok = ok_dm and ok_dp
+        if not independent_ok:
+            independent_failures += 1
+            errors.append(
+                f"independent value comparison FAIL for metric {cmp_row.get('metric_id')} "
+                f"on {cmp_row.get('page_id')}/{cmp_row.get('visual_id')}: "
+                f"{reason_dm if not ok_dm else reason_dp}"
+            )
+        elif st == "FAIL":
             errors.append(
                 f"value comparison FAIL for metric {cmp_row.get('metric_id')} "
                 f"on {cmp_row.get('page_id')}/{cmp_row.get('visual_id')}"
             )
+        # Manual comparison_status=PASS is ignored when independent recompute fails above.
+    details["independent_comparison_failures"] = independent_failures
 
     # Findings
     findings = [f for f in _as_list(payload.get("findings")) if isinstance(f, dict)]

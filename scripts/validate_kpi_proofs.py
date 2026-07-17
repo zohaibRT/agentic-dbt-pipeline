@@ -16,6 +16,7 @@ from lib_gate_common import (
     table_dicts,
     validate_sql_proof_file,
 )
+from lib_report_runtime import run_live_kpi_proof_execution
 
 KPI_DIR = "reports/agent/09_analytics_insights/kpis"
 INSIGHTS_DIR = "reports/agent/09_analytics_insights"
@@ -239,6 +240,27 @@ def main() -> int:
         )
     if proof_validation_errors:
         errors.extend(proof_validation_errors[:20])
+
+    # Live DuckDB execution of referenced proofs (fail-closed for other adapters).
+    executable_proofs: list[Path] = []
+    for ref in sorted(referenced_proofs):
+        resolved = resolve_proof_path(root, ref)
+        if resolved is not None:
+            executable_proofs.append(resolved)
+    if not executable_proofs and proof_files:
+        executable_proofs = list(proof_files)
+    live = run_live_kpi_proof_execution(root, executable_proofs)
+    live_status = str(live.get("status") or "SKIPPED")
+    if live_status == "FAIL":
+        errors.extend(live.get("errors") or ["live KPI proof execution failed"])
+    elif live_status == "BLOCKED":
+        errors.extend(
+            [
+                f"BLOCKED: {msg}"
+                for msg in (live.get("errors") or ["live KPI proof execution blocked"])
+            ]
+        )
+    print(f"  live KPI proof execution: {live_status}")
 
     print("KPI proof validation summary:")
     print(f"  measures: {measure_count}")

@@ -381,9 +381,21 @@
             `Freshness: ${formatFreshness(refreshed.freshness_timestamp)}`;
           document.querySelector(".freshness-label").removeAttribute("data-stale");
           document.body.classList.remove("stale-data");
-          window.__REPORT_DATA_VERSION__ = refreshed.freshness_timestamp || refreshed.data_version || priorVersion;
+          window.__REPORT_DATA_VERSION__ = refreshed.data_version || refreshed.freshness_timestamp || priorVersion;
+          window.__REPORT_EXECUTION_ID__ = refreshed.execution_id || (refreshed.execution_ids || [])[0] || "";
           window.__REPORT_REFRESH_STATUS__ = "success";
           document.querySelector(".refresh-status").textContent = "Ready";
+          // Reload live payloads after warehouse-backed refresh
+          try {
+            const chartsResp = await fetch("/api/charts.json");
+            if (chartsResp.ok) {
+              window.__REPORT_CHART_REGISTRY__ = await chartsResp.json();
+              renderCharts(window.__REPORT_CHART_REGISTRY__);
+            }
+            await loadBoards();
+          } catch (reloadErr) {
+            console.error("Post-refresh reload failed", reloadErr);
+          }
         } catch (err) {
           console.error("Refresh failed", err);
           window.__REPORT_REFRESH_STATUS__ = "error";

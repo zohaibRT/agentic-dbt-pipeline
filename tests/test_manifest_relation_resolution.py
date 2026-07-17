@@ -138,6 +138,53 @@ fixture_duckdb:
             self.assertTrue(bad["errors"])
 
 
+class ManifestRelationFailClosedTests(unittest.TestCase):
+    def test_non_duckdb_physical_check_not_pass(self) -> None:
+        exists, err = physical_relation_exists(
+            adapter="snowflake",
+            connection_path=None,
+            relation_name='"DB"."SCHEMA"."TABLE"',
+            schema="SCHEMA",
+            alias="TABLE",
+        )
+        self.assertFalse(exists)
+        self.assertIn("unsupported_adapter", err or "")
+
+    def test_alias_fallback_forbidden(self) -> None:
+        exists, err = physical_relation_exists(
+            adapter="duckdb",
+            connection_path=":memory:",
+            relation_name='"main"."missing"',
+            schema="main",
+            alias="missing",
+            allow_alias_fallback=True,
+        )
+        self.assertFalse(exists)
+        self.assertIn("alias_fallback_forbidden", err or "")
+
+    def test_unique_id_requires_full_match(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "example"
+            root.mkdir()
+            (root / "dbt_project.yml").write_text(
+                "name: example\nversion: '1.0.0'\nconfig-version: 2\nprofile: fixture_duckdb\n",
+                encoding="utf-8",
+            )
+            (root / "profiles.yml").write_text(
+                "fixture_duckdb:\n  target: dev\n  outputs:\n    dev:\n      type: duckdb\n      path: ./t.duckdb\n",
+                encoding="utf-8",
+            )
+            (root / "target").mkdir()
+            (root / "target" / "manifest.json").write_text(
+                json.dumps({"nodes": {}}),
+                encoding="utf-8",
+            )
+            # Prefix/suffix noise must not match as a unique_id.
+            bad = resolve_unique_id(root, "xmodel.example.fct_events", require_physical=False)
+            self.assertEqual(bad["status"], "FAIL")
+            self.assertIn("not_an_exact_unique_id", bad["notes"])
+
+
 class McpObservationWriterTests(unittest.TestCase):
     def test_writer_requires_observations_json(self) -> None:
         import subprocess

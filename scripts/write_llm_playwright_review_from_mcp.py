@@ -27,6 +27,14 @@ from lib_llm_playwright_review import (
 )
 
 ALLOWED_OBSERVATION_REVIEW_STATUSES = {"PASS", "WARN", "FAIL", "BLOCKED"}
+REQUIRED_OBSERVATION_BINDINGS = (
+    "report_bundle_hash",
+    "repository_commit_sha",
+    "data_version_id",
+    "session_id",
+    "started_at",
+    "completed_at",
+)
 
 
 def _load_observations(path: Path) -> dict[str, Any]:
@@ -36,6 +44,15 @@ def _load_observations(path: Path) -> dict[str, Any]:
     if not isinstance(data, dict):
         raise ValueError("observations JSON must be an object")
     return data
+
+
+def _current_commit_sha(root: Path) -> str:
+    try:
+        return subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=str(root), text=True
+        ).strip()
+    except Exception:
+        return ""
 
 
 def _copy_screenshots(
@@ -75,11 +92,19 @@ def _copy_screenshots(
         if not dest.exists():
             # Do not invent screenshot rows for missing files.
             continue
+        observed_hash = str(item.get("content_sha256") or item.get("sha256") or "").strip()
+        actual_hash = sha256_file(dest)
+        if observed_hash and observed_hash != actual_hash:
+            raise ValueError(
+                f"stale observation screenshot hash for {dest_name}: "
+                f"observed={observed_hash[:12]}… actual={actual_hash[:12]}…"
+            )
         screenshots.append(
             {
                 "path": f"reports/agent/10_presentation/llm_playwright_evidence/{dest_name}",
                 "viewport": item.get("viewport"),
                 "page_id": item.get("page_id"),
+                "content_sha256": observed_hash or actual_hash,
             }
         )
     return screenshots
@@ -93,7 +118,7 @@ def assemble_review(
     mcp_server: str | None = None,
     screenshot_dir: Path | None = None,
 ) -> dict[str, Any]:
-    """Build review payload strictly from observations + current bundle hashes."""
+    """Build review payload by copying observation bindings (never invent freshness)."""
     interactions = observations.get("interactions")
     if not isinstance(interactions, list) or not interactions:
         raise ValueError(
@@ -113,6 +138,12 @@ def assemble_review(
                     "(must be recorded independently in MCP observations)"
                 )
 
+    for key in REQUIRED_OBSERVATION_BINDINGS:
+        if not str(observations.get(key) or "").strip():
+            raise ValueError(
+                f"observations missing required freshness binding field: {key}"
+            )
+
     review_status = str(observations.get("review_status") or "").strip().upper()
     if review_status not in ALLOWED_OBSERVATION_REVIEW_STATUSES:
         raise ValueError(
@@ -127,15 +158,30 @@ def assemble_review(
             "(writer will not invent PASS)"
         )
 
-    bundle, file_hashes = compute_report_bundle_hash(root)
+    current_bundle, file_hashes = compute_report_bundle_hash(root)
     paths = resolve_presentation_paths(root)
-    try:
-        commit = subprocess.check_output(
-            ["git", "rev-parse", "HEAD"], cwd=str(root), text=True
-        ).strip()
-    except Exception:
-        commit = str(observations.get("repository_commit_sha") or "unknown")
+    current_commit = _current_commit_sha(root)
+    obs_bundle = str(observations.get("report_bundle_hash") or "").strip()
+    obs_commit = str(observations.get("repository_commit_sha") or "").strip()
+    if obs_bundle != current_bundle:
+        raise ValueError(
+            "stale observations: report_bundle_hash does not match current project "
+            f"(observed={obs_bundle[:12]}… current={current_bundle[:12]}…)"
+        )
+    if current_commit and obs_commit != current_commit:
+        raise ValueError(
+            "stale observations: repository_commit_sha does not match current HEAD "
+            f"(observed={obs_commit[:12]}… current={current_commit[:12]}…)"
+        )
 
+    for shot in observations.get("screenshots") or []:
+        if isinstance(shot, dict) and not str(
+            shot.get("content_sha256") or shot.get("sha256") or ""
+        ).strip():
+            raise ValueError(
+                "observations.screenshots entries must include content_sha256 "
+                "(screenshot hash binding required)"
+            )
     screenshots = _copy_screenshots(root, observations, screenshot_dir)
     expected_pages = sorted(registry_page_ids(root))
     expected_visuals = sorted(registry_visual_ids(root))
@@ -154,6 +200,7 @@ def assemble_review(
             "(writer will not invent 1.0)"
         )
 
+    # Copy observation freshness bindings; do not overwrite with recomputed values.
     payload = {
         "schema_version": "1.0",
         "review_id": str(
@@ -166,11 +213,16 @@ def assemble_review(
         "business_approval_status": "UNCHANGED",
         "reviewed_at": str(
             observations.get("reviewed_at")
+            or observations.get("completed_at")
             or datetime.now(timezone.utc).replace(microsecond=0).isoformat()
         ),
-        "repository_commit_sha": commit,
+        "repository_commit_sha": obs_commit,
         "dbt_invocation_id": observations.get("dbt_invocation_id"),
-        "report_bundle_hash": bundle,
+        "report_bundle_hash": obs_bundle,
+        "data_version_id": str(observations.get("data_version_id") or ""),
+        "session_id": str(observations.get("session_id") or ""),
+        "started_at": str(observations.get("started_at") or ""),
+        "completed_at": str(observations.get("completed_at") or ""),
         "report_html_hash": file_hashes.get("report_html")
         or (sha256_file(paths["report_html"]) if paths.get("report_html") else ""),
         "page_registry_hash": file_hashes.get("page_registry", ""),

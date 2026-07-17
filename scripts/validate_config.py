@@ -53,6 +53,7 @@ REQUIRED_REPO_FILES = {
     "scripts/check_report_handoff_readiness.py",
     "scripts/lib_report_handoff.py",
     "scripts/lib_manifest_relation.py",
+    "scripts/lib_report_runtime.py",
     "scripts/write_llm_playwright_review_from_mcp.py",
     "templates/reports/10_presentation/matplotlib/open_report.bat",
     "templates/reports/10_presentation/matplotlib/open_report.sh",

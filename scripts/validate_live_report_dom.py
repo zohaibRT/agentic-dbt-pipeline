@@ -834,11 +834,13 @@ def validate_viewport(
             status = page.evaluate("window.__REPORT_REFRESH_STATUS__")
             new_version = page.evaluate("window.__REPORT_DATA_VERSION__")
             status_text = page.locator(".refresh-status").inner_text() if page.locator(".refresh-status").count() else ""
+            execution_id = page.evaluate("window.__REPORT_EXECUTION_ID__ || ''")
             refresh_detail.update(
                 {
                     "status": status,
                     "status_text": status_text,
                     "new_version": new_version,
+                    "execution_id": execution_id,
                 }
             )
             if status == "error" or "fail" in status_text.lower():
@@ -858,6 +860,12 @@ def validate_viewport(
                     )
                 if not new_version or not str(new_version).strip():
                     result.fail(f"{viewport_name}: nonblank __REPORT_DATA_VERSION__ required after refresh")
+                version_changed = bool(prior_version) and new_version != prior_version
+                if not version_changed and not execution_id:
+                    result.fail(
+                        f"{viewport_name}: refresh must change data_version or emit execution_id "
+                        "(warehouse-backed refresh evidence missing)"
+                    )
                 # Chart registry consistency after refresh
                 live_registry = page.evaluate("window.__REPORT_CHART_REGISTRY__ || {}")
                 live_ids = {c.get("chart_id") for c in (live_registry.get("charts") or [])}
@@ -1109,10 +1117,27 @@ def main() -> int:
     finally:
         stop_server(process)
 
+    try:
+        from lib_llm_playwright_review import compute_report_bundle_hash
+
+        bundle_hash, _file_hashes = compute_report_bundle_hash(root)
+    except Exception:  # noqa: BLE001
+        bundle_hash, _file_hashes = "", {}
+    first_vp_name = next(iter(details.get("viewports") or {}), None)
+    first_vp = (details.get("viewports") or {}).get(first_vp_name) or {}
+    data_version = str(first_vp.get("data_version") or "")
+    refresh_execution_id = ""
+    for vp in (details.get("viewports") or {}).values():
+        if isinstance(vp, dict):
+            refresh_execution_id = str((vp.get("refresh") or {}).get("execution_id") or refresh_execution_id)
+
     payload = {
         "status": "FAIL" if result.errors else "PASS",
         "validated_at": datetime.now(timezone.utc).isoformat(),
         "url": url,
+        "report_bundle_hash": bundle_hash,
+        "data_version": data_version,
+        "execution_id": refresh_execution_id,
         "viewports": selected,
         "errors": result.errors,
         "warnings": result.warnings,

@@ -428,12 +428,43 @@ def evaluate_handoff(
     details["report_bundle_hash"] = bundle_hash
     details["file_hashes"] = file_hashes
 
+    # Warehouse-backed runtime execution evidence (DuckDB refresh / query runs).
+    runtime_path = root / "reports" / "agent" / "10_presentation" / "matplotlib" / "runtime_execution.json"
+    if not runtime_path.exists():
+        runtime_path = root / "reports" / "agent" / "10_presentation" / "runtime_execution.json"
+    runtime = load_json(runtime_path) if runtime_path.exists() else {}
+    runtime_status = str(runtime.get("status") or "").strip().upper()
+    details["runtime_execution_status"] = runtime_status or "MISSING"
+    details["runtime_execution_path"] = str(runtime_path) if runtime_path.exists() else ""
+    if phase == "final" and bool(policy.get("require_live_report_refresh_execution", True)):
+        if runtime_status != "PASS":
+            gates.append(
+                _gate(
+                    "runtime_execution",
+                    runtime_status or "FAIL",
+                    evidence=str(runtime_path) if runtime_path.exists() else "runtime_execution.json",
+                    notes="warehouse-backed refresh required before handoff",
+                    required=True,
+                )
+            )
+        else:
+            gates.append(
+                _gate("runtime_execution", "PASS", evidence=str(runtime_path), required=True)
+            )
+
     # Freshness: validator evidence must match the current report bundle.
     # A prior REPORT_HANDOFF_READINESS.json is overwritten by this run and must
     # not block re-evaluation after legitimate report regeneration.
     live_report = load_json(root / "reports" / "agent" / "10_presentation" / "LIVE_REPORT_DOM_REPORT.json")
     live_bundle = str(live_report.get("report_bundle_hash") or "")
-    if live_bundle and live_bundle != bundle_hash:
+    details["live_report_bundle_hash"] = live_bundle or None
+    if phase == "final" and not live_bundle:
+        for gate in gates:
+            if gate["gate_id"] == "deterministic_playwright" and gate["status"] == "PASS":
+                gate["status"] = "FAIL"
+                gate["notes"] = "live DOM report_bundle_hash binding missing"
+                break
+    elif live_bundle and live_bundle != bundle_hash:
         for gate in gates:
             if gate["gate_id"] == "deterministic_playwright" and gate["status"] == "PASS":
                 gate["status"] = "STALE"
@@ -449,6 +480,59 @@ def evaluate_handoff(
             ] == "PASS":
                 gate["status"] = "STALE"
                 gate["notes"] = "LLM review stale for current report bundle"
+
+    # Independent verification + acceptance must bind to current bundle/commit/manifest.
+    indep = load_json(root / "reports" / "agent" / "INDEPENDENT_VERIFICATION_REPORT.json")
+    accept = load_json(root / "reports" / "agent" / "ACCEPTANCE_GATE_REPORT.json")
+    relation_meta = details.get("relation_resolution") if isinstance(details.get("relation_resolution"), dict) else {}
+    current_manifest = str(relation_meta.get("manifest_checksum") or "")
+    for label, artifact in (
+        ("independent_verification", indep),
+        ("final_acceptance", accept),
+    ):
+        if not isinstance(artifact, dict) or not artifact:
+            if phase == "final":
+                # evaluate_gates already flags NOT_RUN; only add binding FAIL when artifact exists without bind.
+                continue
+            continue
+        art_bundle = str(
+            artifact.get("report_bundle_hash")
+            or (artifact.get("details") or {}).get("report_bundle_hash")
+            or ""
+        ).strip()
+        art_manifest = str(
+            artifact.get("manifest_checksum")
+            or (artifact.get("details") or {}).get("manifest_checksum")
+            or ""
+        ).strip()
+        art_commit = str(
+            artifact.get("repository_commit_sha")
+            or artifact.get("git_commit")
+            or (artifact.get("details") or {}).get("repository_commit_sha")
+            or ""
+        ).strip()
+        if phase == "final" and not (art_bundle or art_manifest or art_commit):
+            for gate in gates:
+                if gate["gate_id"] == label and gate["status"] == "PASS":
+                    gate["status"] = "FAIL"
+                    gate["notes"] = (
+                        "missing binding fields "
+                        "(report_bundle_hash and/or manifest_checksum and/or repository_commit_sha)"
+                    )
+                    break
+            continue
+        if art_bundle and art_bundle != bundle_hash:
+            for gate in gates:
+                if gate["gate_id"] == label and gate["status"] == "PASS":
+                    gate["status"] = "STALE"
+                    gate["notes"] = f"{label} report_bundle_hash stale for current report bundle"
+                    break
+        if art_manifest and current_manifest and art_manifest != current_manifest:
+            for gate in gates:
+                if gate["gate_id"] == label and gate["status"] == "PASS":
+                    gate["status"] = "STALE"
+                    gate["notes"] = f"{label} manifest_checksum stale"
+                    break
 
     blocking = []
     for gate in gates:

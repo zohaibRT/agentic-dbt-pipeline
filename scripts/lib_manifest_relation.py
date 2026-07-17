@@ -16,7 +16,7 @@ from typing import Any
 from lib_gate_common import load_manifest, load_yaml
 
 UNIQUE_ID_RE = re.compile(
-    r"^(model|source|seed|snapshot|metric|exposure|semantic_model)\.[A-Za-z0-9_]+\.[A-Za-z0-9_]+"
+    r"\A(model|source|seed|snapshot|metric|exposure|semantic_model)\.[A-Za-z0-9_]+\.[A-Za-z0-9_]+\Z"
 )
 
 
@@ -159,8 +159,16 @@ def physical_relation_exists(
     relation_name: str,
     schema: str | None = None,
     alias: str | None = None,
+    allow_alias_fallback: bool = False,
 ) -> tuple[bool, str]:
-    """Return (exists, error_message). Adapter-neutral; DuckDB file path supported."""
+    """Return (exists, error_message).
+
+    DuckDB: execute against the exact manifest relation_name by default.
+    Non-DuckDB: fail closed (BLOCKED/unsupported) — never silent PASS.
+    """
+    del schema, alias  # retained for API compatibility; not used without fallback
+    if allow_alias_fallback:
+        return False, "alias_fallback_forbidden_for_runtime_truth"
     adapter_l = (adapter or "").strip().lower()
     if adapter_l in {"", "duckdb"} and connection_path:
         try:
@@ -170,38 +178,22 @@ def physical_relation_exists(
         path = Path(connection_path)
         if not path.exists():
             return False, f"duckdb database file missing: {path}"
+        if not relation_name:
+            return False, "relation_name missing for physical check"
         try:
             con = duckdb.connect(str(path), read_only=True)
         except Exception as exc:  # noqa: BLE001
             return False, f"duckdb connect failed: {exc}"
         try:
-            # Prefer exact relation_name; also try schema.alias forms.
-            candidates = [relation_name]
-            if schema and alias:
-                candidates.append(f'"{schema}"."{alias}"')
-                candidates.append(f"{schema}.{alias}")
-            if alias:
-                candidates.append(str(alias))
-            last_error = ""
-            for candidate in candidates:
-                if not candidate:
-                    continue
-                try:
-                    con.execute(f"SELECT 1 FROM {candidate} LIMIT 0")
-                    return True, ""
-                except Exception as exc:  # noqa: BLE001
-                    last_error = str(exc)
-            return False, last_error or "relation not found"
+            con.execute(f"SELECT 1 FROM {relation_name} LIMIT 0")
+            return True, ""
+        except Exception as exc:  # noqa: BLE001
+            return False, str(exc) or "relation not found"
         finally:
             con.close()
-    if not connection_path and adapter_l == "duckdb":
+    if adapter_l in {"", "duckdb"} and not connection_path:
         return False, "duckdb connection path unavailable for physical relation check"
-    # Non-duckdb adapters: require relation_name present; physical check deferred
-    # to warehouse validators. Report as unknown so callers can require duckdb
-    # fixtures / explicit warehouse proof separately.
-    if relation_name:
-        return True, "physical_check_skipped_non_duckdb_adapter"
-    return False, "relation_name missing and physical check unavailable"
+    return False, f"physical_check_unsupported_adapter:{adapter_l or 'unknown'}"
 
 
 def resolve_unique_id(
@@ -228,7 +220,7 @@ def resolve_unique_id(
         "execution_error": "",
         "notes": "",
     }
-    if not UNIQUE_ID_RE.match(unique_id or ""):
+    if not UNIQUE_ID_RE.fullmatch(unique_id or ""):
         result["notes"] = "not_an_exact_unique_id; name shortening / bare names are forbidden"
         result["execution_error"] = result["notes"]
         return result
@@ -281,14 +273,19 @@ def resolve_unique_id(
             relation_name=str(result["relation_name"]),
             schema=str(result["schema"] or "") or None,
             alias=str(result["alias"] or "") or None,
+            allow_alias_fallback=False,
         )
         result["physical_exists"] = exists
         if not exists:
             result["execution_error"] = err or "physical relation does not exist"
-            result["notes"] = "physical_relation_missing"
+            result["notes"] = (
+                "physical_check_unsupported_adapter"
+                if "unsupported_adapter" in (err or "")
+                else "physical_relation_missing"
+            )
+            if "unsupported_adapter" in (err or ""):
+                result["status"] = "BLOCKED"
             return result
-        if err == "physical_check_skipped_non_duckdb_adapter":
-            result["notes"] = err
     else:
         result["physical_exists"] = None
         result["notes"] = "physical_check_not_required"

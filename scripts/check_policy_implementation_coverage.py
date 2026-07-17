@@ -175,6 +175,19 @@ KNOWN_CONSUMERS: dict[tuple[str, str], list[str]] = {
         "validate_local_web_report.py",
         "validate_live_report_dom.py",
     ],
+    ("presentation_policy", "require_live_report_refresh_execution"): [
+        "lib_report_runtime.py",
+        "validate_local_web_report.py",
+        "validate_live_report_dom.py",
+    ],
+    ("presentation_policy", "require_live_kpi_proof_execution"): [
+        "validate_kpi_proofs.py",
+        "lib_report_runtime.py",
+    ],
+    ("presentation_policy", "report_runtime_applicability"): [
+        "lib_report_runtime.py",
+        "validate_local_web_report.py",
+    ],
     ("presentation_policy", "require_deterministic_playwright_before_handoff"): [
         "check_report_handoff_readiness.py",
         "validate_live_report_dom.py",

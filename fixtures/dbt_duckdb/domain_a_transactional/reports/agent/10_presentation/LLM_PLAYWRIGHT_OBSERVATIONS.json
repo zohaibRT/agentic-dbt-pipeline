@@ -4,7 +4,7 @@
   "review_status": "PASS",
   "technical_verification_status": "PASS",
   "reviewed_at": "2026-07-16T22:11:48+00:00",
-  "repository_commit_sha": "58cbe6ea6adfe7b87f6c0cf109ad624930ee9b13",
+  "repository_commit_sha": "e1d0cb8ca6faead9a844111d2e7051ec6db629a8",
   "browser_runtime": "chromium",
   "mcp_server": "user-playwright",
   "llm_reviewer": "cursor-agent",
@@ -300,17 +300,20 @@
     {
       "path": "reports/agent/10_presentation/llm_playwright_evidence/desktop_executive.png",
       "viewport": "desktop",
-      "page_id": "executive_overview"
+      "page_id": "executive_overview",
+      "content_sha256": "e695a0fd2b61f9b9b26d88b7fff6e4f408890eab4f9128ed9ce27ca920cb387b"
     },
     {
       "path": "reports/agent/10_presentation/llm_playwright_evidence/tablet_executive.png",
       "viewport": "tablet",
-      "page_id": "executive_overview"
+      "page_id": "executive_overview",
+      "content_sha256": "ea02120ca0f176b32d1911ea87e2fd0a4e099c28eca993c43e6893b09775a839"
     },
     {
       "path": "reports/agent/10_presentation/llm_playwright_evidence/mobile_executive.png",
       "viewport": "mobile",
-      "page_id": "executive_overview"
+      "page_id": "executive_overview",
+      "content_sha256": "e1104cbdff2bfcb3c616d76680c3e1ce157af0f156ce7e24dbe6ee6985d73b3c"
     }
   ],
   "findings": [
@@ -334,5 +337,10 @@
     "Review performed with user-playwright MCP in Cursor against the local serve_report.py server.",
     "Business KPI definitions were not approved by this review."
   ],
-  "notes": "Real MCP browser navigate/hover/tap/screenshot session completed for desktop, tablet, and mobile. Technical presentation review only."
+  "notes": "Real MCP browser navigate/hover/tap/screenshot session completed for desktop, tablet, and mobile. Technical presentation review only.",
+  "report_bundle_hash": "a464a04a4ed61fe2805e6c31ddc3ed0dcda06bd5bd806a25f7213a69bffcd9fb",
+  "data_version_id": "dv-601ffa5b1e9d",
+  "session_id": "mcp-session-domain-a-20260716",
+  "started_at": "2026-07-16T22:08:50+00:00",
+  "completed_at": "2026-07-16T22:11:48+00:00"
 }

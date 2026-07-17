@@ -264,8 +264,8 @@ def _complete_review(root: Path, **overrides: object) -> dict:
     bundle, file_hashes = compute_report_bundle_hash(root)
     evidence = root / "reports" / "agent" / "10_presentation" / "llm_playwright_evidence"
     evidence.mkdir(parents=True, exist_ok=True)
-    shot = evidence / "desktop_executive.png"
-    shot.write_bytes(b"\x89PNG\r\n\x1a\nfake")
+    for name in ("desktop_executive.png", "tablet_executive.png", "mobile_executive.png"):
+        (evidence / name).write_bytes(b"\x89PNG\r\n\x1a\nfake")
     payload = {
         "schema_version": "1.0",
         "review_id": "LLM-REVIEW-TEST-001",
@@ -399,7 +399,18 @@ def _complete_review(root: Path, **overrides: object) -> dict:
             }
         ],
         "screenshots": [
-            {"path": "reports/agent/10_presentation/llm_playwright_evidence/desktop_executive.png", "viewport": "desktop"}
+            {
+                "path": "reports/agent/10_presentation/llm_playwright_evidence/desktop_executive.png",
+                "viewport": "desktop",
+            },
+            {
+                "path": "reports/agent/10_presentation/llm_playwright_evidence/tablet_executive.png",
+                "viewport": "tablet",
+            },
+            {
+                "path": "reports/agent/10_presentation/llm_playwright_evidence/mobile_executive.png",
+                "viewport": "mobile",
+            },
         ],
         "findings": [],
         "unresolved_critical_findings": [],

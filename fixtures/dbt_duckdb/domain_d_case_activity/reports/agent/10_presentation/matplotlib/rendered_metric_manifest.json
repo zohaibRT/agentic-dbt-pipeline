@@ -1,6 +1,6 @@
 {
   "version": "1",
-  "freshness_timestamp": "2026-07-17T05:11:21+00:00",
+  "freshness_timestamp": "2026-07-17T06:13:40+00:00",
   "metrics": [
     {
       "metric_id": "KPI-001",
@@ -52,7 +52,10 @@
       "trust_level": "TRUSTED",
       "validation_status": "PASS",
       "technical_validation_status": "PASS",
-      "business_approval_status": "APPROVED"
+      "business_approval_status": "APPROVED",
+      "value": 5,
+      "data_version": "dv-da4dad3cb2f0",
+      "runtime_execution_id": "83dd28f2-27cd-4549-8c06-0d0b7eb434e1"
     },
     {
       "metric_id": "KPI-002",
@@ -95,7 +98,7 @@
       ],
       "captured_value": "0.4",
       "displayed_value": "40.0%",
-      "formatted_value": "40.0%",
+      "formatted_value": "40.00%",
       "formatting_rule": "percent",
       "format": "percent",
       "period_label": "Current month",
@@ -103,7 +106,10 @@
       "trust_level": "TRUSTED",
       "validation_status": "PASS",
       "technical_validation_status": "PASS",
-      "business_approval_status": "APPROVED"
+      "business_approval_status": "APPROVED",
+      "value": "0.4",
+      "data_version": "dv-da4dad3cb2f0",
+      "runtime_execution_id": "9d16698c-1868-4778-b963-63c126756eeb"
     },
     {
       "metric_id": "KPI-PENDING-001",
@@ -168,5 +174,6 @@
       "format": "decimal",
       "business_approval_status": "PENDING"
     }
-  ]
+  ],
+  "data_version": "dv-da4dad3cb2f0"
 }

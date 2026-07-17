@@ -199,5 +199,8 @@
     "Independent verifier reads repository/dbt/report artifacts only.",
     "Browser PASS does not grant business approval.",
     "Synthetic TEST FIXTURE approvals are valid only under fixtures/ paths."
-  ]
+  ],
+  "report_bundle_hash": "a464a04a4ed61fe2805e6c31ddc3ed0dcda06bd5bd806a25f7213a69bffcd9fb",
+  "manifest_checksum": "03d4776648a416a43dd1280a79ca6c323d77211d446af2f1706b81d74f6ffdaf",
+  "repository_commit_sha": "e1d0cb8ca6faead9a844111d2e7051ec6db629a8"
 }

@@ -7,8 +7,8 @@
   "reviewed_at": "2026-07-16T22:11:48+00:00",
   "repository_commit_sha": "724bd4f55b8f36c7dbbd8ba7a142be3b33f9078b",
   "dbt_invocation_id": null,
-  "report_bundle_hash": "a30057a90223ca2e64bcd38d1d8abf3eac29d035c247fdcbb4b895f85f0e2993",
-  "report_html_hash": "093548eb673bb98858153d9f357b824c4a0d43f73c4eec96f7840226caf165a7",
+  "report_bundle_hash": "a464a04a4ed61fe2805e6c31ddc3ed0dcda06bd5bd806a25f7213a69bffcd9fb",
+  "report_html_hash": "2e6d769f125e764f46195b09bc4d6a163a5151170a7b18742ee91e46fada5d31",
   "page_registry_hash": "ec25f4182e887cc8792be79c92ba3dbc5d8ff0a1cf90c13edb07b53ace2c0184",
   "chart_registry_hash": "471ccf8fb8311be426cc75f27b165ce6e4f34ddddd34188fb5c25955672f5f87",
   "rendered_metric_manifest_hash": "e998caa6efe8d2062858204b53ce01cd9f9fd66aac40908befc7fd07733dc836",
@@ -73,7 +73,7 @@
         "0 events",
         "January 2026"
       ],
-      "observed_tooltip_text": "Volume KPI — Actual\nJanuary 2026\n0 events\nStatus: On track\nFresh as of: 2026-07-16T22:08:50+00:00",
+      "observed_tooltip_text": "Volume KPI \u2014 Actual\nJanuary 2026\n0 events\nStatus: On track\nFresh as of: 2026-07-16T22:08:50+00:00",
       "interaction_success": true,
       "screenshot_path": "reports/agent/10_presentation/llm_playwright_evidence/desktop_executive.png",
       "finding_ids": [],
@@ -94,7 +94,7 @@
         "5 events",
         "March 2026"
       ],
-      "observed_tooltip_text": "Volume KPI — Actual\nMarch 2026\n5 events\nPrevious: 0 events\nChange: 5 events\nStatus: On track\nPartial period — incomplete\nFresh as of: 2026-07-16T22:08:50+00:00",
+      "observed_tooltip_text": "Volume KPI \u2014 Actual\nMarch 2026\n5 events\nPrevious: 0 events\nChange: 5 events\nStatus: On track\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T22:08:50+00:00",
       "interaction_success": true,
       "screenshot_path": "reports/agent/10_presentation/llm_playwright_evidence/desktop_executive.png",
       "finding_ids": [],
@@ -115,7 +115,7 @@
         "Actual",
         "January 2026"
       ],
-      "observed_tooltip_text": "Volume KPI — Actual\nJanuary 2026\n0 events",
+      "observed_tooltip_text": "Volume KPI \u2014 Actual\nJanuary 2026\n0 events",
       "interaction_success": true,
       "screenshot_path": "reports/agent/10_presentation/llm_playwright_evidence/desktop_executive.png",
       "finding_ids": [],
@@ -136,7 +136,7 @@
         "Prior period",
         "January 2026"
       ],
-      "observed_tooltip_text": "Volume KPI — Prior period\nJanuary 2026\n0 events",
+      "observed_tooltip_text": "Volume KPI \u2014 Prior period\nJanuary 2026\n0 events",
       "interaction_success": true,
       "screenshot_path": "reports/agent/10_presentation/llm_playwright_evidence/desktop_executive.png",
       "finding_ids": [],
@@ -156,7 +156,7 @@
       "expected_tooltip_fields": [
         "5 events"
       ],
-      "observed_tooltip_text": "Volume KPI — Actual\nMarch 2026\n5 events\nPrevious: 0 events\nChange: 5 events\nStatus: On track\nPartial period — incomplete\nFresh as of: 2026-07-16T22:08:50+00:00",
+      "observed_tooltip_text": "Volume KPI \u2014 Actual\nMarch 2026\n5 events\nPrevious: 0 events\nChange: 5 events\nStatus: On track\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T22:08:50+00:00",
       "interaction_success": true,
       "screenshot_path": "reports/agent/10_presentation/llm_playwright_evidence/mobile_executive.png",
       "finding_ids": [],
@@ -176,7 +176,7 @@
       "expected_tooltip_fields": [
         "5 events"
       ],
-      "observed_tooltip_text": "Volume KPI — Actual\nMarch 2026\n5 events\nPrevious: 0 events\nChange: 5 events\nStatus: On track\nPartial period — incomplete\nFresh as of: 2026-07-16T22:08:50+00:00",
+      "observed_tooltip_text": "Volume KPI \u2014 Actual\nMarch 2026\n5 events\nPrevious: 0 events\nChange: 5 events\nStatus: On track\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T22:08:50+00:00",
       "interaction_success": true,
       "screenshot_path": "reports/agent/10_presentation/llm_playwright_evidence/tablet_executive.png",
       "finding_ids": [],
@@ -197,7 +197,7 @@
         "35.00%",
         "January 2026"
       ],
-      "observed_tooltip_text": "Completion rate KPI — Actual\nJanuary 2026\n35.00%\nFresh as of: 2026-07-16T22:08:50+00:00",
+      "observed_tooltip_text": "Completion rate KPI \u2014 Actual\nJanuary 2026\n35.00%\nFresh as of: 2026-07-16T22:08:50+00:00",
       "interaction_success": true,
       "screenshot_path": "reports/agent/10_presentation/llm_playwright_evidence/desktop_executive.png",
       "finding_ids": [],
@@ -218,7 +218,7 @@
         "38.00%",
         "February 2026"
       ],
-      "observed_tooltip_text": "Completion rate KPI — Actual\nFebruary 2026\n38.00%\nPrevious: 35.00%\nChange: 3.00% (8.57%)\nFresh as of: 2026-07-16T22:08:50+00:00",
+      "observed_tooltip_text": "Completion rate KPI \u2014 Actual\nFebruary 2026\n38.00%\nPrevious: 35.00%\nChange: 3.00% (8.57%)\nFresh as of: 2026-07-16T22:08:50+00:00",
       "interaction_success": true,
       "screenshot_path": "reports/agent/10_presentation/llm_playwright_evidence/desktop_executive.png",
       "finding_ids": [],
@@ -239,7 +239,7 @@
         "40.00%",
         "March 2026"
       ],
-      "observed_tooltip_text": "Completion rate KPI — Actual\nMarch 2026\n40.00%\nPrevious: 38.00%\nChange: 2.00% (5.26%)\nPartial period — incomplete\nFresh as of: 2026-07-16T22:08:50+00:00",
+      "observed_tooltip_text": "Completion rate KPI \u2014 Actual\nMarch 2026\n40.00%\nPrevious: 38.00%\nChange: 2.00% (5.26%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T22:08:50+00:00",
       "interaction_success": true,
       "screenshot_path": "reports/agent/10_presentation/llm_playwright_evidence/desktop_executive.png",
       "finding_ids": [],
@@ -259,7 +259,7 @@
       "expected_tooltip_fields": [
         "40.00%"
       ],
-      "observed_tooltip_text": "Completion rate KPI — Actual\nMarch 2026\n40.00%\nPrevious: 38.00%\nChange: 2.00% (5.26%)\nPartial period — incomplete\nFresh as of: 2026-07-16T22:08:50+00:00",
+      "observed_tooltip_text": "Completion rate KPI \u2014 Actual\nMarch 2026\n40.00%\nPrevious: 38.00%\nChange: 2.00% (5.26%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T22:08:50+00:00",
       "interaction_success": true,
       "screenshot_path": "reports/agent/10_presentation/llm_playwright_evidence/mobile_executive.png",
       "finding_ids": [],
@@ -279,7 +279,7 @@
       "expected_tooltip_fields": [
         "40.00%"
       ],
-      "observed_tooltip_text": "Completion rate KPI — Actual\nMarch 2026\n40.00%\nPrevious: 38.00%\nChange: 2.00% (5.26%)\nPartial period — incomplete\nFresh as of: 2026-07-16T22:08:50+00:00",
+      "observed_tooltip_text": "Completion rate KPI \u2014 Actual\nMarch 2026\n40.00%\nPrevious: 38.00%\nChange: 2.00% (5.26%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T22:08:50+00:00",
       "interaction_success": true,
       "screenshot_path": "reports/agent/10_presentation/llm_playwright_evidence/tablet_executive.png",
       "finding_ids": [],

@@ -969,6 +969,36 @@ def run_dbt(root: Path, report: GateReport, timeout: int, skip_dbt: bool, phase:
         report.add(run_command(command, root, timeout))
 
 
+def _evidence_bindings(root: Path) -> dict[str, str]:
+    """Fingerprint fields that bind acceptance to the current report/manifest/commit."""
+    bindings: dict[str, str] = {}
+    try:
+        from lib_llm_playwright_review import compute_report_bundle_hash
+
+        bundle, _ = compute_report_bundle_hash(root)
+        if bundle:
+            bindings["report_bundle_hash"] = bundle
+    except Exception:  # noqa: BLE001
+        pass
+    manifest = root / "target" / "manifest.json"
+    if manifest.exists():
+        try:
+            from lib_manifest_relation import sha256_file
+
+            bindings["manifest_checksum"] = sha256_file(manifest)
+        except Exception:  # noqa: BLE001
+            pass
+    try:
+        commit = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=str(root), text=True
+        ).strip()
+        if commit:
+            bindings["repository_commit_sha"] = commit
+    except Exception:  # noqa: BLE001
+        pass
+    return bindings
+
+
 def write_reports(root: Path, gate: GateReport, accepted_tokens: set[str]) -> None:
     output_dir = root / "reports" / "agent"
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -978,6 +1008,7 @@ def write_reports(root: Path, gate: GateReport, accepted_tokens: set[str]) -> No
 
     payload = asdict(gate)
     payload["accepted_warning_tokens"] = sorted(accepted_tokens)
+    payload.update(_evidence_bindings(root))
     json_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
     rows = ["| Check | Status | Detail |", "|---|---|---|"]

@@ -131,21 +131,58 @@ def validate_live_endpoints(base_url: str, report_dir: Path, details: dict[str, 
         details["metrics_payload_ok"] = False
 
     try:
-        status, body, _ctype = fetch(refresh_url, timeout=5)
+        status, body, _ctype = fetch(refresh_url, timeout=15)
         details["refresh_http_status"] = status
         if status != 200:
             errors.append(f"refresh endpoint returned HTTP {status}")
             details["refresh_ok"] = False
         else:
-            payload = _json_payload(body)
+            payload = json.loads(body.decode("utf-8"))
+            if not isinstance(payload, dict):
+                raise RuntimeError("refresh payload was not an object")
             details["refresh_payload"] = {
-                key: payload.get(key) for key in ("status", "freshness_timestamp", "error") if key in payload
+                key: payload.get(key)
+                for key in (
+                    "status",
+                    "freshness_timestamp",
+                    "data_version",
+                    "execution_id",
+                    "execution_ids",
+                    "result_hashes",
+                    "error",
+                )
+                if key in payload
             }
-            if payload.get("error") or str(payload.get("status") or "").lower() in {"error", "fail", "failed"}:
+            status_text = str(payload.get("status") or "").lower()
+            execution_ids = payload.get("execution_ids") if isinstance(payload.get("execution_ids"), list) else []
+            result_hashes = payload.get("result_hashes") if isinstance(payload.get("result_hashes"), list) else []
+            details["refresh_execution_ids"] = execution_ids
+            details["refresh_result_hashes"] = result_hashes
+            details["refresh_data_version"] = payload.get("data_version")
+            if payload.get("error") or status_text in {"error", "fail", "failed", "blocked"}:
                 errors.append(f"refresh endpoint reported failure: {payload}")
+                details["refresh_ok"] = False
+            elif not execution_ids or not result_hashes:
+                errors.append(
+                    "refresh endpoint returned timestamp-only response without execution_ids/result_hashes "
+                    "(warehouse-backed refresh required)"
+                )
+                details["refresh_ok"] = False
+            elif not payload.get("data_version"):
+                errors.append("refresh endpoint missing data_version from live execution")
                 details["refresh_ok"] = False
             else:
                 details["refresh_ok"] = True
+            runtime_path = report_dir / "runtime_execution.json"
+            if details.get("refresh_ok") and runtime_path.exists():
+                runtime = json.loads(runtime_path.read_text(encoding="utf-8"))
+                details["runtime_execution_status"] = runtime.get("status")
+                if str(runtime.get("status") or "").upper() != "PASS":
+                    errors.append(f"runtime_execution.json status not PASS: {runtime.get('status')}")
+                    details["refresh_ok"] = False
+            elif details.get("refresh_ok"):
+                errors.append("runtime_execution.json missing after successful refresh")
+                details["refresh_ok"] = False
     except Exception as exc:  # noqa: BLE001
         errors.append(f"refresh endpoint failed: {exc}")
         details["refresh_ok"] = False
@@ -200,6 +237,10 @@ def write_runtime_preflight(report_dir: Path, details: dict[str, Any], errors: l
         "charts_payload_ok": details.get("charts_payload_ok"),
         "metrics_payload_ok": details.get("metrics_payload_ok"),
         "refresh_ok": details.get("refresh_ok"),
+        "refresh_execution_ids": details.get("refresh_execution_ids") or [],
+        "refresh_result_hashes": details.get("refresh_result_hashes") or [],
+        "refresh_data_version": details.get("refresh_data_version"),
+        "runtime_execution_status": details.get("runtime_execution_status"),
         "profile_name": details.get("profile_name"),
         "target": details.get("target"),
         "adapter": details.get("adapter"),

@@ -1,0 +1,115 @@
+{
+  "status": "PASS",
+  "execution_id": "exec-74e0554d653d",
+  "data_version": "dv-3111354f45cb",
+  "freshness_timestamp": "2026-07-17T06:13:39+00:00",
+  "profile_name": "fixture_duckdb",
+  "target": "dev",
+  "adapter": "duckdb",
+  "connection_path": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_b_encounter\\target\\fixture.duckdb",
+  "manifest_path": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_b_encounter\\target\\manifest.json",
+  "manifest_checksum": "a09218527699f1be3b33ceb1ac723ff2abe1efa0f3493ef401a7e21634850055",
+  "queries": [
+    {
+      "query_id": "Q-volume_trend",
+      "unique_id": "model.domain_b_encounter.fct_encounters",
+      "relation_name": "\"fixture\".\"main\".\"fct_encounters\"",
+      "sql_path": "reports/agent/10_presentation/matplotlib/sql_verification/010_volume.sql",
+      "query_hash": "c20d8e8d83eb932cb58f400b281002a80cd9bad115e8eb3a6ad42a48b6d01868",
+      "result_hash": "2cc88986433a71f528a3eff6e65fcd752f1d7805774f0f78886eef4e784dd79e",
+      "row_count": 1,
+      "scalar_value": 5,
+      "columns": [
+        "count_star()"
+      ],
+      "rows": [
+        [
+          5
+        ]
+      ],
+      "executed_at": "2026-07-17T06:13:39+00:00",
+      "execution_id": "d40c40ad-073f-43cc-a0b6-4fdf1f1c3ad0",
+      "status": "PASS",
+      "error": ""
+    },
+    {
+      "query_id": "Q-completion_rate",
+      "unique_id": "model.domain_b_encounter.fct_encounters",
+      "relation_name": "\"fixture\".\"main\".\"fct_encounters\"",
+      "sql_path": "reports/agent/10_presentation/matplotlib/sql_verification/020_rate.sql",
+      "query_hash": "4800b39393ca9f44c92e23451e8a568ebb044c729e4ca9d1fb5cf9873f7ebf15",
+      "result_hash": "5031a7e11fdfe4407b299644caa88e85f4b6095e8697892630096977226731cc",
+      "row_count": 1,
+      "scalar_value": "0.4",
+      "columns": [
+        "0.4"
+      ],
+      "rows": [
+        [
+          "0.4"
+        ]
+      ],
+      "executed_at": "2026-07-17T06:13:39+00:00",
+      "execution_id": "9434c007-dd26-4875-8fd0-fea3fc776b79",
+      "status": "PASS",
+      "error": ""
+    },
+    {
+      "query_id": "Q-volume_card",
+      "unique_id": "model.domain_b_encounter.fct_encounters",
+      "relation_name": "\"fixture\".\"main\".\"fct_encounters\"",
+      "sql_path": "reports/agent/10_presentation/matplotlib/sql_verification/010_volume.sql",
+      "query_hash": "c20d8e8d83eb932cb58f400b281002a80cd9bad115e8eb3a6ad42a48b6d01868",
+      "result_hash": "2cc88986433a71f528a3eff6e65fcd752f1d7805774f0f78886eef4e784dd79e",
+      "row_count": 1,
+      "scalar_value": 5,
+      "columns": [
+        "count_star()"
+      ],
+      "rows": [
+        [
+          5
+        ]
+      ],
+      "executed_at": "2026-07-17T06:13:40+00:00",
+      "execution_id": "f9487b18-8ffb-4e9f-881d-42f5054bd802",
+      "status": "PASS",
+      "error": ""
+    },
+    {
+      "query_id": "Q-completion_card",
+      "unique_id": "model.domain_b_encounter.fct_encounters",
+      "relation_name": "\"fixture\".\"main\".\"fct_encounters\"",
+      "sql_path": "reports/agent/10_presentation/matplotlib/sql_verification/020_rate.sql",
+      "query_hash": "4800b39393ca9f44c92e23451e8a568ebb044c729e4ca9d1fb5cf9873f7ebf15",
+      "result_hash": "5031a7e11fdfe4407b299644caa88e85f4b6095e8697892630096977226731cc",
+      "row_count": 1,
+      "scalar_value": "0.4",
+      "columns": [
+        "0.4"
+      ],
+      "rows": [
+        [
+          "0.4"
+        ]
+      ],
+      "executed_at": "2026-07-17T06:13:40+00:00",
+      "execution_id": "f584bf1f-f575-4da7-8f4e-9e3a930b25e0",
+      "status": "PASS",
+      "error": ""
+    }
+  ],
+  "execution_ids": [
+    "d40c40ad-073f-43cc-a0b6-4fdf1f1c3ad0",
+    "9434c007-dd26-4875-8fd0-fea3fc776b79",
+    "f9487b18-8ffb-4e9f-881d-42f5054bd802",
+    "f584bf1f-f575-4da7-8f4e-9e3a930b25e0"
+  ],
+  "result_hashes": [
+    "2cc88986433a71f528a3eff6e65fcd752f1d7805774f0f78886eef4e784dd79e",
+    "5031a7e11fdfe4407b299644caa88e85f4b6095e8697892630096977226731cc",
+    "2cc88986433a71f528a3eff6e65fcd752f1d7805774f0f78886eef4e784dd79e",
+    "5031a7e11fdfe4407b299644caa88e85f4b6095e8697892630096977226731cc"
+  ],
+  "errors": []
+}
