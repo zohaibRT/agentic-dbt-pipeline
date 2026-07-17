@@ -37,6 +37,9 @@ presentation_policy:
   withhold_report_access_until_verified: true
   require_report_handoff_readiness: true
   report_handoff_applicability: not_applicable_fixture
+  report_runtime_applicability: not_applicable_fixture
+  require_live_report_refresh_execution: false
+  require_live_kpi_proof_execution: false
   block_open_report_launcher_until_verified: true
   prohibit_early_report_url_in_chat: true
 acceptance_policy:

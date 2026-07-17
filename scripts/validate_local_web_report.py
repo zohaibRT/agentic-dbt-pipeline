@@ -131,7 +131,7 @@ def validate_live_endpoints(base_url: str, report_dir: Path, details: dict[str, 
         details["metrics_payload_ok"] = False
 
     try:
-        status, body, _ctype = fetch(refresh_url, timeout=15)
+        status, body, _ctype = fetch(refresh_url, timeout=45)
         details["refresh_http_status"] = status
         if status != 200:
             errors.append(f"refresh endpoint returned HTTP {status}")

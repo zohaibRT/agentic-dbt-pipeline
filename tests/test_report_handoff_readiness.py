@@ -172,6 +172,23 @@ def _seed_passing_evidence(root: Path, *, include_mcp: bool = True) -> None:
         "resolved_relations": ["model.local.fct_events"],
     }
     _write_validator(root, "validate_local_web_report", "PASS", details)
+    sys.path.insert(0, str(SCRIPTS))
+    from lib_llm_playwright_review import compute_report_bundle_hash
+    from lib_manifest_relation import sha256_file
+
+    bundle_hash, _ = compute_report_bundle_hash(root)
+    manifest_path = root / "target" / "manifest.json"
+    manifest_checksum = sha256_file(manifest_path) if manifest_path.exists() else ""
+    try:
+        commit = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=str(ROOT), text=True
+        ).strip()
+    except Exception:
+        commit = "0" * 40
+    execution_id = "exec-handoff-test-001"
+    data_version = "dv-handoff-test-001"
+    result_hash = "result-handoff-test-001"
+
     _write_validator(
         root,
         "validate_live_report_dom",
@@ -181,6 +198,9 @@ def _seed_passing_evidence(root: Path, *, include_mcp: bool = True) -> None:
             "refresh_validation": True,
             "manifest_relation_resolution": True,
             "report_url": "http://127.0.0.1:8765/",
+            "report_bundle_hash": bundle_hash,
+            "execution_id": execution_id,
+            "data_version": data_version,
         },
     )
     _write_validator(root, "check_presentation_traceability", "PASS")
@@ -196,11 +216,33 @@ def _seed_passing_evidence(root: Path, *, include_mcp: bool = True) -> None:
             "resolved_relations": ["model.local.fct_events"],
         },
     )
+    _write_json(
+        root / "reports" / "agent" / "10_presentation" / "matplotlib" / "runtime_execution.json",
+        {
+            "status": "PASS",
+            "execution_id": execution_id,
+            "execution_ids": [execution_id],
+            "result_hashes": [result_hash],
+            "data_version": data_version,
+            "manifest_checksum": manifest_checksum,
+            "queries": [],
+            "errors": [],
+        },
+    )
+    _write_json(
+        root / "reports" / "agent" / "10_presentation" / "LIVE_REPORT_DOM_REPORT.json",
+        {
+            "status": "PASS",
+            "report_bundle_hash": bundle_hash,
+            "execution_id": execution_id,
+            "data_version": data_version,
+            "details": {
+                "initial_data_load": True,
+                "refresh_validation": True,
+            },
+        },
+    )
     if include_mcp:
-        sys.path.insert(0, str(SCRIPTS))
-        from lib_llm_playwright_review import compute_report_bundle_hash
-
-        bundle_hash, _ = compute_report_bundle_hash(root)
         _write_json(
             root / "reports" / "agent" / "10_presentation" / "LLM_PLAYWRIGHT_REVIEW.json",
             {
@@ -210,6 +252,7 @@ def _seed_passing_evidence(root: Path, *, include_mcp: bool = True) -> None:
                 "technical_verification_status": "PASS",
                 "business_approval_status": "UNCHANGED",
                 "report_bundle_hash": bundle_hash,
+                "repository_commit_sha": commit,
                 "tested_viewports": ["desktop", "tablet", "mobile"],
                 "reviewed_page_ids": ["executive_overview"],
                 "reviewed_visual_ids": ["volume_trend"],
@@ -224,11 +267,24 @@ def _seed_passing_evidence(root: Path, *, include_mcp: bool = True) -> None:
         _write_validator(root, "check_llm_playwright_review", "PASS", {"applicability": "required"})
     _write_json(
         root / "reports" / "agent" / "INDEPENDENT_VERIFICATION_REPORT.json",
-        {"overall_status": "PASS", "status": "PASS"},
+        {
+            "overall_status": "PASS",
+            "status": "PASS",
+            "report_bundle_hash": bundle_hash,
+            "manifest_checksum": manifest_checksum,
+            "repository_commit_sha": commit,
+        },
     )
     _write_json(
         root / "reports" / "agent" / "ACCEPTANCE_GATE_REPORT.json",
-        {"overall_status": "PASS", "status": "PASS", "phase": "final"},
+        {
+            "overall_status": "PASS",
+            "status": "PASS",
+            "phase": "final",
+            "report_bundle_hash": bundle_hash,
+            "manifest_checksum": manifest_checksum,
+            "repository_commit_sha": commit,
+        },
     )
 
 

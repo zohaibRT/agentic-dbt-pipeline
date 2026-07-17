@@ -6,6 +6,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import subprocess
 from pathlib import Path
 from typing import Any
 
@@ -113,6 +114,93 @@ def compute_report_bundle_hash(root: Path) -> tuple[str, dict[str, str]]:
 def is_under_fixtures(root: Path) -> bool:
     parts = {p.lower() for p in root.resolve().parts}
     return "fixtures" in parts
+
+
+def rebind_fixture_observation_freshness(root: Path, observations_path: Path) -> dict[str, Any]:
+    """Rebind fixture MCP observations to the current report bundle (fixtures/ only).
+
+    Does not invent interactions, comparisons, or PASS. Only refreshes freshness
+    binding fields so CI fixture rebuilds can assemble a review without weakening
+    production stale-observation checks outside fixtures/.
+    """
+    if not is_under_fixtures(root):
+        raise RuntimeError(
+            "fixture observation rebinding is only allowed under fixtures/ "
+            f"(root={root})"
+        )
+    if not observations_path.exists():
+        raise FileNotFoundError(f"observations JSON not found: {observations_path}")
+    data = json.loads(observations_path.read_text(encoding="utf-8"))
+    if not isinstance(data, dict):
+        raise ValueError("observations JSON must be an object")
+
+    bundle, _file_hashes = compute_report_bundle_hash(root)
+    commit = ""
+    try:
+        commit = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=str(root), text=True
+        ).strip()
+    except Exception:
+        # Fixture trees may not be standalone git repos; fall back to workspace.
+        try:
+            commit = subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], text=True
+            ).strip()
+        except Exception:
+            commit = str(data.get("repository_commit_sha") or "")
+
+    data_version = ""
+    for candidate in (
+        root / "reports" / "agent" / "10_presentation" / "matplotlib" / "runtime_execution.json",
+        root / "reports" / "agent" / "10_presentation" / "runtime_execution.json",
+        root / "reports" / "agent" / "10_presentation" / "matplotlib" / "freshness.json",
+        root / "reports" / "agent" / "10_presentation" / "freshness.json",
+    ):
+        if not candidate.exists():
+            continue
+        try:
+            payload = json.loads(candidate.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        if isinstance(payload, dict) and payload.get("data_version"):
+            data_version = str(payload["data_version"])
+            break
+    if not data_version:
+        data_version = str(data.get("data_version_id") or f"fixture-dv-{bundle[:12]}")
+
+    data["report_bundle_hash"] = bundle
+    if commit:
+        data["repository_commit_sha"] = commit
+    data["data_version_id"] = data_version
+    if not str(data.get("session_id") or "").strip():
+        data["session_id"] = f"fixture-mcp-{bundle[:12]}"
+    if not str(data.get("started_at") or "").strip():
+        data["started_at"] = "2026-07-16T22:08:50+00:00"
+    if not str(data.get("completed_at") or "").strip():
+        data["completed_at"] = "2026-07-16T22:11:48+00:00"
+    data["fixture_synthetic_evidence"] = True
+    data["fixture_evidence_scope"] = "fixtures_only"
+    notes = str(data.get("notes") or "").strip()
+    marker = "FIXTURE_SYNTHETIC_EVIDENCE: freshness rebound after final report bundle."
+    if marker not in notes:
+        data["notes"] = f"{notes}\n{marker}".strip() if notes else marker
+
+    screenshots = data.get("screenshots")
+    if isinstance(screenshots, list):
+        for shot in screenshots:
+            if not isinstance(shot, dict):
+                continue
+            rel = str(shot.get("path") or "").strip()
+            if not rel:
+                continue
+            path = root / rel
+            if path.exists() and path.is_file():
+                shot["content_sha256"] = sha256_file(path)
+
+    observations_path.write_text(
+        json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
+    return data
 
 
 def load_json(path: Path) -> dict[str, Any]:

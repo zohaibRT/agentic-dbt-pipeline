@@ -342,8 +342,10 @@ def validate_declared_endpoints(base_url: str, result: ValidationResult) -> dict
     details: dict[str, Any] = {}
     for route in DECLARED_ENDPOINTS:
         url = base_url.rstrip("/") + route
+        # Warehouse-backed /api/refresh imports runtime libs and executes SQL.
+        timeout = 30.0 if route == "/api/refresh" else 5.0
         try:
-            with urllib.request.urlopen(url, timeout=5) as response:
+            with urllib.request.urlopen(url, timeout=timeout) as response:
                 body = response.read().decode("utf-8", errors="replace")
                 status = response.status
                 payload: Any
@@ -830,7 +832,13 @@ def validate_viewport(
             result.fail(f"{viewport_name}: Refresh Data control missing")
         else:
             refresh_btn.click()
-            page.wait_for_timeout(400)
+            try:
+                page.wait_for_function(
+                    "['success','error'].includes(window.__REPORT_REFRESH_STATUS__)",
+                    timeout=max(timeout_ms, 30000),
+                )
+            except Exception:
+                page.wait_for_timeout(400)
             status = page.evaluate("window.__REPORT_REFRESH_STATUS__")
             new_version = page.evaluate("window.__REPORT_DATA_VERSION__")
             status_text = page.locator(".refresh-status").inner_text() if page.locator(".refresh-status").count() else ""
@@ -885,7 +893,13 @@ def validate_viewport(
             )
             prior2 = page.evaluate("window.__REPORT_DATA_VERSION__")
             refresh_btn.click()
-            page.wait_for_timeout(400)
+            try:
+                page.wait_for_function(
+                    "['success','error'].includes(window.__REPORT_REFRESH_STATUS__)",
+                    timeout=max(timeout_ms, 15000),
+                )
+            except Exception:
+                page.wait_for_timeout(400)
             status2 = page.evaluate("window.__REPORT_REFRESH_STATUS__")
             version2 = page.evaluate("window.__REPORT_DATA_VERSION__")
             stale2 = page.evaluate(

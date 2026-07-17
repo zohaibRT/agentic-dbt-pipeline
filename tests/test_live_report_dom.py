@@ -45,6 +45,117 @@ def run_script(script: str, *args: str) -> subprocess.CompletedProcess[str]:
     )
 
 
+def _seed_live_dom_duckdb_runtime(
+    root: Path,
+    *,
+    volume_total: int = 100,
+    completion_rate: float = 0.8,
+    unique_id: str = "model.local.fct_events",
+) -> None:
+    """Minimal DuckDB + manifest + SQL so /api/refresh exercises the real path."""
+    import duckdb
+
+    package, name = unique_id.split(".", 2)[1], unique_id.split(".", 2)[2]
+    (root / "dbt_project.yml").write_text(
+        f"name: {package}\nversion: '1.0.0'\nconfig-version: 2\nprofile: fixture_duckdb\n",
+        encoding="utf-8",
+    )
+    (root / "profiles.yml").write_text(
+        """
+fixture_duckdb:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "./target/fixture.duckdb"
+      schema: main
+""",
+        encoding="utf-8",
+    )
+    (root / "project.config.yml").write_text(
+        """
+presentation_policy:
+  require_live_browser_validation: true
+  require_successful_refresh_validation: true
+  require_live_report_refresh_execution: true
+  report_runtime_applicability: required
+  llm_playwright_review_applicability: not_applicable_fixture
+  report_handoff_applicability: not_applicable_fixture
+""",
+        encoding="utf-8",
+    )
+    target = root / "target"
+    target.mkdir(parents=True, exist_ok=True)
+    db_path = target / "fixture.duckdb"
+    con = duckdb.connect(str(db_path))
+    con.execute(f'DROP TABLE IF EXISTS main."{name}"')
+    # Build a physical table with volume_total rows for count(*) proofs.
+    con.execute(
+        f'CREATE TABLE main."{name}" AS '
+        f"SELECT gs AS id FROM generate_series(1, {int(volume_total)}) AS t(gs)"
+    )
+    con.close()
+    relation_name = f'"fixture"."main"."{name}"'
+    (target / "manifest.json").write_text(
+        json.dumps(
+            {
+                "metadata": {"project_name": package},
+                "nodes": {
+                    unique_id: {
+                        "unique_id": unique_id,
+                        "name": name,
+                        "alias": name,
+                        "resource_type": "model",
+                        "package_name": package,
+                        "database": "fixture",
+                        "schema": "main",
+                        "relation_name": relation_name,
+                        "config": {"enabled": True, "materialized": "table"},
+                    }
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    # serve_report discovers <project>/scripts/lib_report_runtime.py first.
+    # Temp unit-test roots are outside the skill repo, so copy the runtime libs.
+    scripts = root / "scripts"
+    scripts.mkdir(parents=True, exist_ok=True)
+    for script_name in (
+        "lib_report_runtime.py",
+        "lib_manifest_relation.py",
+        "lib_gate_common.py",
+        "lib_llm_playwright_review.py",
+    ):
+        src = SCRIPTS / script_name
+        if src.exists():
+            shutil.copy2(src, scripts / script_name)
+
+    sql_dir = root / "reports" / "agent" / "10_presentation" / "matplotlib" / "sql_verification"
+    sql_dir.mkdir(parents=True, exist_ok=True)
+    (sql_dir / "010_volume.sql").write_text(
+        f"-- expected result: {volume_total}\n"
+        f"-- captured result: {volume_total}\n"
+        f"-- status: PASS\n"
+        f'select count(*) from main."{name}";\n',
+        encoding="utf-8",
+    )
+    (sql_dir / "020_rate.sql").write_text(
+        f"-- expected result: {completion_rate}\n"
+        f"-- captured result: {completion_rate}\n"
+        f"-- status: PASS\n"
+        f"select {completion_rate};\n",
+        encoding="utf-8",
+    )
+    # Keep query registry aligned with the live unique_id / SQL paths.
+    write_interactive_presentation(
+        root / "reports" / "agent" / "10_presentation" / "matplotlib",
+        volume_total=volume_total,
+        completion_rate=completion_rate,
+        source_resource_id=unique_id,
+    )
+
+
 def _seed_report(root: Path) -> Path:
     src = FIX / "domain_a_transactional"
     if not src.exists():
@@ -52,7 +163,6 @@ def _seed_report(root: Path) -> Path:
     for rel in (
         "reports/agent/KPI_DEFINITION_CONTRACTS.md",
         "reports/agent/10_presentation",
-        "project.config.yml",
     ):
         src_path = src / rel
         dst = root / rel
@@ -62,7 +172,7 @@ def _seed_report(root: Path) -> Path:
             dst.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(src_path, dst)
     matplotlib = root / "reports" / "agent" / "10_presentation" / "matplotlib"
-    write_interactive_presentation(matplotlib, volume_total=100, completion_rate=0.8)
+    _seed_live_dom_duckdb_runtime(root, volume_total=100, completion_rate=0.8)
     return matplotlib
 
 
