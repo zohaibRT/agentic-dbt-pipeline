@@ -5,17 +5,14 @@
   "errors": [],
   "warnings": [],
   "details": {
-    "url": "http://127.0.0.1:49180/",
+    "project_root": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events",
+    "url": "http://127.0.0.1:55244/",
     "report_dir": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\10_presentation\\matplotlib",
     "http_status": 200,
     "body_bytes": 51689,
     "charts_http_status": 200,
     "charts_count": 2,
     "charts_payload_ok": true,
-    "resolved_relations": [
-      "model.domain_c_asset_events.fct_asset_events"
-    ],
-    "manifest_relation_resolution": true,
     "metrics_http_status": 200,
     "metrics_count": 3,
     "board_count": 3,
@@ -23,15 +20,43 @@
     "refresh_http_status": 200,
     "refresh_payload": {
       "status": "refreshed",
-      "freshness_timestamp": "2026-07-16T22:27:11.188562+00:00"
+      "freshness_timestamp": "2026-07-17T05:26:59.408138+00:00"
     },
     "refresh_ok": true,
     "runtime_preflight": true,
     "initial_data_load": true,
     "refresh_validation": true,
+    "manifest_relation_resolution": true,
+    "resolved_relations": [
+      "model.domain_c_asset_events.fct_asset_events"
+    ],
+    "relation_resolutions": [
+      {
+        "unique_id": "model.domain_c_asset_events.fct_asset_events",
+        "status": "PASS",
+        "enabled": true,
+        "database": "fixture",
+        "schema": "main",
+        "alias": "fct_asset_events",
+        "relation_name": "\"fixture\".\"main\".\"fct_asset_events\"",
+        "manifest_path": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\target\\manifest.json",
+        "manifest_checksum": "5be23741fec1e1fac9d14a43dbd64c0da309bdac8cbaddb47ff7eb83818e78d9",
+        "physical_exists": true,
+        "execution_error": "",
+        "notes": ""
+      }
+    ],
+    "profile_name": "fixture_duckdb",
+    "target": "dev",
+    "adapter": "duckdb",
+    "database": null,
+    "schema": "main",
+    "manifest_path": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\target\\manifest.json",
+    "manifest_checksum": "5be23741fec1e1fac9d14a43dbd64c0da309bdac8cbaddb47ff7eb83818e78d9",
+    "connection_path": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\target\\fixture.duckdb",
     "runtime_preflight_path": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\10_presentation\\matplotlib\\runtime_preflight.json"
   },
-  "checked_at": "2026-07-16T22:27:11.193318+00:00",
+  "checked_at": "2026-07-17T05:26:59.592335+00:00",
   "warning_ids": [],
   "applicability": ""
 }

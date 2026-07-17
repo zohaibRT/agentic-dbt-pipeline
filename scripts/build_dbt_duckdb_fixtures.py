@@ -55,8 +55,14 @@ def _llm_review_applicability(slug: str) -> str:
 
 
 def refresh_domain_a_llm_review(root: Path) -> None:
-    """Refresh domain_a LLM review hashes from existing MCP evidence (no MCP re-run)."""
+    """Refresh domain_a LLM review hashes from committed MCP observations (no invention)."""
+    observations = root / "reports" / "agent" / "10_presentation" / "LLM_PLAYWRIGHT_OBSERVATIONS.json"
     evidence = root / "reports" / "agent" / "10_presentation" / "llm_playwright_evidence"
+    if not observations.exists():
+        raise RuntimeError(
+            "domain_a LLM Playwright observations missing: "
+            f"{observations} (writer requires --observations-json)"
+        )
     if not evidence.exists() or not any(evidence.glob("*.png")):
         return
     proc = subprocess.run(
@@ -65,6 +71,10 @@ def refresh_domain_a_llm_review(root: Path) -> None:
             str(SCRIPTS / "write_llm_playwright_review_from_mcp.py"),
             "--root",
             str(root),
+            "--observations-json",
+            str(observations),
+            "--screenshot-dir",
+            str(evidence),
         ],
         cwd=str(SCRIPTS),
         capture_output=True,

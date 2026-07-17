@@ -58,6 +58,14 @@ Why this matters: Matplotlib does not execute inside the browser. To reflect cha
 
 Opening instructions are shown to the user **only after** `reports/agent/10_presentation/REPORT_HANDOFF_READINESS.json` has `status=PASS` and `open_allowed=true`.
 
+Handoff readiness requires genuine manifest relation resolution via `lib_manifest_relation.py`:
+
+```text
+exact dbt unique_id → target/manifest.json → database/schema/alias/relation_name → physical existence
+```
+
+No bare-name shortening or fallback is allowed. Runtime preflight must record profile, target, adapter, manifest path/checksum, and per-relation existence. LLM Playwright review must be assembled from `--observations-json` only, with `business_approval_status=UNCHANGED`. Handoff runs only after `ACCEPTANCE_GATE_REPORT.json` exists (post-acceptance).
+
 Before that artifact passes:
 
 - Do not print report URLs, browser links, `open_report.*` instructions, or “report ready / presentation complete”.

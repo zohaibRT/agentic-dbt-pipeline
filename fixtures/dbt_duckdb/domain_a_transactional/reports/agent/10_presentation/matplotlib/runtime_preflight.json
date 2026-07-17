@@ -7,8 +7,32 @@
   "resolved_relations": [
     "model.domain_a_transactional.fct_events"
   ],
+  "relation_resolutions": [
+    {
+      "unique_id": "model.domain_a_transactional.fct_events",
+      "status": "PASS",
+      "enabled": true,
+      "database": "fixture",
+      "schema": "main",
+      "alias": "fct_events",
+      "relation_name": "\"fixture\".\"main\".\"fct_events\"",
+      "manifest_path": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_a_transactional\\target\\manifest.json",
+      "manifest_checksum": "03d4776648a416a43dd1280a79ca6c323d77211d446af2f1706b81d74f6ffdaf",
+      "physical_exists": true,
+      "execution_error": "",
+      "notes": ""
+    }
+  ],
   "charts_payload_ok": true,
   "metrics_payload_ok": true,
   "refresh_ok": true,
+  "profile_name": "fixture_duckdb",
+  "target": "dev",
+  "adapter": "duckdb",
+  "database": null,
+  "schema": "main",
+  "manifest_path": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_a_transactional\\target\\manifest.json",
+  "manifest_checksum": "03d4776648a416a43dd1280a79ca6c323d77211d446af2f1706b81d74f6ffdaf",
+  "connection_path": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_a_transactional\\target\\fixture.duckdb",
   "errors": []
 }

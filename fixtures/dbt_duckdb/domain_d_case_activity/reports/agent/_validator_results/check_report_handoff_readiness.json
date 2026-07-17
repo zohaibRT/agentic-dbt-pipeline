@@ -17,31 +17,37 @@
       "require_final_acceptance_before_handoff": true,
       "require_report_handoff_readiness": true
     },
-    "sibling_statuses": {
-      "validate_live_report_dom": "PASS",
-      "validate_local_web_report": "PASS",
-      "check_presentation_traceability": "PASS",
-      "validate_chart_registry": "PASS"
+    "relation_resolution": {
+      "status": "PASS",
+      "manifest_checksum": "b899b0caf5ebee91c851645e8edb0cf67991fdb1be067a123da5e028981d2577",
+      "manifest_path": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_d_case_activity\\target\\manifest.json",
+      "profile_name": "fixture_duckdb",
+      "target": "dev",
+      "adapter": "duckdb",
+      "errors": [],
+      "resolved_relations": [
+        "model.domain_d_case_activity.fct_case_activities"
+      ]
     },
     "independent_verification_status": "PASS",
     "acceptance_status": "PASS",
     "interactive_report": true,
-    "report_bundle_hash": "ed0f23f11975a407f5493c2e60fbb1026154f334dd856e492b757b9e49dc6ec0",
+    "report_bundle_hash": "f6fc79b0df6860036a62be0cc4af9e646da7cee7a04367bf9da12ff36e97381e",
     "file_hashes": {
-      "report_html": "9fabb383cd10b0bbad4bcf4e40872c6ac9925fe1e0febb1c4349c813382824ef",
+      "report_html": "8b0d5515b442141ec9889a75efac73cea8e1134fc09b3c98c6f8cbb89c6b4c4e",
       "page_registry": "ec25f4182e887cc8792be79c92ba3dbc5d8ff0a1cf90c13edb07b53ace2c0184",
-      "chart_registry": "f01022228c3464dde6910a4cca52afe874a13c6adfda6d902119ab0bab492974",
-      "rendered_metric_manifest": "9ecd81ee9a009c6b1a9b9a0ef3a46e27066dd4c3410ad389a66e2e2cb323299c",
+      "chart_registry": "09f2c9a28a5a5bd3e458d8ffea841dfbe3f7868c42365abc545400c5b5d1d45b",
+      "rendered_metric_manifest": "766cc33442049cb423fb0ea814c7ce050ee44d567748663e34d767f37d061be9",
       "query_registry": "742d660f7c8c964fc38920f5f0861b5870d910a9a8c010fb3e23e1a379b5f4eb",
       "proof_registry": "a33c950142671cb0289e0a1dc6ea2ab29dfc6a0d72fa7d1b921d0116480cf3a7",
-      "chart_registry_canonical": "88b6a587d024e2c6a2234089dbac07d64c714f7e092d4cd0e19a2bbd693a0e47"
+      "chart_registry_canonical": "62313afa5c2a61420d1ce619d8c4f63d84a0f7ec08b4e1ac82c1977c7bf7d15a"
     },
     "presentation_state": "VERIFIED_FOR_HANDOFF",
     "open_allowed": true,
     "status": "PASS",
     "handoff_artifact": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_d_case_activity\\reports\\agent\\10_presentation\\REPORT_HANDOFF_READINESS.json"
   },
-  "checked_at": "2026-07-16T22:29:56.655707+00:00",
+  "checked_at": "2026-07-17T05:20:27.128758+00:00",
   "warning_ids": [],
   "applicability": ""
 }

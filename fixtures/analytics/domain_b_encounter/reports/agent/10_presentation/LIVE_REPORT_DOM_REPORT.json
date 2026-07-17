@@ -1,7 +1,7 @@
 {
   "status": "PASS",
-  "validated_at": "2026-07-16T22:21:55.361809+00:00",
-  "url": "http://127.0.0.1:54198/",
+  "validated_at": "2026-07-17T05:21:58.476340+00:00",
+  "url": "http://127.0.0.1:61300/",
   "viewports": [
     "desktop",
     "tablet",
@@ -19,7 +19,7 @@
             "viewport": "desktop",
             "accessible_name": "Volume KPI Trend",
             "data_table": true,
-            "tooltip_text": "Volume KPI \u2014 Prior period\nJanuary 2026\n80 events\nFresh as of: 2026-07-16T22:20:30+00:00",
+            "tooltip_text": "Volume KPI \u2014 Prior period\nJanuary 2026\n80 events\nFresh as of: 2026-07-17T05:20:42+00:00",
             "expected": {
               "metric_display_name": "Volume KPI",
               "formatted_value": "80 events",
@@ -28,28 +28,28 @@
               "unit": "events",
               "currency": null,
               "partial_period_note": null,
-              "tooltip_text": "Volume KPI \u2014 Prior period\nJanuary 2026\n80 events\nFresh as of: 2026-07-16T22:20:30+00:00"
+              "tooltip_text": "Volume KPI \u2014 Prior period\nJanuary 2026\n80 events\nFresh as of: 2026-07-17T05:20:42+00:00"
             },
             "interactions": [
               {
                 "period": "January 2026",
                 "series": "Actual",
-                "tooltip": "Volume KPI \u2014 Actual\nJanuary 2026\n90 events\nStatus: On track\nFresh as of: 2026-07-16T22:20:30+00:00"
+                "tooltip": "Volume KPI \u2014 Actual\nJanuary 2026\n90 events\nStatus: On track\nFresh as of: 2026-07-17T05:20:42+00:00"
               },
               {
                 "period": "March 2026",
                 "series": "Actual",
-                "tooltip": "Volume KPI \u2014 Actual\nMarch 2026\n100 events\nPrevious: 90 events\nChange: 10 events (11.11%)\nStatus: On track\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T22:20:30+00:00"
+                "tooltip": "Volume KPI \u2014 Actual\nMarch 2026\n100 events\nPrevious: 90 events\nChange: 10 events (11.11%)\nStatus: On track\nPartial period \u2014 incomplete\nFresh as of: 2026-07-17T05:20:42+00:00"
               },
               {
                 "period": "January 2026",
                 "series": "Actual",
-                "tooltip": "Volume KPI \u2014 Actual\nJanuary 2026\n90 events\nStatus: On track\nFresh as of: 2026-07-16T22:20:30+00:00"
+                "tooltip": "Volume KPI \u2014 Actual\nJanuary 2026\n90 events\nStatus: On track\nFresh as of: 2026-07-17T05:20:42+00:00"
               },
               {
                 "period": "January 2026",
                 "series": "Prior period",
-                "tooltip": "Volume KPI \u2014 Prior period\nJanuary 2026\n80 events\nFresh as of: 2026-07-16T22:20:30+00:00"
+                "tooltip": "Volume KPI \u2014 Prior period\nJanuary 2026\n80 events\nFresh as of: 2026-07-17T05:20:42+00:00"
               }
             ],
             "sampled_points": 4
@@ -59,7 +59,7 @@
             "viewport": "desktop",
             "accessible_name": "Completion Rate KPI",
             "data_table": true,
-            "tooltip_text": "Completion rate KPI \u2014 Actual\nMarch 2026\n80.00%\nPrevious: 78.00%\nChange: 2.00% (2.56%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T22:20:30+00:00",
+            "tooltip_text": "Completion rate KPI \u2014 Actual\nMarch 2026\n80.00%\nPrevious: 78.00%\nChange: 2.00% (2.56%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-17T05:20:42+00:00",
             "expected": {
               "metric_display_name": "Completion rate KPI",
               "formatted_value": "80.00%",
@@ -68,23 +68,23 @@
               "unit": null,
               "currency": null,
               "partial_period_note": "Partial period \u2014 incomplete",
-              "tooltip_text": "Completion rate KPI \u2014 Actual\nMarch 2026\n80.00%\nPrevious: 78.00%\nChange: 2.00% (2.56%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T22:20:30+00:00"
+              "tooltip_text": "Completion rate KPI \u2014 Actual\nMarch 2026\n80.00%\nPrevious: 78.00%\nChange: 2.00% (2.56%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-17T05:20:42+00:00"
             },
             "interactions": [
               {
                 "period": "January 2026",
                 "series": "Actual",
-                "tooltip": "Completion rate KPI \u2014 Actual\nJanuary 2026\n75.00%\nFresh as of: 2026-07-16T22:20:30+00:00"
+                "tooltip": "Completion rate KPI \u2014 Actual\nJanuary 2026\n75.00%\nFresh as of: 2026-07-17T05:20:42+00:00"
               },
               {
                 "period": "February 2026",
                 "series": "Actual",
-                "tooltip": "Completion rate KPI \u2014 Actual\nFebruary 2026\n78.00%\nPrevious: 75.00%\nChange: 3.00% (4.00%)\nFresh as of: 2026-07-16T22:20:30+00:00"
+                "tooltip": "Completion rate KPI \u2014 Actual\nFebruary 2026\n78.00%\nPrevious: 75.00%\nChange: 3.00% (4.00%)\nFresh as of: 2026-07-17T05:20:42+00:00"
               },
               {
                 "period": "March 2026",
                 "series": "Actual",
-                "tooltip": "Completion rate KPI \u2014 Actual\nMarch 2026\n80.00%\nPrevious: 78.00%\nChange: 2.00% (2.56%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T22:20:30+00:00"
+                "tooltip": "Completion rate KPI \u2014 Actual\nMarch 2026\n80.00%\nPrevious: 78.00%\nChange: 2.00% (2.56%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-17T05:20:42+00:00"
               }
             ],
             "sampled_points": 3
@@ -126,10 +126,10 @@
         "page_errors": [],
         "failed_requests": [],
         "refresh": {
-          "prior_version": "2026-07-16T22:21:24.225462+00:00",
+          "prior_version": "2026-07-17T05:21:30.192284+00:00",
           "status": "success",
           "status_text": "Ready",
-          "new_version": "2026-07-16T22:21:32.881286+00:00",
+          "new_version": "2026-07-17T05:21:38.288400+00:00",
           "refresh_validation": true,
           "forced_failure": {
             "status": "error",
@@ -148,8 +148,8 @@
         },
         "artifacts": {},
         "report_ready": true,
-        "data_version": "2026-07-16T22:21:24.225462+00:00",
-        "report_url": "http://127.0.0.1:54198/",
+        "data_version": "2026-07-17T05:21:30.192284+00:00",
+        "report_url": "http://127.0.0.1:61300/",
         "initial_data_load": true
       },
       "tablet": {
@@ -160,7 +160,7 @@
             "viewport": "tablet",
             "accessible_name": "Volume KPI Trend",
             "data_table": true,
-            "tooltip_text": "Volume KPI \u2014 Prior period\nJanuary 2026\n80 events\nFresh as of: 2026-07-16T22:20:30+00:00",
+            "tooltip_text": "Volume KPI \u2014 Prior period\nJanuary 2026\n80 events\nFresh as of: 2026-07-17T05:20:42+00:00",
             "expected": {
               "metric_display_name": "Volume KPI",
               "formatted_value": "80 events",
@@ -169,28 +169,28 @@
               "unit": "events",
               "currency": null,
               "partial_period_note": null,
-              "tooltip_text": "Volume KPI \u2014 Prior period\nJanuary 2026\n80 events\nFresh as of: 2026-07-16T22:20:30+00:00"
+              "tooltip_text": "Volume KPI \u2014 Prior period\nJanuary 2026\n80 events\nFresh as of: 2026-07-17T05:20:42+00:00"
             },
             "interactions": [
               {
                 "period": "January 2026",
                 "series": "Actual",
-                "tooltip": "Volume KPI \u2014 Actual\nJanuary 2026\n90 events\nStatus: On track\nFresh as of: 2026-07-16T22:20:30+00:00"
+                "tooltip": "Volume KPI \u2014 Actual\nJanuary 2026\n90 events\nStatus: On track\nFresh as of: 2026-07-17T05:20:42+00:00"
               },
               {
                 "period": "March 2026",
                 "series": "Actual",
-                "tooltip": "Volume KPI \u2014 Actual\nMarch 2026\n100 events\nPrevious: 90 events\nChange: 10 events (11.11%)\nStatus: On track\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T22:20:30+00:00"
+                "tooltip": "Volume KPI \u2014 Actual\nMarch 2026\n100 events\nPrevious: 90 events\nChange: 10 events (11.11%)\nStatus: On track\nPartial period \u2014 incomplete\nFresh as of: 2026-07-17T05:20:42+00:00"
               },
               {
                 "period": "January 2026",
                 "series": "Actual",
-                "tooltip": "Volume KPI \u2014 Actual\nJanuary 2026\n90 events\nStatus: On track\nFresh as of: 2026-07-16T22:20:30+00:00"
+                "tooltip": "Volume KPI \u2014 Actual\nJanuary 2026\n90 events\nStatus: On track\nFresh as of: 2026-07-17T05:20:42+00:00"
               },
               {
                 "period": "January 2026",
                 "series": "Prior period",
-                "tooltip": "Volume KPI \u2014 Prior period\nJanuary 2026\n80 events\nFresh as of: 2026-07-16T22:20:30+00:00"
+                "tooltip": "Volume KPI \u2014 Prior period\nJanuary 2026\n80 events\nFresh as of: 2026-07-17T05:20:42+00:00"
               }
             ],
             "sampled_points": 4
@@ -200,7 +200,7 @@
             "viewport": "tablet",
             "accessible_name": "Completion Rate KPI",
             "data_table": true,
-            "tooltip_text": "Completion rate KPI \u2014 Actual\nMarch 2026\n80.00%\nPrevious: 78.00%\nChange: 2.00% (2.56%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T22:20:30+00:00",
+            "tooltip_text": "Completion rate KPI \u2014 Actual\nMarch 2026\n80.00%\nPrevious: 78.00%\nChange: 2.00% (2.56%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-17T05:20:42+00:00",
             "expected": {
               "metric_display_name": "Completion rate KPI",
               "formatted_value": "80.00%",
@@ -209,23 +209,23 @@
               "unit": null,
               "currency": null,
               "partial_period_note": "Partial period \u2014 incomplete",
-              "tooltip_text": "Completion rate KPI \u2014 Actual\nMarch 2026\n80.00%\nPrevious: 78.00%\nChange: 2.00% (2.56%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T22:20:30+00:00"
+              "tooltip_text": "Completion rate KPI \u2014 Actual\nMarch 2026\n80.00%\nPrevious: 78.00%\nChange: 2.00% (2.56%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-17T05:20:42+00:00"
             },
             "interactions": [
               {
                 "period": "January 2026",
                 "series": "Actual",
-                "tooltip": "Completion rate KPI \u2014 Actual\nJanuary 2026\n75.00%\nFresh as of: 2026-07-16T22:20:30+00:00"
+                "tooltip": "Completion rate KPI \u2014 Actual\nJanuary 2026\n75.00%\nFresh as of: 2026-07-17T05:20:42+00:00"
               },
               {
                 "period": "February 2026",
                 "series": "Actual",
-                "tooltip": "Completion rate KPI \u2014 Actual\nFebruary 2026\n78.00%\nPrevious: 75.00%\nChange: 3.00% (4.00%)\nFresh as of: 2026-07-16T22:20:30+00:00"
+                "tooltip": "Completion rate KPI \u2014 Actual\nFebruary 2026\n78.00%\nPrevious: 75.00%\nChange: 3.00% (4.00%)\nFresh as of: 2026-07-17T05:20:42+00:00"
               },
               {
                 "period": "March 2026",
                 "series": "Actual",
-                "tooltip": "Completion rate KPI \u2014 Actual\nMarch 2026\n80.00%\nPrevious: 78.00%\nChange: 2.00% (2.56%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T22:20:30+00:00"
+                "tooltip": "Completion rate KPI \u2014 Actual\nMarch 2026\n80.00%\nPrevious: 78.00%\nChange: 2.00% (2.56%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-17T05:20:42+00:00"
               }
             ],
             "sampled_points": 3
@@ -267,10 +267,10 @@
         "page_errors": [],
         "failed_requests": [],
         "refresh": {
-          "prior_version": "2026-07-16T22:21:32.881286+00:00",
+          "prior_version": "2026-07-17T05:21:38.288400+00:00",
           "status": "success",
           "status_text": "Ready",
-          "new_version": "2026-07-16T22:21:42.714597+00:00",
+          "new_version": "2026-07-17T05:21:47.153470+00:00",
           "refresh_validation": true,
           "forced_failure": {
             "status": "error",
@@ -289,8 +289,8 @@
         },
         "artifacts": {},
         "report_ready": true,
-        "data_version": "2026-07-16T22:21:32.881286+00:00",
-        "report_url": "http://127.0.0.1:54198/",
+        "data_version": "2026-07-17T05:21:38.288400+00:00",
+        "report_url": "http://127.0.0.1:61300/",
         "initial_data_load": true
       },
       "mobile": {
@@ -301,7 +301,7 @@
             "viewport": "mobile",
             "accessible_name": "Volume KPI Trend",
             "data_table": true,
-            "tooltip_text": "Volume KPI \u2014 Prior period\nJanuary 2026\n80 events\nFresh as of: 2026-07-16T22:20:30+00:00",
+            "tooltip_text": "Volume KPI \u2014 Prior period\nJanuary 2026\n80 events\nFresh as of: 2026-07-17T05:20:42+00:00",
             "expected": {
               "metric_display_name": "Volume KPI",
               "formatted_value": "80 events",
@@ -310,28 +310,28 @@
               "unit": "events",
               "currency": null,
               "partial_period_note": null,
-              "tooltip_text": "Volume KPI \u2014 Prior period\nJanuary 2026\n80 events\nFresh as of: 2026-07-16T22:20:30+00:00"
+              "tooltip_text": "Volume KPI \u2014 Prior period\nJanuary 2026\n80 events\nFresh as of: 2026-07-17T05:20:42+00:00"
             },
             "interactions": [
               {
                 "period": "January 2026",
                 "series": "Actual",
-                "tooltip": "Volume KPI \u2014 Actual\nJanuary 2026\n90 events\nStatus: On track\nFresh as of: 2026-07-16T22:20:30+00:00"
+                "tooltip": "Volume KPI \u2014 Actual\nJanuary 2026\n90 events\nStatus: On track\nFresh as of: 2026-07-17T05:20:42+00:00"
               },
               {
                 "period": "March 2026",
                 "series": "Actual",
-                "tooltip": "Volume KPI \u2014 Actual\nMarch 2026\n100 events\nPrevious: 90 events\nChange: 10 events (11.11%)\nStatus: On track\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T22:20:30+00:00"
+                "tooltip": "Volume KPI \u2014 Actual\nMarch 2026\n100 events\nPrevious: 90 events\nChange: 10 events (11.11%)\nStatus: On track\nPartial period \u2014 incomplete\nFresh as of: 2026-07-17T05:20:42+00:00"
               },
               {
                 "period": "January 2026",
                 "series": "Actual",
-                "tooltip": "Volume KPI \u2014 Actual\nJanuary 2026\n90 events\nStatus: On track\nFresh as of: 2026-07-16T22:20:30+00:00"
+                "tooltip": "Volume KPI \u2014 Actual\nJanuary 2026\n90 events\nStatus: On track\nFresh as of: 2026-07-17T05:20:42+00:00"
               },
               {
                 "period": "January 2026",
                 "series": "Prior period",
-                "tooltip": "Volume KPI \u2014 Prior period\nJanuary 2026\n80 events\nFresh as of: 2026-07-16T22:20:30+00:00"
+                "tooltip": "Volume KPI \u2014 Prior period\nJanuary 2026\n80 events\nFresh as of: 2026-07-17T05:20:42+00:00"
               }
             ],
             "sampled_points": 4
@@ -341,7 +341,7 @@
             "viewport": "mobile",
             "accessible_name": "Completion Rate KPI",
             "data_table": true,
-            "tooltip_text": "Completion rate KPI \u2014 Actual\nMarch 2026\n80.00%\nPrevious: 78.00%\nChange: 2.00% (2.56%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T22:20:30+00:00",
+            "tooltip_text": "Completion rate KPI \u2014 Actual\nMarch 2026\n80.00%\nPrevious: 78.00%\nChange: 2.00% (2.56%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-17T05:20:42+00:00",
             "expected": {
               "metric_display_name": "Completion rate KPI",
               "formatted_value": "80.00%",
@@ -350,23 +350,23 @@
               "unit": null,
               "currency": null,
               "partial_period_note": "Partial period \u2014 incomplete",
-              "tooltip_text": "Completion rate KPI \u2014 Actual\nMarch 2026\n80.00%\nPrevious: 78.00%\nChange: 2.00% (2.56%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T22:20:30+00:00"
+              "tooltip_text": "Completion rate KPI \u2014 Actual\nMarch 2026\n80.00%\nPrevious: 78.00%\nChange: 2.00% (2.56%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-17T05:20:42+00:00"
             },
             "interactions": [
               {
                 "period": "January 2026",
                 "series": "Actual",
-                "tooltip": "Completion rate KPI \u2014 Actual\nJanuary 2026\n75.00%\nFresh as of: 2026-07-16T22:20:30+00:00"
+                "tooltip": "Completion rate KPI \u2014 Actual\nJanuary 2026\n75.00%\nFresh as of: 2026-07-17T05:20:42+00:00"
               },
               {
                 "period": "February 2026",
                 "series": "Actual",
-                "tooltip": "Completion rate KPI \u2014 Actual\nFebruary 2026\n78.00%\nPrevious: 75.00%\nChange: 3.00% (4.00%)\nFresh as of: 2026-07-16T22:20:30+00:00"
+                "tooltip": "Completion rate KPI \u2014 Actual\nFebruary 2026\n78.00%\nPrevious: 75.00%\nChange: 3.00% (4.00%)\nFresh as of: 2026-07-17T05:20:42+00:00"
               },
               {
                 "period": "March 2026",
                 "series": "Actual",
-                "tooltip": "Completion rate KPI \u2014 Actual\nMarch 2026\n80.00%\nPrevious: 78.00%\nChange: 2.00% (2.56%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T22:20:30+00:00"
+                "tooltip": "Completion rate KPI \u2014 Actual\nMarch 2026\n80.00%\nPrevious: 78.00%\nChange: 2.00% (2.56%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-17T05:20:42+00:00"
               }
             ],
             "sampled_points": 3
@@ -408,10 +408,10 @@
         "page_errors": [],
         "failed_requests": [],
         "refresh": {
-          "prior_version": "2026-07-16T22:21:42.714597+00:00",
+          "prior_version": "2026-07-17T05:21:47.153470+00:00",
           "status": "success",
           "status_text": "Ready",
-          "new_version": "2026-07-16T22:21:53.917329+00:00",
+          "new_version": "2026-07-17T05:21:57.252520+00:00",
           "refresh_validation": true,
           "forced_failure": {
             "status": "error",
@@ -430,8 +430,8 @@
         },
         "artifacts": {},
         "report_ready": true,
-        "data_version": "2026-07-16T22:21:42.714597+00:00",
-        "report_url": "http://127.0.0.1:54198/",
+        "data_version": "2026-07-17T05:21:47.153470+00:00",
+        "report_url": "http://127.0.0.1:61300/",
         "initial_data_load": true
       }
     },

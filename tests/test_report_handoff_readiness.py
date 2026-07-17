@@ -48,17 +48,67 @@ def _write_validator(root: Path, stem: str, status: str, details: dict | None = 
     )
 
 
+def _seed_manifest_and_duckdb(root: Path, *, unique_id: str = "model.local.fct_events") -> None:
+    """Create exact unique_id → physical relation evidence (no name shortening)."""
+    import duckdb
+
+    package, name = unique_id.split(".", 2)[1], unique_id.split(".", 2)[2]
+    (root / "dbt_project.yml").write_text(
+        f"name: {package}\nversion: '1.0.0'\nconfig-version: 2\nprofile: fixture_duckdb\n",
+        encoding="utf-8",
+    )
+    (root / "profiles.yml").write_text(
+        """
+fixture_duckdb:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "./target/fixture.duckdb"
+      schema: main
+""",
+        encoding="utf-8",
+    )
+    target = root / "target"
+    target.mkdir(parents=True, exist_ok=True)
+    db_path = target / "fixture.duckdb"
+    con = duckdb.connect(str(db_path))
+    con.execute(f'CREATE TABLE main."{name}" AS SELECT 1 AS id')
+    con.close()
+    relation_name = f'"fixture"."main"."{name}"'
+    _write_json(
+        target / "manifest.json",
+        {
+            "metadata": {"project_name": package},
+            "nodes": {
+                unique_id: {
+                    "unique_id": unique_id,
+                    "name": name,
+                    "alias": name,
+                    "resource_type": "model",
+                    "package_name": package,
+                    "database": "fixture",
+                    "schema": "main",
+                    "relation_name": relation_name,
+                    "config": {"enabled": True, "materialized": "table"},
+                }
+            },
+        },
+    )
+
+
 def _minimal_interactive_root(tmp: Path, *, with_relations: bool = True) -> Path:
     root = tmp / "project_alpha"
     mpl = root / "reports" / "agent" / "10_presentation" / "matplotlib"
     mpl.mkdir(parents=True)
+    unique_id = "model.local.fct_events"
     charts = {
         "version": "1",
         "charts": [
             {
                 "chart_id": "volume_trend",
                 "title": "Volume",
-                "source_resource_ids": ["model.local.fct_events"] if with_relations else [],
+                "source_resource_ids": [unique_id] if with_relations else [],
                 "data": [{"period_label": "Jan", "formatted_value": "1"}],
             }
         ],
@@ -69,11 +119,14 @@ def _minimal_interactive_root(tmp: Path, *, with_relations: bool = True) -> Path
         "metric_board": [],
     }
     _write_json(mpl / "chart_registry.json", charts)
+    _write_json(root / "reports" / "agent" / "10_presentation" / "chart_registry.json", charts)
     _write_json(mpl / "rendered_metric_manifest.json", metrics)
     (mpl / "report.html").write_text("<!doctype html><html><body>report</body></html>", encoding="utf-8")
     shutil.copy2(TEMPLATES / "serve_report.py", mpl / "serve_report.py")
     shutil.copy2(TEMPLATES / "open_report.bat", mpl / "open_report.bat")
     shutil.copy2(TEMPLATES / "open_report.sh", mpl / "open_report.sh")
+    if with_relations:
+        _seed_manifest_and_duckdb(root, unique_id=unique_id)
     # Point project scripts path for launcher by creating scripts symlink/copy of handoff checker
     scripts = root / "scripts"
     scripts.mkdir(parents=True, exist_ok=True)
@@ -82,6 +135,7 @@ def _minimal_interactive_root(tmp: Path, *, with_relations: bool = True) -> Path
         "lib_report_handoff.py",
         "lib_gate_common.py",
         "lib_llm_playwright_review.py",
+        "lib_manifest_relation.py",
     ):
         shutil.copy2(SCRIPTS / name, scripts / name)
     (root / "project.config.yml").write_text(
@@ -143,10 +197,6 @@ def _seed_passing_evidence(root: Path, *, include_mcp: bool = True) -> None:
         },
     )
     if include_mcp:
-        bundle = __import__("importlib.util").util.spec_from_file_location(
-            "lib_llm", SCRIPTS / "lib_llm_playwright_review.py"
-        )
-        # simpler: write review with matching hash via helper script path
         sys.path.insert(0, str(SCRIPTS))
         from lib_llm_playwright_review import compute_report_bundle_hash
 
@@ -158,7 +208,7 @@ def _seed_passing_evidence(root: Path, *, include_mcp: bool = True) -> None:
                 "review_id": "LLM-PW-TEST",
                 "review_status": "PASS",
                 "technical_verification_status": "PASS",
-                "business_approval_status": "PENDING_REVIEW",
+                "business_approval_status": "UNCHANGED",
                 "report_bundle_hash": bundle_hash,
                 "tested_viewports": ["desktop", "tablet", "mobile"],
                 "reviewed_page_ids": ["executive_overview"],
@@ -175,6 +225,10 @@ def _seed_passing_evidence(root: Path, *, include_mcp: bool = True) -> None:
     _write_json(
         root / "reports" / "agent" / "INDEPENDENT_VERIFICATION_REPORT.json",
         {"overall_status": "PASS", "status": "PASS"},
+    )
+    _write_json(
+        root / "reports" / "agent" / "ACCEPTANCE_GATE_REPORT.json",
+        {"overall_status": "PASS", "status": "PASS", "phase": "final"},
     )
 
 
@@ -350,11 +404,11 @@ class ReportHandoffReadinessTests(unittest.TestCase):
             )
             self.assertNotEqual(proc.returncode, 0)
 
-    def test_08_missing_final_acceptance_blocks_without_siblings(self) -> None:
+    def test_08_missing_final_acceptance_blocks(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = _minimal_interactive_root(Path(tmp))
             _seed_passing_evidence(root)
-            (root / "reports/agent/_validator_results/validate_chart_registry.json").unlink()
+            (root / "reports/agent/ACCEPTANCE_GATE_REPORT.json").unlink()
             proc = _run(
                 [
                     str(SCRIPTS / "check_report_handoff_readiness.py"),
@@ -366,6 +420,7 @@ class ReportHandoffReadinessTests(unittest.TestCase):
                 ]
             )
             self.assertNotEqual(proc.returncode, 0)
+            self.assertIn("final_acceptance", (proc.stdout + proc.stderr).lower())
 
     def test_09_warn_or_skipped_required_gate_blocks(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -474,7 +529,7 @@ class ReportHandoffReadinessTests(unittest.TestCase):
                     encoding="utf-8"
                 )
             )
-            self.assertEqual(review["business_approval_status"], "PENDING_REVIEW")
+            self.assertEqual(review["business_approval_status"], "UNCHANGED")
 
     def test_15_generic_synthetic_model_names(self) -> None:
         # Domain-neutral synthetic identity used by this suite.

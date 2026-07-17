@@ -3,12 +3,12 @@
 - Review ID: `LLM-PW-20260716T221148Z`
 - Review status: **PASS**
 - Technical verification status: `PASS`
-- Business approval status: `APPROVED` (unchanged by this review)
+- Business approval status: `UNCHANGED` (unchanged by this review)
 - Reviewed at: `2026-07-16T22:11:48+00:00`
 - MCP server: `user-playwright`
 - Browser runtime: `chromium`
 - Report URL: `http://127.0.0.1:8877/`
-- Report bundle hash: `788094c18d7ea3b2b8b83626e9459ab7d2e6016344d36e48f72d9e0a6cf4b741`
+- Report bundle hash: `a30057a90223ca2e64bcd38d1d8abf3eac29d035c247fdcbb4b895f85f0e2993`
 - Page coverage: `1.0`
 - Visual coverage: `1.0`
 

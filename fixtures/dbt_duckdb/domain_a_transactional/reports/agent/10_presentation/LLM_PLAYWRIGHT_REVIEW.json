@@ -3,15 +3,15 @@
   "review_id": "LLM-PW-20260716T221148Z",
   "review_status": "PASS",
   "technical_verification_status": "PASS",
-  "business_approval_status": "APPROVED",
+  "business_approval_status": "UNCHANGED",
   "reviewed_at": "2026-07-16T22:11:48+00:00",
-  "repository_commit_sha": "58cbe6ea6adfe7b87f6c0cf109ad624930ee9b13",
+  "repository_commit_sha": "724bd4f55b8f36c7dbbd8ba7a142be3b33f9078b",
   "dbt_invocation_id": null,
-  "report_bundle_hash": "788094c18d7ea3b2b8b83626e9459ab7d2e6016344d36e48f72d9e0a6cf4b741",
-  "report_html_hash": "af1701b029b3f6b06f5bc43a4bec2ed79972340f4fdf8c5d8a235b121575a786",
+  "report_bundle_hash": "a30057a90223ca2e64bcd38d1d8abf3eac29d035c247fdcbb4b895f85f0e2993",
+  "report_html_hash": "093548eb673bb98858153d9f357b824c4a0d43f73c4eec96f7840226caf165a7",
   "page_registry_hash": "ec25f4182e887cc8792be79c92ba3dbc5d8ff0a1cf90c13edb07b53ace2c0184",
-  "chart_registry_hash": "762ffc13f04ceb971c5e46b51b7a01c82654be7a7a236f5305ace7179233feeb",
-  "rendered_metric_manifest_hash": "bd812907def17e73f68f97cfb3e87eb7d8b320f82a4db596bbba9cb545c5ae21",
+  "chart_registry_hash": "471ccf8fb8311be426cc75f27b165ce6e4f34ddddd34188fb5c25955672f5f87",
+  "rendered_metric_manifest_hash": "e998caa6efe8d2062858204b53ce01cd9f9fd66aac40908befc7fd07733dc836",
   "query_registry_hash": "13233c3939a05ed3ec783c6c6453095091b3a83dde94ea2c8c6828c49bef82ee",
   "proof_registry_hash": "3accf1610922ec1a9c84eb8f8a1d6cd3fb0184857e31a07ca4524c2c9380070e",
   "browser_runtime": "chromium",
@@ -359,5 +359,6 @@
     "Review performed with user-playwright MCP in Cursor against the local serve_report.py server.",
     "Business KPI definitions were not approved by this review."
   ],
-  "notes": "Real MCP browser navigate/hover/tap/screenshot session completed for desktop, tablet, and mobile. Technical presentation review only."
+  "notes": "Real MCP browser navigate/hover/tap/screenshot session completed for desktop, tablet, and mobile. Technical presentation review only.",
+  "observations_source": "mcp_session_observations_json"
 }

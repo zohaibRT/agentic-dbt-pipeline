@@ -9,7 +9,7 @@
     "interactive_report": true,
     "applicability": "not_applicable_fixture"
   },
-  "checked_at": "2026-07-16T22:28:30.470600+00:00",
+  "checked_at": "2026-07-17T05:19:08.396772+00:00",
   "warning_ids": [],
   "applicability": "fixture_only_llm_playwright_review_exempt"
 }

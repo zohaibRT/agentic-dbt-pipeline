@@ -292,7 +292,7 @@
     {
       "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_domain_neutrality.py --root C:\\codebase\\agentic-dbt-pipeline --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_a_transactional\\reports\\agent\\_validator_results\\check_domain_neutrality.json",
       "status": "PASS",
-      "detail": "Domain neutrality scan: root=C:\\codebase\\agentic-dbt-pipeline, files=256\nSTATUS: PASS\nDomain neutrality check PASSED",
+      "detail": "Domain neutrality scan: root=C:\\codebase\\agentic-dbt-pipeline, files=257\nSTATUS: PASS\nDomain neutrality check PASSED",
       "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_domain_neutrality.py --root C:\\codebase\\agentic-dbt-pipeline --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_a_transactional\\reports\\agent\\_validator_results\\check_domain_neutrality.json",
       "return_code": 0
     },
@@ -304,10 +304,10 @@
       "return_code": null
     },
     {
-      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\validate_local_web_report.py --report-dir C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_a_transactional/reports/agent/10_presentation/matplotlib --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_a_transactional\\reports\\agent\\_validator_results\\validate_local_web_report.json",
+      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\validate_local_web_report.py --report-dir C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_a_transactional/reports/agent/10_presentation/matplotlib --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_a_transactional --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_a_transactional\\reports\\agent\\_validator_results\\validate_local_web_report.json",
       "status": "PASS",
       "detail": "STATUS: PASS\nLocal web report validation PASSED",
-      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\validate_local_web_report.py --report-dir C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_a_transactional/reports/agent/10_presentation/matplotlib --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_a_transactional\\reports\\agent\\_validator_results\\validate_local_web_report.json",
+      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\validate_local_web_report.py --report-dir C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_a_transactional/reports/agent/10_presentation/matplotlib --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_a_transactional --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_a_transactional\\reports\\agent\\_validator_results\\validate_local_web_report.json",
       "return_code": 0
     },
     {
@@ -346,13 +346,6 @@
       "return_code": 0
     },
     {
-      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_report_handoff_readiness.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_a_transactional --phase final --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_a_transactional\\reports\\agent\\_validator_results\\check_report_handoff_readiness.json",
-      "status": "PASS",
-      "detail": "STATUS: PASS\nReport handoff readiness PASSED",
-      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_report_handoff_readiness.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_a_transactional --phase final --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_a_transactional\\reports\\agent\\_validator_results\\check_report_handoff_readiness.json",
-      "return_code": 0
-    },
-    {
       "name": "dbt commands",
       "status": "SKIPPED",
       "detail": "--skip-dbt was used",
@@ -365,6 +358,13 @@
       "detail": "relevant CI/orchestration evidence: fixture_ci.yml (acceptance_gate, analytics_gates, build_dbt_duckdb, unittest)",
       "command": null,
       "return_code": null
+    },
+    {
+      "name": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_report_handoff_readiness.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_a_transactional --phase final --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_a_transactional\\reports\\agent\\_validator_results\\check_report_handoff_readiness.json",
+      "status": "PASS",
+      "detail": "STATUS: PASS\nReport handoff readiness PASSED",
+      "command": "C:\\Program Files\\Python312\\python.exe C:\\codebase\\agentic-dbt-pipeline\\scripts\\check_report_handoff_readiness.py --root C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_a_transactional --phase final --output-json C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_a_transactional\\reports\\agent\\_validator_results\\check_report_handoff_readiness.json",
+      "return_code": 0
     }
   ],
   "warnings": [

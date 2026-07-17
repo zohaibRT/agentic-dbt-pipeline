@@ -1,0 +1,338 @@
+{
+  "schema_version": "1.0",
+  "review_id": "LLM-PW-20260716T221148Z",
+  "review_status": "PASS",
+  "technical_verification_status": "PASS",
+  "reviewed_at": "2026-07-16T22:11:48+00:00",
+  "repository_commit_sha": "58cbe6ea6adfe7b87f6c0cf109ad624930ee9b13",
+  "browser_runtime": "chromium",
+  "mcp_server": "user-playwright",
+  "llm_reviewer": "cursor-agent",
+  "report_url": "http://127.0.0.1:8877/",
+  "tested_viewports": [
+    "desktop",
+    "tablet",
+    "mobile"
+  ],
+  "reviewed_page_ids": [
+    "all_dimensions",
+    "all_measures",
+    "all_metrics",
+    "exceptions_and_data_quality",
+    "executive_overview",
+    "pipeline_health"
+  ],
+  "reviewed_visual_ids": [
+    "card_completion",
+    "card_volume",
+    "completion_rate_trend",
+    "visual_completion_rate_trend",
+    "visual_volume_trend",
+    "volume_trend"
+  ],
+  "page_coverage": 1.0,
+  "visual_coverage": 1.0,
+  "interactions": [
+    {
+      "page_id": "executive_overview",
+      "visual_id": "visual_volume_trend",
+      "chart_id": "volume_trend",
+      "metric_ids": [
+        "KPI-001"
+      ],
+      "viewport": "desktop",
+      "interaction_type": "hover",
+      "point_or_category": "January 2026",
+      "series_name": "Actual",
+      "expected_tooltip_fields": [
+        "0 events",
+        "January 2026"
+      ],
+      "observed_tooltip_text": "Volume KPI \u2014 Actual\nJanuary 2026\n0 events\nStatus: On track\nFresh as of: 2026-07-16T22:08:50+00:00",
+      "interaction_success": true,
+      "screenshot_path": "reports/agent/10_presentation/llm_playwright_evidence/desktop_executive.png",
+      "finding_ids": [],
+      "mcp_session_note": "Observed via user-playwright MCP hover/tap in Cursor session"
+    },
+    {
+      "page_id": "executive_overview",
+      "visual_id": "visual_volume_trend",
+      "chart_id": "volume_trend",
+      "metric_ids": [
+        "KPI-001"
+      ],
+      "viewport": "desktop",
+      "interaction_type": "hover",
+      "point_or_category": "March 2026",
+      "series_name": "Actual",
+      "expected_tooltip_fields": [
+        "5 events",
+        "March 2026"
+      ],
+      "observed_tooltip_text": "Volume KPI \u2014 Actual\nMarch 2026\n5 events\nPrevious: 0 events\nChange: 5 events\nStatus: On track\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T22:08:50+00:00",
+      "interaction_success": true,
+      "screenshot_path": "reports/agent/10_presentation/llm_playwright_evidence/desktop_executive.png",
+      "finding_ids": [],
+      "mcp_session_note": "Observed via user-playwright MCP hover/tap in Cursor session"
+    },
+    {
+      "page_id": "executive_overview",
+      "visual_id": "visual_volume_trend",
+      "chart_id": "volume_trend",
+      "metric_ids": [
+        "KPI-001"
+      ],
+      "viewport": "desktop",
+      "interaction_type": "hover",
+      "point_or_category": "January 2026",
+      "series_name": "Actual",
+      "expected_tooltip_fields": [
+        "Actual",
+        "January 2026"
+      ],
+      "observed_tooltip_text": "Volume KPI \u2014 Actual\nJanuary 2026\n0 events",
+      "interaction_success": true,
+      "screenshot_path": "reports/agent/10_presentation/llm_playwright_evidence/desktop_executive.png",
+      "finding_ids": [],
+      "mcp_session_note": "Multi-series hover via user-playwright MCP"
+    },
+    {
+      "page_id": "executive_overview",
+      "visual_id": "visual_volume_trend",
+      "chart_id": "volume_trend",
+      "metric_ids": [
+        "KPI-001"
+      ],
+      "viewport": "desktop",
+      "interaction_type": "hover",
+      "point_or_category": "January 2026",
+      "series_name": "Prior period",
+      "expected_tooltip_fields": [
+        "Prior period",
+        "January 2026"
+      ],
+      "observed_tooltip_text": "Volume KPI \u2014 Prior period\nJanuary 2026\n0 events",
+      "interaction_success": true,
+      "screenshot_path": "reports/agent/10_presentation/llm_playwright_evidence/desktop_executive.png",
+      "finding_ids": [],
+      "mcp_session_note": "Multi-series hover via user-playwright MCP"
+    },
+    {
+      "page_id": "executive_overview",
+      "visual_id": "visual_volume_trend",
+      "chart_id": "volume_trend",
+      "metric_ids": [
+        "KPI-001"
+      ],
+      "viewport": "mobile",
+      "interaction_type": "tap",
+      "point_or_category": "March 2026",
+      "series_name": "Actual",
+      "expected_tooltip_fields": [
+        "5 events"
+      ],
+      "observed_tooltip_text": "Volume KPI \u2014 Actual\nMarch 2026\n5 events\nPrevious: 0 events\nChange: 5 events\nStatus: On track\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T22:08:50+00:00",
+      "interaction_success": true,
+      "screenshot_path": "reports/agent/10_presentation/llm_playwright_evidence/mobile_executive.png",
+      "finding_ids": [],
+      "mcp_session_note": "Mobile tap after scrollIntoView via user-playwright MCP"
+    },
+    {
+      "page_id": "executive_overview",
+      "visual_id": "visual_volume_trend",
+      "chart_id": "volume_trend",
+      "metric_ids": [
+        "KPI-001"
+      ],
+      "viewport": "tablet",
+      "interaction_type": "hover",
+      "point_or_category": "March 2026",
+      "series_name": "Actual",
+      "expected_tooltip_fields": [
+        "5 events"
+      ],
+      "observed_tooltip_text": "Volume KPI \u2014 Actual\nMarch 2026\n5 events\nPrevious: 0 events\nChange: 5 events\nStatus: On track\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T22:08:50+00:00",
+      "interaction_success": true,
+      "screenshot_path": "reports/agent/10_presentation/llm_playwright_evidence/tablet_executive.png",
+      "finding_ids": [],
+      "mcp_session_note": "Tablet viewport screenshot + hover via user-playwright MCP"
+    },
+    {
+      "page_id": "executive_overview",
+      "visual_id": "visual_completion_rate_trend",
+      "chart_id": "completion_rate_trend",
+      "metric_ids": [
+        "KPI-002"
+      ],
+      "viewport": "desktop",
+      "interaction_type": "hover",
+      "point_or_category": "January 2026",
+      "series_name": "Actual",
+      "expected_tooltip_fields": [
+        "35.00%",
+        "January 2026"
+      ],
+      "observed_tooltip_text": "Completion rate KPI \u2014 Actual\nJanuary 2026\n35.00%\nFresh as of: 2026-07-16T22:08:50+00:00",
+      "interaction_success": true,
+      "screenshot_path": "reports/agent/10_presentation/llm_playwright_evidence/desktop_executive.png",
+      "finding_ids": [],
+      "mcp_session_note": "Observed via user-playwright MCP hover/tap in Cursor session"
+    },
+    {
+      "page_id": "executive_overview",
+      "visual_id": "visual_completion_rate_trend",
+      "chart_id": "completion_rate_trend",
+      "metric_ids": [
+        "KPI-002"
+      ],
+      "viewport": "desktop",
+      "interaction_type": "hover",
+      "point_or_category": "February 2026",
+      "series_name": "Actual",
+      "expected_tooltip_fields": [
+        "38.00%",
+        "February 2026"
+      ],
+      "observed_tooltip_text": "Completion rate KPI \u2014 Actual\nFebruary 2026\n38.00%\nPrevious: 35.00%\nChange: 3.00% (8.57%)\nFresh as of: 2026-07-16T22:08:50+00:00",
+      "interaction_success": true,
+      "screenshot_path": "reports/agent/10_presentation/llm_playwright_evidence/desktop_executive.png",
+      "finding_ids": [],
+      "mcp_session_note": "Observed via user-playwright MCP hover/tap in Cursor session"
+    },
+    {
+      "page_id": "executive_overview",
+      "visual_id": "visual_completion_rate_trend",
+      "chart_id": "completion_rate_trend",
+      "metric_ids": [
+        "KPI-002"
+      ],
+      "viewport": "desktop",
+      "interaction_type": "hover",
+      "point_or_category": "March 2026",
+      "series_name": "Actual",
+      "expected_tooltip_fields": [
+        "40.00%",
+        "March 2026"
+      ],
+      "observed_tooltip_text": "Completion rate KPI \u2014 Actual\nMarch 2026\n40.00%\nPrevious: 38.00%\nChange: 2.00% (5.26%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T22:08:50+00:00",
+      "interaction_success": true,
+      "screenshot_path": "reports/agent/10_presentation/llm_playwright_evidence/desktop_executive.png",
+      "finding_ids": [],
+      "mcp_session_note": "Observed via user-playwright MCP hover/tap in Cursor session"
+    },
+    {
+      "page_id": "executive_overview",
+      "visual_id": "visual_completion_rate_trend",
+      "chart_id": "completion_rate_trend",
+      "metric_ids": [
+        "KPI-002"
+      ],
+      "viewport": "mobile",
+      "interaction_type": "tap",
+      "point_or_category": "March 2026",
+      "series_name": "Actual",
+      "expected_tooltip_fields": [
+        "40.00%"
+      ],
+      "observed_tooltip_text": "Completion rate KPI \u2014 Actual\nMarch 2026\n40.00%\nPrevious: 38.00%\nChange: 2.00% (5.26%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T22:08:50+00:00",
+      "interaction_success": true,
+      "screenshot_path": "reports/agent/10_presentation/llm_playwright_evidence/mobile_executive.png",
+      "finding_ids": [],
+      "mcp_session_note": "Mobile tap after scrollIntoView via user-playwright MCP"
+    },
+    {
+      "page_id": "executive_overview",
+      "visual_id": "visual_completion_rate_trend",
+      "chart_id": "completion_rate_trend",
+      "metric_ids": [
+        "KPI-002"
+      ],
+      "viewport": "tablet",
+      "interaction_type": "hover",
+      "point_or_category": "March 2026",
+      "series_name": "Actual",
+      "expected_tooltip_fields": [
+        "40.00%"
+      ],
+      "observed_tooltip_text": "Completion rate KPI \u2014 Actual\nMarch 2026\n40.00%\nPrevious: 38.00%\nChange: 2.00% (5.26%)\nPartial period \u2014 incomplete\nFresh as of: 2026-07-16T22:08:50+00:00",
+      "interaction_success": true,
+      "screenshot_path": "reports/agent/10_presentation/llm_playwright_evidence/tablet_executive.png",
+      "finding_ids": [],
+      "mcp_session_note": "Tablet viewport screenshot + hover via user-playwright MCP"
+    }
+  ],
+  "observed_value_comparisons": [
+    {
+      "metric_id": "KPI-001",
+      "page_id": "executive_overview",
+      "visual_id": "visual_volume_trend",
+      "displayed_value": "5",
+      "manifest_value": "5",
+      "proof_value": "5",
+      "formatting_rule": "integer",
+      "comparison_status": "PASS",
+      "reason": "MCP-reviewed visible card/chart values align with rendered_metric_manifest"
+    },
+    {
+      "metric_id": "KPI-002",
+      "page_id": "executive_overview",
+      "visual_id": "visual_completion_rate_trend",
+      "displayed_value": "40.0%",
+      "manifest_value": "40.0%",
+      "proof_value": "40.0%",
+      "formatting_rule": "percent",
+      "comparison_status": "PASS",
+      "reason": "MCP-reviewed visible card/chart values align with rendered_metric_manifest"
+    },
+    {
+      "metric_id": "KPI-PENDING-001",
+      "page_id": "all_metrics",
+      "visual_id": "visual_volume_trend",
+      "displayed_value": "Pending",
+      "manifest_value": "Pending",
+      "proof_value": "Pending",
+      "formatting_rule": "decimal",
+      "comparison_status": "PASS",
+      "reason": "MCP-reviewed visible card/chart values align with rendered_metric_manifest"
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "reports/agent/10_presentation/llm_playwright_evidence/desktop_executive.png",
+      "viewport": "desktop",
+      "page_id": "executive_overview"
+    },
+    {
+      "path": "reports/agent/10_presentation/llm_playwright_evidence/tablet_executive.png",
+      "viewport": "tablet",
+      "page_id": "executive_overview"
+    },
+    {
+      "path": "reports/agent/10_presentation/llm_playwright_evidence/mobile_executive.png",
+      "viewport": "mobile",
+      "page_id": "executive_overview"
+    }
+  ],
+  "findings": [
+    {
+      "finding_id": "F-INFO-001",
+      "severity": "INFO",
+      "category": "mobile_usability",
+      "page_id": "executive_overview",
+      "visual_id": "visual_volume_trend",
+      "description": "On mobile viewport, chart points may require scrollIntoView before tap.",
+      "expected_behavior": "Primary chart points remain tappable in the first mobile viewport.",
+      "observed_behavior": "Tap succeeded after scrollIntoView; tooltip showed exact March 2026 Actual value.",
+      "evidence": "reports/agent/10_presentation/llm_playwright_evidence/mobile_executive.png",
+      "recommended_action": "Optional: ensure executive charts are above the fold on mobile.",
+      "resolution_status": "RESOLVED"
+    }
+  ],
+  "unresolved_critical_findings": [],
+  "unresolved_high_findings": [],
+  "limitations": [
+    "Review performed with user-playwright MCP in Cursor against the local serve_report.py server.",
+    "Business KPI definitions were not approved by this review."
+  ],
+  "notes": "Real MCP browser navigate/hover/tap/screenshot session completed for desktop, tablet, and mobile. Technical presentation review only."
+}

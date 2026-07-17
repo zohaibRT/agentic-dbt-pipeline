@@ -3,23 +3,23 @@
   "status": "PASS",
   "open_allowed": true,
   "presentation_state": "VERIFIED_FOR_HANDOFF",
-  "report_bundle_hash": "75cd3c1aef66d875b060441beba46aadb195c195867020d15f78d0444674d832",
+  "report_bundle_hash": "699050afdebb11a5f45dbc7981327ff10bc5e37bc6075e9fdfcb7a53dabcb229",
   "file_hashes": {
-    "report_html": "6cf2be4cdee9cbacfcc16640694d52fad2fda244ab85e748d139cb68725636ac",
+    "report_html": "1541c062e1662e87e346dbeedcb9ebadf2f660a86083429330b265e1114e09f4",
     "page_registry": "ec25f4182e887cc8792be79c92ba3dbc5d8ff0a1cf90c13edb07b53ace2c0184",
-    "chart_registry": "3c9c56b7f9857e5633fb323f25b873b12d336b14741fa2b5fef30bee0d87f424",
-    "rendered_metric_manifest": "62deb194f5151a08c6b9c42e855e63f1538c731121624a02ba8184bca1c1554f",
+    "chart_registry": "2e98621161c5425266311c57df79482a6574ff3389b1013d7cc2e530991de3ae",
+    "rendered_metric_manifest": "546ae5369bca9ea9b066c1f55ec8f4907dd0f7572e7b621cf2bd434a3d196eb4",
     "query_registry": "2899d23976df21458336854d1409d48e55bfdf2c6bbcb8311259118090da7b14",
     "proof_registry": "de2294b4569157aff69410b35dc97458bf10eb84e9a678c637146915689e8983",
-    "chart_registry_canonical": "f9f080123df6b20cf99d63539c9cc59e0bc8310e3e4c678563355828e0cecd85"
+    "chart_registry_canonical": "80ea365c08eea75fa300b3fa2963557f775dc4d2cc21885c6876887fdd685ad5"
   },
-  "checked_at": "2026-07-16T22:28:28.472938+00:00",
+  "checked_at": "2026-07-17T05:18:33.360690+00:00",
   "phase": "final",
   "gates": [
     {
       "gate_id": "manifest_relation_resolution",
       "status": "PASS",
-      "evidence": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\reports\\agent\\10_presentation\\matplotlib\\runtime_preflight.json",
+      "evidence": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_c_asset_events\\target\\manifest.json",
       "notes": "",
       "required": true
     },

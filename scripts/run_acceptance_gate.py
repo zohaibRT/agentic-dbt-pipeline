@@ -110,6 +110,8 @@ PROJECT_VALIDATION_SCRIPTS = [
         [
             "--report-dir",
             "{root}/reports/agent/10_presentation/matplotlib",
+            "--root",
+            "{root}",
         ],
         "presentation",
     ),
@@ -125,11 +127,6 @@ PROJECT_VALIDATION_SCRIPTS = [
     ("check_presentation_traceability.py", ["--root", "{root}", "--phase", "{phase}"], "presentation"),
     ("validate_live_report_dom.py", ["--root", "{root}", "--desktop", "--tablet", "--mobile"], "presentation"),
     ("run_independent_verifier.py", ["--root", "{root}", "--phase", "{phase}"], "final"),
-    (
-        "check_report_handoff_readiness.py",
-        ["--root", "{root}", "--phase", "{phase}"],
-        "presentation",
-    ),
 ]
 
 DBT_COMMANDS = [
@@ -1120,6 +1117,32 @@ def main() -> int:
 
     gate.finalize(accepted_tokens, require_explicit_warning_acceptance=require_explicit)
     write_reports(root, gate, accepted_tokens)
+
+    # Post-acceptance handoff: only after ACCEPTANCE_GATE_REPORT.json exists.
+    # Do not evaluate handoff inside the validator loop (avoids sibling fallback).
+    if phase_at_least(phase, "presentation"):
+        presentation_policy = load_presentation_policy(root)
+        interactive = (root / "reports" / "agent" / "10_presentation" / "matplotlib" / "report.html").exists()
+        if interactive and bool(presentation_policy.get("require_report_handoff_readiness", True)):
+            script_dir = Path(__file__).resolve().parent
+            result_json = root / "reports" / "agent" / "_validator_results" / "check_report_handoff_readiness.json"
+            result_json.parent.mkdir(parents=True, exist_ok=True)
+            handoff_cmd = [
+                sys.executable,
+                str(script_dir / "check_report_handoff_readiness.py"),
+                "--root",
+                str(root),
+                "--phase",
+                phase,
+                "--output-json",
+                str(result_json),
+            ]
+            handoff_result = run_command(handoff_cmd, root, args.timeout, result_json=result_json)
+            gate.add(handoff_result)
+            # Do not re-run finalize (would duplicate warning→failure promotion).
+            if handoff_result.status in FAIL_STATUSES:
+                gate.overall_status = "FAIL"
+            write_reports(root, gate, accepted_tokens)
 
     print(f"Acceptance gate overall status: {gate.overall_status}")
     print(f"Acceptance gate phase: {phase}")

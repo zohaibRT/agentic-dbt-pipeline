@@ -17,6 +17,7 @@ from typing import Any
 
 from lib_gate_common import add_output_json_arg, load_presentation_policy, print_results
 from lib_llm_playwright_review import compute_report_bundle_hash, is_under_fixtures
+from lib_manifest_relation import resolve_registered_relations
 from lib_report_handoff import (
     HANDOFF_JSON,
     HANDOFF_MD,
@@ -123,30 +124,19 @@ def evaluate_gates(root: Path, *, phase: str) -> tuple[list[dict[str, Any]], dic
         preflight_path = root / "reports" / "agent" / "10_presentation" / "runtime_preflight.json"
     preflight = load_json(preflight_path)
 
-    # 1) Manifest relation resolution — prefer explicit resolved_relations lists.
-    resolved = []
-    for source in (preflight, local_data.get("details") if isinstance(local_data.get("details"), dict) else {}, local_data):
-        if isinstance(source, dict):
-            vals = source.get("resolved_relations")
-            if isinstance(vals, list):
-                resolved.extend(str(v) for v in vals if v)
-    explicit_flag = None
-    for source in (
-        preflight,
-        local_data.get("details") if isinstance(local_data.get("details"), dict) else {},
-        local_data,
-        live_data.get("details") if isinstance(live_data.get("details"), dict) else {},
-        live_data,
-    ):
-        if isinstance(source, dict) and "manifest_relation_resolution" in source:
-            explicit_flag = source.get("manifest_relation_resolution")
-            break
-    if explicit_flag is False or (isinstance(preflight.get("resolved_relations"), list) and not preflight.get("resolved_relations")):
-        relation_ok = False
-    elif resolved:
-        relation_ok = True
-    else:
-        relation_ok = _truthy_pass(explicit_flag)
+    # 1) Manifest relation resolution — independent exact unique_id → relation check.
+    relation_report = resolve_registered_relations(root, require_physical=True)
+    details["relation_resolution"] = {
+        "status": relation_report.get("status"),
+        "manifest_checksum": relation_report.get("manifest_checksum"),
+        "manifest_path": relation_report.get("manifest_path"),
+        "profile_name": relation_report.get("profile_name"),
+        "target": relation_report.get("target"),
+        "adapter": relation_report.get("adapter"),
+        "errors": list(relation_report.get("errors") or []),
+        "resolved_relations": list(relation_report.get("resolved_relations") or []),
+    }
+    relation_ok = bool(relation_report.get("manifest_relation_resolution"))
     if not require_manifest:
         gates.append(_gate("manifest_relation_resolution", "NOT_APPLICABLE", required=False))
     elif relation_ok:
@@ -154,16 +144,24 @@ def evaluate_gates(root: Path, *, phase: str) -> tuple[list[dict[str, Any]], dic
             _gate(
                 "manifest_relation_resolution",
                 "PASS",
-                evidence=str(preflight_path if preflight else "validator details"),
+                evidence=str(relation_report.get("manifest_path") or preflight_path),
             )
         )
     else:
+        notes = "; ".join(
+            relation_report.get("errors")
+            or (
+                ["no exact unique_id registered on chart/query/metric payloads"]
+                if not relation_report.get("unique_ids")
+                else ["manifest relation resolution failed"]
+            )
+        )
         gates.append(
             _gate(
                 "manifest_relation_resolution",
-                "FAIL" if (preflight or local_data or live_data) else "NOT_RUN",
-                evidence=str(preflight_path),
-                notes="missing resolved relation evidence for report models",
+                "FAIL",
+                evidence=str(relation_report.get("manifest_path") or preflight_path),
+                notes=notes,
             )
         )
 
@@ -205,15 +203,20 @@ def evaluate_gates(root: Path, *, phase: str) -> tuple[list[dict[str, Any]], dic
             )
         )
 
-    # 4) Refresh validation
-    refresh_ok = _truthy_pass(
-        _detail_flag(local_data, "refresh_validation")
-        or _detail_flag(live_data, "refresh_validation")
-        or _detail_flag(live_data, "refresh_status")
-        or preflight.get("refresh_validation")
-    ) or (
-        local_status == "PASS" and bool(_detail_flag(local_data, "refresh_ok"))
-    ) or (live_status == "PASS")
+    # 4) Refresh validation — explicit False / local FAIL wins over sibling PASS.
+    explicit_refresh = _detail_flag(local_data, "refresh_validation")
+    explicit_refresh_ok = _detail_flag(local_data, "refresh_ok")
+    if explicit_refresh is False or explicit_refresh_ok is False or local_status == "FAIL":
+        refresh_ok = False
+    else:
+        refresh_ok = _truthy_pass(
+            explicit_refresh
+            or _detail_flag(live_data, "refresh_validation")
+            or _detail_flag(live_data, "refresh_status")
+            or preflight.get("refresh_validation")
+        ) or (
+            local_status == "PASS" and bool(explicit_refresh_ok)
+        )
     if not require_refresh:
         gates.append(_gate("refresh_validation", "NOT_APPLICABLE", required=False))
     elif refresh_ok:
@@ -304,16 +307,8 @@ def evaluate_gates(root: Path, *, phase: str) -> tuple[list[dict[str, Any]], dic
             )
         )
 
-    # 9) Final acceptance — prefer sibling validator evidence when acceptance report
-    # is absent (handoff runs inside the acceptance gate before the report is written).
-    sibling_critical = [
-        "validate_live_report_dom",
-        "validate_local_web_report",
-        "check_presentation_traceability",
-        "validate_chart_registry",
-    ]
-    sibling_statuses = {stem: load_validator_status(root, stem)[0] for stem in sibling_critical}
-    siblings_ok = all(status == "PASS" for status in sibling_statuses.values())
+    # 9) Final acceptance — require ACCEPTANCE_GATE_REPORT.json PASS.
+    # Handoff runs post-acceptance; sibling validators must not manufacture this PASS.
     if not require_final:
         gates.append(
             _gate(
@@ -325,26 +320,16 @@ def evaluate_gates(root: Path, *, phase: str) -> tuple[list[dict[str, Any]], dic
         )
     elif accept_status == "PASS":
         gates.append(_gate("final_acceptance", "PASS", evidence=str(accept_path)))
-    elif siblings_ok and (not require_iv or indep_status == "PASS"):
-        gates.append(
-            _gate(
-                "final_acceptance",
-                "PASS",
-                evidence="_validator_results sibling PASS"
-                + (" + independent verification" if require_iv else ""),
-                notes="in_acceptance_run_sibling_evidence",
-            )
-        )
     else:
         gates.append(
             _gate(
                 "final_acceptance",
                 accept_status if accept_status != "NOT_RUN" else "NOT_RUN",
                 evidence=str(accept_path),
+                notes="post_acceptance_handoff_requires_ACCEPTANCE_GATE_REPORT",
             )
         )
 
-    details["sibling_statuses"] = sibling_statuses
     details["independent_verification_status"] = indep_status
     details["acceptance_status"] = accept_status
     return gates, details

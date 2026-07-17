@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-"""Assemble LLM_PLAYWRIGHT_REVIEW artifacts after a real MCP browser session.
+"""Assemble LLM_PLAYWRIGHT_REVIEW artifacts from real MCP session observations.
 
-Copies screenshots from the Playwright MCP output directory and builds a
-freshness-bound review JSON for the target fixture root.
+Observation-only assembler:
+- Requires --observations-json produced by an actual MCP browser session.
+- Never invents interactions, screenshots, displayed values, findings, or PASS.
+- Always sets business_approval_status=UNCHANGED (browser review cannot approve KPIs).
 """
 
 from __future__ import annotations
@@ -13,10 +15,10 @@ import shutil
 import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
 
 from lib_llm_playwright_review import (
     compute_report_bundle_hash,
-    interactive_charts,
     registry_page_ids,
     registry_visual_ids,
     resolve_presentation_paths,
@@ -24,218 +26,150 @@ from lib_llm_playwright_review import (
     write_review_artifacts,
 )
 
+ALLOWED_OBSERVATION_REVIEW_STATUSES = {"PASS", "WARN", "FAIL", "BLOCKED"}
 
-def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--root", type=Path, required=True)
-    parser.add_argument("--report-url", default="http://127.0.0.1:8877/")
-    parser.add_argument(
-        "--screenshot-dir",
-        type=Path,
-        default=Path.home() / ".playwright-mcp" / "llm_review_domain_a",
-    )
-    parser.add_argument("--mcp-server", default="user-playwright")
-    args = parser.parse_args()
-    root = args.root.resolve()
+
+def _load_observations(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        raise FileNotFoundError(f"observations JSON not found: {path}")
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(data, dict):
+        raise ValueError("observations JSON must be an object")
+    return data
+
+
+def _copy_screenshots(
+    root: Path,
+    observations: dict[str, Any],
+    screenshot_dir: Path | None,
+) -> list[dict[str, Any]]:
     evidence = root / "reports" / "agent" / "10_presentation" / "llm_playwright_evidence"
     evidence.mkdir(parents=True, exist_ok=True)
+    screenshots: list[dict[str, Any]] = []
+    for item in observations.get("screenshots") or []:
+        if not isinstance(item, dict):
+            continue
+        rel = str(item.get("path") or "").strip()
+        name = Path(rel).name if rel else ""
+        if not name and screenshot_dir is None:
+            continue
+        dest_name = name or Path(str(item.get("filename") or "")).name
+        if not dest_name:
+            continue
+        dest = evidence / dest_name
+        src_candidates = []
+        if screenshot_dir is not None:
+            src_candidates.append(screenshot_dir / dest_name)
+        if rel:
+            src_candidates.append(root / rel)
+            src_candidates.append(Path(rel))
+        for src in src_candidates:
+            if src.exists() and src.is_file():
+                try:
+                    if src.resolve() != dest.resolve():
+                        shutil.copy2(src, dest)
+                except OSError:
+                    # Same-path / locked file: keep existing evidence file.
+                    pass
+                break
+        if not dest.exists():
+            # Do not invent screenshot rows for missing files.
+            continue
+        screenshots.append(
+            {
+                "path": f"reports/agent/10_presentation/llm_playwright_evidence/{dest_name}",
+                "viewport": item.get("viewport"),
+                "page_id": item.get("page_id"),
+            }
+        )
+    return screenshots
 
-    shot_map = {
-        "desktop_executive.png": "desktop",
-        "tablet_executive.png": "tablet",
-        "mobile_executive.png": "mobile",
-    }
-    screenshots = []
-    for name, viewport in shot_map.items():
-        src = args.screenshot_dir / name
-        dest = evidence / name
-        if src.exists():
-            shutil.copy2(src, dest)
-        if dest.exists():
-            screenshots.append(
-                {
-                    "path": f"reports/agent/10_presentation/llm_playwright_evidence/{name}",
-                    "viewport": viewport,
-                    "page_id": "executive_overview",
-                }
-            )
+
+def assemble_review(
+    root: Path,
+    observations: dict[str, Any],
+    *,
+    report_url: str | None = None,
+    mcp_server: str | None = None,
+    screenshot_dir: Path | None = None,
+) -> dict[str, Any]:
+    """Build review payload strictly from observations + current bundle hashes."""
+    interactions = observations.get("interactions")
+    if not isinstance(interactions, list) or not interactions:
+        raise ValueError(
+            "observations.interactions must be a non-empty list from an actual MCP session"
+        )
+    comparisons = observations.get("observed_value_comparisons")
+    if not isinstance(comparisons, list):
+        raise ValueError("observations.observed_value_comparisons must be a list")
+
+    for idx, row in enumerate(comparisons):
+        if not isinstance(row, dict):
+            raise ValueError(f"observed_value_comparisons[{idx}] must be an object")
+        for key in ("displayed_value", "manifest_value", "proof_value"):
+            if key not in row:
+                raise ValueError(
+                    f"observed_value_comparisons[{idx}] missing {key} "
+                    "(must be recorded independently in MCP observations)"
+                )
+
+    review_status = str(observations.get("review_status") or "").strip().upper()
+    if review_status not in ALLOWED_OBSERVATION_REVIEW_STATUSES:
+        raise ValueError(
+            "observations.review_status must be one of "
+            f"{sorted(ALLOWED_OBSERVATION_REVIEW_STATUSES)} "
+            "(writer will not invent PASS)"
+        )
+    tech_status = str(observations.get("technical_verification_status") or "").strip().upper()
+    if tech_status not in {"PASS", "WARN", "FAIL", "BLOCKED"}:
+        raise ValueError(
+            "observations.technical_verification_status must be set by the MCP session "
+            "(writer will not invent PASS)"
+        )
 
     bundle, file_hashes = compute_report_bundle_hash(root)
     paths = resolve_presentation_paths(root)
-    page_ids = sorted(registry_page_ids(root))
-    visual_ids = sorted(registry_visual_ids(root))
-    charts = interactive_charts(root)
     try:
         commit = subprocess.check_output(
             ["git", "rev-parse", "HEAD"], cwd=str(root), text=True
         ).strip()
     except Exception:
-        commit = "unknown"
+        commit = str(observations.get("repository_commit_sha") or "unknown")
 
-    interactions = []
-    for chart in charts:
-        cid = str(chart.get("chart_id"))
-        vid = str(chart.get("visual_id") or cid)
-        page_id = str(chart.get("page_id") or "executive_overview")
-        metric_ids = list(chart.get("metric_ids") or [])
-        series_list = chart.get("series") or []
-        data_rows = [
-            r
-            for r in (chart.get("data") or [])
-            if isinstance(r, dict) and not r.get("missing_period") and (r.get("formatted_value") or r.get("tooltip_text"))
-        ]
-        period_samples = []
-        if data_rows:
-            for row in (data_rows[0], data_rows[len(data_rows) // 2], data_rows[-1]):
-                label = str(row.get("period_label") or "")
-                if label and row not in period_samples:
-                    period_samples.append(row)
-            for row in data_rows:
-                if row.get("is_partial_period") or row.get("partial_period_note"):
-                    if row not in period_samples:
-                        period_samples.append(row)
-                    break
+    screenshots = _copy_screenshots(root, observations, screenshot_dir)
+    expected_pages = sorted(registry_page_ids(root))
+    expected_visuals = sorted(registry_visual_ids(root))
+    reviewed_pages = list(observations.get("reviewed_page_ids") or [])
+    reviewed_visuals = list(observations.get("reviewed_visual_ids") or [])
+    if not reviewed_pages or not reviewed_visuals:
+        raise ValueError(
+            "observations must include reviewed_page_ids and reviewed_visual_ids from the MCP session"
+        )
 
-        # Desktop period samples on primary series
-        for row in period_samples:
-            tip = row.get("tooltip_text") or (
-                f"{row.get('metric_display_name') or chart.get('title')} — "
-                f"{row.get('series_display_name') or 'Actual'}\n"
-                f"{row.get('period_label')}\n{row.get('formatted_value')}"
-            )
-            interactions.append(
-                {
-                    "page_id": page_id,
-                    "visual_id": vid,
-                    "chart_id": cid,
-                    "metric_ids": metric_ids,
-                    "viewport": "desktop",
-                    "interaction_type": "hover",
-                    "point_or_category": str(row.get("period_label") or ""),
-                    "series_name": str(row.get("series_display_name") or "Actual"),
-                    "expected_tooltip_fields": [
-                        str(row.get("formatted_value") or ""),
-                        str(row.get("period_label") or ""),
-                    ],
-                    "observed_tooltip_text": tip,
-                    "interaction_success": True,
-                    "screenshot_path": "reports/agent/10_presentation/llm_playwright_evidence/desktop_executive.png",
-                    "finding_ids": [],
-                    "mcp_session_note": "Observed via user-playwright MCP hover/tap in Cursor session",
-                }
-            )
-
-        # Multi-series: one point per series
-        if len(series_list) >= 2:
-            for series in series_list:
-                sname = str(series.get("display_name") or series.get("name") or "")
-                srows = [r for r in (series.get("data") or []) if isinstance(r, dict)]
-                srow = next((r for r in srows if r.get("formatted_value") or r.get("volume") is not None), None)
-                if not srow:
-                    continue
-                tip = (
-                    f"{srow.get('metric_display_name') or chart.get('title')} — {sname}\n"
-                    f"{srow.get('period_label')}\n{srow.get('formatted_value') or srow.get('volume')}"
-                )
-                interactions.append(
-                    {
-                        "page_id": page_id,
-                        "visual_id": vid,
-                        "chart_id": cid,
-                        "metric_ids": metric_ids,
-                        "viewport": "desktop",
-                        "interaction_type": "hover",
-                        "point_or_category": str(srow.get("period_label") or ""),
-                        "series_name": sname,
-                        "expected_tooltip_fields": [sname, str(srow.get("period_label") or "")],
-                        "observed_tooltip_text": tip,
-                        "interaction_success": True,
-                        "screenshot_path": "reports/agent/10_presentation/llm_playwright_evidence/desktop_executive.png",
-                        "finding_ids": [],
-                        "mcp_session_note": "Multi-series hover via user-playwright MCP",
-                    }
-                )
-
-        # Mobile tap sample
-        if data_rows:
-            row = data_rows[-1]
-            tip = row.get("tooltip_text") or (
-                f"{row.get('metric_display_name') or chart.get('title')} — Actual\n"
-                f"{row.get('period_label')}\n{row.get('formatted_value')}"
-            )
-            interactions.append(
-                {
-                    "page_id": page_id,
-                    "visual_id": vid,
-                    "chart_id": cid,
-                    "metric_ids": metric_ids,
-                    "viewport": "mobile",
-                    "interaction_type": "tap",
-                    "point_or_category": str(row.get("period_label") or ""),
-                    "series_name": "Actual",
-                    "expected_tooltip_fields": [str(row.get("formatted_value") or "")],
-                    "observed_tooltip_text": tip,
-                    "interaction_success": True,
-                    "screenshot_path": "reports/agent/10_presentation/llm_playwright_evidence/mobile_executive.png",
-                    "finding_ids": [],
-                    "mcp_session_note": "Mobile tap after scrollIntoView via user-playwright MCP",
-                }
-            )
-            interactions.append(
-                {
-                    "page_id": page_id,
-                    "visual_id": vid,
-                    "chart_id": cid,
-                    "metric_ids": metric_ids,
-                    "viewport": "tablet",
-                    "interaction_type": "hover",
-                    "point_or_category": str(row.get("period_label") or ""),
-                    "series_name": "Actual",
-                    "expected_tooltip_fields": [str(row.get("formatted_value") or "")],
-                    "observed_tooltip_text": tip,
-                    "interaction_success": True,
-                    "screenshot_path": "reports/agent/10_presentation/llm_playwright_evidence/tablet_executive.png",
-                    "finding_ids": [],
-                    "mcp_session_note": "Tablet viewport screenshot + hover via user-playwright MCP",
-                }
-            )
-
-    comparisons = []
-    manifest_path = paths.get("rendered_metric_manifest")
-    metrics = []
-    if manifest_path and manifest_path.exists():
-        metrics = json.loads(manifest_path.read_text(encoding="utf-8")).get("metrics") or []
-    for metric in metrics:
-        if not isinstance(metric, dict):
-            continue
-        mid = str(metric.get("metric_id") or "")
-        formatted = str(metric.get("formatted_value") or metric.get("value") or "")
-        page_ids_m = metric.get("page_ids") or ["executive_overview"]
-        comparisons.append(
-            {
-                "metric_id": mid,
-                "page_id": page_ids_m[0] if page_ids_m else "executive_overview",
-                "visual_id": (metric.get("visual_ids") or metric.get("chart_ids") or ["visual_volume_trend"])[0]
-                if (metric.get("visual_ids") or metric.get("chart_ids"))
-                else "visual_volume_trend",
-                "displayed_value": formatted or str(metric.get("display_name")),
-                "manifest_value": formatted,
-                "proof_value": formatted,
-                "formatting_rule": str(metric.get("format") or "display"),
-                "comparison_status": "PASS",
-                "reason": "MCP-reviewed visible card/chart values align with rendered_metric_manifest",
-            }
+    page_cov = observations.get("page_coverage")
+    visual_cov = observations.get("visual_coverage")
+    if page_cov is None or visual_cov is None:
+        raise ValueError(
+            "observations must include page_coverage and visual_coverage "
+            "(writer will not invent 1.0)"
         )
 
     payload = {
         "schema_version": "1.0",
-        "review_id": f"LLM-PW-{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}",
-        "review_status": "PASS",
-        "technical_verification_status": "PASS",
-        "business_approval_status": "APPROVED",
-        "reviewed_at": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
+        "review_id": str(
+            observations.get("review_id")
+            or f"LLM-PW-{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}"
+        ),
+        "review_status": review_status,
+        "technical_verification_status": tech_status,
+        # Browser/MCP review must never approve business KPI definitions.
+        "business_approval_status": "UNCHANGED",
+        "reviewed_at": str(
+            observations.get("reviewed_at")
+            or datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+        ),
         "repository_commit_sha": commit,
-        "dbt_invocation_id": None,
+        "dbt_invocation_id": observations.get("dbt_invocation_id"),
         "report_bundle_hash": bundle,
         "report_html_hash": file_hashes.get("report_html")
         or (sha256_file(paths["report_html"]) if paths.get("report_html") else ""),
@@ -244,51 +178,75 @@ def main() -> int:
         "rendered_metric_manifest_hash": file_hashes.get("rendered_metric_manifest", ""),
         "query_registry_hash": file_hashes.get("query_registry", ""),
         "proof_registry_hash": file_hashes.get("proof_registry", ""),
-        "browser_runtime": "chromium",
-        "mcp_server": args.mcp_server,
-        "llm_reviewer": "cursor-agent",
-        "report_url": args.report_url,
-        "tested_viewports": ["desktop", "tablet", "mobile"],
-        "expected_page_ids": page_ids,
-        "reviewed_page_ids": page_ids,
-        "expected_visual_ids": visual_ids,
-        "reviewed_visual_ids": visual_ids,
-        "page_coverage": 1.0,
-        "visual_coverage": 1.0,
+        "browser_runtime": str(observations.get("browser_runtime") or ""),
+        "mcp_server": str(mcp_server or observations.get("mcp_server") or ""),
+        "llm_reviewer": str(observations.get("llm_reviewer") or ""),
+        "report_url": str(report_url or observations.get("report_url") or ""),
+        "tested_viewports": list(observations.get("tested_viewports") or []),
+        "expected_page_ids": expected_pages,
+        "reviewed_page_ids": reviewed_pages,
+        "expected_visual_ids": expected_visuals,
+        "reviewed_visual_ids": reviewed_visuals,
+        "page_coverage": float(page_cov),
+        "visual_coverage": float(visual_cov),
         "interactions": interactions,
         "observed_value_comparisons": comparisons,
         "screenshots": screenshots,
-        "findings": [
-            {
-                "finding_id": "F-INFO-001",
-                "severity": "INFO",
-                "category": "mobile_usability",
-                "page_id": "executive_overview",
-                "visual_id": "visual_volume_trend",
-                "description": "On mobile viewport, chart points may require scrollIntoView before tap.",
-                "expected_behavior": "Primary chart points remain tappable in the first mobile viewport.",
-                "observed_behavior": "Tap succeeded after scrollIntoView; tooltip showed exact March 2026 Actual value.",
-                "evidence": "reports/agent/10_presentation/llm_playwright_evidence/mobile_executive.png",
-                "recommended_action": "Optional: ensure executive charts are above the fold on mobile.",
-                "resolution_status": "RESOLVED",
-            }
-        ],
-        "unresolved_critical_findings": [],
-        "unresolved_high_findings": [],
-        "limitations": [
-            "Review performed with user-playwright MCP in Cursor against the local serve_report.py server.",
-            "Business KPI definitions were not approved by this review.",
-        ],
-        "notes": (
-            "Real MCP browser navigate/hover/tap/screenshot session completed for "
-            "desktop, tablet, and mobile. Technical presentation review only."
-        ),
+        "findings": list(observations.get("findings") or []),
+        "unresolved_critical_findings": list(observations.get("unresolved_critical_findings") or []),
+        "unresolved_high_findings": list(observations.get("unresolved_high_findings") or []),
+        "limitations": list(observations.get("limitations") or []),
+        "notes": str(observations.get("notes") or ""),
+        "observations_source": "mcp_session_observations_json",
     }
+    if not payload["browser_runtime"] or not payload["mcp_server"] or not payload["llm_reviewer"]:
+        raise ValueError("observations must include browser_runtime, mcp_server, and llm_reviewer")
+    if not payload["report_url"]:
+        raise ValueError("report_url missing from observations and CLI")
+    if not payload["tested_viewports"]:
+        raise ValueError("observations.tested_viewports must be non-empty")
+    return payload
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--root", type=Path, required=True)
+    parser.add_argument(
+        "--observations-json",
+        type=Path,
+        required=True,
+        help="Actual MCP session observation JSON (required; writer never invents interactions).",
+    )
+    parser.add_argument("--report-url", default=None)
+    parser.add_argument(
+        "--screenshot-dir",
+        type=Path,
+        default=None,
+        help="Optional directory containing MCP screenshot files referenced by observations.",
+    )
+    parser.add_argument("--mcp-server", default=None)
+    args = parser.parse_args()
+    root = args.root.resolve()
+
+    try:
+        observations = _load_observations(args.observations_json.resolve())
+        payload = assemble_review(
+            root,
+            observations,
+            report_url=args.report_url,
+            mcp_server=args.mcp_server,
+            screenshot_dir=args.screenshot_dir.resolve() if args.screenshot_dir else None,
+        )
+    except (OSError, ValueError, json.JSONDecodeError) as exc:
+        print(f"ERROR: {exc}")
+        return 2
+
     json_path, md_path = write_review_artifacts(root, payload)
     print(f"Wrote {json_path}")
     print(f"Wrote {md_path}")
-    print(f"bundle={bundle}")
-    print(f"interactions={len(interactions)} screenshots={len(screenshots)}")
+    print(f"bundle={payload['report_bundle_hash']}")
+    print(f"interactions={len(payload['interactions'])} screenshots={len(payload['screenshots'])}")
+    print(f"business_approval_status={payload['business_approval_status']}")
     return 0
 
 

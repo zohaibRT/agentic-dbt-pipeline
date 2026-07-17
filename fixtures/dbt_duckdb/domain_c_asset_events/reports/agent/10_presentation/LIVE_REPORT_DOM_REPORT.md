@@ -1,13 +1,17 @@
 # Live Report DOM Validation
 
-- Status: **PASS**
-- Validated at: `2026-07-16T22:28:27.890824+00:00`
-- URL: `http://127.0.0.1:62439/`
+- Status: **FAIL**
+- Validated at: `2026-07-17T05:28:29.248071+00:00`
+- URL: `http://127.0.0.1:63465/`
 - Viewports: desktop, tablet, mobile
 
 ## Errors
 
-_None_
+- tablet: expected window.__REPORT_REFRESH_STATUS__ == 'success' after refresh, got 'refreshing'
+- mobile: report ready failed: Page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:63465/
+Call log:
+  - navigating to "http://127.0.0.1:63465/", waiting until "networkidle"
+
 
 ## Warnings
 

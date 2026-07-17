@@ -5,17 +5,14 @@
   "errors": [],
   "warnings": [],
   "details": {
-    "url": "http://127.0.0.1:55464/",
+    "project_root": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_b_encounter",
+    "url": "http://127.0.0.1:61427/",
     "report_dir": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_b_encounter\\reports\\agent\\10_presentation\\matplotlib",
     "http_status": 200,
     "body_bytes": 51659,
     "charts_http_status": 200,
     "charts_count": 2,
     "charts_payload_ok": true,
-    "resolved_relations": [
-      "model.domain_b_encounter.fct_encounters"
-    ],
-    "manifest_relation_resolution": true,
     "metrics_http_status": 200,
     "metrics_count": 3,
     "board_count": 3,
@@ -23,15 +20,43 @@
     "refresh_http_status": 200,
     "refresh_payload": {
       "status": "refreshed",
-      "freshness_timestamp": "2026-07-16T22:25:45.213432+00:00"
+      "freshness_timestamp": "2026-07-17T05:25:33.494764+00:00"
     },
     "refresh_ok": true,
     "runtime_preflight": true,
     "initial_data_load": true,
     "refresh_validation": true,
+    "manifest_relation_resolution": true,
+    "resolved_relations": [
+      "model.domain_b_encounter.fct_encounters"
+    ],
+    "relation_resolutions": [
+      {
+        "unique_id": "model.domain_b_encounter.fct_encounters",
+        "status": "PASS",
+        "enabled": true,
+        "database": "fixture",
+        "schema": "main",
+        "alias": "fct_encounters",
+        "relation_name": "\"fixture\".\"main\".\"fct_encounters\"",
+        "manifest_path": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_b_encounter\\target\\manifest.json",
+        "manifest_checksum": "a09218527699f1be3b33ceb1ac723ff2abe1efa0f3493ef401a7e21634850055",
+        "physical_exists": true,
+        "execution_error": "",
+        "notes": ""
+      }
+    ],
+    "profile_name": "fixture_duckdb",
+    "target": "dev",
+    "adapter": "duckdb",
+    "database": null,
+    "schema": "main",
+    "manifest_path": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_b_encounter\\target\\manifest.json",
+    "manifest_checksum": "a09218527699f1be3b33ceb1ac723ff2abe1efa0f3493ef401a7e21634850055",
+    "connection_path": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_b_encounter\\target\\fixture.duckdb",
     "runtime_preflight_path": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_b_encounter\\reports\\agent\\10_presentation\\matplotlib\\runtime_preflight.json"
   },
-  "checked_at": "2026-07-16T22:25:45.216925+00:00",
+  "checked_at": "2026-07-17T05:25:33.664533+00:00",
   "warning_ids": [],
   "applicability": ""
 }

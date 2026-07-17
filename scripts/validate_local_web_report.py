@@ -16,9 +16,17 @@ from typing import Any
 
 try:
     from lib_gate_common import add_output_json_arg, print_results
+    from lib_manifest_relation import (
+        collect_registered_unique_ids,
+        infer_project_root_from_report_dir,
+        resolve_registered_relations,
+    )
 except ImportError:  # pragma: no cover
     add_output_json_arg = None  # type: ignore[assignment]
     print_results = None  # type: ignore[assignment]
+    collect_registered_unique_ids = None  # type: ignore[assignment]
+    infer_project_root_from_report_dir = None  # type: ignore[assignment]
+    resolve_registered_relations = None  # type: ignore[assignment]
 
 
 def find_free_port() -> int:
@@ -96,23 +104,6 @@ def validate_live_endpoints(base_url: str, report_dir: Path, details: dict[str, 
             details["charts_payload_ok"] = len(charts) > 0
             if not charts:
                 errors.append("charts endpoint returned no charts")
-            # Domain-neutral relation resolution evidence from registry metadata
-            resolved = []
-            for chart in charts:
-                if not isinstance(chart, dict):
-                    continue
-                for key in ("source_resource_id", "relation_name", "model_unique_id", "unique_id"):
-                    if chart.get(key):
-                        resolved.append(str(chart.get(key)))
-                for item in chart.get("source_resource_ids") or []:
-                    if item:
-                        resolved.append(str(item))
-            details["resolved_relations"] = sorted(set(resolved))
-            details["manifest_relation_resolution"] = bool(resolved)
-            if not resolved:
-                errors.append(
-                    "manifest relation resolution failed: no source_resource_id/unique_id on chart payloads"
-                )
     except Exception as exc:  # noqa: BLE001
         errors.append(f"charts endpoint failed: {exc}")
         details["charts_payload_ok"] = False
@@ -162,8 +153,39 @@ def validate_live_endpoints(base_url: str, report_dir: Path, details: dict[str, 
     details["runtime_preflight"] = not errors
     details["initial_data_load"] = bool(details.get("charts_payload_ok") and details.get("metrics_payload_ok"))
     details["refresh_validation"] = bool(details.get("refresh_ok"))
-    details["manifest_relation_resolution"] = bool(details.get("manifest_relation_resolution"))
     return errors
+
+
+def apply_manifest_relation_resolution(
+    root: Path,
+    details: dict[str, Any],
+    errors: list[str],
+    *,
+    require_physical: bool = True,
+) -> None:
+    """Exact unique_id → manifest relation_name (+ physical) resolution."""
+    if resolve_registered_relations is None:
+        errors.append("lib_manifest_relation unavailable")
+        details["manifest_relation_resolution"] = False
+        return
+    report = resolve_registered_relations(root, require_physical=require_physical)
+    details["manifest_relation_resolution"] = bool(report.get("manifest_relation_resolution"))
+    details["resolved_relations"] = list(report.get("resolved_relations") or [])
+    details["relation_resolutions"] = list(report.get("resolutions") or [])
+    details["profile_name"] = report.get("profile_name")
+    details["target"] = report.get("target")
+    details["adapter"] = report.get("adapter")
+    details["database"] = report.get("database")
+    details["schema"] = report.get("schema")
+    details["manifest_path"] = report.get("manifest_path")
+    details["manifest_checksum"] = report.get("manifest_checksum")
+    details["connection_path"] = report.get("connection_path")
+    if not report.get("unique_ids"):
+        errors.append(
+            "manifest relation resolution failed: no exact unique_id registered on chart/query/metric payloads"
+        )
+    for err in report.get("errors") or []:
+        errors.append(f"manifest relation resolution failed: {err}")
 
 
 def write_runtime_preflight(report_dir: Path, details: dict[str, Any], errors: list[str]) -> Path:
@@ -174,9 +196,18 @@ def write_runtime_preflight(report_dir: Path, details: dict[str, Any], errors: l
         "initial_data_load": details.get("initial_data_load"),
         "refresh_validation": details.get("refresh_validation"),
         "resolved_relations": details.get("resolved_relations") or [],
+        "relation_resolutions": details.get("relation_resolutions") or [],
         "charts_payload_ok": details.get("charts_payload_ok"),
         "metrics_payload_ok": details.get("metrics_payload_ok"),
         "refresh_ok": details.get("refresh_ok"),
+        "profile_name": details.get("profile_name"),
+        "target": details.get("target"),
+        "adapter": details.get("adapter"),
+        "database": details.get("database"),
+        "schema": details.get("schema"),
+        "manifest_path": details.get("manifest_path"),
+        "manifest_checksum": details.get("manifest_checksum"),
+        "connection_path": details.get("connection_path"),
         "errors": list(errors),
     }
     path = report_dir / "runtime_preflight.json"
@@ -187,10 +218,21 @@ def write_runtime_preflight(report_dir: Path, details: dict[str, Any], errors: l
 def main() -> int:
     parser = argparse.ArgumentParser(description="Validate live local web report data endpoints.")
     parser.add_argument("--report-dir", required=True, help="Directory containing serve_report.py.")
+    parser.add_argument(
+        "--root",
+        type=Path,
+        default=None,
+        help="dbt project root (defaults to parent of reports/ from --report-dir).",
+    )
     parser.add_argument("--port", type=int, default=0, help="Port to use. Defaults to an available port.")
     parser.add_argument("--path", default="/", help="URL path to validate.")
     parser.add_argument("--expected-text", default=None, help="Text expected in the returned HTML.")
     parser.add_argument("--timeout-seconds", type=float, default=30)
+    parser.add_argument(
+        "--skip-physical-relation-check",
+        action="store_true",
+        help="Resolve unique_id→relation_name only (skip warehouse existence).",
+    )
     parser.add_argument(
         "--command",
         nargs=argparse.REMAINDER,
@@ -205,6 +247,13 @@ def main() -> int:
     details: dict[str, Any] = {}
 
     report_dir = Path(args.report_dir).resolve()
+    if args.root is not None:
+        project_root = Path(args.root).resolve()
+    elif infer_project_root_from_report_dir is not None:
+        project_root = infer_project_root_from_report_dir(report_dir)
+    else:
+        project_root = report_dir.parents[3]
+    details["project_root"] = str(project_root)
     if not report_dir.exists():
         errors.append(f"report directory does not exist: {report_dir}")
         if print_results is not None:
@@ -269,13 +318,21 @@ def main() -> int:
         # HTTP 200/title alone is not enough for a live report.
         endpoint_errors = validate_live_endpoints(base_url, report_dir, details)
         errors.extend(endpoint_errors)
-        preflight_path = write_runtime_preflight(report_dir, details, endpoint_errors)
+        apply_manifest_relation_resolution(
+            project_root,
+            details,
+            errors,
+            require_physical=not bool(args.skip_physical_relation_check),
+        )
+        details["runtime_preflight"] = not errors
+        preflight_path = write_runtime_preflight(report_dir, details, errors)
         details["runtime_preflight_path"] = str(preflight_path)
     except Exception as exc:  # noqa: BLE001
         errors.append(f"local web report validation failed for {url}: {exc}")
         details["runtime_preflight"] = False
         details["initial_data_load"] = False
         details["refresh_validation"] = False
+        details["manifest_relation_resolution"] = False
         write_runtime_preflight(report_dir, details, errors)
     finally:
         if process.poll() is None:

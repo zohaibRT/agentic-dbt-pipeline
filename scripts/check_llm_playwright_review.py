@@ -131,17 +131,20 @@ def validate_review(
     elif status == "FAIL":
         errors.append("LLM Playwright review status is FAIL")
 
-    # Technical vs business separation
-    biz = str(payload.get("business_approval_status") or "")
+    # Technical vs business separation — browser review cannot approve KPIs.
+    biz = str(payload.get("business_approval_status") or "").strip().upper()
     tech = str(payload.get("technical_verification_status") or "")
     details["business_approval_status"] = biz
     details["technical_verification_status"] = tech
     if not tech:
         errors.append("technical_verification_status missing on LLM review")
-    # Business approval must not be auto-set to APPROVED by review alone without explicit note —
-    # we only ensure the field exists as a separate status (may be PENDING etc.)
     if "business_approval_status" not in payload:
         errors.append("business_approval_status missing (must remain separate from browser review)")
+    elif biz != "UNCHANGED":
+        errors.append(
+            "business_approval_status must be UNCHANGED for browser/MCP review "
+            f"(got {biz!r}; browser review cannot approve business KPI definitions)"
+        )
 
     required_scalar = [
         "review_id",

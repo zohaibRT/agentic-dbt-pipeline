@@ -3,14 +3,14 @@
 - Status: PASS
 - Presentation state: VERIFIED_FOR_HANDOFF
 - Open allowed: True
-- Report bundle hash: 9825e7c9d7f71a12d24ab1f8609528b8f7c6f48e0445fdae3d23baaebc5b486f
-- Reviewed at: 2026-07-16T22:27:01.431225+00:00
+- Report bundle hash: 3af27f2788eb758445d701f23ab82063507199c06745177edd95865d6f93abbf
+- Reviewed at: 2026-07-17T05:26:48.795530+00:00
 
 ## Gates
 
 | Gate | Status | Evidence | Notes |
 |---|---|---|---|
-| manifest_relation_resolution | PASS | C:\codebase\agentic-dbt-pipeline\fixtures\dbt_duckdb\domain_b_encounter\reports\agent\10_presentation\matplotlib\runtime_preflight.json |  |
+| manifest_relation_resolution | PASS | C:\codebase\agentic-dbt-pipeline\fixtures\dbt_duckdb\domain_b_encounter\target\manifest.json |  |
 | runtime_preflight | PASS | validate_local_web_report.py / runtime_preflight.json |  |
 | initial_data_load | PASS | live data endpoints |  |
 | refresh_validation | PASS | refresh endpoint |  |

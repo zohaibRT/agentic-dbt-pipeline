@@ -271,7 +271,7 @@ def _complete_review(root: Path, **overrides: object) -> dict:
         "review_id": "LLM-REVIEW-TEST-001",
         "review_status": "PASS",
         "technical_verification_status": "PASS",
-        "business_approval_status": "PENDING_REVIEW",
+        "business_approval_status": "UNCHANGED",
         "reviewed_at": "2026-07-16T12:00:00+00:00",
         "repository_commit_sha": "deadbeef",
         "dbt_invocation_id": None,
@@ -630,11 +630,20 @@ class LlmPlaywrightReviewTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             _minimal_presentation(root)
-            payload = _complete_review(root, business_approval_status="PENDING_REVIEW")
-            self.assertEqual(payload["business_approval_status"], "PENDING_REVIEW")
+            payload = _complete_review(root, business_approval_status="UNCHANGED")
+            self.assertEqual(payload["business_approval_status"], "UNCHANGED")
             self.assertEqual(payload["technical_verification_status"], "PASS")
             proc = run_script("check_llm_playwright_review.py", "--root", str(root), "--phase", "final")
             self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+
+    def test_17b_business_approval_approved_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            _minimal_presentation(root)
+            _complete_review(root, business_approval_status="APPROVED")
+            proc = run_script("check_llm_playwright_review.py", "--root", str(root), "--phase", "final")
+            self.assertEqual(proc.returncode, 1)
+            self.assertIn("UNCHANGED", proc.stdout + proc.stderr)
 
     def test_18_synthetic_outside_fixtures_fails(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

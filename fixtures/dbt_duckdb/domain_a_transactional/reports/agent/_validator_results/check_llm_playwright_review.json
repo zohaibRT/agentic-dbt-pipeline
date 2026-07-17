@@ -9,16 +9,16 @@
     "interactive_report": true,
     "applicability": "required",
     "review_status": "PASS",
-    "business_approval_status": "APPROVED",
+    "business_approval_status": "UNCHANGED",
     "technical_verification_status": "PASS",
-    "computed_report_bundle_hash": "788094c18d7ea3b2b8b83626e9459ab7d2e6016344d36e48f72d9e0a6cf4b741",
+    "computed_report_bundle_hash": "a30057a90223ca2e64bcd38d1d8abf3eac29d035c247fdcbb4b895f85f0e2993",
     "page_coverage": 1.0,
     "visual_coverage": 1.0,
     "interaction_count": 11,
     "unresolved_critical_findings": [],
     "unresolved_high_findings": []
   },
-  "checked_at": "2026-07-16T22:30:59.242014+00:00",
+  "checked_at": "2026-07-17T05:23:58.344974+00:00",
   "warning_ids": [],
   "applicability": ""
 }

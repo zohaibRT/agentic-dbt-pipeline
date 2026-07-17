@@ -167,6 +167,17 @@ class LiveBrowserHelperTests(unittest.TestCase):
         result.fail("desktop: failed report API request: GET http://127.0.0.1/api/charts.json -> 500")
         self.assertTrue(any("failed report API request" in e for e in result.errors))
         self.assertIsNotNone(response_has_sql_error({"sql_error": "psycopg2.Error: boom"}))
+        for message in (
+            "Catalog Error: Table with name fct_events does not exist",
+            "Binder Error: Referenced column not found",
+            "relation does not exist",
+            "table does not exist",
+            "no such table: fct_events",
+            "query failed",
+            "Internal Server Error",
+            "Traceback (most recent call last)",
+        ):
+            self.assertIsNotNone(response_has_sql_error({"error": message}), message)
 
     def test_05_missing_page_fails(self) -> None:
         result = ValidationResult()

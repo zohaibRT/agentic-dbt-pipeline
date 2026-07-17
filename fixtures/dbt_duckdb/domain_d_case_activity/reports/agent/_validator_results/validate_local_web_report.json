@@ -5,17 +5,14 @@
   "errors": [],
   "warnings": [],
   "details": {
-    "url": "http://127.0.0.1:51986/",
+    "project_root": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_d_case_activity",
+    "url": "http://127.0.0.1:52098/",
     "report_dir": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_d_case_activity\\reports\\agent\\10_presentation\\matplotlib",
     "http_status": 200,
     "body_bytes": 51713,
     "charts_http_status": 200,
     "charts_count": 2,
     "charts_payload_ok": true,
-    "resolved_relations": [
-      "model.domain_d_case_activity.fct_case_activities"
-    ],
-    "manifest_relation_resolution": true,
     "metrics_http_status": 200,
     "metrics_count": 3,
     "board_count": 3,
@@ -23,15 +20,43 @@
     "refresh_http_status": 200,
     "refresh_payload": {
       "status": "refreshed",
-      "freshness_timestamp": "2026-07-16T22:28:38.346067+00:00"
+      "freshness_timestamp": "2026-07-17T05:19:16.907868+00:00"
     },
     "refresh_ok": true,
     "runtime_preflight": true,
     "initial_data_load": true,
     "refresh_validation": true,
+    "manifest_relation_resolution": true,
+    "resolved_relations": [
+      "model.domain_d_case_activity.fct_case_activities"
+    ],
+    "relation_resolutions": [
+      {
+        "unique_id": "model.domain_d_case_activity.fct_case_activities",
+        "status": "PASS",
+        "enabled": true,
+        "database": "fixture",
+        "schema": "main",
+        "alias": "fct_case_activities",
+        "relation_name": "\"fixture\".\"main\".\"fct_case_activities\"",
+        "manifest_path": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_d_case_activity\\target\\manifest.json",
+        "manifest_checksum": "b899b0caf5ebee91c851645e8edb0cf67991fdb1be067a123da5e028981d2577",
+        "physical_exists": true,
+        "execution_error": "",
+        "notes": ""
+      }
+    ],
+    "profile_name": "fixture_duckdb",
+    "target": "dev",
+    "adapter": "duckdb",
+    "database": null,
+    "schema": "main",
+    "manifest_path": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_d_case_activity\\target\\manifest.json",
+    "manifest_checksum": "b899b0caf5ebee91c851645e8edb0cf67991fdb1be067a123da5e028981d2577",
+    "connection_path": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_d_case_activity\\target\\fixture.duckdb",
     "runtime_preflight_path": "C:\\codebase\\agentic-dbt-pipeline\\fixtures\\dbt_duckdb\\domain_d_case_activity\\reports\\agent\\10_presentation\\matplotlib\\runtime_preflight.json"
   },
-  "checked_at": "2026-07-16T22:28:38.367291+00:00",
+  "checked_at": "2026-07-17T05:19:17.089100+00:00",
   "warning_ids": [],
   "applicability": ""
 }

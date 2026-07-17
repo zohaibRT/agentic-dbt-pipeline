@@ -35,7 +35,13 @@ VIEWPORTS: dict[str, dict[str, int]] = {
 
 DECLARED_ENDPOINTS = ("/api/charts.json", "/api/metrics.json", "/api/refresh")
 SQL_ERROR_RE = re.compile(
-    r"(sql\s*error|psycopg2|sqlalchemy|duckdb\.Error|syntax error at|database error|odbc)",
+    r"("
+    r"sql\s*error|psycopg2|sqlalchemy|duckdb\.Error|"
+    r"syntax error at|database error|odbc|"
+    r"relation does not exist|table does not exist|no such table|"
+    r"catalog error|binder error|query failed|"
+    r"internal server error|traceback"
+    r")",
     re.I,
 )
 TECH_ID_RE = re.compile(r"^(model|source|metric|exposure|seed|snapshot)\.|^[a-z][a-z0-9]*(_[a-z0-9]+)+$")

@@ -160,6 +160,7 @@ KNOWN_CONSUMERS: dict[tuple[str, str], list[str]] = {
     ("presentation_policy", "require_manifest_relation_resolution"): [
         "check_report_handoff_readiness.py",
         "validate_local_web_report.py",
+        "lib_manifest_relation.py",
     ],
     ("presentation_policy", "require_report_runtime_preflight"): [
         "check_report_handoff_readiness.py",
