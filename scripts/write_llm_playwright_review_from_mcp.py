@@ -251,6 +251,11 @@ def assemble_review(
         "notes": str(observations.get("notes") or ""),
         "observations_source": "mcp_session_observations_json",
     }
+    if observations.get("fixture_synthetic_evidence") is True:
+        payload["fixture_synthetic_evidence"] = True
+        payload["fixture_evidence_scope"] = str(
+            observations.get("fixture_evidence_scope") or "fixtures_only"
+        )
     if not payload["browser_runtime"] or not payload["mcp_server"] or not payload["llm_reviewer"]:
         raise ValueError("observations must include browser_runtime, mcp_server, and llm_reviewer")
     if not payload["report_url"]:

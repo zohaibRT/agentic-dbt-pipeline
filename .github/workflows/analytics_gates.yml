@@ -71,6 +71,17 @@ jobs:
             python scripts/validate_live_report_dom.py --root "$fixture" --desktop --tablet --mobile
           done
 
+      - name: Rebind fixture MCP evidence after final browser refresh
+        run: |
+          set -euo pipefail
+          # Browser refresh mutates chart/metric payloads and therefore report_bundle_hash.
+          # Rebind Domain A fixture observations to the post-browser bundle before IV/acceptance.
+          python scripts/rebind_fixture_llm_review.py \
+            --root fixtures/dbt_duckdb/domain_a_transactional
+          python scripts/check_llm_playwright_review.py \
+            --root fixtures/dbt_duckdb/domain_a_transactional \
+            --phase final
+
       - name: Independent verifier
         run: |
           set -euo pipefail

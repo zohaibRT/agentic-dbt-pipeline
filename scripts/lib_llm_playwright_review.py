@@ -279,6 +279,10 @@ def looks_synthetic_production_review(payload: dict[str, Any], root: Path) -> bo
     """Detect fixture-only / placeholder reviews used outside fixtures/."""
     if is_under_fixtures(root):
         return False
+    if payload.get("fixture_synthetic_evidence") is True:
+        return True
+    if str(payload.get("fixture_evidence_scope") or "").strip().lower() == "fixtures_only":
+        return True
     blob = json.dumps(payload, ensure_ascii=False).lower()
     tokens = (
         "synthetic fixture",
@@ -286,6 +290,9 @@ def looks_synthetic_production_review(payload: dict[str, Any], root: Path) -> bo
         "not a real mcp review",
         "placeholder llm review",
         "fake playwright mcp",
+        "fixture_synthetic_evidence",
+        "fixture_evidence_scope",
+        "fixture_synthetic_evidence:",
     )
     return any(token in blob for token in tokens)
 

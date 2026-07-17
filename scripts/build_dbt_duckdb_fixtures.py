@@ -34,7 +34,6 @@ from fixture_kpi_contracts import (  # noqa: E402
 from lib_fixture_control_plane import write_control_plane_files  # noqa: E402
 from lib_gate_common import REQUIRED_OBSERVABILITY_DOMAINS  # noqa: E402
 from lib_interactive_presentation import write_interactive_presentation  # noqa: E402
-from lib_llm_playwright_review import rebind_fixture_observation_freshness  # noqa: E402
 
 TIME_INTEL_METRICS = [
     "KPI-001",
@@ -58,34 +57,16 @@ def _llm_review_applicability(slug: str) -> str:
 def refresh_domain_a_llm_review(root: Path) -> None:
     """Refresh domain_a LLM review from fixture observations after final bundle.
 
-    Rebinds observation freshness fields under fixtures/ only, then assembles the
-    review. Does not invent interactions or weaken production stale checks.
+    Delegates to scripts/rebind_fixture_llm_review.py (fixtures/ only).
     """
-    observations = root / "reports" / "agent" / "10_presentation" / "LLM_PLAYWRIGHT_OBSERVATIONS.json"
-    evidence = root / "reports" / "agent" / "10_presentation" / "llm_playwright_evidence"
-    root = root.resolve()
-    observations = observations.resolve()
-    evidence = evidence.resolve()
-    if not observations.exists():
-        raise RuntimeError(
-            "domain_a LLM Playwright observations missing: "
-            f"{observations} (writer requires --observations-json)"
-        )
-    if not evidence.exists() or not any(evidence.glob("*.png")):
-        return
-    rebind_fixture_observation_freshness(root, observations)
     proc = subprocess.run(
         [
             sys.executable,
-            str(SCRIPTS / "write_llm_playwright_review_from_mcp.py"),
+            str(SCRIPTS / "rebind_fixture_llm_review.py"),
             "--root",
-            str(root),
-            "--observations-json",
-            str(observations),
-            "--screenshot-dir",
-            str(evidence),
+            str(root.resolve()),
         ],
-        cwd=str(SCRIPTS),
+        cwd=str(ROOT),
         capture_output=True,
         text=True,
     )
